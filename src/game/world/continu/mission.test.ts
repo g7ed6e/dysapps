@@ -7,7 +7,7 @@ import { EMPTY_STATE, type GameState } from '../../engine';
 import { questProgress } from '../../exercises';
 import { NOMS_ARCHIPELS } from '../archipelago';
 import { modeleDuMonde } from '../model';
-import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, firstToPlayAt, keepClear, markOnScreen, missionsOfPlace, nextMission, playedPlaces, playsInPlace, type MissionMark } from './mission';
+import { DISTANCE_SIGN_STEPS, bornesDuMondeOuvert, distanceSign, firstToPlayAt, keepClear, keoZone, markOnScreen, missionsOfPlace, nextMission, overlaps, playedPlaces, playsInPlace, type MissionMark } from './mission';
 import { KEO_STEP, PLACES, placeById, placeOfIsland } from './plan6e';
 import { planFor } from './levelPlan';
 
@@ -176,6 +176,23 @@ describe('La marque à l’écran', () => {
     expect(m.inside).toBe(false);
     expect(m.y).toBe(750);
     expect(Math.abs(m.angle)).toBeCloseTo(Math.PI, 9);
+  });
+});
+
+describe('La colonne de Kéo, que la rangée du bas ne couvre pas (choix du mainteneur, 23 octobre 2026)', () => {
+  it('au milieu de l’écran, de la moitié de la hauteur jusqu’à ses pieds au plus bas', () => {
+    expect(keoZone(1024, 768, 78)).toEqual({ left: 466, top: 384, width: 92, height: 306 });
+    // Sur un téléphone couché, Kéo est petit : 24 px au moins de chaque côté.
+    expect(keoZone(844, 390, 78)).toEqual({ left: 398, top: 195, width: 48, height: 117 });
+  });
+
+  it('« Y aller » au texte normal tient dessous ; au plus grand texte, ou sa bulle au-dessus de lui, non', () => {
+    const zone = keoZone(1024, 768, 78);
+    expect(overlaps({ left: 416, top: 700, width: 192, height: 56 }, zone)).toBe(false);
+    expect(overlaps({ left: 400, top: 660, width: 240, height: 96 }, zone)).toBe(true);
+    expect(overlaps({ left: 330, top: 640, width: 360, height: 50 }, zone)).toBe(true);
+    // À droite de « Y aller », la bulle laisse Kéo libre.
+    expect(overlaps({ left: 618, top: 672, width: 374, height: 84 }, zone)).toBe(false);
   });
 });
 

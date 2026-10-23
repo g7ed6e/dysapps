@@ -126,16 +126,59 @@
   background: #e5ebe3;
   pointer-events: none;
 }
-/* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
+/* « Y aller » qui ne tient plus sous les pieds de Kéo (un grand texte, un téléphone) : en bas à droite, loin de lui,
+   sur une ligne (choix du mainteneur, 23 octobre 2026 : la caméra ne bouge pas, la rangée s'écarte). La page mesure et
+   pose `data-go-cote` (placeGoRow). */
+.world-stage[data-go-cote='oui'] .open-world-go {
+  left: auto;
+  right: calc(0.6rem + env(safe-area-inset-right, 0px));
+  margin-inline: 0;
+  align-items: flex-end;
+}
+.world-stage[data-go-cote='oui'] .open-world-go .button {
+  white-space: nowrap;
+}
+/* La raison d'un « Y aller » grisé, écrite près de lui (pas seulement dite aux lecteurs d'écran), jamais sur Kéo : à sa
+   droite (`data-go-bulle="cote"`), au-dessus de lui quand il est à droite de Kéo (`dessus`), sinon en haut de l'écran
+   (`haut`). Sa largeur, jusqu'au bord droit : `--open-world-bulle`. Posée hors de la rangée, elle ne la pousse jamais :
+   « Y aller » garde sa place. */
 .open-world-go-reason {
-  max-width: min(90vw, 24rem);
-  margin: 0 auto 0.4rem;
+  position: absolute;
+  bottom: calc(100% + 0.4rem);
+  left: 50%;
+  translate: -50% 0;
+  width: max-content;
+  max-width: min(var(--open-world-bulle, 90vw), 24rem);
+  margin: 0;
   padding: 0.3rem 0.8rem;
   border: var(--border-width, 2px) solid var(--text);
   border-radius: var(--radius-control, 12px);
   background: var(--surface);
   color: var(--text);
   text-align: center;
+}
+.world-stage[data-go-cote='oui'] .open-world-go-reason {
+  left: auto;
+  right: 0;
+  translate: none;
+}
+.world-stage[data-go-bulle='cote'] .open-world-go-reason {
+  bottom: 0;
+  left: calc(100% + 10px);
+  translate: none;
+}
+/* En haut, entre la colonne des accès directs et celle de Réglages et de la caméra (56 px chacune, à 0,6 rem du bord,
+   et un écart de 12 px) ; `fixed` : la scène couvre tout l'écran, rien au-dessus d'elle ne la décale. */
+.world-stage[data-go-bulle='haut'] .open-world-go-reason {
+  position: fixed;
+  top: calc(0.6rem + env(safe-area-inset-top, 0px));
+  bottom: auto;
+  left: calc(0.6rem + 56px + 12px + env(safe-area-inset-left, 0px));
+  right: calc(0.6rem + 56px + 12px + env(safe-area-inset-right, 0px));
+  width: fit-content;
+  max-width: none;
+  margin: 0 auto;
+  translate: none;
 }
 .open-world-go {
   display: flex;
@@ -158,21 +201,6 @@
   .open-world-go .button {
     min-width: 0;
     max-width: 100%;
-  }
-  /* La bulle au-dessus de « Y aller » monte en haut de l'écran, entre la colonne des accès directs et celle des Réglages
-     et de la caméra, jamais dessus : en bas, au plus grand texte, elle ne laissait aucune place à Kéo, que la caméra
-     garde au-dessus de « Y aller » (piste « Remonter Kéo dans l'image », consultant UX UI). À la même place à toutes
-     les tailles, pour qu'elle ne change pas de place d'une phrase à l'autre (référent dys). `fixed` : la scène du monde
-     ouvert couvre toute la fenêtre et aucun de ses ancêtres n'est transformé ; 56 px, la largeur des boutons des deux
-     colonnes. */
-  .open-world-go-reason {
-    position: fixed;
-    top: calc(0.6rem + env(safe-area-inset-top, 0px));
-    left: calc(0.6rem + 56px + 12px + env(safe-area-inset-left, 0px));
-    right: calc(0.6rem + 56px + 12px + env(safe-area-inset-right, 0px));
-    width: fit-content;
-    max-width: none;
-    margin: 0 auto;
   }
 }
 .open-world-go .button:disabled {

@@ -25,8 +25,9 @@ describe('Le plan par niveau', () => {
     expect([...OPEN_WORLD_ARCHIPELAGOS]).toEqual([...OPEN_WORLD_LEVELS]);
   });
 
-  it('la Carte serrée : au 4e et au 3e seulement (expert frontend, relecture du lot 1 du 3e)', () => {
+  it('la Carte serrée et les pieds de Kéo gardés : au 4e et au 3e seulement (expert frontend, relecture du lot 1 du 3e)', () => {
     expect(OPEN_WORLD_LEVELS.filter((l) => planFor(l).snugMap)).toEqual(['4e', '3e']);
+    expect(OPEN_WORLD_LEVELS.filter((l) => planFor(l).guardFeet)).toEqual(['4e', '3e']);
   });
 
   it('le plan du 6e est celui de plan6e.ts, sans rien changer', () => {

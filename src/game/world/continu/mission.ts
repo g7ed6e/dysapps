@@ -167,7 +167,23 @@ export interface ScreenRect {
   height: number;
 }
 
-const overlaps = (a: ScreenRect, b: ScreenRect) => a.left < b.left + b.width && b.left < a.left + a.width && a.top < b.top + b.height && b.top < a.top + a.height;
+export const overlaps = (a: ScreenRect, b: ScreenRect): boolean => a.left < b.left + b.width && b.left < a.left + a.width && a.top < b.top + b.height && b.top < a.top + a.height;
+
+/**
+ * La place de Kéo à l'écran, que la rangée du bas et sa bulle ne couvrent jamais (choix du mainteneur, 23 octobre 2026 :
+ * la caméra du 6e et du 5e ne bouge pas, ce sont « Y aller » et la bulle qui s'écartent) : une colonne au milieu de
+ * l'écran, où la caméra le tient, de `half` de la hauteur de chaque côté (`minHalf` pixels au moins : Kéo grandit avec
+ * l'écran), depuis `top` de la hauteur jusqu'à ses pieds au plus bas, `feetRoom` pixels au-dessus du bas de l'écran
+ * (`LOOK_UP.footRoom`, le regard levé devant un lieu haut).
+ */
+const KEO_ZONE = { half: 0.06, minHalf: 24, top: 0.5 } as const;
+
+/** La colonne de Kéo (`KEO_ZONE`) sur un écran de `width` × `height`, ses pieds à `feetRoom` pixels du bas au plus bas. */
+export function keoZone(width: number, height: number, feetRoom: number): ScreenRect {
+  const half = Math.max(KEO_ZONE.minHalf, Math.round(KEO_ZONE.half * height));
+  const top = Math.round(KEO_ZONE.top * height);
+  return { left: width / 2 - half, top, width: 2 * half, height: Math.max(0, height - feetRoom - top) };
+}
 
 /**
  * Un bouton ou une zone que la marque évite. `below` : la marque n'en sort que par le bas (la colonne des accès directs,

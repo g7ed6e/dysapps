@@ -270,13 +270,6 @@ export function liftStep(current: number, target: number, dt: number, reduceMoti
 }
 
 /**
- * La plus grande part de l'écran, depuis le bas, que la rangée du bas garde sous les pieds de Kéo, la bulle au-dessus de
- * « Y aller » comprise : sur tablette, en OpenDyslexic 32 px, interligne et espacements au plus grand, la bulle monte à
- * 54 % de l'écran.
- */
-const FEET_ROOM_MAX = 0.6;
-
-/**
  * Le regard levé (lot 2, choix du directeur artistique) : Kéo arrêté à moins de `within` unités du Phare, la caméra
  * lève le regard pour faire entrer la lanterne avec un peu d'air au-dessus (`air`, en part de la hauteur de l'écran),
  * sans reculer ; Kéo reste entier au-dessus de « Y aller » (ses pieds à `footRoom` pixels au moins du bas de l'écran : le
@@ -310,12 +303,10 @@ function groundClear(p: Vec3, feet: Vec3, ground: (x: number, z: number) => numb
 /**
  * Lève le regard de `pose` (remplie sur place) de la part `amount` (0 : la caméra qui suit, 1 : le regard levé) pour
  * que `top` (le haut de la lanterne) entre à l'écran ; les pieds de Kéo (`feet`) restent au-dessus du bas de l'écran
- * de `footRoom` pixels, ou de la rangée du bas mesurée (`room`, « Y aller » et sa bulle) si elle est plus haute, sur un
- * écran de `height` pixels : la caméra descend et l'air se réduit avant que `keepFeetAbove` ne fasse plonger le regard
- * (au Phare, la bulle d'arrivée sortait la lanterne de l'écran). La caméra garde sa direction et ne recule pas : seuls
- * sa hauteur et son angle sous l'horizon changent.
+ * de `footRoom` pixels, sur un écran de `height` pixels. La caméra garde sa direction et ne recule pas : seuls sa
+ * hauteur et son angle sous l'horizon changent.
  */
-export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, height: number, ground?: (x: number, z: number) => number, room = 0): void {
+export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, height: number, ground?: (x: number, z: number) => number): void {
   if (amount <= 0) return;
   const p = pose.position;
   // La direction du regard, à plat (vers le nord quand la caméra n'est pas tournée).
@@ -331,7 +322,7 @@ export function lookUp(pose: CameraPose, top: Vec3, feet: Vec3, amount: number, 
   const dTop = Math.max(0.1, (top.x - p.x) * fx + (top.z - p.z) * fz);
   const dFeet = Math.max(0.1, (feet.x - p.x) * fx + (feet.z - p.z) * fz);
   // L'angle le plus bas, sous l'axe, où les pieds restent au-dessus de « Y aller ».
-  const feetMax = Math.atan((1 - 2 * Math.min(FEET_ROOM_MAX, Math.max(LOOK_UP.footRoom, room) / Math.max(1, height))) * t);
+  const feetMax = Math.atan((1 - 2 * Math.min(0.45, LOOK_UP.footRoom / Math.max(1, height))) * t);
   // Le regard qui met la lanterne à `air` du haut de l'écran, d'une caméra à la hauteur `y`, et l'angle des pieds.
   const solve = (y: number, air: number) => ({ pitch: Math.atan((1 - 2 * air) * t) - Math.atan2(top.y - y, dTop), feet: Math.atan2(y - feet.y, dFeet) });
   const low = Math.max(clear, Math.min(y0, feet.y + LOOK_UP.lowest));
@@ -377,8 +368,7 @@ export const detourRise = (t: number): number => t * (2 - t);
 
 /**
  * Garde les pieds de Kéo (`feet`) au-dessus de la rangée du bas (« Y aller »), à `room` pixels au moins du bas d'un
- * écran de `height` pixels, quelle que soit la taille du texte (au 4e : consultant UX UI, deuxième relecture du lot 1 ; à
- * tous les niveaux depuis la bulle d'arrivée au plus grand texte) :
+ * écran de `height` pixels, quelle que soit la taille du texte (au 4e : consultant UX UI, deuxième relecture du lot 1) :
  * si la caméra qui suit les y met dessous, son regard plonge un peu plus, sans qu'elle bouge (`pose`, remplie sur place).
  */
 export function keepFeetAbove(pose: CameraPose, feet: Vec3, room: number, height: number): void {
@@ -391,7 +381,7 @@ export function keepFeetAbove(pose: CameraPose, feet: Vec3, room: number, height
   const dFeet = Math.max(0.1, (feet.x - p.x) * fx + (feet.z - p.z) * fz);
   // L'angle des pieds sous l'axe du regard, et le plus grand qui les laisse au-dessus de la rangée.
   const below = Math.atan2(p.y - feet.y, dFeet) - pitch0;
-  const most = Math.atan((1 - 2 * Math.min(FEET_ROOM_MAX, room / height)) * tanHalf(pose.fov));
+  const most = Math.atan((1 - 2 * Math.min(0.45, room / height)) * tanHalf(pose.fov));
   if (below <= most) return;
   const pitch = Math.min(1.4, pitch0 + below - most);
   pose.target.y = p.y - Math.tan(pitch) * flat;
@@ -413,7 +403,7 @@ export function fitArrivalBack(feet: Vec3, lift: number, yaw: number, top: Vec3,
   for (let k = 0; back + k * ARRIVAL_FIT.step < maxBack; k++) {
     const b = back + k * ARRIVAL_FIT.step;
     followPose(feet, lift, pose, yaw, 1, undefined, { height: 0, back: b });
-    lookUp(pose, top, feet, 1, height, ground, room);
+    lookUp(pose, top, feet, 1, height, ground);
     if (room > 0) keepFeetAbove(pose, feet, room, height);
     if (screenOf(pose, top, width, height).y >= ARRIVAL_FIT.air) return b;
   }

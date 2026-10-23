@@ -40,7 +40,8 @@ import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { payableBlocks } from '../../world/archipelago';
 import { firstBefore, isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
-import { bornesDuMondeOuvert, firstToPlayAt, keepClear, missionsOfPlace, nextMission, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
+import { LOOK_UP } from '../../world/continu/camera';
+import { bornesDuMondeOuvert, firstToPlayAt, keepClear, keoZone, missionsOfPlace, nextMission, overlaps, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
 import { hasScenette, placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
 import { scenetteOf } from '../../world/continu/scenette';
 import type { PortSpot } from '../../world/continu/plan6e';
@@ -392,12 +393,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       // Sur un écran étroit (un téléphone, au plus grand texte surtout), la rangée du bas, sur une ou deux lignes, déborde
       // au-dessus de « Carte » : elle se pose alors au-dessus de lui (seconde relecture du lot 3, consultant UX UI). Lu à
       // l'horizontale seulement (la rangée levée garde sa largeur : aucun aller-retour).
-      const goBox = stage.querySelector<HTMLElement>('.open-world-go')?.getBoundingClientRect();
-      const lifted = carte && goBox && goBox.width > 0 && goBox.left < carte.right + MARK_EDGE - 1 ? 'oui' : '';
-      if ((stage.dataset.goLeve ?? '') !== lifted) {
-        if (lifted) stage.dataset.goLeve = lifted;
-        else delete stage.dataset.goLeve;
-      }
+      const goBox = placeGoRow(stage, s, carte, plan.guardFeet === true);
       const carteTop = carte ? `${Math.round(s.bottom - carte.top)}px` : '';
       if (stage.style.getPropertyValue('--open-world-carte-dessus') !== carteTop) stage.style.setProperty('--open-world-carte-dessus', carteTop);
       layout.width = s.width;
@@ -413,7 +409,6 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       const reserve: Obstacle[] = column ? [{ left: 0, top: 0, width: Math.max(COLUMN_ZONE.width, column.right - s.left + MARK_EDGE), height: column.bottom - s.top + COLUMN_ZONE.below, below: true }] : [];
       layout.obstacles = [
         ...reserve,
-        // La bulle au-dessus de « Y aller » à part : sur un écran bas, elle monte en haut de l'écran (openWorld.css).
         ...[...stage.querySelectorAll<HTMLElement>('.world-settings, .open-world-camera, .open-world-go, .open-world-go-reason, .open-world-bar')].map((el) => {
           const r = el.getBoundingClientRect();
           // La rangée du bas (« Y aller », « Monter », « Passer le trajet ») : un écart double, la marque n'y colle jamais
@@ -429,9 +424,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         }),
       ];
       if (resized && lastMark.current) placeMark(markRef.current, arrowRef.current, lastMark.current, layout);
-      // La place de la rangée du bas, que les pieds de Kéo ne passent pas (à tous les niveaux) : depuis le bas de la scène
-      // jusqu'au haut de « Y aller », avec son écart, et de sa bulle quand elle est au-dessus de lui (sur un écran bas,
-      // elle monte en haut de l'écran, hors de la rangée : openWorld.css).
+      // La place de la rangée du bas, que les pieds de Kéo ne passent pas (au 4e et au 3e ; la scène l'ignore ailleurs) :
+      // depuis le bas de la scène jusqu'au haut de « Y aller », avec son écart ; la bulle, posée à côté de Kéo, n'y
+      // compte plus.
       if (goBox && goBox.height > 0) world.current?.footRoom(Math.round(s.bottom - goBox.top + GO_CLEAR));
     };
     const observer = new ResizeObserver(measure);
@@ -443,7 +438,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     // prête (`ready`) reçoit la place de la rangée du bas ; la marque revient, un autre élément, au retour de la Carte
     // (`mapOpen`) ou quand Kéo quitte le lieu suggéré (`here`) : sans quoi sa largeur restait l'ancienne et la marque
     // passait sous le bord droit (deuxième relecture du lot 1 du 4e, consultant UX UI : « La Forg »).
-  }, [layout, next, suggestedId, walking, asking, remise, sheetOpen, ready, mapOpen, here]);
+  }, [layout, plan, next, suggestedId, walking, asking, remise, sheetOpen, ready, mapOpen, here]);
 
   useEffect(() => {
     const el = host.current;
@@ -1407,6 +1402,82 @@ function subscribeSmallScreen(changed: () => void): () => void {
 /** Vrai sur un petit écran, relu quand l'écran tourne ou change de taille. */
 function useSmallScreen(): boolean {
   return useSyncExternalStore(subscribeSmallScreen, smallScreen);
+}
+
+/** L'écart entre « Y aller », sa bulle, la colonne de Kéo et les autres boutons, en pixels. */
+const GO_GAP = 10;
+
+/** Une bulle à côté de « Y aller » n'a pas plus de lignes : plus haute, elle passe au-dessus de lui, ou en haut. */
+const BESIDE_LINES = 3;
+
+/**
+ * Pose la rangée du bas et sa bulle sans couvrir Kéo (choix du mainteneur, 23 octobre 2026 : la caméra ne bouge pas, ce
+ * sont elles qui s'adaptent à l'écran et à la taille du texte) et renvoie la place de la rangée. « Y aller » reste en bas
+ * au milieu tant qu'il tient sous les pieds de Kéo ; plus haut (un grand texte, un téléphone), il passe en bas à
+ * droite, loin de Kéo (`data-go-cote`). Sa bulle se pose à droite de lui (`data-go-bulle="cote"`), ou au-dessus de lui
+ * quand il est en bas à droite (`dessus`), sinon en haut de l'écran entre les colonnes de boutons (`haut`) : la première
+ * place qui ne couvre ni Kéo ni un bouton, qui tient dans l'écran et, à côté, en trois lignes au plus. Chaque essai
+ * se mesure aussitôt (la mise en page se fait à la lecture, rien ne s'affiche entre deux essais) : pour un même écran,
+ * un même texte et les mêmes réglages, la même place, toujours.
+ */
+function placeGoRow(stage: HTMLElement, s: DOMRect, carte: DOMRect | undefined, guarded: boolean): DOMRect | undefined {
+  const go = stage.querySelector<HTMLElement>('.open-world-go');
+  if (!go) return undefined;
+  const local = (r: DOMRect): ScreenRect => ({ left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height });
+  let zone = keoZone(s.width, s.height, LOOK_UP.footRoom);
+  const set = (key: 'goCote' | 'goLeve' | 'goBulle', value: string) => {
+    if ((stage.dataset[key] ?? '') === value) return;
+    if (value) stage.dataset[key] = value;
+    else delete stage.dataset[key];
+  };
+  // Levée au-dessus de « Carte » quand elle déborde sur lui (un écran étroit), lu à l'horizontale seulement.
+  const lift = () => {
+    const r = go.getBoundingClientRect();
+    set('goLeve', carte && r.width > 0 && r.left < carte.right + MARK_EDGE - 1 ? 'oui' : '');
+  };
+  // « Y aller » d'abord, au milieu ; à droite de Kéo s'il monte dans sa colonne.
+  set('goCote', '');
+  lift();
+  // Au 4e et au 3e, la caméra garde déjà les pieds de Kéo au-dessus de « Y aller » (`footRoom`) : il reste au milieu, et
+  // sa colonne s'arrête au-dessus de lui.
+  if (guarded) zone = keoZone(s.width, s.height, Math.max(LOOK_UP.footRoom, Math.round(s.bottom - go.getBoundingClientRect().top + GO_CLEAR)));
+  const beside = overlaps(local(go.getBoundingClientRect()), zone);
+  if (beside) {
+    set('goCote', 'oui');
+    lift();
+  }
+  const goBox = go.getBoundingClientRect();
+  const bubble = go.querySelector<HTMLElement>('.open-world-go-reason');
+  if (!bubble) {
+    set('goBulle', '');
+    return goBox;
+  }
+  // Les boutons que la bulle ne couvre jamais, « Y aller » compris.
+  const buttons = [...stage.querySelectorAll<HTMLElement>('.world-settings, .world-shortcuts, .open-world-camera, .open-world-bar, .open-world-go-row')].map((el) => local(el.getBoundingClientRect()));
+  const camera = stage.querySelector<HTMLElement>('.open-world-camera')?.getBoundingClientRect();
+  const style = getComputedStyle(bubble);
+  const lineHeight = parseFloat(style.lineHeight) || 0;
+  const padding = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
+  // À droite de « Y aller » jusqu'au bord de l'écran, ou jusqu'à la colonne de la caméra (une bulle plus haute, sur un
+  // téléphone) ; au-dessus de « Y aller » posé à droite de Kéo, de son bord droit jusqu'à la colonne de Kéo.
+  const tries: { place: 'cote' | 'dessus'; width: number }[] = beside
+    ? [{ place: 'dessus', width: goBox.right - s.left - (zone.left + zone.width + GO_GAP) }]
+    : [
+        { place: 'cote', width: s.right - MARK_EDGE - (goBox.right + GO_GAP) },
+        ...(camera ? [{ place: 'cote' as const, width: camera.left - GO_GAP - (goBox.right + GO_GAP) }] : []),
+      ];
+  for (const { place, width } of tries) {
+    stage.style.setProperty('--open-world-bulle', `${Math.max(0, Math.round(width))}px`);
+    set('goBulle', place);
+    const b = bubble.getBoundingClientRect();
+    const r = local(b);
+    const inside = r.left >= 0 && r.top >= 0 && r.left + r.width <= s.width && r.top + r.height <= s.height;
+    const short = place !== 'cote' || lineHeight <= 0 || Math.round((bubble.clientHeight - padding) / lineHeight) <= BESIDE_LINES;
+    if (inside && short && !overlaps(r, zone) && !buttons.some((o) => overlaps(r, o))) return goBox;
+  }
+  stage.style.removeProperty('--open-world-bulle');
+  set('goBulle', 'haut');
+  return goBox;
 }
 
 /** La dernière place posée de chaque cadenas. */

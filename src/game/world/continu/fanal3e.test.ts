@@ -277,7 +277,7 @@ describe('« Y aller » au Fanal', () => {
       expect(back).toBeGreaterThanOrEqual(view.back);
       expect(back).toBeLessThan(view.maxBack!);
       const pose = followPose(feet, lift, undefined, doorViewOf('fanal'), 1, undefined, { height: 0, back });
-      lookUp(pose, top, feet, 1, H, ground, room);
+      lookUp(pose, top, feet, 1, H, ground);
       keepFeetAbove(pose, feet, room, H);
       const s = (p: { x: number; y: number; z: number }) => screenOf(pose, p, W, H);
       expect(s(top).y, 'pointe du toit').toBeGreaterThanOrEqual(8);
