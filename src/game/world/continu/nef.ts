@@ -149,7 +149,7 @@ export function berLocal(b: FacetBuilder, at: Vec2, departed: boolean, colors: B
   }
   if (!departed) return;
   // La bouée, au flanc du ber (`buoySide`, à l'ouest à l'Escale).
-  buoyAt(b, x + 2.1 * buoySide, z, colors);
+  buoyAt(b, x + BUOY_OFFSET * buoySide, z, colors);
 }
 
 /**
@@ -235,10 +235,22 @@ export function bancTouched(p: Vec2): boolean {
   return NEF_BANC.some((v) => Math.hypot(p.x - v.x, p.z - v.z) <= v.r + 8);
 }
 
-/** La Nef touchée (un point du monde) : son poste, ber compris, avec une marge (une cible large). */
+/** L'écart entre le ber et sa bouée (`berLocal`), et la marge d'un toucher sur la bouée (une cible large). */
+const BUOY_OFFSET = 2.1;
+export const BUOY_TOUCH = 1.4;
+
+/**
+ * La bouée touchée, en coordonnées locales du ber (`buoySide`, comme `berLocal`) : après le départ, elle ouvre la fiche
+ * de la Nef et sa rangée « Revenir » (voyage entre niveaux, piste A).
+ */
+export function buoyTouched(l: Vec2, berth: Vec2, buoySide = -1): boolean {
+  return Math.hypot(l.x - (berth.x + BUOY_OFFSET * buoySide), l.z - berth.z) <= BUOY_TOUCH;
+}
+
+/** La Nef touchée (un point du monde) : son poste, ber et bouée compris, avec une marge (une cible large). */
 export function nefTouched(p: Vec2): boolean {
   const l = PORT.toLocal(p);
-  return Math.abs(l.x - NEF_BERTH.x) <= 2.2 && Math.abs(l.z - NEF_BERTH.z) <= 3.8;
+  return (Math.abs(l.x - NEF_BERTH.x) <= 2.2 && Math.abs(l.z - NEF_BERTH.z) <= 3.8) || buoyTouched(l, NEF_BERTH);
 }
 
 /**
