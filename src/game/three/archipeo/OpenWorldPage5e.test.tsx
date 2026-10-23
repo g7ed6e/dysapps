@@ -6,7 +6,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { afterEach, beforeEach, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
-import { BloclandProvider } from '../../BloclandContext';
+import { degelerSauvegarde } from '../../../core/storage';
+import { BloclandProvider, useBlocland } from '../../BloclandContext';
 import { getArchipelago, voyageId } from '../../world/archipelago';
 import type { LinkedLand } from '../../world/continu/lands';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
@@ -66,11 +67,19 @@ beforeEach(() => {
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: {} }));
 });
 
+/** Ouvre le mode bâtisseur depuis le test (`open`). */
+const builder = { open: null as (() => void) | null };
+function BuilderHook() {
+  builder.open = useBlocland().ouvrirBatisseur;
+  return null;
+}
+
 function renderPage() {
   render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
+          <BuilderHook />
           <MemoryRouter initialEntries={['/adventure']}>
             <OpenWorldPage level="5e" />
           </MemoryRouter>
@@ -98,6 +107,18 @@ test('un seul niveau atteint : pas de rangée des niveaux', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   expect(screen.queryByRole('list', { name: 'Changer de classe' })).toBeNull();
+});
+
+test('en mode bâtisseur, pas de rangée des niveaux : la barre du mode a déjà les siens', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  renderPage();
+  await screen.findByRole('list', { name: 'Changer de classe' });
+  try {
+    act(() => builder.open!());
+    expect(screen.queryByRole('list', { name: 'Changer de classe' })).toBeNull();
+  } finally {
+    degelerSauvegarde();
+  }
 });
 
 test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4), et ses Détours (lot 6)', async () => {

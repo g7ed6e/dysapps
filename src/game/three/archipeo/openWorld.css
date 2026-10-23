@@ -3370,7 +3370,7 @@
 .open-world .world-archipel.open-world-archipel {
   top: 0.6rem;
   right: calc(0.6rem + env(safe-area-inset-right, 0px) + 56px + 0.5rem);
-  left: calc(var(--gauche-droite, 0px) + 0.6rem + 56px + 0.5rem);
+  left: calc(0.6rem + env(safe-area-inset-left, 0px) + 56px + 0.5rem);
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-end;
