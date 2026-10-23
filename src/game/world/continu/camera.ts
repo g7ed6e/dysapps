@@ -269,9 +269,6 @@ export function liftStep(current: number, target: number, dt: number, reduceMoti
   return current + (target - current) * (1 - Math.exp(-rate * Math.max(0, dt)));
 }
 
-/** Un écran plus bas que tant de pixels (le téléphone couché) : le regard d'arrivée d'un lieu haut y recule plus (`PlaceArt.arrivalView.lowBack`). */
-export const LOW_SCREEN = 500;
-
 /**
  * Le regard levé (lot 2, choix du directeur artistique) : Kéo arrêté à moins de `within` unités du Phare, la caméra
  * lève le regard pour faire entrer la lanterne avec un peu d'air au-dessus (`air`, en part de la hauteur de l'écran),
@@ -388,6 +385,29 @@ export function keepFeetAbove(pose: CameraPose, feet: Vec3, room: number, height
   if (below <= most) return;
   const pitch = Math.min(1.4, pitch0 + below - most);
   pose.target.y = p.y - Math.tan(pitch) * flat;
+}
+
+/** Le pas du recul d'arrivée qui s'ajuste (`fitArrivalBack`), et l'air au-dessus du haut du lieu, en pixels. */
+const ARRIVAL_FIT = { step: 0.1, air: 8 } as const;
+
+/**
+ * Le recul du regard d'arrivée devant un lieu haut (`PlaceArt.arrivalView`) : `back`, ou davantage, d'un pas de 0,1,
+ * jusqu'à `maxBack`, tant que son haut (`top`) sort du haut de l'écran une fois le regard levé (`lookUp`) et les pieds de
+ * Kéo gardés au-dessus de la rangée du bas (`room` pixels, `keepFeetAbove` ; 0 : sans rangée gardée). Au téléphone
+ * couché, ou quand la phrase « Aucune mission » s'ajoute au-dessus de « Y aller », la lanterne du Fanal restait coupée
+ * (relecture du directeur artistique avant la PR du 3e). Calculé à l'arrivée et quand la rangée ou l'écran changent,
+ * jamais à chaque image.
+ */
+export function fitArrivalBack(feet: Vec3, lift: number, yaw: number, top: Vec3, back: number, maxBack: number, room: number, width: number, height: number, ground?: (x: number, z: number) => number): number {
+  const pose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+  for (let k = 0; back + k * ARRIVAL_FIT.step < maxBack; k++) {
+    const b = back + k * ARRIVAL_FIT.step;
+    followPose(feet, lift, pose, yaw, 1, undefined, { height: 0, back: b });
+    lookUp(pose, top, feet, 1, height, ground);
+    if (room > 0) keepFeetAbove(pose, feet, room, height);
+    if (screenOf(pose, top, width, height).y >= ARRIVAL_FIT.air) return b;
+  }
+  return maxBack;
 }
 
 /**

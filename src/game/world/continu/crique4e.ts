@@ -242,7 +242,7 @@ function ball(b: FacetBuilder, c: Vec3, r: number, color: number): void {
  * debout, la cloche de départ, le poids étalon (un cylindre trapu à anse), le régulateur à boules (deux boules sur leur
  * axe), le gong (un disque debout dans son cadre) et la vasque. Les mêmes, rendues au Fanal du 3e (./ferrailleurs3e.ts).
  */
-export const RAFIOT_PIECES = ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const;
+const RAFIOT_PIECES = ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const;
 export type RafiotPiece = (typeof RAFIOT_PIECES)[number];
 
 /** La hauteur de chaque pièce, à l'échelle 1, de son pied à son haut. */
