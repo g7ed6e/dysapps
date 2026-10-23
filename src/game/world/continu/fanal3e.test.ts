@@ -346,7 +346,7 @@ describe('La fin des Ferrailleurs, au Fanal restauré', () => {
   };
   const rackGrappin = { x: PLACE.center.x + FANAL_LAYOUT.ret.grappinAt.x, z: PLACE.center.z + FANAL_LAYOUT.ret.grappinAt.z };
 
-  it('avant la fin : Grappin se tient sur le balcon au bout de la gondole, côté Fanal, immobile ; pas au râtelier (restes du 3e, piste 3 A)', () => {
+  it('avant la fin : Grappin se tient sur le balcon au bout de la gondole, immobile ; pas au râtelier (restes du 3e, piste 3 A)', () => {
     const balcony = zeppelinBalcony3e();
     for (const t of [0, FANAL_LAYOUT.ret.grappin - 0.01]) {
       const f = art.draw(c, t);
@@ -355,10 +355,12 @@ describe('La fin des Ferrailleurs, au Fanal restauré', () => {
     }
     // Le même dessin à chaque image d'avant : il ne bouge pas.
     expect(Array.from(art.draw(c, 0).positions)).toEqual(Array.from(art.draw(c, 0).positions));
-    // Au bout de la gondole du côté du Fanal : plus près du Fanal que le milieu du zeppelin, sous l'enveloppe, au-dessus des nuages.
+    // Au bout de la gondole, devant son nez (côté mât : au bout de la queue, l'hélice le cachait depuis les rives des
+    // Prairies) : entre le mât et le milieu de l'enveloppe, sous elle, au-dessus des nuages.
     const { rock, tail } = ZEPPELIN_3E;
     const mid = { x: (rock.x + tail.x) / 2, z: (rock.z + tail.z) / 2 };
-    expect(distance(balcony, PLACE.center)).toBeLessThan(distance(mid, PLACE.center));
+    expect(distance(balcony, rock)).toBeLessThan(distance(mid, rock));
+    expect(distance(balcony, rock)).toBeGreaterThan(5);
     expect(balcony.y).toBeGreaterThan(0.5);
     // Le balcon tient dans le zeppelin : son plancher sous les pieds de Grappin.
     const z = zeppelinFacets();

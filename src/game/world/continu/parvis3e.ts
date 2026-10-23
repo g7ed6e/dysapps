@@ -187,13 +187,14 @@ const ZEPPELIN = {
   /** La planche de flanc des pièces, côté sud-ouest (vers le Parvis et les Prairies) : son écart, sa hauteur sous l'axe de la gondole, l'échelle des pièces. */
   shelf: { out: 0.45, drop: 0.35, bar: 1.1, scale: 0.85 },
   /**
-   * Le balcon de ferraille au bout de la gondole, côté Fanal (vers la queue ; restes du 3e, piste 3 A, choix du mainteneur
-   * du 23 octobre 2026) : où Grappin se tient avant la fin des Ferrailleurs. Son plancher part de `from` avant le bout de
-   * la cabine et va `length` au-delà, large de deux `half` ; son dessus `drop` sous le bas de la cabine, pour passer sous
-   * le bout des pales arrêtées (elles tournent dans le plan à 0,52 au-delà du bout, leur pointe à 0,93 sous l'axe au plus
-   * bas) ; ses deux suspentes, son garde-corps de `rail` de haut ; Grappin à `stand` du bout de la cabine.
+   * Le balcon de ferraille au bout de la gondole (restes du 3e, piste 3 A, choix du mainteneur du 23 octobre 2026) : où
+   * Grappin se tient avant la fin des Ferrailleurs. Au bout du nez, côté mât : au bout de la queue, l'hélice le cachait
+   * depuis les rives des Prairies (captures du lot). Son plancher part de `from` sous le nez de la cabine et va
+   * `length` devant lui, large de deux `half` ; son dessus `drop` sous le bas de la cabine, sous la pointe du nez ; ses
+   * deux suspentes, son garde-corps de `rail` de haut, en barres sur les flancs au-delà de la pointe (`clear`) ; Grappin
+   * à `stand` devant le bout de la cabine.
    */
-  balcony: { from: 0.2, length: 1.7, half: 0.6, drop: 0.27, thick: 0.1, rail: 0.5, stand: 1.25 },
+  balcony: { from: 0.2, length: 2.0, half: 0.6, drop: 0.27, thick: 0.1, rail: 0.5, clear: 0.9, stand: 1.4 },
 } as const;
 
 /** La couleur des rustines : une prune un cran plus claire que les côtes, jamais vive ; le verre des hublots. */
@@ -333,16 +334,16 @@ export function zeppelinFacets(): Facets {
         else l.quad(q(-0.14, -0.14), q(0.14, -0.14), q(0.14, 0.14), q(-0.14, 0.14), PORTHOLE_3E);
       }
     }
-    // Le balcon au bout de la cabine : le plancher de ferraille, pendu à deux suspentes sous la cabine, et son garde-corps
-    // sur les deux flancs et au bout, plein au bout (un pan bas), en barres sur les flancs.
+    // Le balcon devant le nez de la cabine : le plancher de ferraille, pendu à deux suspentes sous la cabine, et son
+    // garde-corps, plein au bout (un pan bas), en barres sur les flancs.
     const B = Z.balcony;
     const deck = gy - G.r - B.drop;
-    const b0 = z1 - B.from,
-      b1 = z1 + B.length;
-    l.box({ x: 0, y: deck - B.thick, z: (b0 + b1) / 2 }, [2 * B.half, B.thick, b1 - b0], COLORS_3E.graphite, COLORS_3E.graphiteSun);
-    for (const sx of [-1, 1]) l.beam({ x: sx * (B.half - 0.08), y: gy - G.r + 0.05, z: b0 + 0.1 }, { x: sx * (B.half - 0.08), y: deck - B.thick / 2, z: b0 + 0.1 }, 0.08, COLORS_3E.graphite);
-    l.box({ x: 0, y: deck, z: b1 - 0.04 }, [2 * B.half, B.rail, 0.08], COLORS_3E.graphite, COLORS_3E.graphiteSun);
-    for (const sx of [-1, 1]) l.beam({ x: sx * (B.half - 0.04), y: deck + B.rail, z: z1 + 0.62 }, { x: sx * (B.half - 0.04), y: deck + B.rail, z: b1 }, 0.07, COLORS_3E.graphiteSun);
+    const b0 = z0 + B.from,
+      b1 = z0 - B.length;
+    l.box({ x: 0, y: deck - B.thick, z: (b0 + b1) / 2 }, [2 * B.half, B.thick, b0 - b1], COLORS_3E.graphite, COLORS_3E.graphiteSun);
+    for (const sx of [-1, 1]) l.beam({ x: sx * (B.half - 0.08), y: gy - G.r + 0.05, z: b0 - 0.1 }, { x: sx * (B.half - 0.08), y: deck - B.thick / 2, z: b0 - 0.1 }, 0.08, COLORS_3E.graphite);
+    l.box({ x: 0, y: deck, z: b1 + 0.04 }, [2 * B.half, B.rail, 0.08], COLORS_3E.graphite, COLORS_3E.graphiteSun);
+    for (const sx of [-1, 1]) l.beam({ x: sx * (B.half - 0.04), y: deck + B.rail, z: z0 - B.clear }, { x: sx * (B.half - 0.04), y: deck + B.rail, z: b1 }, 0.07, COLORS_3E.graphiteSun);
     const S = Z.shelf;
     const sx = G.half + S.out;
     l.box({ x: sx, y: gy - S.drop - 0.08, z: (z0 + z1) / 2 }, [0.8, 0.08, z1 - z0 - 0.6], COLORS_3E.graphite);
@@ -402,8 +403,8 @@ export function zeppelinBalcony3e(): Vec3 {
   const { rock, tail } = ZEPPELIN_3E;
   const len = distance(rock, tail);
   const yaw = Math.atan2(tail.x - rock.x, tail.z - rock.z);
-  const { gy, z1 } = gondolaFrame(len);
-  const lz = z1 + Z.balcony.stand;
+  const { gy, z0 } = gondolaFrame(len);
+  const lz = z0 - Z.balcony.stand;
   return { x: rock.x + lz * Math.sin(yaw), y: Z.rockTop + Z.mast + 0.3 + gy - Z.gondola.r - Z.balcony.drop, z: rock.z + lz * Math.cos(yaw) };
 }
 
