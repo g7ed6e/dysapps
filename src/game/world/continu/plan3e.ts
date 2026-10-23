@@ -224,7 +224,7 @@ const PLACE_SPECS: readonly PlaceSpec[] = [
   { id: 'tribune', name: 'La Tribune', at: 'à la Tribune', agree: 'fs', island: 'civics-3e-democratic-life', plan: [580, 400], door: { x: -10, z: 8.4 } },
   { id: 'douane', name: 'La Douane', at: 'à la Douane', agree: 'fs', island: 'lv2-3e-travel', plan: [200, 400], door: { x: 5.3, z: 9.6 } },
   { id: 'ermitage', name: 'L’Ermitage', at: 'à l’Ermitage', agree: 'ms', island: 'lca-3e-ideas', plan: [215, 580], door: { x: 8.8, z: -4.7 } },
-  { id: 'coupole', name: 'La Coupole', at: 'à la Coupole', agree: 'fs', island: 'french-3e-close-reading', plan: [1870, 945], door: { x: 0, z: -8 } },
+  { id: 'coupole', name: 'La Coupole', at: 'à la Coupole', agree: 'fs', island: 'french-3e-close-reading', plan: [1870, 945], door: { x: 6.5, z: 9 } },
   { id: 'lutherie', name: 'La Lutherie', at: 'à la Lutherie', agree: 'fs', island: 'french-3e-language', plan: [2000, 1000], door: { x: -8, z: -4 } },
   { id: 'ondes', name: 'Les Ondes', at: 'aux Ondes', agree: 'fp', island: 'english-3e-comprehension', plan: [1535, 1045], door: { x: 8, z: -4 } },
   { id: 'palais', name: 'Le Palais', at: 'au Palais', agree: 'ms', island: 'english-3e-grammar', plan: [1680, 605], door: { x: 1.7, z: 11 } },
@@ -260,7 +260,7 @@ const MAP_SIDES_3E: Readonly<Record<PlaceId3e, 'below' | 'left' | 'right'>> = {
 /**
  * Les lieux du 3e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
  * seule liste, comme `BUILT_PLACES_4E` (./plan4e.ts), que lisent la scénette (./levelPlan.ts, `hasScenette`) et les
- * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque, la Maquette, la Tribune, la Douane, l'Ermitage ; les Prairies (lot 4) : le Palais. Aucun habitant du 3e n'a encore son modèle
+ * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque, la Maquette, la Tribune, la Douane, l'Ermitage ; les Prairies (lot 4) : le Palais, la Coupole. Aucun habitant du 3e n'a encore son modèle
  * 3D (./habitants.ts) : il se dessine en pion. Un lieu construit s'ajoute ici, et seulement ici.
  */
 export const BUILT_PLACES_3E = {
@@ -274,6 +274,7 @@ export const BUILT_PLACES_3E = {
   ermitage: ['la-empire', 'la-provinces', 'la-heritage', 'gr-myth-history', 'gr-greek-world', 'gr-heritage'],
   douane: ['es-past', 'es-stories', 'es-countries', 'es-connectives', 'es-media', 'de-past', 'de-stories', 'de-on-the-road', 'de-connectives', 'de-media'],
   palais: ['for-since', 'if', 'passive', 'messages'],
+  coupole: ['inference', 'figures-of-speech', 'text-connectives', 'voices', 'literary-eras'],
 } as const satisfies Partial<Record<PlaceId3e, readonly string[]>>;
 
 /** Un lieu du 3e déjà construit. */
@@ -530,7 +531,9 @@ export const PATH_EDGES_3E: readonly (readonly [string, string])[] = [
   ['arc-p', 'pr-1'],
   ['pr-1', 'sa1-a'],
   ['sa1-a', 'sa1-b'],
-  ['sa1-b', 'coupole'],
+  // La Coupole par l'est, depuis `pr-2` : sa porte au sud-est de la salle (relecture des lieux, correction 2, et du Versant,
+  // (b) 1), le chemin ne passe jamais devant la vue d'arrivée.
+  ['pr-2', 'coupole'],
   ['sa1-b', 'pr-2'],
   ['pr-2', 'lutherie'],
   ['pr-1', 'sa2-a'],

@@ -87,14 +87,6 @@ function standard(b: FacetBuilder): void {
   b.box({ x: 1, y: SINK, z: 3.5, yaw: 0.2 }, [2.4, 0.6 - SINK, 1.4], C.woodShade, C.wood);
 }
 
-/** La Coupole : la salle ronde de pierre blanche, sa coupole d'émail cobalt à moitié ouverte ; une grande table. */
-function coupole(b: FacetBuilder): void {
-  b.prism({ x: 0, y: SINK, z: 0 }, 5, 5, 3.4 - SINK, 10, C.white, C.graniteSun);
-  b.prism({ x: 0, y: 3.4, z: 0 }, 4.6, 1.4, 2.6, 10, C.cobalt, C.cobalt);
-  rubble(b, 6, 3, 1.2, C.cobalt, C.cobalt);
-  b.box({ x: -6.5, y: SINK, z: 2 }, [2.6, 1 - SINK, 1.6], C.woodShade, C.wood);
-}
-
 /** La Lutherie : l'atelier de bois à grandes fenêtres, son toit tombé ; l'établi fendu ; des instruments couchés, du plus grand au plus petit. */
 function lutherie(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: -1.5 }, [8, 3.4 - SINK, 5], C.woodShade, C.wood);
@@ -115,13 +107,12 @@ function ondes(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 3e pas encore construit, dessinée dans son repère : un lieu construit (./plan3e.ts,
- * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts ; le Kiosque, ./kiosque3e.ts ; la Maquette, ./maquette3e.ts ; la Tribune, ./tribune3e.ts ; la Douane, ./douane3e.ts ; l'Ermitage, ./ermitage3e.ts ; le Palais, ./palais3e.ts).
+ * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts ; le Kiosque, ./kiosque3e.ts ; la Maquette, ./maquette3e.ts ; la Tribune, ./tribune3e.ts ; la Douane, ./douane3e.ts ; l'Ermitage, ./ermitage3e.ts ; le Palais, ./palais3e.ts ; la Coupole, ./coupole3e.ts).
  */
 export const RUINS_3E: Readonly<Record<Exclude<PlaceId3e, BuiltPlace3e>, (b: FacetBuilder) => void>> = {
   fanal,
   rampe,
   standard,
-  coupole,
   lutherie,
   ondes,
 };

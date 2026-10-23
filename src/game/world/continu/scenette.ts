@@ -420,6 +420,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['L’escalier est refait.', 'L’aile est couverte d’ardoise.', 'Le gong est relevé.', 'L’allée est prête.'], end: 'Ici, on recevait les messagers de tous les archipels.' },
   },
+  // La Coupole (les Prairies du 3e, GD-25) : le libraire, sans phrase de métier (proposition du consultant d'Archipéo,
+  // § 4 : le métier est connu) ; les phrases de pose et la réplique de la proposition, à valider par le directeur du
+  // contenu ; « Le dôme bleu est refermé. » à la place de « La coupole est refermée. » (« coupole », nom d'un plan de l'île).
+  coupole: {
+    role: placeArt('coupole')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: {
+      pose: ['Les murs sont remontés.', 'La table est remise.', 'Les livres sont rangés.', 'Le dôme bleu est refermé.', 'Le seuil est dallé.'],
+      end: 'Ici, on lisait tous les livres des Passeurs.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -878,6 +890,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   tribune: northSite('tribune'),
   douane: northSite('douane'),
   ermitage: northSite('ermitage'),
+  coupole: northSite('coupole'),
   palais: northSite('palais'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
@@ -2465,6 +2478,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   ermitage: 'earth',
   // Le Palais : l'herbe de la Prairie.
   palais: 'earth',
+  // La Coupole : l'herbe de la Prairie.
+  coupole: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
