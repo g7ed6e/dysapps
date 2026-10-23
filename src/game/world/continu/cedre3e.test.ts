@@ -8,6 +8,7 @@ import { BERGERIE } from './bergerie3e';
 import { COMMON_DETOUR_VIEW } from './camera';
 import { CADRAN } from './cadran3e';
 import { CEDRE, CEDRE_BUDGET, CEDRE_LAYOUT, CEDRE_STONES, TIERS, cedreFacets, cedreStoneAt } from './cedre3e';
+import { LAC } from './lac3e';
 import { DETOURS_3E, DETOUR_IDS, detourAtPoint, detourById, detourCap, detourViewOf } from './detours';
 import type { Facets } from './facets';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
@@ -39,11 +40,11 @@ function countColor(f: Facets, color: number): number {
 describe('Le Cèdre, le Détour des Prairies', () => {
   it('se nomme « Le Cèdre », aux Prairies, dans la sauvegarde à la fin ; Kéo dit sa phrase, écrite sous le nom', () => {
     expect(detourById('cedre')).toBe(CEDRE);
-    expect(DETOURS_3E).toEqual([CADRAN, BERGERIE, CEDRE]);
+    expect(DETOURS_3E).toEqual([CADRAN, BERGERIE, CEDRE, LAC]);
     expect(CEDRE.name).toBe('Le Cèdre');
     expect(CEDRE.land).toBe('prairies');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.at(-1)).toBe('cedre');
+    expect(DETOUR_IDS.at(-2)).toBe('cedre');
     expect(sanitizeDetours(['cedre', 'cadran'])).toEqual(['cadran', 'cedre']);
     expect(CEDRE.says).toBe('Un seul arbre, et toute la montagne en face.');
     expect(CEDRE.saysAloudOnly).toBeUndefined();

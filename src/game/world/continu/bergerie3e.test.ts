@@ -8,6 +8,7 @@ import { BERGERIE, BERGERIE_BUDGET, BERGERIE_LAYOUT, BERGERIE_STONES, SHEEP, ber
 import { COMMON_DETOUR_VIEW } from './camera';
 import { CADRAN } from './cadran3e';
 import { CEDRE } from './cedre3e';
+import { LAC } from './lac3e';
 import { DETOURS_3E, DETOUR_IDS, detourAtPoint, detourById, detourCap, detourViewOf } from './detours';
 import type { Facets } from './facets';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
@@ -41,11 +42,11 @@ function countColor(f: Facets, color: number): number {
 describe('La Bergerie, le Détour des Alpages', () => {
   it('se nomme « La Bergerie », aux Alpages, dans la sauvegarde à la fin ; Kéo dit sa phrase, écrite sous le nom', () => {
     expect(detourById('bergerie')).toBe(BERGERIE);
-    expect(DETOURS_3E).toEqual([CADRAN, BERGERIE, CEDRE]);
+    expect(DETOURS_3E).toEqual([CADRAN, BERGERIE, CEDRE, LAC]);
     expect(BERGERIE.name).toBe('La Bergerie');
     expect(BERGERIE.land).toBe('alpages');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.slice(-3)).toEqual(['cadran', 'bergerie', 'cedre']);
+    expect(DETOUR_IDS.slice(-4)).toEqual(['cadran', 'bergerie', 'cedre', 'lac']);
     expect(sanitizeDetours(['bergerie', 'cadran'])).toEqual(['cadran', 'bergerie']);
     expect(BERGERIE.says).toBe('Les moutons passent l’été tout là-haut.');
     expect(BERGERIE.saysAloudOnly).toBeUndefined();

@@ -582,7 +582,9 @@ export const LANDS_3E: readonly Land[] = [
 export const DETOUR_SPOTS_3E = {
   cadran: fromPlan3e([1060, 760]),
   bergerie: fromPlan3e([330, 270]),
-  lac: fromPlan3e([720, 105]),
+  // Le Lac : 13 unités au sud de sa place du plan ([720, 105], sur la pente de la levée nord, où l'eau ne tiendrait
+  // pas à plat), sur le replat du creux (le lot du Cirque).
+  lac: fromPlan3e([698, 148]),
   cedre: fromPlan3e([1640, 1000]),
 } as const;
 
