@@ -110,21 +110,39 @@ const TRUNK = { knee: [-0.55, 1.15, 0.35] as P3, crown: [-0.2, 2.25, 0.15] as P3
 /**
  * Les deux masses de la couronne, depuis le pied du tronc : leur milieu, leur rayon, leur haut et leur bas, et leur tour
  * (retouche 1 du Bastion, point 6 : deux masses rondes et basses, irrégulières, à la place de deux cônes plats qui se
- * lisaient en parasol) ; elles couvrent l'angle des murets.
+ * lisaient en parasol) ; elles couvrent l'angle des murets. Aplaties en coussins (restes du monde ouvert du 4e, point 3 :
+ * un haut à 0,8 du rayon faisait deux losanges pointus) : le haut vers 0,45 du rayon, le bas vers 0,3 ; la grande sur
+ * huit côtés, la petite sur six, plus basse et plus en avant (vers l'arrivée, au sud), à moitié dans la grande : une seule
+ * couronne en deux bosses.
  */
 const CROWN = [
-  { at: [-0.45, 2.3, 0.2] as P3, r: 1.3, up: 1.0, down: 0.75, yaw: 0.2, lean: [0.2, 0.1] as const },
-  { at: [0.85, 2.0, -0.1] as P3, r: 1.0, up: 0.8, down: 0.6, yaw: 0.9, lean: [0.15, -0.1] as const },
+  { at: [-0.45, 2.3, 0.2] as P3, r: 1.3, up: 0.58, down: 0.4, yaw: 0.2, lean: [0.2, 0.1] as const, rim: 0 },
+  { at: [0.55, 1.95, 0.5] as P3, r: 1.0, up: 0.45, down: 0.3, yaw: 0.9, lean: [0.15, -0.1] as const, rim: 1 },
 ] as const;
 
-/** Les écarts de la couronne, pan après pan : le rayon (une part de `r`) et la hauteur (une part de `up`) de chaque coin. */
-const CROWN_RIM = [
-  [1.0, 0.12],
-  [0.8, -0.1],
-  [0.96, 0.18],
-  [0.76, -0.04],
-  [1.06, 0.1],
-  [0.86, -0.14],
+/**
+ * Les écarts du tour de chaque masse, pan après pan : le rayon (une part de `r`) et la hauteur (une part de `up`) de chaque
+ * coin ; des hauteurs de ±0,2 à 0,25 : le tour se lit en bosses, plus en arête droite.
+ */
+const CROWN_RIMS = [
+  [
+    [1.0, 0.22],
+    [0.84, -0.2],
+    [0.98, 0.25],
+    [0.8, -0.22],
+    [1.05, 0.2],
+    [0.86, -0.25],
+    [0.96, 0.23],
+    [0.82, -0.2],
+  ],
+  [
+    [1.0, 0.2],
+    [0.8, -0.22],
+    [0.96, 0.25],
+    [0.78, -0.2],
+    [1.04, 0.22],
+    [0.86, -0.25],
+  ],
 ] as const;
 
 /** Les deux cerclages de la chaudière : leur place le long de son axe, depuis son milieu, et leur largeur. */
@@ -273,15 +291,16 @@ function figTree(b: FacetBuilder, ground: Ground): void {
   limb(b, off(TRUNK.knee), off(TRUNK.crown), TRUNK.r[1], TRUNK.r[1] * 0.8, 3, C.bark, C.barkShade);
   for (const m of CROWN) {
     const c = off(m.at);
-    const ring: P3[] = CROWN_RIM.map(([kr, ky], i) => {
-      const t = m.yaw + (2 * Math.PI * i) / 6;
+    const rim = CROWN_RIMS[m.rim];
+    const ring: P3[] = rim.map(([kr, ky], i) => {
+      const t = m.yaw + (2 * Math.PI * i) / rim.length;
       return [c[0] + Math.cos(t) * m.r * kr, c[1] + ky * m.up, c[2] + Math.sin(t) * m.r * kr] as const;
     });
-    // Le haut, un peu de travers ; le dessous, plus bas que le tour : une masse ronde, jamais un disque.
+    // Le haut, un peu de travers ; le dessous, plus bas que le tour : un coussin, jamais un disque ni une pointe.
     const up: P3 = [c[0] + m.lean[0], c[1] + m.up, c[2] + m.lean[1]];
     const down: P3 = [c[0] - m.lean[0] * 0.5, c[1] - m.down, c[2]];
-    for (let i = 0; i < 6; i++) {
-      const n = (i + 1) % 6;
+    for (let i = 0; i < ring.length; i++) {
+      const n = (i + 1) % ring.length;
       b.triangle(up, ring[n], ring[i], C.leaf);
       b.triangle(down, ring[i], ring[n], C.leafShade);
     }
