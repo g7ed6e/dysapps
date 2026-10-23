@@ -730,9 +730,13 @@ export function nef4eFlight(u: number, out: NefFlight): NefFlight {
   return out;
 }
 
-/** Un toucher sur l'aéronef : sur son aire. */
+/** La bouée du 4e dans le monde, et la marge d'un toucher sur elle (une cible large). */
+const BUOY_WORLD = CRIQUE.toWorld(DEPOSIT_SPOTS.buoy.x, DEPOSIT_SPOTS.buoy.z);
+const BUOY_TOUCH = 1.4;
+
+/** Un toucher sur l'aéronef : sur son aire, ou sur la bouée (après le départ, elle ouvre la rangée « Revenir »). */
 function nef4eTouched(p: Vec2): boolean {
-  return Math.hypot(p.x - BERTH.x, p.z - BERTH.z) <= CRIQUE_PAD.radius;
+  return Math.hypot(p.x - BERTH.x, p.z - BERTH.z) <= CRIQUE_PAD.radius || Math.hypot(p.x - BUOY_WORLD.x, p.z - BUOY_WORLD.z) <= BUOY_TOUCH;
 }
 
 /**

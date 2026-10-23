@@ -12,7 +12,7 @@
 import { FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2 } from './geometry';
 import { LISIERE_PONTON } from './lisiere';
-import { NEF_BAND, berLocal, type BerColors, type NefFlight, type NefLook, type NefSite } from './nef';
+import { NEF_BAND, berLocal, buoyTouched, type BerColors, type NefFlight, type NefLook, type NefSite } from './nef';
 import { ANSE_5E, QUAY_5E } from './plan5e';
 import { SHADOW_DIR_5E } from './sky';
 
@@ -285,10 +285,10 @@ export function wallTouched(p: Vec2): boolean {
   return NEF_WALL.some((v) => Math.hypot(p.x - v.x, p.z - v.z) <= v.r + 10);
 }
 
-/** La Nef touchée : son poste, ber compris, avec une marge (une cible large). */
+/** La Nef touchée : son poste, ber et bouée compris, avec une marge (une cible large). */
 export function nef5eTouched(p: Vec2): boolean {
   const l = ANSE_5E.toLocal(p);
-  return Math.abs(l.x - BERTH_LOCAL.x) <= 2.2 && Math.abs(l.z - BERTH_LOCAL.z) <= 4.6;
+  return (Math.abs(l.x - BERTH_LOCAL.x) <= 2.2 && Math.abs(l.z - BERTH_LOCAL.z) <= 4.6) || buoyTouched(l, BERTH_LOCAL, 1);
 }
 
 /**

@@ -2721,8 +2721,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const p = hitAt(e.clientX, e.clientY);
     if (!p) return;
     // La Nef, son ber ou son obstacle (le banc du large, le mur de nuages) : la fiche de la Nef (GD-21), Kéo reste où il
-    // est ; partie, plus rien.
-    if (options.onNef && nefLookNow !== 4 && (nefSite.touched(p) || nefSite.obstacleTouched(p))) return options.onNef();
+    // est ; partie, le ber vide et sa bouée l'ouvrent aussi, avec la rangée « Revenir » (voyage entre niveaux, piste A).
+    if (options.onNef && (nefSite.touched(p) || nefSite.obstacleTouched(p))) return options.onNef();
     // Le lieu de départ : une porte, la galerie ou le lieu d'assemblage y mène Kéo d'un coup et en ouvre le panneau ; le
     // reste ouvre sa fiche (Kéo reste où il est).
     const atPort = portTouch(p, site);
@@ -4602,7 +4602,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     info: () => ({ calls: renderer.info.render.calls, triangles: renderer.info.render.triangles, mapMs }),
     portAt: (clientX: number, clientY: number) => {
       const p = hitAt(clientX, clientY);
-      if (p && options.onNef && nefLookNow !== 4 && (nefSite.touched(p) || nefSite.obstacleTouched(p))) return 'nef';
+      if (p && options.onNef && (nefSite.touched(p) || nefSite.obstacleTouched(p))) return 'nef';
       return p ? portTouch(p, site) : null;
     },
     dispose: () => {

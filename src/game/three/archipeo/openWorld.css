@@ -3365,3 +3365,40 @@
 .open-world-needle {
   display: inline-flex;
 }
+/* La rangée « Revenir » de la fiche de la Nef (voyage entre niveaux, piste A) : des boutons secondaires, sous l'action
+   principale, de 48 px au moins. */
+.nef-returns {
+  list-style: none;
+  margin: 0.8rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.nef-returns .button {
+  min-height: 48px;
+}
+/* Le fondu du voyage entre niveaux : une demi-seconde en tout, la moitié pour couvrir, la moitié pour découvrir le niveau
+   d'arrivée ; la couleur de la brume, jamais le noir. Il prend les touchers le temps qu'il couvre. */
+.open-world-fondu {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: #e5ebe3;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.open-world-fondu.on {
+  opacity: 1;
+  pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  .open-world-fondu {
+    transition: none;
+  }
+}
+/* Le mot du chargement reste lisible par-dessus le fondu, le temps que le monde du niveau d'arrivée se fasse. */
+.open-world .world-loading {
+  z-index: 21;
+}
