@@ -14,7 +14,7 @@ import { planFor } from './levelPlan';
 import { modelOfPlace } from './places';
 import { FANAL_TOWER_3E } from './fanal3e';
 import { CUT_CLEARANCE_3E, NETWORK_3E, pathRibbons3e } from './paths3e';
-import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets } from './parvis3e';
+import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets, zeppelinPiecesFacets } from './parvis3e';
 import { veilFacets } from './veil';
 import { COLORS_3E, DEPARTURE_3E, LINKS_3E, PARVIS, PARVIS_PAD, PATH_EDGES_3E, PEAK_3E, SMALL_ARCHES_3E, TERRAIN_3E, ZEPPELIN_3E, parvisFloor } from './plan3e';
 import { SKY_OF } from './sky';
@@ -252,7 +252,14 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
       for (let i = 0; i < f.colors.length; i += 3) if (Math.abs(f.colors[i] - r) < 1e-4 && Math.abs(f.colors[i + 1] - g) < 1e-4 && Math.abs(f.colors[i + 2] - b) < 1e-4) return true;
       return false;
     };
-    for (const c of [COLORS_3E.graphite, COLORS_3E.prune, COLORS_3E.bronze]) expect(has(c), c.toString(16)).toBe(true);
+    for (const c of [COLORS_3E.graphite, COLORS_3E.prune]) expect(has(c), c.toString(16)).toBe(true);
+    // Le bronze n'est qu'aux pièces prises au Rafiot, dessinées à part (le Fanal les rend à sa restauration).
+    expect(has(COLORS_3E.bronze)).toBe(false);
+    const pieces = zeppelinPiecesFacets();
+    const [r, g, bl] = linearRgb(COLORS_3E.bronze);
+    let bronze = 0;
+    for (let i = 0; i < pieces.colors.length; i += 3) if (Math.abs(pieces.colors[i] - r) < 1e-4 && Math.abs(pieces.colors[i + 1] - g) < 1e-4 && Math.abs(pieces.colors[i + 2] - bl) < 1e-4) bronze++;
+    expect(bronze).toBeGreaterThan(0);
   });
 
   it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#E4EAF1, retouche 1)', () => {

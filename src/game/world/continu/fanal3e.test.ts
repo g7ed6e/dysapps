@@ -264,3 +264,58 @@ describe('« Y aller » au Fanal', () => {
         expect(foot.y - s({ ...feet, y: feet.y + 2.4 }).y).toBeGreaterThanOrEqual(H > 500 ? 70 : 40);
       });
 });
+
+describe('La fin des Ferrailleurs, au Fanal restauré', () => {
+  const art = FANAL.restoration!;
+  const c = { x: PLACE.center.x, y: ground(PLACE.center.x, PLACE.center.z), z: PLACE.center.z };
+  const bronzeAt = (f: Facets) => {
+    const [r, g, b] = linearRgb(C3E.bronze);
+    const out: { x: number; z: number }[] = [];
+    for (let i = 0; i < f.colors.length; i += 3) if (Math.abs(f.colors[i] - r) < 1e-4 && Math.abs(f.colors[i + 1] - g) < 1e-4 && Math.abs(f.colors[i + 2] - b) < 1e-4) out.push({ x: f.positions[i], z: f.positions[i + 2] });
+    return out;
+  };
+
+  it('avant : les pièces de bronze sur la gondole du zeppelin, loin du Cirque ; le port au nord, sa lanterne éteinte', () => {
+    const before = art.draw(c, 0);
+    const bronze = bronzeAt(before);
+    expect(bronze.length).toBeGreaterThan(0);
+    for (const p of bronze) expect(distance(p, PLACE.center)).toBeGreaterThan(100);
+    expect(countColor(before, C3E.lantern)).toBe(0);
+    expect(countColor(before, C3E.lanternOff)).toBeGreaterThan(0);
+  });
+
+  it('jouée : les pièces rangées sur le râtelier au pied du Fanal, côté Rampe ; la gondole n’en porte plus ; une seule lumière, celle du port, au nord', () => {
+    const after = art.draw(c, Infinity);
+    const bronze = bronzeAt(after);
+    expect(bronze.length).toBeGreaterThan(0);
+    const rampe = PLAN.places.find((p) => p.id === 'rampe')!.center;
+    for (const p of bronze) {
+      expect(distance(p, PLACE.center)).toBeLessThan(14);
+      expect(p.x).toBeGreaterThan(PLACE.center.x + FANAL_LAYOUT.socle.low.x);
+    }
+    expect(distance(FANAL_LAYOUT.ret.rackAt, { x: rampe.x - PLACE.center.x, z: rampe.z - PLACE.center.z })).toBeLessThan(distance({ x: 0, z: 0 }, { x: rampe.x - PLACE.center.x, z: rampe.z - PLACE.center.z }));
+    // Une seule lanterne d'ocre : la lumière fixe du port, au nord du Cirque, loin, sortie du brouillard.
+    expect(countColor(after, C3E.lantern)).toBe(30);
+    const [r, g, b] = linearRgb(C3E.lantern);
+    for (let i = 0; i < after.colors.length; i += 3)
+      if (Math.abs(after.colors[i] - r) < 1e-4 && Math.abs(after.colors[i + 1] - g) < 1e-4 && Math.abs(after.colors[i + 2] - b) < 1e-4) {
+        expect(after.positions[i + 2]).toBeLessThan(PLACE.center.z - 120);
+        expect(distance({ x: after.positions[i], z: after.positions[i + 2] }, PLACE.center)).toBeLessThan(200);
+        expect(after.positions[i + 1]).toBeGreaterThan(10);
+        expect(landDistance3e({ x: after.positions[i], z: after.positions[i + 2] })).toBeLessThan(0);
+      }
+  });
+
+  it('une seule fois, en moins de 4 secondes, une pièce après l’autre ; rien sur le chemin du Fanal', () => {
+    expect(art.seconds).toBeLessThanOrEqual(4);
+    const frames = [0, 0.5, 1, 1.3, 1.7, 2.1, 2.5, 2.9, 3.1, 3.5].map((t) => art.frame(t));
+    expect(new Set(frames).size).toBe(frames.length);
+    expect(art.frame(Infinity)).toBe(art.frame(art.seconds));
+    const way = [nodes.get('fanal')!, nodes.get('ci-1')!];
+    const f = art.draw(c, Infinity);
+    for (let i = 0; i < f.positions.length; i += 3) {
+      const p = { x: f.positions[i], z: f.positions[i + 2] };
+      if (distance(p, PLACE.center) < 20) expect(distanceToPolyline(p, way)).toBeGreaterThan(1.5);
+    }
+  });
+});

@@ -8,6 +8,7 @@
 // obstacle (le 3e est le dernier niveau : ce départ ne mène nulle part). Code pur.
 import type { DetourView } from './camera';
 import { drawPosed, FacetBuilder, placeFacets, type Facets } from './facets';
+import { HANGS_3E, PIECE_HEIGHT_3E, PIECES_3E, piece3e } from './ferrailleurs3e';
 import { distance, type Vec2 } from './geometry';
 import type { NefFlight, NefSite } from './nef';
 import { quadOut, triOut } from './place4eKit';
@@ -137,8 +138,9 @@ export const FOLLOW_FAR_3E = 600;
  * haut du mât, posée à l'horizontale, la queue au nord-nord-ouest (`ZEPPELIN_3E.tail`, cap 330° environ) : vue du
  * Parvis, du Belvédère et des arches, elle se lit de profil, un long cigare à côtes, et non plus par le bout. Son ventre
  * au ras des nuages, son dos plus bas qu'au lot 1. L'enveloppe rigide graphite, ses côtes et ses rustines de prune, ses
- * quatre empennages ; dessous, la gondole et ses pièces de bronze (le nez, la bande des hublots, la rambarde de la
- * plate-forme), et ses deux hélices arrêtées. Immobile tout le niveau, sans mot.
+ * quatre empennages ; dessous, la gondole, sa planche et sa barre de flanc, et ses deux hélices arrêtées. Les pièces de
+ * bronze prises au Rafiot, rangées sur la planche, se dessinent à part (`zeppelinPiecesFacets`) : le Fanal les montre tant
+ * qu'il n'est pas restauré, puis les range sur son râtelier (./ferrailleurs3e.ts). Immobile tout le niveau, sans mot.
  */
 const ZEPPELIN = {
   rockTop: 2.6,
@@ -161,6 +163,8 @@ const ZEPPELIN = {
   gondola: { from: 0.34, to: 0.6, r: 0.95, gap: 0.75 },
   /** Les deux hélices arrêtées, au bout de la gondole : leur écart de côté, la longueur d'une pale. */
   propeller: { side: 2.1, blade: 1.2 },
+  /** La planche de flanc des pièces, côté sud-ouest (vers le Parvis et les Prairies) : son écart, sa hauteur sous l'axe de la gondole, l'échelle des pièces. */
+  shelf: { out: 0.45, drop: 0.35, bar: 1.1, scale: 0.85 },
 } as const;
 
 /** La couleur des rustines : une prune un cran plus claire que les côtes, jamais vive. */
@@ -173,14 +177,14 @@ export function zeppelinFacets(): Facets {
   const { rock, rockRadius, tail } = ZEPPELIN_3E;
   // Le rocher : un bloc de granit à sept pans, son pied sous les nuages, son dessus d'ardoise.
   b.prism({ x: rock.x, y: -2, z: rock.z }, rockRadius, rockRadius * 0.8, Z.rockTop + 2, 7, COLORS_3E.granite, COLORS_3E.graniteSun);
-  // Le mât : un fût et trois haubans de ferraille, une tête de bronze.
+  // Le mât : un fût et trois haubans de ferraille, sa tête de ferraille (le bronze n'est qu'aux pièces prises au Rafiot).
   const top = Z.rockTop + Z.mast;
   b.prism({ x: rock.x, y: Z.rockTop, z: rock.z }, 0.35, 0.22, Z.mast, 5, COLORS_3E.graphite);
   for (let k = 0; k < 3; k++) {
     const a = (2 * Math.PI * k) / 3 + 0.4;
     b.beam({ x: rock.x + Math.cos(a) * 3, y: Z.rockTop, z: rock.z + Math.sin(a) * 3 }, { x: rock.x, y: top - 1, z: rock.z }, 0.14, COLORS_3E.graphite);
   }
-  b.prism({ x: rock.x, y: top, z: rock.z }, 0.5, 0.5, 0.6, 6, COLORS_3E.bronze);
+  b.prism({ x: rock.x, y: top, z: rock.z }, 0.5, 0.5, 0.6, 6, COLORS_3E.graphiteSun);
   // L'enveloppe, du nez (au mât) à la queue : trois pièces le long de son axe, couché à l'horizontale.
   const len = distance(rock, tail);
   const yaw = Math.atan2(tail.x - rock.x, tail.z - rock.z);
@@ -198,11 +202,11 @@ export function zeppelinFacets(): Facets {
       const a = (p.a * Math.PI) / 180;
       l.box({ x: Math.cos(a) * face, y: len * p.at, z: Math.sin(a) * face, yaw: -a }, [0.16, p.l, p.w], PATCH_3E);
     }
-    // La gondole, couchée sous le ventre ; son nez de bronze, vers le mât.
+    // La gondole, couchée sous le ventre ; son nez, vers le mât.
     const G = Z.gondola;
     const gz = Z.radius + G.gap + G.r;
     l.prism({ x: 0, y: len * G.from, z: gz }, G.r, G.r, len * (G.to - G.from), 6, COLORS_3E.prune, COLORS_3E.graphite);
-    l.prism({ x: 0, y: len * G.from - 0.7, z: gz }, 0.15, G.r, 0.7, 6, COLORS_3E.bronze);
+    l.prism({ x: 0, y: len * G.from - 0.7, z: gz }, 0.15, G.r, 0.7, 6, COLORS_3E.graphiteSun);
   });
   drawPosed(b, { x: rock.x, y, z: rock.z, yaw }, (l) => {
     // Les quatre empennages près de la queue.
@@ -210,22 +214,54 @@ export function zeppelinFacets(): Facets {
     l.box({ x: 0, y: Z.radius - 0.3, z: fz }, [0.3, Z.fin, Z.tail - 1], COLORS_3E.prune);
     l.box({ x: 0, y: -Z.radius - Z.fin + 0.3, z: fz }, [0.3, Z.fin, Z.tail - 1], COLORS_3E.prune);
     for (const s of [-1, 1]) l.box({ x: s * (Z.radius + Z.fin / 2 - 0.3), y: -0.15, z: fz }, [Z.fin, 0.3, Z.tail - 1], COLORS_3E.prune);
-    // La gondole : ses deux suspentes, la bande de bronze des hublots de chaque côté, la rambarde de la plate-forme.
+    // La gondole : ses deux suspentes, la bande des hublots de chaque côté, la rambarde de la plate-forme ; la planche de
+    // flanc et sa barre, où se rangent les pièces prises au Rafiot.
     const G = Z.gondola;
     const gy = -(Z.radius + G.gap + G.r);
     const z0 = len * G.from,
       z1 = len * G.to;
     for (const z of [z0 + 1.2, z1 - 1.2]) l.beam({ x: 0, y: gy + G.r * 0.8, z }, { x: 0, y: -Z.radius + 0.2, z }, 0.16, COLORS_3E.graphite);
-    for (const s of [-1, 1]) l.box({ x: s * G.r * 0.88, y: gy + 0.05, z: (z0 + z1) / 2 + 0.6 }, [0.1, 0.32, z1 - z0 - 2.4], COLORS_3E.bronze);
-    l.box({ x: 0, y: gy + G.r * 0.85, z: z0 + 0.7 }, [G.r * 1.6, 0.12, 1.2], COLORS_3E.bronze);
-    // Les deux hélices arrêtées, au bout de la gondole, une pale en haut, une en bas ; leur moyeu de bronze.
+    for (const s of [-1, 1]) l.box({ x: s * G.r * 0.88, y: gy + 0.05, z: (z0 + z1) / 2 + 0.6 }, [0.1, 0.32, z1 - z0 - 2.4], COLORS_3E.graphiteSun);
+    l.box({ x: 0, y: gy + G.r * 0.85, z: z0 + 0.7 }, [G.r * 1.6, 0.12, 1.2], COLORS_3E.graphite);
+    const S = Z.shelf;
+    const sx = G.r * 0.86 + S.out;
+    l.box({ x: sx, y: gy - S.drop - 0.08, z: (z0 + z1) / 2 }, [0.8, 0.08, z1 - z0 - 1.2], COLORS_3E.graphite);
+    l.box({ x: sx, y: gy - S.drop + S.bar, z: (z0 + z1) / 2 }, [0.1, 0.1, z1 - z0 - 1.2], COLORS_3E.graphite);
+    // Les deux hélices arrêtées, au bout de la gondole, une pale en haut, une en bas ; leur moyeu.
     const P = Z.propeller;
     for (const s of [-1, 1]) {
       const hub = { x: s * P.side, y: gy, z: z1 - 0.3 };
       l.beam({ x: s * G.r * 0.7, y: gy, z: hub.z }, hub, 0.12, COLORS_3E.graphite);
-      l.drum({ x: hub.x, y: hub.y, z: hub.z + 0.15, pitch: Math.PI / 2 }, 0.22, 0.3, 6, COLORS_3E.bronze);
+      l.drum({ x: hub.x, y: hub.y, z: hub.z + 0.15, pitch: Math.PI / 2 }, 0.22, 0.3, 6, COLORS_3E.graphiteSun);
       l.box({ x: hub.x, y: hub.y - P.blade, z: hub.z + 0.32 }, [0.26, 2 * P.blade, 0.08], COLORS_3E.graphiteSun);
     }
+  });
+  return b.build();
+}
+
+/**
+ * Les pièces de bronze prises au Rafiot (./ferrailleurs3e.ts), rangées sur la planche de flanc de la gondole, tournées
+ * vers le sud-ouest : dans le repère du monde ; le Fanal les dessine tant qu'il n'est pas restauré (`restoration`).
+ */
+export function zeppelinPiecesFacets(): Facets {
+  const b = new FacetBuilder();
+  const Z = ZEPPELIN;
+  const { rock, tail } = ZEPPELIN_3E;
+  const len = distance(rock, tail);
+  const yaw = Math.atan2(tail.x - rock.x, tail.z - rock.z);
+  const y = Z.rockTop + Z.mast + 0.3;
+  drawPosed(b, { x: rock.x, y, z: rock.z, yaw }, (l) => {
+    const G = Z.gondola;
+    const S = Z.shelf;
+    const gy = -(Z.radius + G.gap + G.r);
+    const z0 = len * G.from + 0.9,
+      z1 = len * G.to - 0.9;
+    const sx = G.r * 0.86 + S.out;
+    PIECES_3E.forEach((id, k) => {
+      const z = z0 + ((z1 - z0) * (k + 0.5)) / PIECES_3E.length;
+      const bottom = HANGS_3E[id] ? gy - S.drop + S.bar - 0.05 - PIECE_HEIGHT_3E[id] * S.scale : gy - S.drop;
+      drawPosed(l, { x: sx, y: bottom, z, yaw: Math.PI / 2 }, (k2) => piece3e(k2, id, 0, 0, 0, S.scale));
+    });
   });
   return b.build();
 }

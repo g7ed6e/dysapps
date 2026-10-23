@@ -856,9 +856,21 @@ function parvisCost(onMap: boolean): number {
  * `onMap`, sans le zeppelin) ; deux maillages.
  */
 function placesCost3e(onMap = false): { triangles: number; calls: number } {
-  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
+  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0) + (onMap ? 0 : restorationCost3e(p.id)), 0);
   const passages = LINKED_LANDS_3E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
   return { triangles: ruins + passages + parvisCost(onMap), calls: 2 };
+}
+
+/**
+ * Ce qu'un lieu du 3e montre hors de son modèle à sa restauration (`PlaceArt.restoration` : au Fanal, la fin des
+ * Ferrailleurs, les pièces de la gondole puis le râtelier, Grappin et la lumière de leur port), à son état le plus
+ * chargé ; dans le monde seulement, jamais sur la Carte.
+ */
+function restorationCost3e(id: (typeof PLAN_3E.places)[number]['id']): number {
+  const art = placeArt(id)?.restoration;
+  if (!art) return 0;
+  const origin = { x: 0, y: 0, z: 0 };
+  return Math.max(art.draw(origin, 0).triangles, art.draw(origin, Infinity).triangles);
 }
 
 /** La brume des terres fermées du 3e (au départ, les trois) : aucun voile retenu (retouche 1 du lot 1), aucun appel alors. */

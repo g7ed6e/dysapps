@@ -21,8 +21,10 @@
 // L'or blanc de la lumière n'est qu'à la lanterne, et seulement quand le haut est posé. Une trace par mission, avec sa
 // partie. Code pur.
 import type { Stage } from './construction';
-import { drawPosed, type FacetBuilder } from './facets';
+import { drawPosed, FacetBuilder, type Facets } from './facets';
+import { PIECES_3E, ferrailleursPort3e, grappin3e, rack3e } from './ferrailleurs3e';
 import type { Vec3 } from './geometry';
+import { zeppelinPiecesFacets } from './parvis3e';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
 import { C3E, SINK_3E, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
 import { capOf, groundPlane4e, once, sceneRight, sceneRise } from './place4eKit';
@@ -583,6 +585,49 @@ function prismGlass(b: FacetBuilder, at: Vec3, s: number): void {
   b.prism({ x: at.x, y: at.y, z: at.z, yaw: Math.PI / 6 }, 0.16 * s, 0.16 * s, PRISMS.glass * s, 3, C.glass, C3E.stone);
 }
 
+// ---------- La fin des Ferrailleurs ----------
+
+/**
+ * La fin des Ferrailleurs (proposition du Cirque ; ./ferrailleurs3e.ts), jouée une fois, après le bilan de la dernière
+ * partie : les pièces quittent la gondole du zeppelin, le râtelier paraît au pied du Fanal, côté Rampe (à l'est du socle,
+ * sa face vers la Rampe), les pièces s'y rangent l'une après l'autre, puis Grappin, et la lumière du port, au nord. Les
+ * instants (en secondes) ; le râtelier et Grappin, dans le repère du lieu.
+ */
+const RETURN = {
+  seconds: 3.6,
+  gondola: 0.4,
+  rack: 0.8,
+  pieces: [1.2, 1.6, 2.0, 2.4, 2.8] as const,
+  grappin: 3.0,
+  port: 3.4,
+  rackAt: { x: 8.9, z: 0.6 },
+  grappinAt: { x: 10.0, z: 3.4 },
+} as const;
+
+/** Les pièces sur la gondole, dessinées une fois. */
+const gondolaPieces = once(zeppelinPiecesFacets);
+
+/** La fin des Ferrailleurs à `t` secondes de son début (0 : avant ; `Infinity` : jouée), dans le repère du monde (`c` : le centre du lieu à son sol). */
+function returnFacets(c: Vec3, t: number): Facets {
+  const R = RETURN;
+  const b = new FacetBuilder();
+  if (t < R.gondola) b.append(gondolaPieces());
+  ferrailleursPort3e(b, t >= R.port);
+  if (t >= R.rack) {
+    const { x, z } = R.rackAt;
+    const shown = R.pieces.filter((at) => t >= at).length;
+    drawPosed(b, { x: c.x + x, y: c.y + planeY(x, z), z: c.z + z, yaw: Math.PI / 2 }, (l) => rack3e(l, Math.min(shown, PIECES_3E.length)));
+  }
+  if (t >= R.grappin) {
+    const { x, z } = R.grappinAt;
+    grappin3e(b, { x: c.x + x, y: c.y + planeY(x, z), z: c.z + z });
+  }
+  return b.build();
+}
+
+/** La clé de ce qu'on voit à `t` : le nombre d'instants passés. */
+const returnFrame = (t: number): string => String([RETURN.gondola, RETURN.rack, ...RETURN.pieces, RETURN.grappin, RETURN.port].filter((at) => t >= at).length);
+
 export const FANAL: PlaceArt = {
   role: 'L’opticienne',
   model,
@@ -630,6 +675,7 @@ export const FANAL: PlaceArt = {
   doorView: DOOR_VIEW,
   arrivalView: ARRIVAL,
   mapPoint: MAP_POINT,
+  restoration: { seconds: RETURN.seconds, draw: returnFacets, frame: returnFrame },
 };
 
 /** Le plan du Fanal, pour les tests. */
@@ -648,4 +694,5 @@ export const FANAL_LAYOUT = {
   arrival: ARRIVAL,
   scene: SCENE_SPOT,
   traceSpots: TRACE_SPOTS,
+  ret: RETURN,
 } as const;
