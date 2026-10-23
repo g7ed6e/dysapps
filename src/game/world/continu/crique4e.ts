@@ -482,8 +482,10 @@ export function aiguillesFacets(): Facets {
   return b.build();
 }
 
-/** Le décor de la Crique qui ne change pas : le volcan vu de loin, sa lave figée et son panache ; la digue, le Rafiot, les Aiguilles. */
-/** Le décor de la Crique ; `returned` : les six pièces du Rafiot rendues au Fanal du 3e, son pont vide. */
+/**
+ * Le décor de la Crique : le volcan vu de loin, sa lave figée et son panache ; la digue, le Rafiot, les Aiguilles ;
+ * `returned` : les six pièces du Rafiot rendues au Fanal du 3e, son pont vide.
+ */
 export const criqueDecorFacets = (returned = false): Facets => mergeFacets([volcanoFarFacets(), lavaFacets(), plumeFacets(), digueFacets(), rafiotFacets(returned), aiguillesFacets()]);
 
 // ---------- L'aéronef ----------

@@ -189,8 +189,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const nefResting = nefAtRest(level);
   // Les pièces du Rafiot rendues au Fanal du 3e (la fin des Ferrailleurs, jouée au Fanal restauré) : au 4e, le pont du
   // Rafiot est vide (consultant d'Archipéo, relecture de la PR du 3e). La scène le lit à sa création.
-  const piecesReturned = useRef(false);
-  piecesReturned.current = level === '4e' && fanalRestored(state.world.parts);
+  const piecesReturnedNow = useMemo(() => level === '4e' && fanalRestored(state.world.parts), [level, state.world.parts]);
+  const piecesReturned = useRef(piecesReturnedNow);
+  useEffect(() => {
+    piecesReturned.current = piecesReturnedNow;
+  }, [piecesReturnedNow]);
   const nefLookNow = useMemo(() => (nefResting ? 3 : nefLookOf(state, sail.kit, nefStage)), [nefResting, state, sail.kit, nefStage]);
   const feux = useMemo(() => paruresFeux(state.progress, achieved), [state.progress, achieved]);
   const paruresNow = useMemo(() => (nefResting ? paruresLook(state.world.parts, state.progress, achieved) : 0), [nefResting, state.world.parts, state.progress, achieved]);
