@@ -324,8 +324,7 @@ describe('Le budget du 4e', () => {
 describe('La caméra du 4e et « Y aller » (deuxième relecture du lot 1, consultant UX UI)', () => {
   it('les pieds de Kéo restent au-dessus de la rangée du bas, quelle que soit sa hauteur', () => {
     const feet = { x: 2, y: heightAt4e({ x: 2, z: -36 }), z: -36 };
-    // 464 : la bulle au-dessus de « Y aller » sur tablette, au plus grand texte (54 % de l'écran, à tous les niveaux).
-    for (const room of [96, 130, 200, 464]) {
+    for (const room of [96, 130, 200]) {
       const pose = followPose(feet, 0, undefined, 0.4);
       keepFeetAbove(pose, feet, room, 860);
       expect(screenOf(pose, feet, 1280, 860).y).toBeLessThanOrEqual(860 - room + 1e-6);

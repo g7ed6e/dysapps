@@ -161,7 +161,10 @@
   }
   /* La bulle au-dessus de « Y aller » monte en haut de l'écran, entre la colonne des accès directs et celle des Réglages
      et de la caméra, jamais dessus : en bas, au plus grand texte, elle ne laissait aucune place à Kéo, que la caméra
-     garde au-dessus de « Y aller » (piste « Remonter Kéo dans l'image », consultant UX UI). */
+     garde au-dessus de « Y aller » (piste « Remonter Kéo dans l'image », consultant UX UI). À la même place à toutes
+     les tailles, pour qu'elle ne change pas de place d'une phrase à l'autre (référent dys). `fixed` : la scène du monde
+     ouvert couvre toute la fenêtre et aucun de ses ancêtres n'est transformé ; 56 px, la largeur des boutons des deux
+     colonnes. */
   .open-world-go-reason {
     position: fixed;
     top: calc(0.6rem + env(safe-area-inset-top, 0px));

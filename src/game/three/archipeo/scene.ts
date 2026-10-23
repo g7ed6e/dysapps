@@ -1735,9 +1735,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     return true;
   };
-  // La place de la rangée du bas, sa bulle comprise, que les pieds de Kéo ne passent jamais (`footRoom`), en pixels : au
-  // 4e et au 3e d'abord, puis au 6e et au 5e, où la bulle d'arrivée au plus grand texte cachait Kéo (relecture UX UI des
-  // habitants du 5e, piste « Remonter Kéo dans l'image »).
+  // La place de la rangée du bas, sa bulle comprise, que les pieds de Kéo ne passent jamais (`footRoom`), en pixels, à
+  // tous les niveaux : au plus grand texte, la bulle au-dessus de « Y aller » cachait Kéo.
   let feetRoom = 0;
   // Le recul d'arrivée devant un lieu haut qui s'ajuste (`maxBack`) : le haut du lieu entier avec Kéo au-dessus de la
   // rangée du bas ; refait à l'arrivée, quand la rangée change (la phrase « Aucune mission ») et quand l'écran change.
@@ -1793,7 +1792,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const follow = () => {
     if (manualView) return applyPose(manualView);
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());
-    lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
+    lookUp(pose, lanternTop, keoFeet, look, viewH, ground, feetRoom);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     applyPose(pose);
@@ -1863,7 +1862,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const reframe = () => {
     if (!frameRect || (!framed && !framedNef) || asked || remise || mapView) return;
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), undefined, arrivalBack > 0 ? arrivalShape : viewShape());
-    lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
+    lookUp(pose, lanternTop, keoFeet, look, viewH, ground, feetRoom);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
     keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
@@ -3787,7 +3786,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     turn: () => {
       copyPose(current, poseFrom);
       followPose(focus, lift, poseTo, yaw);
-      lookUp(poseTo, lanternTop, keoFeet, look, viewH, ground);
+      lookUp(poseTo, lanternTop, keoFeet, look, viewH, ground, feetRoom);
       if (exit) exitView(poseTo, exit.keep, keoFeet, back, exit.view);
     },
     back: (e) => tween(poseFrom, poseTo, e),

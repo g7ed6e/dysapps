@@ -430,12 +430,13 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       ];
       if (resized && lastMark.current) placeMark(markRef.current, arrowRef.current, lastMark.current, layout);
       // La place de la rangée du bas, que les pieds de Kéo ne passent pas (à tous les niveaux) : depuis le bas de la scène
-      // jusqu'au haut de la bulle au-dessus de « Y aller », ou de « Y aller », avec son écart.
+      // jusqu'au haut de « Y aller », avec son écart, et de sa bulle quand elle est au-dessus de lui (sur un écran bas,
+      // elle monte en haut de l'écran, hors de la rangée : openWorld.css).
       if (goBox && goBox.height > 0) world.current?.footRoom(Math.round(s.bottom - goBox.top + GO_CLEAR));
     };
     const observer = new ResizeObserver(measure);
     observer.observe(stage);
-    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-camera, .open-world-go, .open-world-bar, .open-world-said')) observer.observe(el);
+    for (const el of stage.querySelectorAll('.open-world-mark, .world-settings, .open-world-camera, .open-world-go, .open-world-go-reason, .open-world-bar, .open-world-said')) observer.observe(el);
     measure();
     return () => observer.disconnect();
     // La marque et « Y aller » changent d'élément avec la suggestion et la marche : on les observe de nouveau ; la scène
