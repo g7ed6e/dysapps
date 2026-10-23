@@ -119,7 +119,7 @@ function nefReturnWord(to: ArchipelagoId, here: ArchipelagoId): string {
  * la voix au toucher. Un toucher lance le fondu, puis Kéo arrive au quai du lieu de départ de ce niveau. Même rangée
  * aux quatre niveaux, Nef présente, partie ou au repos.
  */
-export function NefReturns({ here, onReturn }: { here: ArchipelagoId; onReturn(to: ArchipelagoId): void }) {
+function NefReturns({ here, onReturn }: { here: ArchipelagoId; onReturn(to: ArchipelagoId): void }) {
   const { state } = useBlocland();
   const textes = useTextes();
   const levels = nefReturns(state.world.links, here);
