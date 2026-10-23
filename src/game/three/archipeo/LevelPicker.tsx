@@ -8,8 +8,11 @@ import { Icon } from '../../../components/Icon';
 import { useTextes } from '../../../universes';
 import { reachedArchipelagos, type ArchipelagoId } from '../../world/archipelago';
 
-/** La pastille dépliée se replie seule après ce délai sans toucher (rien ne se perd : on la rouvre d'un toucher). */
-export const LEVEL_PICKER_FOLD_MS = 5000;
+/**
+ * La pastille dépliée se replie seule après ce délai sans geste (rien ne se perd : on la rouvre d'un toucher) ; assez
+ * long pour une lecture lente ou la voix (référent dys), relancé par chaque geste, le pointeur ou le focus dedans.
+ */
+export const LEVEL_PICKER_FOLD_MS = 8000;
 
 interface Props {
   here: ArchipelagoId;
@@ -41,7 +44,8 @@ export function LevelPicker({ here, links, onGo }: Props) {
   // Dépliée, le focus va au premier niveau ; un toucher ailleurs (le monde, la caméra) la replie (référent dys).
   useEffect(() => {
     if (!open) return;
-    first.current?.focus();
+    // Sans défilement : la liste, encore étroite, décalerait la pastille (expert frontend).
+    first.current?.focus({ preventScroll: true });
     restart();
     const away = (e: PointerEvent) => {
       if (!box.current?.contains(e.target as Node)) close();
@@ -60,6 +64,8 @@ export function LevelPicker({ here, links, onGo }: Props) {
       ref={box}
       className={`open-world-niveaux${open ? ' ouvert' : ''}`}
       onPointerDown={open ? restart : undefined}
+      onPointerMove={open ? restart : undefined}
+      onFocus={open ? restart : undefined}
       onKeyDown={(e) => {
         if (!open) return;
         restart();
@@ -69,24 +75,27 @@ export function LevelPicker({ here, links, onGo }: Props) {
       }}
     >
       {/* Les autres niveaux, toujours là pour glisser, mais hors d'atteinte repliés (`inert`). */}
-      <ul id={listId} className="open-world-niveaux-liste" aria-label="Les autres niveaux" inert={!open} aria-hidden={!open}>
-        {others.map((to, i) => (
-          <li key={to}>
-            <button
-              ref={i === 0 ? first : undefined}
-              type="button"
-              className="open-world-niveaux-choix"
-              aria-label={`Aller en ${to}, les ${textes.archipels[to]}`}
-              onClick={() => {
-                setOpen(false);
-                onGo(to);
-              }}
-            >
-              {to}
-            </button>
-          </li>
-        ))}
-      </ul>
+      <div className="open-world-niveaux-glisse">
+        <ul id={listId} className="open-world-niveaux-liste" aria-label="Les autres niveaux" inert={!open} aria-hidden={!open}>
+          {others.map((to, i) => (
+            <li key={to}>
+              <button
+                ref={i === 0 ? first : undefined}
+                type="button"
+                className="open-world-niveaux-choix"
+                aria-label={`Aller en ${to}, les ${textes.archipels[to]}`}
+                onClick={() => {
+                  // Le focus revient au bouton avant que la liste ne devienne inerte.
+                  close();
+                  onGo(to);
+                }}
+              >
+                {to}
+              </button>
+            </li>
+          ))}
+        </ul>
+      </div>
       <button
         ref={toggle}
         type="button"

@@ -3384,22 +3384,29 @@
 }
 /* Dépliée, elle se reconnaît à sa forme (bord épais), pas seulement à sa couleur. */
 .open-world-niveaux.ouvert {
-  border-width: calc(var(--border-width, 2px) * 2);
+  /* Un trait de plus autour, sans changer la hauteur : la pastille reste alignée sur Réglages. */
+  outline: var(--border-width, 2px) solid var(--ink);
+}
+.open-world-niveaux-glisse {
+  /* Glisser de 0 à la largeur réelle des niveaux, sans largeur écrite (expert frontend). */
+  display: grid;
+  grid-template-columns: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-columns 0.25s ease,
+    opacity 0.2s ease;
+}
+.open-world-niveaux.ouvert .open-world-niveaux-glisse {
+  grid-template-columns: 1fr;
+  opacity: 1;
 }
 .open-world-niveaux-liste {
   display: flex;
+  min-width: 0;
+  overflow: hidden;
   list-style: none;
   margin: 0;
   padding: 0;
-  max-width: 0;
-  opacity: 0;
-  transition:
-    max-width 0.25s ease,
-    opacity 0.2s ease;
-}
-.open-world-niveaux.ouvert .open-world-niveaux-liste {
-  max-width: 40rem;
-  opacity: 1;
 }
 /* Un trait entre deux niveaux, et entre le dernier et le niveau où l'on est. */
 .open-world-niveaux-liste li {
@@ -3448,7 +3455,7 @@
   transform: none;
 }
 @media (prefers-reduced-motion: reduce) {
-  .open-world-niveaux-liste,
+  .open-world-niveaux-glisse,
   .open-world-niveau svg {
     transition: none;
   }

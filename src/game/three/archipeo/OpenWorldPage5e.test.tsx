@@ -113,16 +113,23 @@ test('le niveau où l’on est, une seule pastille qui glisse vers les autres ni
   await user.click(toggle());
   await user.click(document.querySelector('.open-world-canvas')!);
   expect(toggle()).toHaveAttribute('aria-expanded', 'false');
-  // Elle se replie seule après un moment sans toucher.
-  await user.click(toggle());
-  expect(toggle()).toHaveAttribute('aria-expanded', 'true');
-  await act(() => new Promise((r) => setTimeout(r, LEVEL_PICKER_FOLD_MS + 50)));
-  expect(toggle()).toHaveAttribute('aria-expanded', 'false');
-  expect(toggle()).toHaveFocus();
+  // Elle se replie seule après un moment sans geste.
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    await user.click(toggle());
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true');
+    act(() => vi.advanceTimersByTime(LEVEL_PICKER_FOLD_MS - 500));
+    expect(toggle()).toHaveAttribute('aria-expanded', 'true');
+    act(() => vi.advanceTimersByTime(1000));
+    expect(toggle()).toHaveAttribute('aria-expanded', 'false');
+    expect(toggle()).toHaveFocus();
+  } finally {
+    vi.useRealTimers();
+  }
   await user.click(toggle());
   await user.click(screen.getByRole('button', { name: /^Aller en 6e/ }));
   expect(document.querySelector('.open-world-fondu')).toHaveClass('on');
-}, 15000);
+});
 
 test('un seul niveau atteint : pas de bouton du niveau', async () => {
   renderPage();
