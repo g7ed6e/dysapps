@@ -87,15 +87,6 @@ function standard(b: FacetBuilder): void {
   b.box({ x: 1, y: SINK, z: 3.5, yaw: 0.2 }, [2.4, 0.6 - SINK, 1.4], C.woodShade, C.wood);
 }
 
-/** La Lutherie : l'atelier de bois à grandes fenêtres, son toit tombé ; l'établi fendu ; des instruments couchés, du plus grand au plus petit. */
-function lutherie(b: FacetBuilder): void {
-  b.box({ x: 0, y: SINK, z: -1.5 }, [8, 3.4 - SINK, 5], C.woodShade, C.wood);
-  b.box({ x: 0, y: 1.2, z: 1.06 }, [5.6, 1.6, 0.1], C.glass);
-  b.box({ x: 1, y: 3.4, z: -1.5, pitch: 0.25 }, [8.4, 0.3, 5.6], C.slate, C.slateTop);
-  b.box({ x: -5, y: SINK, z: 3, yaw: 0.2 }, [3, 1 - SINK, 1.2], C.woodShade, C.wood);
-  [2.4, 1.8, 1.2].forEach((s, k) => b.box({ x: 2 + k * 1.6, y: SINK, z: 3.5 }, [s * 0.5, 0.3 - SINK, s], C.bronze, C.wood));
-}
-
 /** Les Ondes : la station de pierre ; le grand mât de bois haubané, debout ; le pavillon d'écoute en cornet, couché. */
 function ondes(b: FacetBuilder): void {
   b.box({ x: 0, y: SINK, z: 0 }, [7, 3 - SINK, 5], C.graniteShade, C.granite);
@@ -107,12 +98,11 @@ function ondes(b: FacetBuilder): void {
 
 /**
  * La ruine de chaque lieu du 3e pas encore construit, dessinée dans son repère : un lieu construit (./plan3e.ts,
- * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts ; le Kiosque, ./kiosque3e.ts ; la Maquette, ./maquette3e.ts ; la Tribune, ./tribune3e.ts ; la Douane, ./douane3e.ts ; l'Ermitage, ./ermitage3e.ts ; le Palais, ./palais3e.ts ; la Coupole, ./coupole3e.ts).
+ * `BUILT_PLACES_3E`) dessine sa ruine dans son fichier, avec ses étapes (le Belvédère, ./belvedere3e.ts ; le Grenier, ./grenier3e.ts ; l'Abri, ./abri3e.ts ; le Jardin, ./jardin3e.ts ; le Kiosque, ./kiosque3e.ts ; la Maquette, ./maquette3e.ts ; la Tribune, ./tribune3e.ts ; la Douane, ./douane3e.ts ; l'Ermitage, ./ermitage3e.ts ; le Palais, ./palais3e.ts ; la Coupole, ./coupole3e.ts ; la Lutherie, ./lutherie3e.ts).
  */
 export const RUINS_3E: Readonly<Record<Exclude<PlaceId3e, BuiltPlace3e>, (b: FacetBuilder) => void>> = {
   fanal,
   rampe,
   standard,
-  lutherie,
   ondes,
 };

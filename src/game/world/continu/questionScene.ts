@@ -280,6 +280,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   palais: placeArt('palais')!.sceneSpot,
   // La Coupole : au seuil, à l'est des bancs, la salle à droite.
   coupole: placeArt('coupole')!.sceneSpot,
+  // La Lutherie : sur l'herbe au nord de l'atelier, devant son pignon, la Coupole au loin.
+  lutherie: placeArt('lutherie')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -599,6 +601,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   palais: 'lieu',
   // La Coupole : les livres fermés et leurs signets de cuir, sur une table basse.
   coupole: 'lieu',
+  // La Lutherie : les chevilles de bois, en rang sur un petit établi.
+  lutherie: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

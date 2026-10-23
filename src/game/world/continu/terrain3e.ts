@@ -43,11 +43,17 @@ import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type G
 const CLOUD_FLOOR = -1.5;
 /**
  * Les rives : de la mer de nuages au sol, sur tant d'unités (la montagne, une pente douce comme une plage ; les Prairies,
- * leur bord à un ou deux pas au-dessus des nuages) ; sous les nuages, sur tant d'autres.
+ * voir `PRAIRIE_BANK`) ; sous les nuages, sur tant d'autres.
  */
-const BANK = { mountain: 5, prairie: 2.2, under: 3 } as const;
+const BANK = { mountain: 5, under: 3 } as const;
 /** Le sol où l'on marche : la montagne à `mountain` (son ondulation en plus), les Prairies à `prairie`, plates. */
-const LEVEL = { mountain: 1.25, swell: 0.35, prairie: 1.35, prairieSwell: 0.1 } as const;
+const LEVEL = { mountain: 1.25, swell: 0.35, prairie: 0.55, prairieSwell: 0.1 } as const;
+/**
+ * La rive d'une Prairie (lot 1, retouche 1, « Reporté » : la rive des Prairies était en gradins ; sélection des Prairies,
+ * « Partout » : une table, son liseré d'ardoise arrondi, jamais de falaise) : la table garde son niveau jusque sous le
+ * liseré (`edge`, en unités de la rive), puis plonge d'un coup sous les nuages (`under`) ; le liseré seul se voit au bord.
+ */
+const PRAIRIE_BANK = { edge: [0.5, 1.5], under: -0.9 } as const;
 /** La levée douce le long de la rive nord du Cirque : sa hauteur, de `rise[0]` à `rise[1]` unités de la rive, jusqu'à `fade`. */
 const CIRQUE_RIM = { height: 2.2, rise: [3, 10], fade: [13, 28] } as const;
 
@@ -108,8 +114,12 @@ export function heightAt3e(p: Vec2): number {
   const m = mountainDistance(p);
   const pr = prairieDistance(p);
   const coast = Math.max(m, pr);
+  if (pr >= m) {
+    const under = pr >= 0 ? PRAIRIE_BANK.under : PRAIRIE_BANK.under + (CLOUD_FLOOR - PRAIRIE_BANK.under) * smoothstep(0, BANK.under, -pr);
+    if (pr <= PRAIRIE_BANK.edge[0]) return under;
+    return under + (LEVEL.prairie + LEVEL.prairieSwell * wave(p) - under) * smoothstep(PRAIRIE_BANK.edge[0], PRAIRIE_BANK.edge[1], pr);
+  }
   if (coast < 0) return CLOUD_FLOOR * smoothstep(0, BANK.under, -coast);
-  if (pr >= m) return (LEVEL.prairie + LEVEL.prairieSwell * wave(p)) * smoothstep(0, BANK.prairie, pr);
   const d = distance(p, PEAK_3E.at);
   // Le col : le sol y redescend au niveau du replat (le flanc du cône s'y efface), pour que la galerie passe à plat.
   const ground = LEVEL.mountain + LEVEL.swell * wave(p) + flank(d);
@@ -162,6 +172,16 @@ const SLOPE_UP = 0.97;
 /** Sous cette hauteur, la pente qui entre dans les nuages : du granit, sous le liseré d'ardoise. */
 const SHORE_ROCK = 0.35;
 
+/**
+ * Au-delà du liseré d'une Prairie, ce que la grille du sol laisse dépasser des nuages en dents de scie (lot 1, retouche 1,
+ * « Reporté » : la rive en gradins) prend la teinte des nuages : ils montent contre le liseré, rien ne se voit dessous.
+ */
+function underPrairieRim(x: number, z: number): boolean {
+  const p = { x, z };
+  const pr = prairieDistance(p);
+  return pr < PRAIRIE_BANK.edge[0] + 0.15 && pr >= mountainDistance(p);
+}
+
 /** Le sens d'où vient le soleil, à plat : un flanc qui le regarde est au soleil. */
 const SUN_FLAT = { x: -SHADOW_DIR_3E.x, z: -SHADOW_DIR_3E.z } as const;
 
@@ -178,6 +198,7 @@ const patch = (x: number, z: number): number =>
  */
 function flat3e(x: number, z: number, h: number): number {
   const p = { x, z };
+  if (underPrairieRim(x, z)) return COLORS_3E.cloud;
   if (h < SHORE_ROCK) return COLORS_3E.granite;
   const k = patch(x, z);
   if (distance(p, PEAK_3E.at) < PEAK_3E.granite || areteClearance(p) < 0.4) return k < 0.6 ? COLORS_3E.granite : COLORS_3E.graniteSun;
@@ -202,6 +223,7 @@ const SHADE_OF: Readonly<Record<number, number>> = {
  * noir) ; sur une pente douce, son aplat au soleil ou à l'ombre ; sinon, le sol à plat.
  */
 function facet3e(a: P3, b: P3, c: P3): number {
+  if (underPrairieRim((a[0] + b[0] + c[0]) / 3, (a[2] + b[2] + c[2]) / 3)) return COLORS_3E.cloud;
   const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2];
   const vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
   const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
@@ -409,7 +431,7 @@ export function peakFacets(): Facets {
  * `height` : sa largeur et sa hauteur au-dessus du sol ; `foot` : jusqu'où ses flancs descendent ; `step` : le pas de son
  * tracé le long de la rive.
  */
-const RIM_3E = { inset: { mountain: 2.2, prairie: 1.1 }, width: 0.9, height: 0.28, foot: 0.6, step: 4.5 } as const;
+const RIM_3E = { inset: { mountain: 2.2, prairie: 1.1 }, width: 0.9, height: 0.28, foot: 0.6, step: 4.5, dip: { out: 0.3, y: -0.35 } } as const;
 
 /** Une rive repassée à un pas régulier, fermée. */
 function resampleLoop(loop: readonly Vec2[], step: number): Vec2[] {
@@ -427,7 +449,7 @@ function resampleLoop(loop: readonly Vec2[], step: number): Vec2[] {
  * Le liseré d'une rive : chaque point repassé, poussé vers la terre de `inset` (la normale qui entre dans le polygone),
  * posé sur le sol ; un dessus et deux flancs par tronçon.
  */
-function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number): void {
+function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number, dip = false): void {
   const pts = resampleLoop(loop, RIM_3E.step);
   const n = pts.length;
   const inward = (i: number): Vec2 => {
@@ -458,7 +480,12 @@ function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number): void {
       tq = q.y + RIM_3E.height;
     const m = inward(i);
     up([p.out.x, tp, p.out.z], [q.out.x, tq, q.out.z], [q.in.x, tq, q.in.z], [p.in.x, tp, p.in.z], COLORS_3E.slateTop, [0, 1, 0]);
-    up([p.out.x, p.y - RIM_3E.foot, p.out.z], [q.out.x, q.y - RIM_3E.foot, q.out.z], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0, -m.z]);
+    if (dip) {
+      // Le flanc du dehors d'une Prairie s'arrondit et plonge sous les nuages, sans rien laisser voir sous lui.
+      const o = RIM_3E.dip.out;
+      const mq = inward((i + 1) % n);
+      up([p.out.x - m.x * o, RIM_3E.dip.y, p.out.z - m.z * o], [q.out.x - mq.x * o, RIM_3E.dip.y, q.out.z - mq.z * o], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0.6, -m.z]);
+    } else up([p.out.x, p.y - RIM_3E.foot, p.out.z], [q.out.x, q.y - RIM_3E.foot, q.out.z], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0, -m.z]);
     up([p.in.x, p.y - RIM_3E.foot, p.in.z], [q.in.x, q.y - RIM_3E.foot, q.in.z], [q.in.x, tq, q.in.z], [p.in.x, tp, p.in.z], COLORS_3E.slate, [m.x, 0, m.z]);
   }
 }
@@ -467,7 +494,7 @@ function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number): void {
 export function shoreRimFacets(): Facets {
   const b = new FacetBuilder();
   rimOf(b, MOUNTAIN_3E, RIM_3E.inset.mountain);
-  for (const loop of [PRAIRIES_3E.grande, PRAIRIES_3E.deuxieme, PRAIRIES_3E.petite]) rimOf(b, loop, RIM_3E.inset.prairie);
+  for (const loop of [PRAIRIES_3E.grande, PRAIRIES_3E.deuxieme, PRAIRIES_3E.petite]) rimOf(b, loop, RIM_3E.inset.prairie, true);
   return b.build();
 }
 

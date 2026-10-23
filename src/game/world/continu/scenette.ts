@@ -432,6 +432,19 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, on lisait tous les livres des Passeurs.',
     },
   },
+  // La Lutherie (les Prairies du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 5), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« atelier », « toit », « galerie ») : « Les fenêtres sont vitrées. », « Les ardoises sont posées. » et « Les bancs
+  // sont remis. » à la place de « L'atelier a ses murs. », « L'atelier a son toit. » et « La galerie est prête. ».
+  lutherie: {
+    role: placeArt('lutherie')!.role,
+    greeting: 'L’accordeur règle chaque instrument pour qu’il sonne juste.',
+    placement: 'rangee',
+    words: {
+      pose: ['Les fenêtres sont vitrées.', 'L’établi est réparé.', 'Les instruments sont rangés.', 'Les ardoises sont posées.', 'Les bancs sont remis.'],
+      end: 'Ici, chaque instrument trouvait sa juste voix.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -890,6 +903,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   tribune: northSite('tribune'),
   douane: northSite('douane'),
   ermitage: northSite('ermitage'),
+  lutherie: northSite('lutherie'),
   coupole: northSite('coupole'),
   palais: northSite('palais'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
@@ -2480,6 +2494,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   palais: 'earth',
   // La Coupole : l'herbe de la Prairie.
   coupole: 'earth',
+  // La Lutherie : l'herbe de la Prairie.
+  lutherie: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
