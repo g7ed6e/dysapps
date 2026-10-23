@@ -25,6 +25,7 @@ import type { Vec2, Vec3 } from './geometry';
 import { CHAPE, chape, COURSE_HEIGHTS, courses, EPAULE_COLORS, lantern, quadToward, SINK, slab } from './epauleKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
+import { localGround4e, once } from './place4eKit';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
 
@@ -55,10 +56,11 @@ const C = {
 
 /** Le centre du lieu et le sol sous lui. */
 const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'terminus')!.center;
-const H0 = standingHeight(heightAt4e(CENTER));
+/** Le sol sous le centre, pris au premier usage, jamais à l'import (./place4eKit.ts). */
+const h0 = once(() => standingHeight(heightAt4e(CENTER)));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
-const localGround = (lx: number, lz: number): number => standingHeight(heightAt4e({ x: CENTER.x + lx, z: CENTER.z + lz })) - H0;
+const localGround = localGround4e(CENTER);
 
 /**
  * La voie : du dernier point des rails du lot 1 (au pas de la porte) au butoir, au nord-nord-ouest, le long du pied du
@@ -103,12 +105,12 @@ const pt = (t: number, v: number, y: number): P3 => [-v, y, t];
  * rail (intention, § 3) ; sa bordure de dalles claires côté voie ; sa rampe au bout sud.
  */
 const QUAI = { t0: 1.6, t1: 10.4, v0: -2.9, v1: -0.95, kerb: 0.3, wall: 0.7 } as const;
-const QUAI_LIFT = (() => {
+const quaiLift = once(() => {
   let hi = -Infinity;
   for (let t = QUAI.t0; t <= QUAI.t1 + 1e-9; t += 0.4) for (let v = QUAI.v0; v <= QUAI.v1 + 1e-9; v += 0.35) hi = Math.max(hi, tGround(t, v) - TRACK.slope * t);
   return Math.max(hi + 0.08, TRACK.y0 + 0.2 + 1.1);
-})();
-const quaiTop = (t: number): number => QUAI_LIFT + TRACK.slope * t;
+});
+const quaiTop = (t: number): number => quaiLift() + TRACK.slope * t;
 
 /**
  * La trémie, à cheval sur la voie, son côté ouest au-dessus du quai : sa caisse de planches (`along` le long de la voie,
@@ -134,15 +136,15 @@ const MOUTH = { w: 1.8, h: 2.0, head: { side: 0.3, over: 0.36 }, brow: 1.4, spre
 
 /** La remise, sur le replat, son long côté parallèle à la voie, sa grande porte tournée vers la voie de garage. */
 const REMISE = { t0: 5.4, t1: 11.0, v0: 5.0, v1: 9.2, wall: 0.45, h: 3.0, ridge: 1.4, door: [7.2, 9.8] as const, doorH: 2.5 } as const;
-const REMISE_Y = (() => {
+const remiseY = once(() => {
   let hi = -Infinity;
   for (const t of [REMISE.t0, (REMISE.t0 + REMISE.t1) / 2, REMISE.t1]) for (const v of [REMISE.v0, (REMISE.v0 + REMISE.v1) / 2, REMISE.v1]) hi = Math.max(hi, tGround(t, v));
   return hi + 0.04;
-})();
+});
 
 /** La voie de garage, parallèle à la voie côté remise (hors de la ligne) ; son heurtoir au bout nord ; la benne vide. */
 const SIDING = { v: 2.7, t0: 3.6, t1: 9.6 } as const;
-const SIDING_Y = Math.max(tGround(SIDING.t0, SIDING.v), tGround(SIDING.t1, SIDING.v)) + 0.12;
+const sidingY = once(() => Math.max(tGround(SIDING.t0, SIDING.v), tGround(SIDING.t1, SIDING.v)) + 0.12);
 const BENNE = { t: 5.0, w: 1.3, l: 1.9, h: 0.8, ruin: { t: 4.6, v: 4.0 } } as const;
 
 /** La potence de la cloche, au bout nord du quai : son poteau bas, son bras vers la voie. */
@@ -177,10 +179,10 @@ const DOOR_VIEW = Math.atan2(DOOR_AT.x - DOOR_LOOK.x, DOOR_AT.z - DOOR_LOOK.z);
 const DOOR_FRAME = { height: -0.4, back: 1.6 } as const;
 
 /** Le point du nom sur la Carte : au-dessus de la remise, jamais sur la trémie ni sur une galerie. */
-const MAP_POINT: Vec3 = (() => {
+const mapPoint = once((): Vec3 => {
   const p = tv((REMISE.t0 + REMISE.t1) / 2, (REMISE.v0 + REMISE.v1) / 2);
-  return { x: p.x, y: REMISE_Y + REMISE.h + REMISE.ridge + 2, z: p.z };
-})();
+  return { x: p.x, y: remiseY() + REMISE.h + REMISE.ridge + 2, z: p.z };
+});
 
 // ---------- La voie ----------
 
@@ -459,13 +461,13 @@ function remiseWall(l: FacetBuilder, alongT: boolean, at: number, from: number, 
   const R = REMISE;
   const len = to - from,
     mid = (from + to) / 2;
-  const y = REMISE_Y + SINK;
+  const y = remiseY() + SINK;
   if (alongT) {
     l.box({ x: -at, y, z: mid }, [R.wall, h - SINK, len], C.stoneShade, C.stone);
-    courses(l, { x: -at, y: REMISE_Y, z: mid }, [R.wall, h, len], COURSE_HEIGHTS);
+    courses(l, { x: -at, y: remiseY(), z: mid }, [R.wall, h, len], COURSE_HEIGHTS);
   } else {
     l.box({ x: -mid, y, z: at }, [len, h - SINK, R.wall], C.stone, C.stoneSun);
-    courses(l, { x: -mid, y: REMISE_Y, z: at }, [len, h, R.wall], COURSE_HEIGHTS);
+    courses(l, { x: -mid, y: remiseY(), z: at }, [len, h, R.wall], COURSE_HEIGHTS);
   }
 }
 
@@ -476,13 +478,13 @@ function remiseStanding(l: FacetBuilder): void {
   const [d0, d1] = R.door;
   remiseWall(l, true, R.v0 + w, R.t0, d0, R.h);
   remiseWall(l, true, R.v0 + w, d1, R.t1, R.h);
-  l.box({ x: -(R.v0 + w), y: REMISE_Y + R.doorH, z: (d0 + d1) / 2 }, [R.wall, R.h - R.doorH, d1 - d0], C.stoneShade, C.stone);
+  l.box({ x: -(R.v0 + w), y: remiseY() + R.doorH, z: (d0 + d1) / 2 }, [R.wall, R.h - R.doorH, d1 - d0], C.stoneShade, C.stone);
   remiseWall(l, true, R.v1 - w, R.t0, R.t1, R.h);
   remiseWall(l, false, R.t0 + w, R.v0, R.v1, R.h);
   remiseWall(l, false, R.t1 - w, R.v0, R.v1, R.h);
   // L'ombre de la porte, un peu en retrait ; sa porte de bois neuf, ouverte à plat contre la façade, au sud.
-  l.plate({ x: -(R.v0 - 0.01), y: REMISE_Y, z: (d0 + d1) / 2, yaw: Math.PI / 2 }, [[-(d1 - d0) / 2, 0], [(d1 - d0) / 2, 0], [(d1 - d0) / 2, R.doorH], [-(d1 - d0) / 2, R.doorH]], C.hollow);
-  l.box({ x: -(R.v0 - 0.08), y: REMISE_Y - 0.02, z: d0 - (d1 - d0) / 2 - 0.05 }, [0.14, R.doorH - 0.05, d1 - d0 - 0.1], C.newShade, C.newWood);
+  l.plate({ x: -(R.v0 - 0.01), y: remiseY(), z: (d0 + d1) / 2, yaw: Math.PI / 2 }, [[-(d1 - d0) / 2, 0], [(d1 - d0) / 2, 0], [(d1 - d0) / 2, R.doorH], [-(d1 - d0) / 2, R.doorH]], C.hollow);
+  l.box({ x: -(R.v0 - 0.08), y: remiseY() - 0.02, z: d0 - (d1 - d0) / 2 - 0.05 }, [0.14, R.doorH - 0.05, d1 - d0 - 0.1], C.newShade, C.newWood);
 }
 
 /** Le toit de la remise (le haut) : ses deux pignons de pierre, ses deux pans de tôle de fer bruni, jamais orange. */
@@ -490,7 +492,7 @@ function remiseRoof(l: FacetBuilder): void {
   const R = REMISE;
   const vm = (R.v0 + R.v1) / 2,
     half = (R.v1 - R.v0) / 2;
-  const y = REMISE_Y + R.h;
+  const y = remiseY() + R.h;
   for (const t of [R.t0, R.t1 - R.wall]) l.extrude({ x: -vm, y, z: t }, [[-half, 0], [half, 0], [0, R.ridge]], R.wall, C.stone, C.stoneSun);
   const o = 0.35;
   const ridge = y + R.ridge + 0.1;
@@ -511,8 +513,8 @@ function remiseRuin(l: FacetBuilder): void {
   remiseWall(l, false, R.t0 + w, R.v0, R.v1, 1.5);
   remiseWall(l, false, R.t1 - w, R.v0, R.v1, 2.0);
   const vm = (R.v0 + R.v1) / 2;
-  l.beam({ x: -(R.v0 + 0.8), y: REMISE_Y + 0.1, z: 6.2 }, { x: -(R.v1 - 0.7), y: REMISE_Y + 1.25, z: 9.9 }, 0.24, C.woodShade);
-  l.beam({ x: -vm, y: REMISE_Y + 0.12, z: 6.0 }, { x: -(vm + 0.9), y: REMISE_Y + 0.15, z: 10.2 }, 0.22, C.wood);
+  l.beam({ x: -(R.v0 + 0.8), y: remiseY() + 0.1, z: 6.2 }, { x: -(R.v1 - 0.7), y: remiseY() + 1.25, z: 9.9 }, 0.24, C.woodShade);
+  l.beam({ x: -vm, y: remiseY() + 0.12, z: 6.0 }, { x: -(vm + 0.9), y: remiseY() + 0.15, z: 10.2 }, 0.22, C.wood);
 }
 
 // ---------- La voie de garage, la benne ----------
@@ -522,10 +524,10 @@ function siding(l: FacetBuilder): void {
   const S = SIDING;
   const len = S.t1 - S.t0,
     mid = (S.t0 + S.t1) / 2;
-  l.box({ x: -S.v, y: SIDING_Y - 0.5, z: mid }, [1.9, 0.5, len], C.ballast);
-  for (let k = 0; k < 4; k++) l.box({ x: -S.v, y: SIDING_Y - 0.02, z: S.t0 + (len * (k + 0.5)) / 4 }, [1.5, 0.1, 0.32], C.woodShade, C.wood);
-  for (const s of [-1, 1]) l.box({ x: -(S.v + (s * TRACK.gauge) / 2), y: SIDING_Y + 0.06, z: mid }, [TRACK.rail, 0.12, len], C.rust, C.rustTop);
-  l.box({ x: -S.v, y: SIDING_Y, z: S.t1 + 0.2 }, [1.2, 0.7, 0.6], C.woodShade, C.wood);
+  l.box({ x: -S.v, y: sidingY() - 0.5, z: mid }, [1.9, 0.5, len], C.ballast);
+  for (let k = 0; k < 4; k++) l.box({ x: -S.v, y: sidingY() - 0.02, z: S.t0 + (len * (k + 0.5)) / 4 }, [1.5, 0.1, 0.32], C.woodShade, C.wood);
+  for (const s of [-1, 1]) l.box({ x: -(S.v + (s * TRACK.gauge) / 2), y: sidingY() + 0.06, z: mid }, [TRACK.rail, 0.12, len], C.rust, C.rustTop);
+  l.box({ x: -S.v, y: sidingY(), z: S.t1 + 0.2 }, [1.2, 0.7, 0.6], C.woodShade, C.wood);
 }
 
 /** La benne, sans numéro ni marque : sa caisse ouverte (vide), son châssis, ses roues de chaque côté. */
@@ -548,7 +550,7 @@ function benneLying(l: FacetBuilder): void {
 
 /** La benne relevée, vide, sur la voie de garage (les abords). */
 function benneStanding(l: FacetBuilder): void {
-  drawPosed(l, { x: -SIDING.v, y: SIDING_Y + 0.18, z: BENNE.t, yaw: 0 }, (k) => benne(k, false));
+  drawPosed(l, { x: -SIDING.v, y: sidingY() + 0.18, z: BENNE.t, yaw: 0 }, (k) => benne(k, false));
 }
 
 // ---------- Les lanternes, le banc, la passerelle ----------
@@ -556,9 +558,9 @@ function benneStanding(l: FacetBuilder): void {
 /** La lanterne du cheminot, sur son poteau contre le pignon sud de la remise, et son banc dessous : toujours là. */
 function keeperCorner(l: FacetBuilder): void {
   const L = KEEPER_LANTERN;
-  l.box({ x: -L.v, y: REMISE_Y + SINK, z: L.t }, [0.2, L.h - SINK, 0.2], C.woodShade, C.wood);
-  l.beam({ x: -L.v, y: REMISE_Y + L.h - 0.1, z: L.t }, { x: -L.v, y: REMISE_Y + L.h - 0.1, z: L.t - 0.5 }, 0.08, C.woodShade);
-  lantern(l, { x: -L.v, y: REMISE_Y + L.h - 0.14, z: L.t - 0.5 }, true);
+  l.box({ x: -L.v, y: remiseY() + SINK, z: L.t }, [0.2, L.h - SINK, 0.2], C.woodShade, C.wood);
+  l.beam({ x: -L.v, y: remiseY() + L.h - 0.1, z: L.t }, { x: -L.v, y: remiseY() + L.h - 0.1, z: L.t - 0.5 }, 0.08, C.woodShade);
+  lantern(l, { x: -L.v, y: remiseY() + L.h - 0.14, z: L.t - 0.5 }, true);
   const B = BENCH;
   const y = tGround(B.t, B.v);
   l.box({ x: -B.v, y: y + 0.4, z: B.t }, [B.len, 0.08, 0.38], C.woodShade, C.wood);
@@ -889,7 +891,9 @@ export const TERMINUS: PlaceArt = {
   exit: { x: DOOR_AT.x + 0.9, z: DOOR_AT.z - 0.3 },
   doorView: DOOR_VIEW,
   doorFrame: DOOR_FRAME,
-  mapPoint: MAP_POINT,
+  get mapPoint() {
+    return mapPoint();
+  },
 };
 
 /** Le plan du Terminus, pour les tests et ses abords : le repère de la voie, le quai, la trémie, la remise, la caméra. */
@@ -906,9 +910,13 @@ export const TERMINUS_LAYOUT = {
   hopperRail: HOPPER_RAIL,
   galleries: GALLERIES,
   remise: REMISE,
-  remiseY: REMISE_Y,
+  get remiseY() {
+    return remiseY();
+  },
   siding: SIDING,
-  sidingY: SIDING_Y,
+  get sidingY() {
+    return sidingY();
+  },
   benne: BENNE,
   potence: POTENCE,
   keeperLantern: KEEPER_LANTERN,
@@ -917,11 +925,15 @@ export const TERMINUS_LAYOUT = {
   door: DOOR_AT,
   doorFrame: DOOR_FRAME,
   doorLook: DOOR_LOOK,
-  mapPoint: MAP_POINT,
+  get mapPoint() {
+    return mapPoint();
+  },
   scene: SCENE_SPOT,
   sceneStart: SCENE_START,
   traceSpots: TRACE_SPOTS,
-  heightAtCenter: H0,
+  get heightAtCenter() {
+    return h0();
+  },
   /** Le bois neuf et le fer bruni (ses abords en posent) ; le ballast et les rails de la voie (les tests). */
   colors: { wood: C.newWood, woodShade: C.newShade, iron: C.iron, ironTop: C.ironTop, rope: C.rope, ballast: C.ballast, rail: C.rust, railTop: C.rustTop },
 } as const;

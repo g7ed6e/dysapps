@@ -4,7 +4,7 @@
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
 import { WORLD_FOG, type CameraPose, type DetourView } from './camera';
-import { AIGUILLES_COLORS, CRIQUE_LOOK, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, RAFIOT_HULL_COLORS, RAFIOT_SMOKE_COLORS, SKY_ISLAND_COLORS, criqueDecorFacets } from './crique4e';
+import { AIGUILLES_COLORS, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, RAFIOT_HULL_COLORS, RAFIOT_SMOKE_COLORS, SKY_ISLAND_COLORS, criqueDecorFacets, criqueLook } from './crique4e';
 import { mergeFacets, type Facets } from './facets';
 import { FANAL_TOWER_3E } from './fanal3e';
 import { FAR_ISLES_3E, FAR_ISLES_FOG_3E, FINAL_VIEW_3E, FINAL_VIEW_SECONDS_3E, farArchipelagos3e, finalViewPose3e } from './finalView3e';
@@ -91,7 +91,7 @@ interface Departure {
    * artistique, lot 4) ; rien au 6e.
    */
   lookAt: PlaceId | null;
-  /** Ou un haut fixe que le regard levé cadre au quai (au 4e, le cratère du volcan : ./crique4e.ts, `CRIQUE_LOOK`). */
+  /** Ou un haut fixe que le regard levé cadre au quai (au 4e, le cratère du volcan : ./crique4e.ts, `criqueLook`). */
   lookTop?: Vec3;
   /**
    * Ce qui ne change jamais autour du lieu de départ (au 5e, la graine géante et la lumière du Phare), ou rien ; au 4e,
@@ -260,7 +260,9 @@ const DEPARTURE_4E_SITE: Departure = {
   viewYaw: CRIQUE_VIEW.yaw,
   facadeYaw: CRIQUE.yaw,
   lookAt: null,
-  lookTop: CRIQUE_LOOK,
+  get lookTop() {
+    return criqueLook();
+  },
   decor: (returned = false) => {
     let f = decor4e.get(returned);
     if (!f) decor4e.set(returned, (f = criqueDecorFacets(returned)));

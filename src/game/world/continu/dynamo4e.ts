@@ -21,6 +21,7 @@ import type { Vec2, Vec3 } from './geometry';
 import { COURSE_HEIGHTS, courses, EPAULE_COLORS, lantern, quadToward, SINK, slab, strut } from './epauleKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { PATH_NODES_4E, PLACES_4E } from './plan4e';
+import { localGround4e, once } from './place4eKit';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
 
@@ -54,10 +55,11 @@ const C = {
 
 /** Le centre du lieu et le sol sous lui. */
 const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'dynamo')!.center;
-const H0 = standingHeight(heightAt4e(CENTER));
+/** Le sol sous le centre, pris au premier usage, jamais à l'import (./place4eKit.ts). */
+const h0 = once(() => standingHeight(heightAt4e(CENTER)));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
-const localGround = (lx: number, lz: number): number => standingHeight(heightAt4e({ x: CENTER.x + lx, z: CENTER.z + lz })) - H0;
+const localGround = localGround4e(CENTER);
 
 // ---------- Le plan ----------
 
@@ -66,11 +68,11 @@ const localGround = (lx: number, lz: number): number => standingHeight(heightAt4
  * milieu de la façade sud, sa fenêtre à gauche. Le clocheton sur le faîte, 6,5 au plus.
  */
 const POSTE = { x0: -2.5, x1: 2.5, z0: -4, z1: 0, wall: 0.45, h: 3.2, ridge: 1.5, door: { w: 1.2, h: 2.2 }, window: { x: -1.5, y: 1.25, w: 0.8, h: 0.8 } } as const;
-const POSTE_Y = (() => {
+const posteY = once(() => {
   let hi = -Infinity;
   for (const x of [POSTE.x0, 0, POSTE.x1]) for (const z of [POSTE.z0, POSTE.z1]) hi = Math.max(hi, localGround(x, z));
   return hi + 0.04;
-})();
+});
 const BELFRY = { half: 0.36, post: 0.1, h: 0.85, roof: 0.6, r: 0.66 } as const;
 
 /** La dynamo, son socle, sa grande roue à manivelle (son axe le long de z) : rien ne tourne. */
@@ -121,7 +123,7 @@ const MAP_POINT: Vec3 = { x: -1.4, y: POSTE.h + POSTE.ridge + 2, z: (POSTE.z0 + 
 /** Les murs du poste (toujours entiers) : ses quatre murs, ses deux pignons de pierre ; l'ombre de sa porte et de sa fenêtre. */
 function poste(b: FacetBuilder): void {
   const P = POSTE;
-  const y = POSTE_Y;
+  const y = posteY();
   const t = P.wall;
   const xm = (P.x0 + P.x1) / 2,
     zm = (P.z0 + P.z1) / 2;
@@ -150,7 +152,7 @@ function poste(b: FacetBuilder): void {
 /** Le toit de tôle du poste (le corps), un peu débordant. */
 function roof(b: FacetBuilder): void {
   const P = POSTE;
-  const y = POSTE_Y + P.h;
+  const y = posteY() + P.h;
   const zm = (P.z0 + P.z1) / 2,
     half = (P.z1 - P.z0) / 2;
   const o = 0.35;
@@ -170,7 +172,7 @@ const FALLEN_ROOF = { top: { x: -0.4, y: 2.9 }, foot: { x: -3.4, y: -0.1 }, half
 
 function fallenRoof(b: FacetBuilder): void {
   const F = FALLEN_ROOF;
-  const y0 = POSTE_Y;
+  const y0 = posteY();
   const ax = F.top.x - F.foot.x,
     ay = F.top.y - F.foot.y;
   const len = Math.hypot(ax, ay);
@@ -254,8 +256,8 @@ function wheelDown(b: FacetBuilder): void {
 /** La lanterne de l'électricienne, au mur à droite de la porte : toujours là, toujours allumée. */
 function keeperLantern(b: FacetBuilder): void {
   const L = KEEPER_LANTERN;
-  b.beam({ x: L.x, y: POSTE_Y + L.h, z: POSTE.z1 }, { x: L.x, y: POSTE_Y + L.h, z: L.z + 0.4 }, 0.07, C.iron);
-  lantern(b, { x: L.x, y: POSTE_Y + L.h - 0.04, z: L.z + 0.4 }, true);
+  b.beam({ x: L.x, y: posteY() + L.h, z: POSTE.z1 }, { x: L.x, y: posteY() + L.h, z: L.z + 0.4 }, 0.07, C.iron);
+  lantern(b, { x: L.x, y: posteY() + L.h - 0.04, z: L.z + 0.4 }, true);
 }
 
 // ---------- Les poteaux ----------
@@ -305,19 +307,19 @@ function wire(b: FacetBuilder, a: P3, c: P3, sag: number): void {
 }
 
 /** Le départ des fils, au pignon est du poste. */
-const GABLE_HOOKS: [P3, P3] = (() => {
-  const y = POSTE_Y + POSTE.h - 0.3;
+const gableHooks = once((): [P3, P3] => {
+  const y = posteY() + POSTE.h - 0.3;
   return [
     [POSTE.x1 + 0.05, y, -1.6],
     [POSTE.x1 + 0.05, y, -2.4],
   ];
-})();
+});
 
 /** Les fils tendus : du pignon au premier poteau, puis d'un poteau à l'autre (les abords). */
 function wiresTaut(b: FacetBuilder): void {
   const tops = POLES.map((_, k) => poleTop(k, false));
   for (let s = 0; s < 2; s++) {
-    wire(b, GABLE_HOOKS[s], tops[0][s], 0.3);
+    wire(b, gableHooks()[s], tops[0][s], 0.3);
     wire(b, tops[0][s], tops[1][s], 0.45);
     wire(b, tops[1][s], tops[2][s], 0.45);
   }
@@ -341,7 +343,7 @@ function wiresLoose(b: FacetBuilder): void {
   const t0 = poleTop(0, false);
   const t1 = poleTop(1, true);
   const t2 = poleTop(2, false);
-  for (let s = 0; s < 2; s++) wire(b, GABLE_HOOKS[s], t0[s], 0.3);
+  for (let s = 0; s < 2; s++) wire(b, gableHooks()[s], t0[s], 0.3);
   looseWire(b, t0[0], t1[0], 0.9);
   looseWire(b, t1[1], t2[1], 1.3);
 }
@@ -422,7 +424,7 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   });
   // ---- Le haut : le clocheton remonté sur le faîte, la cloche dedans ; la lampe du premier poteau, allumée.
   add(1, 0, (b) => {
-    belfry(b, { x: 0, y: POSTE_Y + POSTE.h + POSTE.ridge + 0.05, z: (POSTE.z0 + POSTE.z1) / 2 });
+    belfry(b, { x: 0, y: posteY() + POSTE.h + POSTE.ridge + 0.05, z: (POSTE.z0 + POSTE.z1) / 2 });
     poleLamp(b, 0, true);
   });
   // ---- Les abords : le deuxième poteau debout, les fils tendus ; la lampe du troisième, allumée ; le chemin dallé.
@@ -582,7 +584,9 @@ export const DYNAMO_PLACE: PlaceArt = {
 /** Le plan de la Dynamo, pour les tests et ses abords : le poste, la dynamo, les poteaux, le miroir, la caméra. */
 export const DYNAMO_LAYOUT = {
   poste: POSTE,
-  posteY: POSTE_Y,
+  get posteY() {
+    return posteY();
+  },
   belfry: BELFRY,
   dynamo: DYNAMO,
   wheel: WHEEL,
@@ -598,7 +602,9 @@ export const DYNAMO_LAYOUT = {
   scene: SCENE_SPOT,
   sceneStart: SCENE_START,
   traceSpots: TRACE_SPOTS,
-  heightAtCenter: H0,
+  get heightAtCenter() {
+    return h0();
+  },
   /** Le bois neuf et le cuivre patiné (ses abords en posent). */
   colors: { wood: C.newWood, woodShade: C.newShade, insulator: C.insulator, insulatorTop: C.insulatorTop },
 } as const;

@@ -15,7 +15,7 @@
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { BUOY_TOUCH, NEF_BAND, buoyAt, type NefFlight, type NefLook, type NefSite } from './nef';
-import { C4E, brickCourse, brickCourseHeights } from './place4eKit';
+import { C4E, brickCourse, brickCourseHeights, once } from './place4eKit';
 import { COLORS_3E } from './plan3e';
 import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVING, CRIQUE_QUAY_SPOT, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import type { PortSite } from './port';
@@ -92,13 +92,13 @@ export const CRIQUE_VIEW = { yaw: 0.7 } as const;
  * Le haut que le regard levé cadre au quai de la Crique (retouche 1 du lot 1 : fiche, § 1 et § 5, « vue du quai, la
  * Forge et le volcan ») : le rebord du cratère, un peu au-dessus (`above`, le pied du panache). La caméra qui suit Kéo
  * plonge trop pour qu'on voie le cône à plus de 300 unités ; levée, elle garde Kéo au-dessus de « Y aller », le
- * fourneau au milieu de l'image, le cône au fond, à gauche du milieu.
+ * fourneau au milieu de l'image, le cône au fond, à gauche du milieu. Pris au premier usage, jamais à l'import.
  */
-export const CRIQUE_LOOK = (() => {
+export const criqueLook = once((): Vec3 => {
   const { crater, craterRadius } = VOLCANO_4E;
   const above = 4;
   return { x: crater.x, y: heightAt4e({ x: crater.x + craterRadius, z: crater.z }) + above, z: crater.z };
-})();
+});
 
 /**
  * Le bout de la caméra qui suit Kéo au 4e (expert frontend, retouche 1 du lot 1 : explicite, plus celui du 5e pris sans

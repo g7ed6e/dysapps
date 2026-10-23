@@ -12,7 +12,6 @@ import {
   AIGUILLES_4E,
   AIGUILLES_AT,
   AIGUILLES_COLORS,
-  CRIQUE_LOOK,
   CRIQUE_PAVING_COLOR,
   CRIQUE_SITE,
   CRIQUE_VIEW,
@@ -29,6 +28,7 @@ import {
   SKY_ISLANDS_4E,
   SKY_ISLAND_COLORS,
   aiguillesFacets,
+  criqueLook,
   criqueDecorFacets,
   digueFacets,
   envelopeShown,
@@ -79,7 +79,7 @@ const contrast = (a: number, b: number) => (Math.max(lum(a), lum(b)) + 0.05) / (
 const KEO: Vec3 = { x: DEPARTURE_4E.at.x, y: CRIQUE_LEVEL, z: DEPARTURE_4E.at.z };
 function arrival(): CameraPose {
   const pose = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw);
-  lookUp(pose, CRIQUE_LOOK, KEO, 1, 768);
+  lookUp(pose, criqueLook(), KEO, 1, 768);
   return pose;
 }
 const inFrame = (pose: CameraPose, p: Vec3, margin = 0) => {
@@ -375,7 +375,7 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     const forge = PLACES_4E.find((p) => p.id === 'forge')!.center;
     const at = screenOf(pose, { x: forge.x, y: heightAt4e(forge) + 6, z: forge.z }, 1024, 768);
     expect(Math.abs(at.x - 512)).toBeLessThan(120);
-    const crater = screenOf(pose, CRIQUE_LOOK, 1024, 768);
+    const crater = screenOf(pose, criqueLook(), 1024, 768);
     expect(crater.x).toBeLessThan(512 - 60);
     expect(crater.x).toBeGreaterThan(0);
     expect(crater.y).toBeGreaterThan(0);

@@ -50,4 +50,29 @@ describe('Le kit des lieux du 4e', () => {
     expect(FORGE.site.rise).toBeGreaterThan(0);
     expect(ground4e.calls).toBeGreaterThan(before);
   });
+
+  it('les lieux des Coteaux et de l’Épaule, la Crique et le niveau ne lisent jamais le sol à l’import (restes du monde ouvert du 4e, 23 octobre 2026)', async () => {
+    const before = ground4e.calls;
+    await Promise.all([
+      import('./basilique4e'),
+      import('./herbier4e'),
+      import('./jonction4e'),
+      import('./roches4e'),
+      import('./veillee4e'),
+      import('./terminus4e'),
+      import('./orgues4e'),
+      import('./dynamo4e'),
+      import('./dalle4e'),
+      import('./crique4e'),
+      import('./levelWorld'),
+    ]);
+    expect(ground4e.calls).toBe(before);
+    const { TERMINUS_LAYOUT } = await import('./terminus4e');
+    expect(Number.isFinite(TERMINUS_LAYOUT.remiseY)).toBe(true);
+    const { DYNAMO_LAYOUT } = await import('./dynamo4e');
+    expect(Number.isFinite(DYNAMO_LAYOUT.posteY)).toBe(true);
+    const { criqueLook } = await import('./crique4e');
+    expect(Number.isFinite(criqueLook().y)).toBe(true);
+    expect(ground4e.calls).toBeGreaterThan(before);
+  });
 });
