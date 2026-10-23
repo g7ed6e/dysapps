@@ -12,10 +12,12 @@ import { BLOCKS, blockCount, type BiomeId, type BlockId } from '../../biomes';
 import { useBlocland } from '../../BloclandContext';
 import { canLaunch, planStatus, type GameState } from '../../engine';
 import { EarnLink, useEarnWhere } from '../../PlanSection';
+import { useParuresBuilder } from '../../useParuresBuilder';
 import { useVehicleBuilder } from '../../useVehicleBuilder';
 import { BlockIcon } from '../../Voxel';
 import { voyageId, type ArchipelagoId } from '../../world/archipelago';
 import { nefLook, type NefLook } from '../../world/continu/nef';
+import { NEF_COMPLETE, NEF_PARURES_PLAN, PARURE_NAMES, paruresOpenCells, type ParuresLook } from '../../world/nefParures';
 import { planCells } from '../../world/plans';
 import { VEHICLE_NAME, VEHICLE_STAGES, kitReady, stageWords, type VehicleStage } from '../../world/vehicle';
 import { MissionSheet, useOpenPanel } from './PortPanels';
@@ -31,7 +33,7 @@ export const nefStageOf = (level: ArchipelagoId): VehicleStage => VEHICLE_STAGES
 /**
  * Le niveau d'où aucune forme de la Nef ne part (le 3e, le dernier) : la Nef y est au repos, entière, sur son aire (fiche
  * du 3e : l'aéronef au repos ; retouche 1 du lot 1, directeur artistique : on ne la voyait sur aucune capture), sans
- * fiche ni départ ; ses trois parures viennent avec le lot du Versant.
+ * départ ; sa fiche pose ses trois parures (GD-25, `NefParuresSheet`).
  */
 export const nefAtRest = (level: ArchipelagoId): boolean => !VEHICLE_STAGES.some((s) => s.from === level);
 
@@ -213,6 +215,115 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
       <p className="build-status" role="status" aria-live="polite">
         {ship.notice ? frenchTypography(ship.notice) : ''}
       </p>
+    </MissionSheet>
+  );
+}
+
+interface ParuresProps {
+  /** Les parures posées (`paruresLook`). */
+  look: ParuresLook;
+  /** Les feux sont arrivés (assez de lieux du 3e restaurés, ou de Gardiens du 3e rallumés dans la grille). */
+  feux: boolean;
+  /** Les lieux qu'il reste à achever pour les feux. */
+  missing: number;
+  /** « Carte » : la fiche se ferme, la Carte s'ouvre (les lieux à achever). */
+  onMap(): void;
+  onClose(): void;
+}
+
+/**
+ * La fiche de la Nef au repos du 3e (GD-25, règle des parures, décision du mainteneur du 23 octobre 2026) : la même que
+ * celle des 6e et 5e, ses trois pastilles pour les trois parures (la figure de proue, le pavois, les feux), la jauge de
+ * la parure en cours, l'icône du bloc qui manque avec leur nombre et où le gagner ; un seul bouton, « Poser », puis
+ * « Carte » tant que les feux attendent des lieux. Toutes posées : « La Nef est complète. », sans bouton. Jamais
+ * « Partir », aucune phrase d'échec ; « la Nef », jamais « l'aéronef ».
+ */
+export function NefParuresSheet({ look, feux, missing, onMap, onClose }: ParuresProps) {
+  useOpenPanel(onClose);
+  const { state } = useBlocland();
+  const parures = useParuresBuilder(feux);
+  const earnWhere = useEarnWhere();
+  const action = useRef<HTMLButtonElement>(null);
+  const complete = look === 3;
+  const waiting = look === 2 && !feux;
+  useEffect(() => {
+    action.current?.focus();
+  }, [waiting]);
+  const titre = NEF_TITLE;
+  const status = (
+    <p className="build-status" role="status" aria-live="polite">
+      {parures.notice ? frenchTypography(parures.notice) : ''}
+    </p>
+  );
+  if (complete || (look === 2 && feux)) {
+    return (
+      <MissionSheet id="panneau-nef" className="nef-sheet" icon="ship" title={titre} onClose={onClose}>
+        <p className="world-fiche-phrase">
+          <PastillesDesTemps look={3} /> <Syllabified text={frenchTypography(NEF_COMPLETE)} />
+        </p>
+        {status}
+      </MissionSheet>
+    );
+  }
+  if (waiting) {
+    const phrase = nefWaitLabel(missing);
+    return (
+      <MissionSheet id="panneau-nef" className="nef-sheet" icon="ship" title={titre} onClose={onClose}>
+        <p className="visually-hidden">{frenchTypography(phrase)}</p>
+        <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
+          <PastillesDesTemps look={look} />{' '}
+          <span className="signe">
+            <Icon name="map" /> {missing}
+          </span>
+        </p>
+        <p className="world-fiche-phrase" aria-hidden="true">
+          <Syllabified text={frenchTypography(phrase)} />
+        </p>
+        <div className="nef-sheet-actions">
+          {/* Achever un lieu se fait ailleurs : la Carte montre les lieux et leur état. */}
+          <button ref={action} type="button" className="button" onClick={onMap}>
+            <Icon name="map" /> Carte
+          </button>
+        </div>
+        {status}
+      </MissionSheet>
+    );
+  }
+  // La parure en cours : ses cases, posées sur toutes, et le bloc qui manque (dans l'inventaire aussi).
+  const open = paruresOpenCells(state.world.parts);
+  const total = look === 0 ? 6 : 10;
+  const done = total - open.length;
+  const bloc: BlockId | null = open[0]?.block ?? null;
+  const manquants = bloc ? Math.max(0, open.length - (state.stock[bloc] ?? 0)) : 0;
+  const nom = PARURE_NAMES[look];
+  const phrase = `${nom}. ${done} blocs posés sur ${total}.`;
+  return (
+    <MissionSheet id="panneau-nef" className="nef-sheet" icon="ship" title={titre} onClose={onClose}>
+      <p className="visually-hidden">{frenchTypography(manquants && bloc ? `${phrase} ${blockCount(bloc, manquants)}, à gagner ${earnWhere(bloc)}.` : phrase)}</p>
+      <p className="world-fiche-phrase fiche-signes" aria-hidden="true">
+        <PastillesDesTemps look={look} />{' '}
+        <span className="signe">
+          <Icon name="cube" /> {done}/{total}
+        </span>{' '}
+        {bloc && manquants > 0 && (
+          <span className="signe">
+            <BlockIcon top={BLOCKS[bloc].top} side={BLOCKS[bloc].side} size={28} /> {manquants}
+          </span>
+        )}
+      </p>
+      {bloc && manquants > 0 && (
+        <p className="world-fiche-phrase" aria-hidden="true">
+          {blockCount(bloc, manquants)}, <EarnLink block={bloc} here={NEF_PARURES_PLAN.biome} />.
+        </p>
+      )}
+      <div className="nef-sheet-actions">
+        {parures.canFill && (
+          <button ref={action} type="button" className="button primary" onClick={parures.fillAll}>
+            <Icon name="hammer" /> Poser
+          </button>
+        )}
+      </div>
+      {status}
     </MissionSheet>
   );
 }

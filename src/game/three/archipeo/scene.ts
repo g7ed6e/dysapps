@@ -95,7 +95,7 @@ import { SEA_TEXTURE } from '../../world/continu/sea';
 import { skyDome, type HeightLight } from '../../world/continu/sky';
 import { FOLLOW_FAR_5E } from '../../world/continu/nef5e';
 import { FOLLOW_FAR_4E } from '../../world/continu/crique4e';
-import { FOLLOW_FAR_3E } from '../../world/continu/parvis3e';
+import { FOLLOW_FAR_3E, NEF_PARURES } from '../../world/continu/parvis3e';
 import { ringHeights, standingHeight, tileRings } from '../../world/continu/terrain';
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
@@ -335,6 +335,12 @@ export interface OpenWorld {
    * arrive descend à sa place (d'un coup avec « Réduire les animations ») ; le reste est dans le maillage des lieux.
    */
   setNef(look: NefLook): void;
+  /**
+   * Les parures posées de l'aéronef au repos du 3e (GD-25) : 0 à 3, dans l'ordre (la figure de proue, le pavois, les
+   * feux). Comme un temps de la Nef, la parure qui arrive descend à sa place, d'un coup avec « Réduire les animations »,
+   * jamais sur la Carte, pendant une question ni une scénette ; rien avant d'être posée. Sans effet ailleurs qu'au 3e.
+   */
+  setParures(look: 0 | 1 | 2 | 3): void;
   /**
    * Le départ de la Nef (GD-21) : la caméra ne bouge pas, la Nef glisse vers la passe, le banc se retire ; huit secondes
    * au plus, qu'un toucher termine (d'un coup avec « Réduire les animations ») ; `done` à la fin, par n'importe quel chemin.
@@ -1394,6 +1400,21 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const offMapDecor = departure.offMap?.() ?? null;
   /** Le temps que les parties nouvelles de la Nef mettent à descendre sur le ber. */
   const NEF_DROP_SECONDS = 0.8;
+  // Les parures de l'aéronef au repos (au 3e, GD-25) : celles qui sont posées, réunies aux lieux (aucun appel de plus) ;
+  // celle qui arrive descend à part, dans `nefMesh`, libre au 3e (la Nef n'y part pas). Le premier nombre dit par la page
+  // se montre tel quel.
+  let paruresNow = 0;
+  let paruresKnown = false;
+  let paruresDrop: { start: number; from: number } | null = null;
+  const paruresCache = new Map<number, Facets>();
+  /** Les parures de `from` (compris) à `to` (exclu), dans le repère de la Nef, ou rien. */
+  const paruresOf = (from: number, to: number): Facets | null => {
+    if (!departure.parures || to <= from) return null;
+    const k = from * 4 + to;
+    let f = paruresCache.get(k);
+    if (!f) paruresCache.set(k, (f = departure.parures(NEF_PARURES.slice(from, to))));
+    return f;
+  };
   // La baleine et les oiseaux du bord d'eau : un seul maillage, dont les sommets sont réécrits sur place pendant leur
   // scène ; montré seulement près du bord d'eau. Leur horloge n'avance que hors des questions et de la Carte (tout se
   // fige quand un panneau s'ouvre, référent dys) ; la scène ne revient pas avant `faunaAgain` secondes.
@@ -1944,7 +1965,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}${colOpen ? 'g' : ''}|${restoring?.place ?? ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}p${paruresDrop ? paruresDrop.from : paruresNow}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}${colOpen ? 'g' : ''}|${restoring?.place ?? ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -2010,6 +2031,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       rest.push(nefAtBerth(nefNow, nefSite));
       nefMark.y = nefSite.lift.ber + topOf(nefNow) + MARK_LIFT;
     }
+    // Les parures posées (au 3e), sans celle qui descend.
+    const parures = gone ? null : paruresOf(0, paruresDrop ? paruresDrop.from : paruresNow);
+    if (parures) rest.push(nefAtBerth(parures, nefSite));
     if (!gone) (mapView ? rest : mark).push(nefBanc);
     else if (nefLookNow === 4 && nefAfter) rest.push(nefAfter);
     if (nefStays) rest.push(nefStays);
@@ -3963,6 +3987,28 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     nefMesh.position.y = nefSite.lift.ber + POSE_DROP * (1 - u) ** 3;
     if (u >= 1) finishNefDrop();
   };
+  /** La parure qui arrive (au 3e) : elle descend sur l'aéronef, de haut, et ralentit en arrivant, comme un temps de la Nef. */
+  const startParuresDrop = (from: number, to: number) => {
+    const f = paruresOf(from, to);
+    if (!f) return;
+    const at = nefSite.berth;
+    paruresDrop = { start: performance.now() / 1000, from };
+    setGeometry(nefMesh, f);
+    nefMesh.position.set(at.x, nefSite.lift.ber + POSE_DROP, at.z);
+    nefMesh.rotation.y = at.yaw;
+  };
+  const finishParuresDrop = () => {
+    if (!paruresDrop) return;
+    paruresDrop = null;
+    nefMesh.visible = false;
+    placeVisibility();
+  };
+  const stepParuresDrop = (t: number) => {
+    if (!paruresDrop) return;
+    const u = Math.min(1, (t - paruresDrop.start) / NEF_DROP_SECONDS);
+    nefMesh.position.y = nefSite.lift.ber + POSE_DROP * (1 - u) ** 3;
+    if (u >= 1) finishParuresDrop();
+  };
   /** Le départ de la Nef : elle et son obstacle dans leurs maillages à part, le temps du voyage ; la caméra ne bouge pas. */
   const startNefTrip = (done: () => void) => {
     finishNefDrop();
@@ -4156,6 +4202,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     last = now;
     const t = now / 1000;
     stepNefDrop(t);
+    stepParuresDrop(t);
     advanceSceneReturn(t);
     // La caméra tournée pendant une scénette : la scène se refait une fois par image au plus, et ses repères suivent.
     if (sceneTurnPending) {
@@ -4389,6 +4436,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const first = !nefKnown;
       nefKnown = true;
       if (!first && !reduceMotion && !mapView && look !== 4 && look > from) startNefDrop(from, look);
+      placeVisibility();
+    },
+    setParures: (look) => {
+      if (!departure.parures) return;
+      const first = !paruresKnown;
+      paruresKnown = true;
+      if (look === paruresNow) return;
+      const from = paruresNow;
+      finishParuresDrop();
+      paruresNow = look;
+      // Rien ne descend à l'ouverture, sur la Carte, pendant une question ou une scénette, ni en reculant.
+      if (!first && !reduceMotion && !mapView && !asked && !scenette && look > from) startParuresDrop(from, look);
       placeVisibility();
     },
     departNef: (done) => {

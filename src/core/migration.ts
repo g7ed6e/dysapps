@@ -32,6 +32,13 @@ import { RETIRED_ITEMS, STARS_KEPT_IN_MISSION, movedExerciseId, movedItemId } fr
  *
  * Au format 5, le même onglet perd aussi les lieux ajoutés de `challengesKeptOpen`, mais rien ne se perd : il
  * enregistre au format 4, et la règle de l'ajout repasse au chargement suivant, sur une progression qui n'a pas bougé.
+ *
+ * Le plan des parures de l'aéronef du 3e (`nef-parures`, GD-25, 23 octobre 2026) ne change pas le format : c'est une clé
+ * nouvelle de `world.parts`, qu'une partie d'avant n'a pas (ses parures sont à zéro) et qui n'a rien à traduire, comme
+ * chaque plan ajouté avant lui. Passer au format 6 ne protégerait de rien : le code d'avant ne lit pas le numéro pour
+ * refuser une partie plus récente. Limite connue, la même qu'aux formats 4 et 5 : un onglet resté ouvert sur le code
+ * d'avant jette `nef-parures` à sa lecture et, s'il enregistre, les cases posées sont perdues avec les blocs dépensés
+ * (16 au plus : 6 marbres, 10 quartz) ; la fenêtre est celle de la mise à jour proposée.
  */
 export const GAME_VERSION = 5;
 /** Le format des exercices déplacés par les programmes de 2025-2026. */

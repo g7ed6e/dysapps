@@ -86,9 +86,9 @@ test('la scène reçoit le plan du 3e, le Parvis et l’aéronef ; ses trois ter
   await screen.findByRole('button', { name: /Carte/ });
   expect(scene.options!.plan.level).toBe('3e');
   expect(scene.world!.setPort).toHaveBeenCalled();
-  // L'aéronef au repos, entier, sur son aire (retouche 1) : ni fiche ni départ au toucher.
+  // L'aéronef au repos, entier, sur son aire (retouche 1), sans départ ; ses parures, aucune posée (GD-25).
   expect(scene.world!.setNef).toHaveBeenCalledWith(3);
-  expect(scene.options!.onNef).toBeUndefined();
+  expect(scene.world!.setParures).toHaveBeenCalledWith(0);
   expect([...scene.closed].sort()).toEqual(['alpages', 'cirque', 'prairies']);
 });
 
@@ -101,4 +101,19 @@ test('une mission du Belvédère, construit au lot du Versant, se joue dans sa s
   await userEvent.setup().click(within(rows).getAllByRole('button')[0]);
   await vi.waitFor(() => expect(document.querySelector('.world-question')).not.toBeNull());
   expect(document.querySelector('.world-question.ecran-habituel')).toBeNull();
+});
+
+test('toucher l’aéronef ouvre la fiche de la Nef et de ses parures (GD-25), jamais « Partir »', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'maths-3e-geometry': 6 } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(scene.options!.onNef).toBeDefined();
+  act(() => scene.options!.onNef!());
+  const sheet = await screen.findByRole('dialog', { name: 'La Nef' });
+  expect(sheet.querySelectorAll('.nef-pastille')).toHaveLength(3);
+  expect(within(sheet).queryByRole('button', { name: /Partir/ })).toBeNull();
+  await userEvent.setup().click(within(sheet).getByRole('button', { name: /Poser/ }));
+  // La figure de proue posée : elle descend sur l'aéronef.
+  await vi.waitFor(() => expect(scene.world!.setParures).toHaveBeenLastCalledWith(1));
+  expect(within(sheet).getByRole('status').textContent).toBe('La figure de proue est posée.');
 });

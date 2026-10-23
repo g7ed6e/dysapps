@@ -435,30 +435,120 @@ export type NefParure = (typeof NEF_PARURES)[number];
 
 /** Les mesures des parures, dans le repère de la Nef. */
 const PARURES_LOOK = {
-  /** La tête de baleine : le bout de la proue, sa hauteur, sa longueur, son rayon. */
-  head: { z: -2.35, y: 0.62, length: 0.95, radius: 0.36 },
+  /** La tête de baleine : son attache au haut de l'étrave (le dessous de la mâchoire), et sa pente (le museau relevé de 10°). */
+  head: { z: -2.35, y: 0.32, tilt: Math.tan((10 * Math.PI) / 180) },
   /** Le pavois : le bord du bastingage, le bas et le haut des plaques, de quelle part de la proue à quelle part de la poupe, combien de plaques. */
   pavois: { x: 1.47, y0: 0.5, y1: 1.02, z0: -1.05, z1: 1.45, plates: 5, gap: 0.05, thick: 0.05 },
   /** Les feux : leur écart à l'axe, leur hauteur, leur place le long de la coque. */
   feux: { x: 1.3, y: 1.0, z: -1.2 },
 } as const;
 
-/** L'ocre des lanternes, seule lumière (`#E0A84A`), et le fer de leur potence. */
-const PARURE_COLORS = { bronze: COLORS_3E.bronze, bronzeSun: 0xb98c4c, cobalt: COLORS_3E.cobalt, cobaltEdge: 0x264f92, lantern: 0xe0a84a, iron: 0x6b7690 } as const;
+/**
+ * La tête de baleine (règle des parures, § 6 ; décision du mainteneur du 23 octobre 2026), en tranches de l'attache au
+ * museau : `d`, la distance devant l'étrave ; `w`, la demi-largeur ; `top`, le haut du crâne au-dessus du dessous de la
+ * mâchoire. Plus large que haute (0,85 sur 0,6 environ), le crâne en dôme aplati, au plus haut au tiers arrière, qui
+ * descend en pente douce vers un museau rond et franc, 0,9 devant l'étrave.
+ */
+const WHALE_HEAD = [
+  { d: 0, w: 0.4, top: 0.54 },
+  { d: 0.3, w: 0.425, top: 0.56 },
+  { d: 0.55, w: 0.41, top: 0.49 },
+  { d: 0.72, w: 0.36, top: 0.4 },
+  { d: 0.84, w: 0.26, top: 0.3 },
+  { d: 0.9, w: 0.13, top: 0.2 },
+] as const;
 
-/** Les parures posées, dans le repère de la Nef. */
-function nefParuresLocal(posed: readonly NefParure[]): Facets {
+/**
+ * La mâchoire : une dalle plate dessous, épaisse de `thick`, aussi large que la tête à l'arrière, un peu resserrée
+ * devant (`front`, en part de la largeur), qui finit au ras du museau (`to`). La ligne de bouche : un creux net entre le
+ * crâne et la mâchoire, qui part du bout du museau, au ras de la mâchoire, et remonte doucement vers l'arrière jusqu'à
+ * la place de l'œil (`eye`, à `rise` au-dessus de la mâchoire), sans œil ; épaisse de `line`.
+ */
+const WHALE_JAW = { thick: 0.12, front: 0.82, to: 0.84, eye: 0.3, rise: 0.12, line: 0.035 } as const;
+
+/** Le bronze chaud de la tête, sans reflet : le corps, la face au soleil, la mâchoire et l'ombre (jamais de vert). */
+const WHALE_BRONZE = { body: 0xb47e3e, sun: 0xcc9757, shade: 0x8a5b2c } as const;
+
+/** La tête de baleine, dans le repère de la Nef : le crâne, la mâchoire et la ligne de bouche ; environ 120 triangles. */
+function whaleHead(b: FacetBuilder): void {
+  const H = PARURES_LOOK.head;
+  const J = WHALE_JAW;
+  const C = WHALE_BRONZE;
+  /** Un point de la tête : `d` devant l'étrave, `x` de côté, `y` au-dessus du dessous de la mâchoire, relevé de 10°. */
+  const at = (d: number, x: number, y: number): P3 => [x, H.y + y + d * H.tilt, H.z - d];
+  /** Le dedans de la tête à la distance `d` (pour tourner chaque face vers le dehors). */
+  const axis = (d: number, y: number): P3 => at(d, 0, y);
+  const out = (p: P3, q: P3): P3 => [p[0] - q[0], p[1] - q[1], p[2] - q[2]];
+  const mid = (...ps: P3[]): P3 => [ps.reduce((s, p) => s + p[0], 0) / ps.length, ps.reduce((s, p) => s + p[1], 0) / ps.length, ps.reduce((s, p) => s + p[2], 0) / ps.length];
+  // Le crâne : six points par tranche, du bas d'un flanc (au ras de la mâchoire) au bas de l'autre, par le dôme aplati.
+  const ring = (k: number): P3[] => {
+    const s = WHALE_HEAD[k];
+    const lo = J.thick;
+    const side = lo + (s.top - lo) * 0.55;
+    return [at(s.d, -s.w, lo), at(s.d, -s.w * 0.96, side), at(s.d, -s.w * 0.55, s.top), at(s.d, s.w * 0.55, s.top), at(s.d, s.w * 0.96, side), at(s.d, s.w, lo)];
+  };
+  const rings = WHALE_HEAD.map((_, k) => ring(k));
+  for (let k = 0; k < rings.length - 1; k++) {
+    const r0 = rings[k],
+      r1 = rings[k + 1];
+    const centre = axis((WHALE_HEAD[k].d + WHALE_HEAD[k + 1].d) / 2, J.thick + 0.12);
+    // Le dessus du dôme au soleil, les flancs dans le bronze du corps.
+    for (let j = 0; j < r0.length - 1; j++) quadOut(b, r0[j], r0[j + 1], r1[j + 1], r1[j], out(mid(r0[j], r1[j + 1]), centre), j === 2 ? C.sun : C.body);
+  }
+  // Le museau rond : la dernière tranche se ferme sur un point, devant, au milieu de sa hauteur.
+  const last = rings[rings.length - 1];
+  const tipD = WHALE_HEAD[WHALE_HEAD.length - 1].d + 0.05;
+  const tip = at(tipD, 0, (J.thick + WHALE_HEAD[WHALE_HEAD.length - 1].top) / 2);
+  for (let j = 0; j < last.length - 1; j++) triOut(b, last[j], last[j + 1], tip, out(mid(last[j], last[j + 1]), axis(tipD - 0.1, J.thick + 0.05)), j === 2 ? C.sun : C.body);
+  triOut(b, last[last.length - 1], last[0], tip, [0, -1, -0.3], C.shade);
+  // Le dos de la tête, contre l'étrave : fermé, sans jour.
+  const first = rings[0];
+  for (let j = 1; j < first.length - 1; j++) triOut(b, first[0], first[j], first[j + 1], [0, 0, 1], C.body);
+  // La mâchoire : une dalle à quatre faces vues (le dessous plat, les deux flancs, le bout), de l'attache au museau.
+  const jaw = (d: number): number => {
+    const u = d / J.to;
+    const w = WHALE_HEAD.findIndex((s) => s.d >= d);
+    const s0 = WHALE_HEAD[Math.max(0, w - 1)],
+      s1 = WHALE_HEAD[Math.max(0, w)];
+    const head = s1.d === s0.d ? s1.w : s0.w + ((s1.w - s0.w) * (d - s0.d)) / (s1.d - s0.d);
+    return Math.min(head, WHALE_HEAD[0].w * (1 - (1 - J.front) * u));
+  };
+  const steps = [0, 0.3, 0.55, 0.72, J.to];
+  for (let k = 0; k < steps.length - 1; k++) {
+    const d0 = steps[k],
+      d1 = steps[k + 1];
+    const w0 = jaw(d0) - 0.01,
+      w1 = jaw(d1) - 0.01;
+    quadOut(b, at(d0, -w0, 0), at(d0, w0, 0), at(d1, w1, 0), at(d1, -w1, 0), [0, -1, 0], C.shade);
+    for (const sx of [-1, 1]) quadOut(b, at(d0, sx * w0, 0), at(d1, sx * w1, 0), at(d1, sx * w1, J.thick), at(d0, sx * w0, J.thick), [sx, 0, 0], C.shade);
+  }
+  const wf = jaw(J.to) - 0.01;
+  quadOut(b, at(J.to, -wf, 0), at(J.to, wf, 0), at(J.to, wf, J.thick), at(J.to, -wf, J.thick), [0, 0, -1], C.shade);
+  // La ligne de bouche, de chaque côté : une bande sombre posée sur le flanc du crâne, du museau jusqu'à l'œil.
+  const line = [J.to, 0.72, 0.55, J.eye] as const;
+  for (const sx of [-1, 1])
+    for (let k = 0; k < line.length - 1; k++) {
+      const d0 = line[k],
+        d1 = line[k + 1];
+      const y = (d: number) => J.thick + (J.rise * (J.to - d)) / (J.to - J.eye);
+      const w = (d: number) => {
+        const i = WHALE_HEAD.findIndex((s) => s.d >= d);
+        const s0 = WHALE_HEAD[Math.max(0, i - 1)],
+          s1 = WHALE_HEAD[i];
+        return (s0.w + ((s1.w - s0.w) * (d - s0.d)) / (s1.d - s0.d || 1)) * 0.99 + 0.012;
+      };
+      quadOut(b, at(d0, sx * w(d0), y(d0) - J.line / 2), at(d1, sx * w(d1), y(d1) - J.line / 2), at(d1, sx * w(d1), y(d1) + J.line / 2), at(d0, sx * w(d0), y(d0) + J.line / 2), [sx, 0, 0], C.shade);
+    }
+}
+
+/** L'ocre des lanternes, seule lumière (`#E0A84A`), et le fer de leur potence. */
+const PARURE_COLORS = { bronze: COLORS_3E.bronze, cobalt: COLORS_3E.cobalt, cobaltEdge: 0x264f92, lantern: 0xe0a84a, iron: 0x6b7690 } as const;
+
+/** Les parures posées, dans le repère de la Nef (la vue les pose sur l'aéronef, et fait descendre celle qui arrive). */
+export function nefParuresLocal(posed: readonly NefParure[]): Facets {
   const b = new FacetBuilder();
   const L = PARURES_LOOK;
-  if (posed.includes('proue')) {
-    // La tête : un fuseau à huit pans couché le long de l'axe, arrondi aux deux bouts (le museau devant), lisse.
-    const H = L.head;
-    drawPosed(b, { x: 0, y: H.y, z: H.z, yaw: Math.PI, pitch: Math.PI / 2 }, (l) => {
-      l.prism({ x: 0, y: 0, z: 0 }, H.radius * 0.8, H.radius, H.length * 0.45, 8, PARURE_COLORS.bronze, PARURE_COLORS.bronzeSun);
-      l.prism({ x: 0, y: H.length * 0.45, z: 0 }, H.radius, H.radius * 0.55, H.length * 0.4, 8, PARURE_COLORS.bronze, PARURE_COLORS.bronzeSun);
-      l.prism({ x: 0, y: H.length * 0.85, z: 0 }, H.radius * 0.55, 0, H.length * 0.15, 8, PARURE_COLORS.bronzeSun);
-    });
-  }
+  if (posed.includes('proue')) whaleHead(b);
   if (posed.includes('pavois')) {
     const P = L.pavois;
     const w = (P.z1 - P.z0 - (P.plates - 1) * P.gap) / P.plates;

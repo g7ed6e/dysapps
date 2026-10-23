@@ -224,9 +224,10 @@ export interface PlanDef<I extends IleId = BiomeId> {
   /**
    * Où le plan se pose : dans la zone des plans de l'île (par défaut), sur le quai du port (la Nef), ou sur l'îlot
    * d'un monument (`origin` est alors le coin du monument dans le monde), ou entre deux lieux réunis (GD-9, ./join.ts :
-   * ses clés sont dans le repère de la paire).
+   * ses clés sont dans le repère de la paire), ou sur l'aéronef au repos du 3e (`nef` : ses parures, GD-25, sans place
+   * dans la grille ; ses clés sont celles de ses cases, sans origine).
    */
-  zone?: 'plans' | 'port' | 'monument' | 'join';
+  zone?: 'plans' | 'port' | 'monument' | 'join' | 'nef';
 }
 
 /**
@@ -271,7 +272,7 @@ export const PLANS_AU_FOND: Readonly<Partial<Record<IleId, Readonly<{ x: number;
  * et des monuments ont leur propre ancre (`ancreDuQuai`, `monumentAnchor`).
  */
 export function decalageDesPlans(plan: Pick<PlanDef<IleId>, 'biome' | 'zone'>): Readonly<{ x: number; y: number; z: number }> {
-  if (plan.zone === 'port' || plan.zone === 'monument' || plan.zone === 'join') return SANS_DECALAGE;
+  if (plan.zone === 'port' || plan.zone === 'monument' || plan.zone === 'join' || plan.zone === 'nef') return SANS_DECALAGE;
   return PLANS_AU_FOND[plan.biome] ?? SANS_DECALAGE;
 }
 
@@ -561,7 +562,7 @@ export function planOrigin(plan: PlanDef<IleId>): { x: number; y: number; z: num
     return { x: o.x + plan.origin.x, y: o.y + plan.origin.y, z: o.z };
   }
   // La construction qui réunit deux lieux (GD-9) : ses cases sont déjà dans le repère de la paire (./join.ts).
-  if (plan.zone === 'join') return { x: 0, y: 0, z: 0 };
+  if (plan.zone === 'join' || plan.zone === 'nef') return { x: 0, y: 0, z: 0 };
   if (plan.zone === 'monument') {
     const o = ORIGINE_DES_MONUMENTS[plan.id];
     if (!o) throw new Error(`Monument sans origine : ${plan.id}`);

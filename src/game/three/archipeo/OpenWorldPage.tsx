@@ -59,7 +59,8 @@ import { PlacePanel, earnPlacesOf, placeFromParam, placeResume } from './PlacePa
 import { PARAM_ILE } from '../../world/openWorldReturn';
 import { PLACES_BUTTON_LABEL, PLACES_SHEET_ID, PlacesSheet, placesRows, usePlacesList } from './PlacesSheet';
 import { PortPanels, portFromParam, portResume, type PortPanel } from './PortPanels';
-import { NEF_LEAVES, NEF_TITLE, NefSheet, nefAtRest, nefLookOf, nefReady, nefReadyLabel, nefSail, nefStageOf } from './NefSheet';
+import { NEF_LEAVES, NEF_TITLE, NefParuresSheet, NefSheet, nefAtRest, nefLookOf, nefReady, nefReadyLabel, nefSail, nefStageOf } from './NefSheet';
+import { paruresFeux, paruresLook } from '../../world/nefParures';
 import { EarnPlaces } from '../../PlanSection';
 import type { VehicleStage } from '../../world/vehicle';
 import { portState } from './portState';
@@ -183,9 +184,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const nefStage = nefStageOf(level);
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
   const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
-  // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni fiche, ni départ.
+  // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni départ ; sa fiche pose ses trois
+  // parures (GD-25), les feux arrivant avec deux lieux restaurés.
   const nefResting = nefAtRest(level);
   const nefLookNow = useMemo(() => (nefResting ? 3 : nefLookOf(state, sail.kit, nefStage)), [nefResting, state, sail.kit, nefStage]);
+  const feux = useMemo(() => paruresFeux(state.progress, achieved), [state.progress, achieved]);
+  const paruresNow = useMemo(() => (nefResting ? paruresLook(state.world.parts, state.progress, achieved) : 0), [nefResting, state.world.parts, state.progress, achieved]);
   // La Nef prête (GD-21, « Prête ») : le passage prêt passe en tête de la suggestion, avant toute commande et toute
   // mission, aux deux niveaux ; la marque se pose sur elle, « Y aller » mène au quai et ouvre sa fiche. Partie (le
   // voyage fait), elle n'est plus prête.
@@ -492,14 +496,13 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         if (end) lines.push(end);
         setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines, after: 0, icon: islandStateIcon('restauree') }));
       },
-      // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est ; au repos (le 3e), rien.
-      onNef: nefAtRest(plan.level)
-        ? undefined
-        : () => {
-            setLieu(null);
-            setCommandsOpen(false);
-            setPanel('nef');
-          },
+      // La Nef, son ber ou le banc du large touché (GD-21) : sa fiche, Kéo reste où il est ; au repos (le 3e), la fiche
+      // de ses parures (GD-25).
+      onNef: () => {
+        setLieu(null);
+        setCommandsOpen(false);
+        setPanel('nef');
+      },
       onMark: (m) => {
         lastMark.current = m;
         placeMark(markRef.current, arrowRef.current, m, layout);
@@ -914,6 +917,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   useEffect(() => {
     if (!departing) world.current?.setNef(nefLookNow);
   }, [nefLookNow, departing, ready]);
+  // Les parures de l'aéronef au repos (GD-25) : chacune descend à sa place quand elle est posée.
+  useEffect(() => {
+    if (nefResting) world.current?.setParures(paruresNow);
+  }, [nefResting, paruresNow, ready]);
   // « Partir » : la fiche se ferme, la Nef glisse vers la passe ; à la fin (ou au toucher), le voyage se fait et l'élève
   // arrive en 5e, dans la disposition que choisit la fabrique (le monde ouvert du 5e derrière `?monde=ouvert`, GD-22).
   const departNef = useCallback(
@@ -1116,7 +1123,18 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               Carte et « Y aller » ; un seul panneau à la fois. */}
           {panel && !playing && (panel === 'nef' || departNames) && (
             <div ref={panelRef} className={`open-world-panel open-world-panel-${panel}`}>
-              {panel === 'nef' ? (
+              {panel === 'nef' && nefResting ? (
+                <NefParuresSheet
+                  look={paruresNow}
+                  feux={feux.kit}
+                  missing={feux.missing}
+                  onMap={() => {
+                    setPanel(null);
+                    setMapOpen(true);
+                  }}
+                  onClose={closePanel}
+                />
+              ) : panel === 'nef' ? (
                 <NefSheet
                   stage={nefStage}
                   kit={sail.kit}
@@ -1129,7 +1147,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                   onClose={closePanel}
                 />
               ) : (
-                <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={nefLookNow === 4 || nefResting ? undefined : () => setPanel('nef')} onClose={closePanel} />
+                <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
               )}
             </div>
           )}

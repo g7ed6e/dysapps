@@ -12,7 +12,7 @@ import type { Vec2, Vec3 } from './geometry';
 import { LISIERE_SITE, LISIERE_VIEW, PHARE_DARK, lisiereDecorFacets } from './lisiere';
 import { NEF_6E, type NefSite } from './nef';
 import { NEF_5E, PLUME_COLORS, WALL_COLORS } from './nef5e';
-import { NEF_3E, PARVIS_ARRIVAL, PARVIS_LOOK, PARVIS_SITE, PARVIS_VIEW, parvisDecorFacets, zeppelinFacets } from './parvis3e';
+import { NEF_3E, PARVIS_ARRIVAL, PARVIS_LOOK, PARVIS_SITE, PARVIS_VIEW, nefParuresLocal, parvisDecorFacets, zeppelinFacets, type NefParure } from './parvis3e';
 import { ESCALE, type PortSite } from './port';
 import type { OpenWorldLevel, PlaceId } from './levelPlan';
 import type { Network } from './network';
@@ -98,6 +98,11 @@ interface Departure {
    * 3e, § 5 bis), dessiné avec `decor` hors de la Carte ; rien ailleurs.
    */
   offMap?(): Facets;
+  /**
+   * Les parures posées de la Nef au repos (au 3e, GD-25 : la figure de proue, le pavois, les feux), dans le repère de la
+   * Nef ; rien ailleurs.
+   */
+  parures?(posed: readonly NefParure[]): Facets;
   /**
    * La vue d'arrivée au quai, tourné vers son cap (au 3e, `PARVIS_ARRIVAL` : la caméra monte et recule pour que la mer de
    * nuages se lise entre la terre et l'horizon) ; rien : la caméra qui suit, le regard levé seulement.
@@ -272,6 +277,7 @@ const DEPARTURE_3E_SITE: Departure = {
   lookTop: PARVIS_LOOK,
   decor: () => (decor3e ??= parvisDecorFacets()),
   offMap: () => (zeppelin3e ??= zeppelinFacets()),
+  parures: nefParuresLocal,
   quayView: PARVIS_ARRIVAL,
 };
 

@@ -44,6 +44,8 @@ const REGLES = [
   'world/parts',
   'world/plansV1',
   'world/formerVehicle',
+  // Les parures de l'aéronef du 3e (GD-25) : un plan sans place dans la grille, ses cases et ce qui les débloque.
+  'world/nefParures',
   'world/architect',
   'world/monuments',
   // L'assemblage des blocs (GD-2) et ses recettes, produites depuis docs/contenu/assemblage.md par `npm run contenu`.
