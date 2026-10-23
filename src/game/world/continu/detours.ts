@@ -7,55 +7,121 @@
 // le monde et sur la Carte. Ni compteur, ni liste, ni récompense. Les places et les noms : le consultant d'Archipéo ; la
 // forme : l'artiste technique 3D ; les durées : le référent dys. Au 5e (GD-22, lot 6), le premier Détour, le Creux, a son
 // fichier (./creux5e.ts) ; la Hutte (lot 8) aussi (./hutte5e.ts) ; au 4e (lot 2), l'Épave (./epave4e.ts), et (lot 3) le Recoin (./recoin4e.ts), puis (les Coteaux) le Replat (./replat4e.ts) ; au 3e (le Versant), le Cadran (./cadran3e.ts), puis (les Alpages) la Bergerie (./bergerie3e.ts) ; ce fichier les connaît tous par leur identifiant et leur niveau. Code pur.
-import { COMMON_DETOUR_VIEW, type DetourView } from './camera';
-import { CREUX } from './creux5e';
-import { DALLE } from './dalle4e';
-import { EPAVE } from './epave4e';
-import { RECOIN } from './recoin4e';
-import { HUTTE } from './hutte5e';
-import { FAILLE } from './faille5e';
-import { PERCHOIR } from './perchoir5e';
-import { REPLAT } from './replat4e';
-import { CADRAN } from './cadran3e';
-import { BERGERIE } from './bergerie3e';
-import { FacetBuilder, type Facets } from './facets';
-import { distance, distanceToPolyline, type Vec2 } from './geometry';
-import type { LandId } from './lands';
-import type { OpenWorldLevel } from './levelPlan';
-import { snapToNetwork } from './paths';
-import { LAMP_COLOR } from './places';
-import { COLORS_6E, DETOUR_HILL, DETOUR_HILLS } from './plan6e';
-import { detourFoot, detourReach, heightAt, landDistance, standingHeight } from './terrain';
+import { COMMON_DETOUR_VIEW, type DetourView } from "./camera";
+import { CREUX } from "./creux5e";
+import { DALLE } from "./dalle4e";
+import { EPAVE } from "./epave4e";
+import { RECOIN } from "./recoin4e";
+import { HUTTE } from "./hutte5e";
+import { FAILLE } from "./faille5e";
+import { PERCHOIR } from "./perchoir5e";
+import { REPLAT } from "./replat4e";
+import { CADRAN } from "./cadran3e";
+import { BERGERIE } from "./bergerie3e";
+import { CEDRE } from "./cedre3e";
+import { FacetBuilder, type Facets } from "./facets";
+import { distance, distanceToPolyline, type Vec2 } from "./geometry";
+import type { LandId } from "./lands";
+import type { OpenWorldLevel } from "./levelPlan";
+import { snapToNetwork } from "./paths";
+import { LAMP_COLOR } from "./places";
+import { COLORS_6E, DETOUR_HILL, DETOUR_HILLS } from "./plan6e";
+import {
+  detourFoot,
+  detourReach,
+  heightAt,
+  landDistance,
+  standingHeight,
+} from "./terrain";
 
 /**
  * Les Détours, les mêmes, dans le même ordre, que engine/detours.ts, pour la sauvegarde : les cinq du 6e, un par terre,
  * puis ceux du 5e (lot 6 : le Creux ; lot 8 : la Hutte ; lot 11 : la Faille ; lot 16 : le Perchoir), puis ceux du 4e (lot 2 :
- * l'Épave ; lot 3 : la Dalle ; les Coteaux : le Replat), puis ceux du 3e (le Versant : le Cadran ; les Alpages : la Bergerie), chacun ajouté à la fin.
+ * l'Épave ; lot 3 : la Dalle ; les Coteaux : le Replat), puis ceux du 3e (le Versant : le Cadran ; les Alpages : la Bergerie ; les Prairies : le Cèdre), chacun ajouté à la fin.
  */
-export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux', 'hutte', 'faille', 'perchoir', 'epave', 'recoin', 'dalle', 'replat', 'cadran', 'bergerie'] as const;
+export const DETOUR_IDS = [
+  "butte-chantier",
+  "braise-herons",
+  "bout-large",
+  "colline-aube",
+  "haut-cretes",
+  "creux",
+  "hutte",
+  "faille",
+  "perchoir",
+  "epave",
+  "recoin",
+  "dalle",
+  "replat",
+  "cadran",
+  "bergerie",
+  "cedre",
+] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
 /** Les Détours du 5e. */
-const DETOUR_IDS_5E = ['creux', 'hutte', 'faille', 'perchoir'] as const satisfies readonly DetourId[];
+const DETOUR_IDS_5E = [
+  "creux",
+  "hutte",
+  "faille",
+  "perchoir",
+] as const satisfies readonly DetourId[];
 
 /** Les Détours du 4e. */
-const DETOUR_IDS_4E = ['epave', 'recoin', 'dalle', 'replat'] as const satisfies readonly DetourId[];
+const DETOUR_IDS_4E = [
+  "epave",
+  "recoin",
+  "dalle",
+  "replat",
+] as const satisfies readonly DetourId[];
 
 /** Les Détours du 3e. */
-const DETOUR_IDS_3E = ['cadran', 'bergerie'] as const satisfies readonly DetourId[];
+const DETOUR_IDS_3E = [
+  "cadran",
+  "bergerie",
+  "cedre",
+] as const satisfies readonly DetourId[];
 
 /** Un Détour du 6e. */
-type DetourId6e = Exclude<DetourId, (typeof DETOUR_IDS_5E)[number] | (typeof DETOUR_IDS_4E)[number] | (typeof DETOUR_IDS_3E)[number]>;
+type DetourId6e = Exclude<
+  DetourId,
+  | (typeof DETOUR_IDS_5E)[number]
+  | (typeof DETOUR_IDS_4E)[number]
+  | (typeof DETOUR_IDS_3E)[number]
+>;
 
 /** Les cinq Détours du 6e, un par terre. */
-export const DETOUR_IDS_6E = DETOUR_IDS.filter((id): id is DetourId6e => !([...DETOUR_IDS_5E, ...DETOUR_IDS_4E, ...DETOUR_IDS_3E] as readonly string[]).includes(id));
+export const DETOUR_IDS_6E = DETOUR_IDS.filter(
+  (id): id is DetourId6e =>
+    !(
+      [
+        ...DETOUR_IDS_5E,
+        ...DETOUR_IDS_4E,
+        ...DETOUR_IDS_3E,
+      ] as readonly string[]
+    ).includes(id),
+);
 
 /**
  * Ce qu'est un Détour : un sommet, le sommet au cairn à rallumer, un bord d'eau, ou (au 5e) un arbre creux, une cabane,
  * une fente, une dalle au pied d'une aiguille, ou (au 4e) une coque sur sa cale, l'angle de deux murets, une dalle de
- * basalte au bord de l'épaule, ou (au 3e) un cadran solaire sur son rocher, une bergerie et son enclos.
+ * basalte au bord de l'épaule, ou (au 3e) un cadran solaire sur son rocher, une bergerie et son enclos, un cèdre seul.
  */
-type DetourKind = 'sommet' | 'cairn' | 'rive' | 'creux' | 'cabane' | 'faille' | 'perchoir' | 'coque' | 'recoin' | 'dalle' | 'replat' | 'cadran' | 'bergerie';
+type DetourKind =
+  | "sommet"
+  | "cairn"
+  | "rive"
+  | "creux"
+  | "cabane"
+  | "faille"
+  | "perchoir"
+  | "coque"
+  | "recoin"
+  | "dalle"
+  | "replat"
+  | "cadran"
+  | "bergerie"
+  | "cedre";
 
 export interface Detour {
   id: DetourId;
@@ -92,20 +158,44 @@ export interface Detour {
 const SHORE = { at: { x: -165, z: 91 }, radius: 2.5 } as const;
 
 /** Les noms et les sortes, dans l'ordre de `DETOUR_IDS`. */
-const SPECS: Readonly<Record<DetourId6e, { land: LandId; name: string; kind: DetourKind; from?: Vec2 }>> = {
-  'butte-chantier': { land: 'pointe', name: 'La Butte du Chantier', kind: 'sommet' },
-  'braise-herons': { land: 'couchant', name: 'La Braise des Hérons', kind: 'cairn' },
-  'bout-large': { land: 'large', name: 'Le Bout du Large', kind: 'rive' },
-  'colline-aube': { land: 'levant', name: "La Colline de l'Aube", kind: 'sommet' },
+const SPECS: Readonly<
+  Record<
+    DetourId6e,
+    { land: LandId; name: string; kind: DetourKind; from?: Vec2 }
+  >
+> = {
+  "butte-chantier": {
+    land: "pointe",
+    name: "La Butte du Chantier",
+    kind: "sommet",
+  },
+  "braise-herons": {
+    land: "couchant",
+    name: "La Braise des Hérons",
+    kind: "cairn",
+  },
+  "bout-large": { land: "large", name: "Le Bout du Large", kind: "rive" },
+  "colline-aube": {
+    land: "levant",
+    name: "La Colline de l'Aube",
+    kind: "sommet",
+  },
   // Le chemin le plus proche passe au bord de la rivière, en contrebas : la sente part du point d'après, sur le sol sec.
-  'haut-cretes': { land: 'cretes', name: 'Le Haut des Crêtes', kind: 'sommet', from: { x: 64.5, z: -120.5 } },
+  "haut-cretes": {
+    land: "cretes",
+    name: "Le Haut des Crêtes",
+    kind: "sommet",
+    from: { x: 64.5, z: -120.5 },
+  },
 };
 
 /** Le sens du large depuis un point de la côte : celui où la distance à la terre descend le plus vite. */
 function seaward(p: Vec2): number {
   const e = 1;
-  const gx = landDistance({ x: p.x + e, z: p.z }) - landDistance({ x: p.x - e, z: p.z });
-  const gz = landDistance({ x: p.x, z: p.z + e }) - landDistance({ x: p.x, z: p.z - e });
+  const gx =
+    landDistance({ x: p.x + e, z: p.z }) - landDistance({ x: p.x - e, z: p.z });
+  const gz =
+    landDistance({ x: p.x, z: p.z + e }) - landDistance({ x: p.x, z: p.z - e });
   return Math.atan2(-gz, -gx);
 }
 
@@ -123,9 +213,25 @@ function detourOf(id: DetourId6e): Detour {
   const hill = DETOUR_HILLS.find((h) => h.id === id);
   if (hill) {
     const foot = detourFoot(hill);
-    return { id, ...spec, at: hill.at, radius: DETOUR_HILL.plateau + 0.3, foot, face: hill.face, sente: senteOf(foot, hill.at, from) };
+    return {
+      id,
+      ...spec,
+      at: hill.at,
+      radius: DETOUR_HILL.plateau + 0.3,
+      foot,
+      face: hill.face,
+      sente: senteOf(foot, hill.at, from),
+    };
   }
-  return { id, ...spec, at: SHORE.at, radius: SHORE.radius, foot: SHORE.at, face: seaward(SHORE.at), sente: senteOf(SHORE.at, SHORE.at, from) };
+  return {
+    id,
+    ...spec,
+    at: SHORE.at,
+    radius: SHORE.radius,
+    foot: SHORE.at,
+    face: seaward(SHORE.at),
+    sente: senteOf(SHORE.at, SHORE.at, from),
+  };
 }
 
 /** Les cinq Détours du 6e, tirés une fois. */
@@ -138,19 +244,33 @@ export const DETOURS_5E: readonly Detour[] = [CREUX, HUTTE, FAILLE, PERCHOIR];
 export const DETOURS_4E: readonly Detour[] = [EPAVE, RECOIN, DALLE, REPLAT];
 
 /** Les Détours du 3e (le Versant : le Cadran ; les Alpages : la Bergerie ; le Lac et le Cèdre viennent avec leur lot). */
-export const DETOURS_3E: readonly Detour[] = [CADRAN, BERGERIE];
+export const DETOURS_3E: readonly Detour[] = [CADRAN, BERGERIE, CEDRE];
 
 /** Les Détours d'un niveau. */
-const DETOURS_OF: Readonly<Record<OpenWorldLevel, readonly Detour[]>> = { '6e': DETOURS, '5e': DETOURS_5E, '4e': DETOURS_4E, '3e': DETOURS_3E };
-const detoursOf = (level: OpenWorldLevel): readonly Detour[] => DETOURS_OF[level];
+const DETOURS_OF: Readonly<Record<OpenWorldLevel, readonly Detour[]>> = {
+  "6e": DETOURS,
+  "5e": DETOURS_5E,
+  "4e": DETOURS_4E,
+  "3e": DETOURS_3E,
+};
+const detoursOf = (level: OpenWorldLevel): readonly Detour[] =>
+  DETOURS_OF[level];
 
 /** Tous les Détours, par leur nom : la table se construit une fois. */
-const DETOUR_BY_ID: ReadonlyMap<DetourId, Detour> = new Map([...DETOURS, ...DETOURS_5E, ...DETOURS_4E, ...DETOURS_3E].map((d) => [d.id, d]));
+const DETOUR_BY_ID: ReadonlyMap<DetourId, Detour> = new Map(
+  [...DETOURS, ...DETOURS_5E, ...DETOURS_4E, ...DETOURS_3E].map((d) => [
+    d.id,
+    d,
+  ]),
+);
 
 export const detourById = (id: DetourId): Detour => DETOUR_BY_ID.get(id)!;
 
 /** Le Détour du niveau `level` (le 6e, sans le dire) où se tient Kéo en `p`, ou rien. */
-export function detourAtPoint(p: Vec2, level: OpenWorldLevel = '6e'): Detour | null {
+export function detourAtPoint(
+  p: Vec2,
+  level: OpenWorldLevel = "6e",
+): Detour | null {
   for (const d of detoursOf(level)) if (distance(p, d.at) <= d.radius) return d;
   return null;
 }
@@ -163,12 +283,25 @@ export function detourAtPoint(p: Vec2, level: OpenWorldLevel = '6e'): Detour | n
  * soit le cap d'arrivée : `face` va du milieu du pont vers sa tête, où se tient Kéo ; tourné de `view.turn` (à la
  * Faille, vers le sud, à l'opposé de l'arbre : la paroi d'en face se voit de profil). À l'Épave (4e, lot 2) et à la Dalle
  * (lot 3), vers la mer : `face` va de la mer vers Kéo. Au Recoin (lot 3), vers la mer du nord, par-dessus les murets ;
- * au Replat (les Coteaux), de l'usine vers Kéo ; au Cadran (le Versant du 3e), du pic vers Kéo ; à la Bergerie (les Alpages), de l'est vers Kéo.
+ * au Replat (les Coteaux), de l'usine vers Kéo ; au Cadran (le Versant du 3e), du pic vers Kéo ; à la Bergerie (les Alpages), de l'est vers Kéo ; au Cèdre (les Prairies), du nord vers Kéo.
  */
-export const detourCap = (d: Detour): number | null => (d.kind === 'creux' || d.kind === 'faille' || d.kind === 'perchoir' || d.kind === 'coque' || d.kind === 'recoin' || d.kind === 'dalle' || d.kind === 'replat' || d.kind === 'cadran' || d.kind === 'bergerie' ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) + (d.view?.turn ?? 0) : null);
+export const detourCap = (d: Detour): number | null =>
+  d.kind === "creux" ||
+  d.kind === "faille" ||
+  d.kind === "perchoir" ||
+  d.kind === "coque" ||
+  d.kind === "recoin" ||
+  d.kind === "dalle" ||
+  d.kind === "replat" ||
+  d.kind === "cadran" ||
+  d.kind === "bergerie" ||
+  d.kind === "cedre"
+    ? Math.atan2(Math.cos(d.face), Math.sin(d.face)) + (d.view?.turn ?? 0)
+    : null;
 
 /** La forme de la vue à l'arrivée sur `d` : la sienne, ou la vue commune des Détours. */
-export const detourViewOf = (d: Detour): DetourView => d.view ?? COMMON_DETOUR_VIEW;
+export const detourViewOf = (d: Detour): DetourView =>
+  d.view ?? COMMON_DETOUR_VIEW;
 
 /** La place que la végétation laisse libre : la sente, de part et d'autre, et autour du bord d'eau. */
 const KEEP = { sente: 1.6, shore: 4 } as const;
@@ -178,10 +311,11 @@ const KEEP = { sente: 1.6, shore: 4 } as const;
  * bord d'eau (flora.ts) : le chemin du Détour reste toujours marchable.
  */
 export function keptClearForDetour(p: Vec2): boolean {
-  for (const h of DETOUR_HILLS) if (distance(p, h.at) < detourReach(h)) return true;
+  for (const h of DETOUR_HILLS)
+    if (distance(p, h.at) < detourReach(h)) return true;
   for (const d of DETOURS) {
     if (distanceToPolyline(p, d.sente) < KEEP.sente) return true;
-    if (d.kind === 'rive' && distance(p, d.at) < KEEP.shore) return true;
+    if (d.kind === "rive" && distance(p, d.at) < KEEP.shore) return true;
   }
   return false;
 }
@@ -192,7 +326,13 @@ export function keptClearForDetour(p: Vec2): boolean {
  * partent `faunaDelay` secondes après l'arrêt et ne reviennent pas avant `faunaAgain` secondes. Le nom suit la bulle de
  * parole du monde (4 secondes, même si Kéo repart) ; le cairn s'allume d'un coup (directeur artistique, référent dys).
  */
-export const DETOUR_TIMING = { settle: 0.4, rise: 1.2, fall: 0.8, faunaDelay: 2.5, faunaAgain: 10 } as const;
+export const DETOUR_TIMING = {
+  settle: 0.4,
+  rise: 1.2,
+  fall: 0.8,
+  faunaDelay: 2.5,
+  faunaAgain: 10,
+} as const;
 
 /** Les couleurs (directeur artistique, piste B) : les pierres claires, le cairn de la roche, le fanal éteint et sa flamme. */
 const C = {
@@ -217,7 +357,15 @@ function stones(b: FacetBuilder, d: Detour): void {
     const x = d.foot.x + ux * s.along - uz * s.lat;
     const z = d.foot.z + uz * s.along + ux * s.lat;
     const y = standingHeight(heightAt({ x, z })) - 0.05;
-    b.prism({ x, y, z, yaw: d.face + k }, s.r, s.r * 0.85, 0.22, 6, C.stoneSide, C.stone);
+    b.prism(
+      { x, y, z, yaw: d.face + k },
+      s.r,
+      s.r * 0.85,
+      0.22,
+      6,
+      C.stoneSide,
+      C.stone,
+    );
   }
 }
 
@@ -226,7 +374,10 @@ function stones(b: FacetBuilder, d: Detour): void {
  * rampe, pour qu'on le voie devant soi en arrivant (directeur artistique).
  */
 export function cairnSpot(d: Detour): Vec2 {
-  return { x: d.at.x - Math.cos(d.face) * 1.6, z: d.at.z - Math.sin(d.face) * 1.6 };
+  return {
+    x: d.at.x - Math.cos(d.face) * 1.6,
+    z: d.at.z - Math.sin(d.face) * 1.6,
+  };
 }
 
 /** Le cairn : quatre pierres empilées, puis le fanal au sommet, éteint (un creux) ou allumé (une flamme). */
@@ -240,19 +391,42 @@ function cairn(b: FacetBuilder, d: Detour, lit: boolean): void {
     { r: 0.38, h: 0.3 },
   ];
   for (const [k, ring] of rings.entries()) {
-    b.prism({ x: c.x, y, z: c.z, yaw: k * 0.7 }, ring.r, ring.r * 0.88, ring.h, 6, C.cairn, C.cairnTop);
+    b.prism(
+      { x: c.x, y, z: c.z, yaw: k * 0.7 },
+      ring.r,
+      ring.r * 0.88,
+      ring.h,
+      6,
+      C.cairn,
+      C.cairnTop,
+    );
     y += ring.h;
   }
   // Le fanal : une coupelle, puis la flamme (une pointe) ou le creux.
-  b.prism({ x: c.x, y, z: c.z }, 0.28, 0.38, 0.18, 6, C.cairn, lit ? LAMP_COLOR : C.hollow);
-  if (lit) b.prism({ x: c.x, y: y + 0.18, z: c.z }, 0.22, 0, 0.55, 5, LAMP_COLOR);
+  b.prism(
+    { x: c.x, y, z: c.z },
+    0.28,
+    0.38,
+    0.18,
+    6,
+    C.cairn,
+    lit ? LAMP_COLOR : C.hollow,
+  );
+  if (lit)
+    b.prism({ x: c.x, y: y + 0.18, z: c.z }, 0.22, 0, 0.55, 5, LAMP_COLOR);
 }
 
 /**
  * La sente : de la terre battue, plus sombre que le liseré des chemins, en pointillé, plus étroite qu'un chemin (référent
  * dys : trait plus fin, pointillé, 3:1 au moins avec la prairie et l'herbe à mi-hauteur ; jamais presque-noire).
  * Les pointillés : un trait de `dash` unités, un vide de `gap`, de demi-largeur `half`, à `lift` au-dessus du sol. */
-export const SENTE = { dash: 1.4, gap: 0.7, half: 0.48, lift: 0.025, color: 0x735e3a } as const;
+export const SENTE = {
+  dash: 1.4,
+  gap: 0.7,
+  half: 0.48,
+  lift: 0.025,
+  color: 0x735e3a,
+} as const;
 
 /** La sente d'un Détour, en pointillé, posée sur le sol. */
 function senteRibbon(b: FacetBuilder, d: Detour): void {
@@ -267,12 +441,21 @@ function senteRibbon(b: FacetBuilder, d: Detour): void {
     let s = carry;
     while (s < len) {
       const e = Math.min(len, s + SENTE.dash);
-      const y = (t: number) => standingHeight(heightAt({ x: a.x + dx * t, z: a.z + dz * t })) + SENTE.lift;
-      const p = (t: number, o: number) => [a.x + dx * t + dz * o, y(t), a.z + dz * t - dx * o] as const;
+      const y = (t: number) =>
+        standingHeight(heightAt({ x: a.x + dx * t, z: a.z + dz * t })) +
+        SENTE.lift;
+      const p = (t: number, o: number) =>
+        [a.x + dx * t + dz * o, y(t), a.z + dz * t - dx * o] as const;
       // Un trait coupé en morceaux d'au plus 0,5 unité, pour suivre la pente de la rampe.
       for (let t = s; t < e - 1e-6; t += 0.5) {
         const t1 = Math.min(e, t + 0.5);
-        b.quad(p(t, SENTE.half), p(t, -SENTE.half), p(t1, -SENTE.half), p(t1, SENTE.half), SENTE.color);
+        b.quad(
+          p(t, SENTE.half),
+          p(t, -SENTE.half),
+          p(t1, -SENTE.half),
+          p(t1, SENTE.half),
+          SENTE.color,
+        );
       }
       s = e + SENTE.gap;
     }
@@ -284,11 +467,14 @@ function senteRibbon(b: FacetBuilder, d: Detour): void {
  * Le décor des Détours : les pierres de tous, le cairn (allumé ou non), et les sentes des Détours trouvés. Un seul jeu
  * de facettes, que la vue ajoute au maillage des lieux (aucun appel de plus).
  */
-export function detourFacets(found: readonly DetourId[], cairnLit: boolean): Facets {
+export function detourFacets(
+  found: readonly DetourId[],
+  cairnLit: boolean,
+): Facets {
   const b = new FacetBuilder();
   for (const d of DETOURS) {
     stones(b, d);
-    if (d.kind === 'cairn') cairn(b, d, cairnLit);
+    if (d.kind === "cairn") cairn(b, d, cairnLit);
     if (found.includes(d.id)) senteRibbon(b, d);
   }
   return b.build();
@@ -332,7 +518,10 @@ export interface FaunaPose {
 }
 
 /** La fin de la scène de la baleine et des oiseaux, en secondes depuis son départ. */
-export const FAUNA_END = Math.max(FAUNA.rise + FAUNA.stay + FAUNA.dive, FAUNA.stagger * (FAUNA.birds - 1) + FAUNA.flight + 0.3);
+export const FAUNA_END = Math.max(
+  FAUNA.rise + FAUNA.stay + FAUNA.dive,
+  FAUNA.stagger * (FAUNA.birds - 1) + FAUNA.flight + 0.3,
+);
 
 /** L'instant du souffle, en secondes depuis le départ de la scène : la baleine arrivée en surface. */
 export const FAUNA_BLOW = FAUNA.rise;
@@ -344,8 +533,8 @@ const ease = (u: number) => {
 };
 
 /** Les perchoirs des oiseaux d'un bord d'eau, faits une fois : en rang au bord de l'eau, d'un côté du Détour, à `perchOff` unités de Kéo au moins. */
-const perches = new Map<DetourId, FaunaPose['birds']>();
-function perchesOf(shore: Detour): FaunaPose['birds'] {
+const perches = new Map<DetourId, FaunaPose["birds"]>();
+function perchesOf(shore: Detour): FaunaPose["birds"] {
   let out = perches.get(shore.id);
   if (!out) {
     const sx = Math.cos(shore.face);
@@ -354,7 +543,13 @@ function perchesOf(shore: Detour): FaunaPose['birds'] {
       const side = FAUNA.perchOff + k * 0.9;
       const x = shore.at.x + sx * (0.8 + 0.3 * (k % 2)) - sz * side;
       const z = shore.at.z + sz * (0.8 + 0.3 * (k % 2)) + sx * side;
-      return { x, y: Math.max(0, standingHeight(heightAt({ x, z }))), z, yaw: shore.face + 0.6 * k, perched: true };
+      return {
+        x,
+        y: Math.max(0, standingHeight(heightAt({ x, z }))),
+        z,
+        yaw: shore.face + 0.6 * k,
+        perched: true,
+      };
     });
     perches.set(shore.id, out);
   }
@@ -369,19 +564,31 @@ const WHALE_LENGTH = 7.5;
  * oiseaux posés, la baleine sous l'eau) ; `still` (« Réduire les animations ») : pendant la scène, les oiseaux restent
  * posés et le dos de la baleine se tient immobile en surface, sans souffle.
  */
-export function faunaPose(shore: Detour, t: number | null, still = false): FaunaPose {
+export function faunaPose(
+  shore: Detour,
+  t: number | null,
+  still = false,
+): FaunaPose {
   const sx = Math.cos(shore.face);
   const sz = Math.sin(shore.face);
   const perch = perchesOf(shore);
   const playing = t !== null && t >= 0 && t < FAUNA_END;
   // Le cap de la baleine : le long de la côte, de son côté vers le milieu.
   const yaw = Math.atan2(sx, -sz);
-  const at = { x: shore.at.x + sx * FAUNA.whaleOff - sz * FAUNA.whaleSide, z: shore.at.z + sz * FAUNA.whaleOff + sx * FAUNA.whaleSide };
+  const at = {
+    x: shore.at.x + sx * FAUNA.whaleOff - sz * FAUNA.whaleSide,
+    z: shore.at.z + sz * FAUNA.whaleOff + sx * FAUNA.whaleSide,
+  };
   if (!playing) return { whale: null, spout: null, birds: perch };
-  if (still) return { whale: { x: at.x, y: -0.05, z: at.z, yaw, pitch: 0 }, spout: null, birds: perch };
+  if (still)
+    return {
+      whale: { x: at.x, y: -0.05, z: at.z, yaw, pitch: 0 },
+      spout: null,
+      birds: perch,
+    };
   const whaleEnd = FAUNA.rise + FAUNA.stay + FAUNA.dive;
-  let whale: FaunaPose['whale'] = null;
-  let spout: FaunaPose['spout'] = null;
+  let whale: FaunaPose["whale"] = null;
+  let spout: FaunaPose["spout"] = null;
   if (t < whaleEnd) {
     const swim = (FAUNA.swim * t) / whaleEnd;
     const fx = Math.sin(yaw) * swim;
@@ -389,11 +596,22 @@ export function faunaPose(shore: Detour, t: number | null, still = false): Fauna
     const up = ease(t / FAUNA.rise);
     const down = ease((t - FAUNA.rise - FAUNA.stay) / FAUNA.dive);
     // En plongeant, la tête descend d'abord : la queue se lève hors de l'eau un instant, puis tout disparaît.
-    whale = { x: at.x + fx, y: -1.4 + 1.38 * up - 3.2 * down, z: at.z + fz, yaw, pitch: -0.75 * Math.sin(Math.PI * Math.min(1, down * 1.2)) - 0.3 * down };
+    whale = {
+      x: at.x + fx,
+      y: -1.4 + 1.38 * up - 3.2 * down,
+      z: at.z + fz,
+      yaw,
+      pitch: -0.75 * Math.sin(Math.PI * Math.min(1, down * 1.2)) - 0.3 * down,
+    };
     const u = (t - FAUNA_BLOW) / FAUNA.spout;
     if (u > 0 && u < 1) {
       const head = WHALE_LENGTH * 0.28;
-      spout = { x: whale.x + Math.sin(yaw) * head, y: 0.3, z: whale.z + Math.cos(yaw) * head, grow: Math.sin(Math.PI * u) };
+      spout = {
+        x: whale.x + Math.sin(yaw) * head,
+        y: 0.3,
+        z: whale.z + Math.cos(yaw) * head,
+        grow: Math.sin(Math.PI * u),
+      };
     }
   }
   const cx = shore.at.x + sx * FAUNA.circleOff;
@@ -403,11 +621,22 @@ export function faunaPose(shore: Detour, t: number | null, still = false): Fauna
     if (u <= 0 || u >= FAUNA.flight) return p;
     const a = p.yaw + (2 * Math.PI * u) / FAUNA.turn;
     const lift = ease(u / 1.5);
-    const fly = { x: p.x + (cx + Math.cos(a) * FAUNA.radius - p.x) * lift, y: p.y + FAUNA.lift * ease(u / 4), z: p.z + (cz + Math.sin(a) * FAUNA.radius - p.z) * lift, yaw: -a - Math.PI / 2 };
+    const fly = {
+      x: p.x + (cx + Math.cos(a) * FAUNA.radius - p.x) * lift,
+      y: p.y + FAUNA.lift * ease(u / 4),
+      z: p.z + (cz + Math.sin(a) * FAUNA.radius - p.z) * lift,
+      yaw: -a - Math.PI / 2,
+    };
     // La fin du vol : chacun revient se poser sur son perchoir.
     const back = ease((u - (FAUNA.flight - FAUNA.land)) / FAUNA.land);
     const landed = back > 0.9;
-    return { x: fly.x + (p.x - fly.x) * back, y: fly.y + (p.y - fly.y) * back, z: fly.z + (p.z - fly.z) * back, yaw: landed ? p.yaw : fly.yaw, perched: landed };
+    return {
+      x: fly.x + (p.x - fly.x) * back,
+      y: fly.y + (p.y - fly.y) * back,
+      z: fly.z + (p.z - fly.z) * back,
+      yaw: landed ? p.yaw : fly.yaw,
+      perched: landed,
+    };
   });
   return { whale, spout, birds };
 }
@@ -429,16 +658,36 @@ export function whaleFacets(): Facets {
     { x: L / 2 - 0.5, r: 0.7 },
     { x: L / 2, r: 0.15 },
   ];
-  const ring = (x: number, r: number) => Array.from({ length: 6 }, (_, k) => [x, r * Math.sin((Math.PI * k) / 5) * 0.42, r * Math.cos((Math.PI * k) / 5)] as const);
+  const ring = (x: number, r: number) =>
+    Array.from(
+      { length: 6 },
+      (_, k) =>
+        [
+          x,
+          r * Math.sin((Math.PI * k) / 5) * 0.42,
+          r * Math.cos((Math.PI * k) / 5),
+        ] as const,
+    );
   for (let i = 1; i < sect.length; i++) {
     const p = ring(sect[i - 1].x, sect[i - 1].r);
     const q = ring(sect[i].x, sect[i].r);
-    for (let k = 0; k < 5; k++) b.quad(p[k], q[k], q[k + 1], p[k + 1], k === 0 || k === 4 ? belly : back);
+    for (let k = 0; k < 5; k++)
+      b.quad(p[k], q[k], q[k + 1], p[k + 1], k === 0 || k === 4 ? belly : back);
   }
   // La nageoire du dos, petite, basse et arrondie (deux pans), aux deux tiers vers la queue.
   const fx = -L * 0.22;
-  b.triangle([fx - 0.5, 0.36, 0], [fx + 0.4, 0.4, 0], [fx - 0.15, 0.62, 0], back);
-  b.triangle([fx - 0.5, 0.36, 0], [fx - 0.15, 0.62, 0], [fx - 0.55, 0.55, 0], back);
+  b.triangle(
+    [fx - 0.5, 0.36, 0],
+    [fx + 0.4, 0.4, 0],
+    [fx - 0.15, 0.62, 0],
+    back,
+  );
+  b.triangle(
+    [fx - 0.5, 0.36, 0],
+    [fx - 0.15, 0.62, 0],
+    [fx - 0.55, 0.55, 0],
+    back,
+  );
   // La queue en éventail.
   const tx = -L / 2;
   b.triangle([tx, 0.1, 0], [tx - 1.1, 0.45, 1.4], [tx - 0.7, 0.15, 0], back);
@@ -457,8 +706,18 @@ export function spoutFacets(): Facets {
     const a = (Math.PI * k) / 3;
     const c = Math.cos(a);
     const s = Math.sin(a);
-    b.triangle([0, 0, 0], [-0.45 * c, 1, -0.45 * s], [0.45 * c, 1, 0.45 * s], k === 1 ? mist : white);
-    b.triangle([-0.45 * c, 1, -0.45 * s], [0, 1.25, 0], [0.45 * c, 1, 0.45 * s], white);
+    b.triangle(
+      [0, 0, 0],
+      [-0.45 * c, 1, -0.45 * s],
+      [0.45 * c, 1, 0.45 * s],
+      k === 1 ? mist : white,
+    );
+    b.triangle(
+      [-0.45 * c, 1, -0.45 * s],
+      [0, 1.25, 0],
+      [0.45 * c, 1, 0.45 * s],
+      white,
+    );
   }
   return b.build();
 }
@@ -468,11 +727,20 @@ export function spoutFacets(): Facets {
  * repliées le long du corps, plus ramassé (consultant d'Archipéo). Les mêmes sommets dans le même ordre : la vue passe de
  * l'un à l'autre sans changer son maillage. `white` et `tip` : ses deux aplats (le choucas du 5e les change).
  */
-export function birdFacets(perched = false, white = 0xf2f1ea, tip = 0x9aa3a8): Facets {
+export function birdFacets(
+  perched = false,
+  white = 0xf2f1ea,
+  tip = 0x9aa3a8,
+): Facets {
   const b = new FacetBuilder();
-  const w: readonly [number, number, number] = perched ? [-0.15, 0.24, 0.16] : [-0.1, 0.12, 0.55];
-  const e: readonly [number, number, number] = perched ? [-0.42, 0.2, 0.09] : [-0.25, 0.16, 0.85];
-  const n = (p: readonly [number, number, number]) => [p[0], p[1], -p[2]] as const;
+  const w: readonly [number, number, number] = perched
+    ? [-0.15, 0.24, 0.16]
+    : [-0.1, 0.12, 0.55];
+  const e: readonly [number, number, number] = perched
+    ? [-0.42, 0.2, 0.09]
+    : [-0.25, 0.16, 0.85];
+  const n = (p: readonly [number, number, number]) =>
+    [p[0], p[1], -p[2]] as const;
   b.triangle([0.25, 0, 0], w, [-0.2, 0, 0], white);
   b.triangle([-0.2, 0, 0], w, [0.25, 0, 0], white);
   b.triangle([-0.2, 0, 0], n(w), [0.25, 0, 0], white);
@@ -485,4 +753,5 @@ export function birdFacets(perched = false, white = 0xf2f1ea, tip = 0x9aa3a8): F
 }
 
 /** Le nombre de triangles de tout le décor des Détours au pire (toutes les sentes tracées, le cairn allumé) : le budget. */
-export const detourTrianglesAtMost = (): number => detourFacets(DETOUR_IDS, true).triangles;
+export const detourTrianglesAtMost = (): number =>
+  detourFacets(DETOUR_IDS, true).triangles;

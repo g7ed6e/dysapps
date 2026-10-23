@@ -4,59 +4,114 @@
 // (GD-20, L6b : « Un iPad 9e génération doit pouvoir faire tourner le jeu, donc on est large en triangles pour
 // l'instant »), puis à 86 000 le 17 octobre 2026 (GD-20, point 3, lot 3), les appels inchangés, puis à 98 000 triangles et 21
 // appels le 18 octobre 2026 pour les habitants en 3D (« on peut augmenter le budget », mesure sur iPad avant la fusion). Les images par seconde se mesurent sur l'iPad 9e génération (`?mesures`).
-import { creuxTriangles } from './creux5e';
-import { failleTriangles } from './faille5e';
-import { perchoirTriangles } from './perchoir5e';
-import { FAUNA, birdFacets, detourTrianglesAtMost, spoutFacets, whaleFacets } from './detours';
-import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from './nef';
-import { NEF_5E_MODEL_TRIANGLES, nef5eSiteTriangles } from './nef5e';
-import { LISIERE_SITE, lisiereDecorFacets } from './lisiere';
-import { WORLD_FOG } from './camera';
-import { bridgeLay } from './bridgeLay';
-import { bridgeFacets, bridgeMapMark, cabinCarFacets, isCabin } from './bridges';
-import { monteeGlowBand } from './montee5e';
-import { linkedLands } from './lands';
-import { planFor, scenePlace, type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
-import { placeArt } from './northShore';
-import { networkSamples, pathRibbons } from './paths';
-import { PLACES, type PlaceId } from './plan6e';
-import { lanternLight, modelOfPlace } from './places';
-import { constructionFacets, WHOLE } from './construction';
-import { PORT_WORST, assemblyScene, portFacets } from './port';
-import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
-import type { ItemScene } from './questions';
-import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
-import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
-import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, habitantPawn, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
-import { hasWorldHabitant } from './worldHabitants';
-import { landTileCounts } from './flora';
-import { buildHeightField, heightOnMesh, tileRings } from './terrain';
-import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
-import { NETWORK_5E, pathMapEdges5e, pathRibbons5e } from './paths5e';
-import { TERRAIN_5E } from './plan5e';
-import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from './mist5e';
-import { FOG_3E, FOG_4E, skyDome } from './sky';
-import { veilFacets } from './veil';
-import { groupsTriangles, wildlifeTriangles } from './wildlife';
-import { allCritterForms, wildlifeGroups5e } from './wildlife5e';
-import { hutteFacets } from './hutte5e';
-import { dalleFacets } from './dalle4e';
-import { epaveFacets } from './epave4e';
-import { recoinFacets } from './recoin4e';
-import { replatFacets } from './replat4e';
-import { cadranFacets } from './cadran3e';
-import { bergerieFacets } from './bergerie3e';
-import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets } from './crique4e';
-import { NETWORK_4E, pathRibbons4e } from './paths4e';
-import { TERRAIN_4E } from './plan4e';
-import { buildHeightField4e, groundOn4e, mapOverlay4e, tileCounts4e } from './terrain4e';
-import { NEF_PARURES, PARVIS_SITE, nefParuresFacets, parvisDecorFacets, zeppelinFacets } from './parvis3e';
-import { NETWORK_3E, pathRibbons3e } from './paths3e';
-import { TERRAIN_3E } from './plan3e';
-import { buildHeightField3e, ground3e, mapOverlay3e, tileCounts3e } from './terrain3e';
+import { creuxTriangles } from "./creux5e";
+import { failleTriangles } from "./faille5e";
+import { perchoirTriangles } from "./perchoir5e";
+import {
+  FAUNA,
+  birdFacets,
+  detourTrianglesAtMost,
+  spoutFacets,
+  whaleFacets,
+} from "./detours";
+import { NEF_MODEL_TRIANGLES, nefSiteTriangles } from "./nef";
+import { NEF_5E_MODEL_TRIANGLES, nef5eSiteTriangles } from "./nef5e";
+import { LISIERE_SITE, lisiereDecorFacets } from "./lisiere";
+import { WORLD_FOG } from "./camera";
+import { bridgeLay } from "./bridgeLay";
+import {
+  bridgeFacets,
+  bridgeMapMark,
+  cabinCarFacets,
+  isCabin,
+} from "./bridges";
+import { monteeGlowBand } from "./montee5e";
+import { linkedLands } from "./lands";
+import {
+  planFor,
+  scenePlace,
+  type OpenWorldLevel,
+  type ScenePlaceId,
+} from "./levelPlan";
+import { placeArt } from "./northShore";
+import { networkSamples, pathRibbons } from "./paths";
+import { PLACES, type PlaceId } from "./plan6e";
+import { lanternLight, modelOfPlace } from "./places";
+import { constructionFacets, WHOLE } from "./construction";
+import { PORT_WORST, assemblyScene, portFacets } from "./port";
+import {
+  answerObjects,
+  itemScene,
+  placeTrace,
+  sceneSpot,
+} from "./questionScene";
+import type { ItemScene } from "./questions";
+import {
+  HABITANT_TRIANGLES,
+  HABITANT_TRIANGLES_4E,
+  HABITANT_TRIANGLES_5E,
+  hasHabitantModel,
+} from "./habitants";
+import { EQUIPIER_TRIANGLES, guideOf } from "./equipage";
+import {
+  GUIDE_SHADOW_TRIANGLES,
+  bellPlane,
+  habitantHand,
+  habitantPawn,
+  scenetteDecor,
+  scenetteFinale,
+  scenetteSetting,
+} from "./scenette";
+import { hasWorldHabitant } from "./worldHabitants";
+import { landTileCounts } from "./flora";
+import { buildHeightField, heightOnMesh, tileRings } from "./terrain";
+import { buildHeightField5e, groundOn5e, tileCounts5e } from "./terrain5e";
+import { NETWORK_5E, pathMapEdges5e, pathRibbons5e } from "./paths5e";
+import { TERRAIN_5E } from "./plan5e";
+import { CLIFF_MAP_COLORS, cliffMapLine, riftMistFacets } from "./mist5e";
+import { FOG_3E, FOG_4E, skyDome } from "./sky";
+import { veilFacets } from "./veil";
+import { groupsTriangles, wildlifeTriangles } from "./wildlife";
+import { allCritterForms, wildlifeGroups5e } from "./wildlife5e";
+import { hutteFacets } from "./hutte5e";
+import { dalleFacets } from "./dalle4e";
+import { epaveFacets } from "./epave4e";
+import { recoinFacets } from "./recoin4e";
+import { replatFacets } from "./replat4e";
+import { cadranFacets } from "./cadran3e";
+import { bergerieFacets } from "./bergerie3e";
+import { cedreFacets } from "./cedre3e";
+import {
+  CRIQUE_SITE,
+  NEF_4E_MODEL_TRIANGLES,
+  criqueDecorFacets,
+} from "./crique4e";
+import { NETWORK_4E, pathRibbons4e } from "./paths4e";
+import { TERRAIN_4E } from "./plan4e";
+import {
+  buildHeightField4e,
+  groundOn4e,
+  mapOverlay4e,
+  tileCounts4e,
+} from "./terrain4e";
+import {
+  NEF_PARURES,
+  PARVIS_SITE,
+  nefParuresFacets,
+  parvisDecorFacets,
+  zeppelinFacets,
+} from "./parvis3e";
+import { NETWORK_3E, pathRibbons3e } from "./paths3e";
+import { TERRAIN_3E } from "./plan3e";
+import {
+  buildHeightField3e,
+  ground3e,
+  mapOverlay3e,
+  tileCounts3e,
+} from "./terrain3e";
 
 /** Les terres qu'on relie du 6e : le budget est celui du monde ouvert du 6e (GD-22, lot 1 : le plan par niveau). */
-const LINKED_LANDS_6E = linkedLands(planFor('6e'));
+const LINKED_LANDS_6E = linkedLands(planFor("6e"));
 
 /**
  * Kéo : le modèle importé de près (1 500 triangles environ) et son anneau clair au sol, comme le poste « bonhomme » du
@@ -72,7 +127,14 @@ const KEO = { triangles: 3170, calls: 5 };
  * La baleine, son souffle et les cinq oiseaux du bord d'eau (GD-20, déplacement libre, lot 2), et les bêtes des côtes
  * (mouettes, crabes, poissons ; piste « Ambiance », 19 octobre 2026, ./wildlife.ts) : un maillage, toutes à la fois.
  */
-const FAUNA_COST = { triangles: whaleFacets().triangles + spoutFacets().triangles + FAUNA.birds * birdFacets().triangles + wildlifeTriangles(), calls: 1 };
+const FAUNA_COST = {
+  triangles:
+    whaleFacets().triangles +
+    spoutFacets().triangles +
+    FAUNA.birds * birdFacets().triangles +
+    wildlifeTriangles(),
+  calls: 1,
+};
 
 /** Le dôme du ciel (GD-20, point 3, lot 3) : un maillage, dessiné d'abord, sur la Carte aussi. */
 const SKY = { triangles: skyDome(1).triangles, calls: 1 };
@@ -194,56 +256,78 @@ export const ARCHES_TRIANGLES_3E = 2_400;
 export const RAVIN_BRIDGE_TRIANGLES_MAX_4E = 1_200;
 
 /** L'enveloppe du monde ouvert de chaque niveau, que seul le mainteneur relève. */
-export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>> = {
-  '6e': OPEN_WORLD_BUDGET_6E,
-  '5e': OPEN_WORLD_BUDGET_5E,
-  '4e': OPEN_WORLD_BUDGET_4E,
-  '3e': OPEN_WORLD_BUDGET_3E,
+export const OPEN_WORLD_BUDGETS: Readonly<
+  Record<OpenWorldLevel, { readonly triangles: number; readonly calls: number }>
+> = {
+  "6e": OPEN_WORLD_BUDGET_6E,
+  "5e": OPEN_WORLD_BUDGET_5E,
+  "4e": OPEN_WORLD_BUDGET_4E,
+  "3e": OPEN_WORLD_BUDGET_3E,
 };
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef';
+  poste:
+    | "ciel"
+    | "sol"
+    | "mer"
+    | "chemins"
+    | "lieux"
+    | "aménagements"
+    | "détours"
+    | "faune"
+    | "pose"
+    | "brume"
+    | "kéo"
+    | "question"
+    | "scénette"
+    | "nef";
   triangles: number;
   calls: number;
 }
 
 /** Les scènes d'item les plus chargées de chaque lieu (le Phare : six cloches ; les Quais : 98 caisses, ou 49 et 49). */
 const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
-  { place: 'phare', scene: { kind: 'cloches' } },
-  { place: 'filets', scene: { kind: 'filets', catch: 'crabes', count: 4 } },
-  { place: 'ecluses', scene: { kind: 'echelle', n: 24, d: 12 } },
-  { place: 'ecluses', scene: { kind: 'sas', n: 12, d: 12 } },
+  { place: "phare", scene: { kind: "cloches" } },
+  { place: "filets", scene: { kind: "filets", catch: "crabes", count: 4 } },
+  { place: "ecluses", scene: { kind: "echelle", n: 24, d: 12 } },
+  { place: "ecluses", scene: { kind: "sas", n: 12, d: 12 } },
   // Deux rives : deux sas de dix parts (le générateur s'arrête à dix) ; le sas au repos des autres missions (lot L2).
-  { place: 'ecluses', scene: { kind: 'lockPair', a: [10, 10], b: [10, 10] } },
-  { place: 'ecluses', scene: { kind: 'lockIdle', column: false } },
-  { place: 'quais', scene: { kind: 'quai', op: 'moitie', before: 98, after: 49 } },
-  { place: 'quais', scene: { kind: 'quai', op: 'double', before: 49, after: 98 } },
+  { place: "ecluses", scene: { kind: "lockPair", a: [10, 10], b: [10, 10] } },
+  { place: "ecluses", scene: { kind: "lockIdle", column: false } },
+  {
+    place: "quais",
+    scene: { kind: "quai", op: "moitie", before: 98, after: 49 },
+  },
+  {
+    place: "quais",
+    scene: { kind: "quai", op: "double", before: 49, after: 98 },
+  },
   // Les Marais salants (lot L5) : la jauge du bassin (dix graduations), et le bassin au repos des autres missions.
-  { place: 'saltworks', scene: { kind: 'jauge', start: 9, d: 10, n: 9 } },
-  { place: 'saltworks', scene: { kind: 'saline' } },
+  { place: "saltworks", scene: { kind: "jauge", start: 9, d: 10, n: 9 } },
+  { place: "saltworks", scene: { kind: "saline" } },
   // La Turbine (lot L6a) : le C neutre, la soupape levée et sa bouffée (aucun objet de réponse).
-  { place: 'engine', scene: { kind: 'column' } },
+  { place: "engine", scene: { kind: "column" } },
   // Le Chantier naval (lot L6b) : le C neutre, les tréteaux et la planche de bordé plaquée contre la coque.
-  { place: 'shipyard', scene: { kind: 'column' } },
+  { place: "shipyard", scene: { kind: "column" } },
   // Le rivage nord (lot L7) : le C de la Vigie et son volet ouvert, puis chaque lieu au repos (ses objets de réponse).
-  { place: 'lookout', scene: { kind: 'column' } },
-  { place: 'lookout', scene: { kind: 'rest' } },
-  { place: 'archives', scene: { kind: 'rest' } },
-  { place: 'printworks', scene: { kind: 'rest' } },
+  { place: "lookout", scene: { kind: "column" } },
+  { place: "lookout", scene: { kind: "rest" } },
+  { place: "archives", scene: { kind: "rest" } },
+  { place: "printworks", scene: { kind: "rest" } },
   // La Mangrove (lot L8a) : le C neutre, la pirogue qui glisse jusqu'au platelage.
-  { place: 'mangrove', scene: { kind: 'column' } },
+  { place: "mangrove", scene: { kind: "column" } },
   // Les Ruines (lot L8b) : le C neutre, le seau du treuil de fouille qui remonte.
-  { place: 'ruins', scene: { kind: 'column' } },
+  { place: "ruins", scene: { kind: "column" } },
   // L'Observatoire (lot L8c) : le C neutre, la baie aux volets ouverts sur sa vitre.
-  { place: 'observatory', scene: { kind: 'column' } },
+  { place: "observatory", scene: { kind: "column" } },
   // La Halle (lot L8d) : le C neutre, la borne-fontaine, son filet et l'eau de son auge.
-  { place: 'commons', scene: { kind: 'column' } },
+  { place: "commons", scene: { kind: "column" } },
   // Le large (lot L9) : la bouée témoin et son voyant, les bouées et le voyant marqué ; la malle témoin qui se ferme, les
   // malles et le couvercle rabattu.
-  { place: 'beacons', scene: { kind: 'column' } },
-  { place: 'beacons', scene: { kind: 'restMark' } },
-  { place: 'ferry', scene: { kind: 'column' } },
-  { place: 'ferry', scene: { kind: 'restMark' } },
+  { place: "beacons", scene: { kind: "column" } },
+  { place: "beacons", scene: { kind: "restMark" } },
+  { place: "ferry", scene: { kind: "column" } },
+  { place: "ferry", scene: { kind: "restMark" } },
 ];
 
 /**
@@ -254,12 +338,27 @@ function questionCost(): { triangles: number; calls: number } {
   let triangles = 0;
   for (const { place, scene } of HEAVIEST) {
     const s = sceneSpot(place);
-    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
+    const points = Array.from({ length: 6 }, (_, i) => ({
+      x: s.x - 5 + 2 * i,
+      y: s.y,
+      z: s.z + 6,
+    }));
     const item = itemScene(place, scene, true, points, 1);
     // Au Phare, les cloches pendues à leur poutre, toutes balancées, et la corde de sonnerie.
-    const hang = place === 'phare' ? { hand: habitantHand(place), rail: bellPlane(place).rail } : undefined;
-    const objects = answerObjects(place, points, 1, { picked: [0, 1, 2, 3, 4, 5], hanging: hang });
-    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+    const hang =
+      place === "phare"
+        ? { hand: habitantHand(place), rail: bellPlane(place).rail }
+        : undefined;
+    const objects = answerObjects(place, points, 1, {
+      picked: [0, 1, 2, 3, 4, 5],
+      hanging: hang,
+    });
+    triangles = Math.max(
+      triangles,
+      item.still.triangles +
+        objects.triangles +
+        (item.reaction?.facets.triangles ?? 0),
+    );
   }
   return { triangles, calls: 2 };
 }
@@ -279,8 +378,19 @@ function questionCost(): { triangles: number; calls: number } {
 function scenetteCost(): { triangles: number; calls: number } {
   // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST);
-  const guide = (p: PlaceId) => (guideOf(p) ? EQUIPIER_TRIANGLES + GUIDE_SHADOW_TRIANGLES : 0);
-  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES + guide(p)), assembly.pieces.triangles, assembly.made.triangles);
+  const guide = (p: PlaceId) =>
+    guideOf(p) ? EQUIPIER_TRIANGLES + GUIDE_SHADOW_TRIANGLES : 0;
+  const triangles = Math.max(
+    ...SCENETTE_PLACES.map(
+      (p) =>
+        Math.max(scenetteDecor(p).triangles, successTriangles(p)) -
+        pawnTriangles(p) +
+        HABITANT_TRIANGLES +
+        guide(p),
+    ),
+    assembly.pieces.triangles,
+    assembly.made.triangles,
+  );
   return { triangles, calls: 3 };
 }
 
@@ -295,9 +405,9 @@ function pawnTriangles(place: PlaceId): number {
 
 /** La scène d'item la plus chargée d'un lieu à scénette posée (celle que la réussite reprend). */
 const FINALE_SCENES: Partial<Record<PlaceId, ItemScene>> = {
-  quais: { kind: 'quai', op: 'moitie', before: 98, after: 49 },
-  filets: { kind: 'filets', catch: 'crabes', count: 4 },
-  ecluses: { kind: 'echelle', n: 24, d: 12 },
+  quais: { kind: "quai", op: "moitie", before: 98, after: 49 },
+  filets: { kind: "filets", catch: "crabes", count: 4 },
+  ecluses: { kind: "echelle", n: 24, d: 12 },
 };
 
 /**
@@ -308,9 +418,13 @@ const FINALE_SCENES: Partial<Record<PlaceId, ItemScene>> = {
 function successTriangles(place: PlaceId): number {
   const scene = FINALE_SCENES[place];
   // Aux Filets, la réussite du Troupeau, la seule qui change le décor (le filet raccommodé et le panier plein).
-  const f = scene ? scenetteFinale(place, scene, 1, true, 'plurals') : null;
+  const f = scene ? scenetteFinale(place, scene, 1, true, "plurals") : null;
   if (!f) return scenetteDecor(place).triangles;
-  return f.decor.triangles + f.landed.triangles + Math.max(f.moving.triangles, f.glow?.triangles ?? 0);
+  return (
+    f.decor.triangles +
+    f.landed.triangles +
+    Math.max(f.moving.triangles, f.glow?.triangles ?? 0)
+  );
 }
 
 /**
@@ -329,8 +443,21 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
  * (`PORT_WORST`) ; aucun appel de plus.
  */
 function placesCost(): { triangles: number; calls: number } {
-  const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, [...p.scenes, ...(p.panels ?? [])]).triangles, 0);
-  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles + bridgesCost(), calls: 2 };
+  const triangles = PLACES.reduce(
+    (s, p) =>
+      s +
+      modelOfPlace(p.id).facets.triangles +
+      placeTrace(p.id, [...p.scenes, ...(p.panels ?? [])]).triangles,
+    0,
+  );
+  return {
+    triangles:
+      triangles +
+      lanternLight().triangles +
+      portFacets(PORT_WORST).triangles +
+      bridgesCost(),
+    calls: 2,
+  };
 }
 
 /**
@@ -338,7 +465,15 @@ function placesCost(): { triangles: number; calls: number } {
  * ou rebâti), dans le maillage des lieux : aucun appel de plus.
  */
 function bridgesCost(): number {
-  return LINKED_LANDS_6E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
+  return LINKED_LANDS_6E.reduce(
+    (s, l) =>
+      s +
+      Math.max(
+        bridgeFacets(l, false).triangles,
+        bridgeFacets(l, true).triangles,
+      ),
+    0,
+  );
 }
 
 /**
@@ -362,9 +497,16 @@ export const PORT_BUDGET = 4500;
  * pose ») passe par le même maillage, jamais en même temps : ce qui se relève du pont (ses piles, son tablier, ses
  * garde-corps et ses lanternes), les lieux n'en gardant que ses culées et ses départs d'arche.
  */
-function poseCost(ground: (x: number, z: number) => number): { triangles: number; calls: number } {
-  const places = Math.max(...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
-  const bridges = Math.max(...LINKED_LANDS_6E.map((l) => bridgeLay(l).facets.triangles));
+function poseCost(ground: (x: number, z: number) => number): {
+  triangles: number;
+  calls: number;
+} {
+  const places = Math.max(
+    ...PLACES.map((p) => constructionFacets(p.id, [WHOLE], ground).triangles),
+  );
+  const bridges = Math.max(
+    ...LINKED_LANDS_6E.map((l) => bridgeLay(l).facets.triangles),
+  );
   return { triangles: Math.max(places, bridges), calls: 1 };
 }
 
@@ -378,19 +520,39 @@ const SAMPLE_YAWS = 8;
  * unités, la caméra tournée dans huit directions, le plus chargé de près et le plus chargé de loin (ils peuvent venir de deux points différents : on compte
  * large).
  */
-export function groundCost(): { triangles: number; calls: number; near: number; far: number } {
+export function groundCost(): {
+  triangles: number;
+  calls: number;
+  near: number;
+  far: number;
+} {
   const field = buildHeightField();
-  const near = landTileCounts(field, 'near');
-  const far = landTileCounts(field, 'far');
+  const near = landTileCounts(field, "near");
+  const far = landTileCounts(field, "far");
   let worstNear = 0;
   let worstFar = 0;
   for (const p of networkSamples(SAMPLE_STEP))
     for (let y = 0; y < SAMPLE_YAWS; y++) {
-      const rings = tileRings(p, WORLD_FOG.far, (2 * Math.PI * y) / SAMPLE_YAWS);
-      worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
-      worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+      const rings = tileRings(
+        p,
+        WORLD_FOG.far,
+        (2 * Math.PI * y) / SAMPLE_YAWS,
+      );
+      worstNear = Math.max(
+        worstNear,
+        rings.near.reduce((s, t) => s + near[t], 0),
+      );
+      worstFar = Math.max(
+        worstFar,
+        rings.far.reduce((s, t) => s + far[t], 0),
+      );
     }
-  return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
+  return {
+    triangles: worstNear + worstFar,
+    calls: 2,
+    near: worstNear,
+    far: worstFar,
+  };
 }
 
 /**
@@ -404,25 +566,29 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
   const paths = pathRibbons(height);
   const ground = groundCost();
   return [
-    { poste: 'ciel', ...SKY },
-    { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
-    { poste: 'mer', triangles: 2, calls: 1 },
-    { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...placesCost() },
+    { poste: "ciel", ...SKY },
+    { poste: "sol", triangles: ground.triangles, calls: ground.calls },
+    { poste: "mer", triangles: 2, calls: 1 },
+    { poste: "chemins", triangles: paths.triangles, calls: 1 },
+    { poste: "lieux", ...placesCost() },
     // Les aménagements (GD-20, point 4, lot L0) : les dix-neuf posés, dans le maillage des lieux, aucun appel de plus ;
     // leurs triangles comptés par la vue, qui trace leurs dessins (three/archipeo/amenagements.ts, `amenagementsCost`).
-    { poste: 'aménagements', triangles: amenagements, calls: 0 },
+    { poste: "aménagements", triangles: amenagements, calls: 0 },
     // Les Détours (GD-20, déplacement libre, lot 2) : leurs pierres, le cairn allumé et toutes les sentes tracées, au pire,
     // dans le maillage des lieux, aucun appel de plus ; la baleine et les oiseaux du bord d'eau, un maillage, montré
     // seulement près du bord d'eau.
-    { poste: 'détours', triangles: detourTrianglesAtMost(), calls: 0 },
-    { poste: 'faune', ...FAUNA_COST },
-    { poste: 'pose', ...poseCost(height) },
-    { poste: 'brume', triangles: veilFacets(LINKED_LANDS_6E).triangles, calls: 1 },
-    { poste: 'kéo', ...KEO },
-    { poste: 'question', ...questionCost() },
-    { poste: 'scénette', ...scenetteCost() },
-    { poste: 'nef', ...nefCost() },
+    { poste: "détours", triangles: detourTrianglesAtMost(), calls: 0 },
+    { poste: "faune", ...FAUNA_COST },
+    { poste: "pose", ...poseCost(height) },
+    {
+      poste: "brume",
+      triangles: veilFacets(LINKED_LANDS_6E).triangles,
+      calls: 1,
+    },
+    { poste: "kéo", ...KEO },
+    { poste: "question", ...questionCost() },
+    { poste: "scénette", ...scenetteCost() },
+    { poste: "nef", ...nefCost() },
   ];
 }
 
@@ -432,30 +598,51 @@ export function openWorldCost(amenagements: number): OpenWorldCost[] {
  * pire ; les ponts y ont en plus leur trait double), la brume des terres fermées, Kéo. Ni question, ni scénette, ni pose n'y
  * sont ouvertes : elle ne s'ouvre pas pendant une question, et l'ouvrir finit la pose.
  */
-export function mapCost(amenagements: number): { triangles: number; calls: number } {
+export function mapCost(amenagements: number): {
+  triangles: number;
+  calls: number;
+} {
   const field = buildHeightField();
   const height = (x: number, z: number) => heightOnMesh(field, x, z);
-  const far = landTileCounts(field, 'far').reduce((s, n) => s + n, 0);
+  const far = landTileCounts(field, "far").reduce((s, n) => s + n, 0);
   const paths = pathRibbons(height).triangles;
   const places = placesCost();
   const veil = veilFacets(LINKED_LANDS_6E).triangles;
-  const marks = LINKED_LANDS_6E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0);
+  const marks = LINKED_LANDS_6E.reduce(
+    (s, l) => s + bridgeMapMark(l).triangles,
+    0,
+  );
   // Les Détours, leurs sentes tracées comprises, dans le maillage des lieux ; la baleine et les oiseaux, au bord d'eau.
   const detours = detourTrianglesAtMost();
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + amenagements + detours + FAUNA_COST.triangles + marks + veil + KEO.triangles + nefCost().triangles,
-    calls: SKY.calls + 1 + 1 + 1 + places.calls + FAUNA_COST.calls + 1 + KEO.calls,
+    triangles:
+      SKY.triangles +
+      far +
+      2 +
+      paths +
+      places.triangles +
+      amenagements +
+      detours +
+      FAUNA_COST.triangles +
+      marks +
+      veil +
+      KEO.triangles +
+      nefCost().triangles,
+    calls:
+      SKY.calls + 1 + 1 + 1 + places.calls + FAUNA_COST.calls + 1 + KEO.calls,
   };
 }
 
 // ---------- Le 5e (GD-22, lot 2) ----------
 
 /** Le plan du 5e et ses terres qu'on relie (deux ponts et la cabine). */
-const PLAN_5E = planFor('5e');
+const PLAN_5E = planFor("5e");
 const LINKED_LANDS_5E = linkedLands(PLAN_5E);
 
 /** Le poste de la brume des failles du 5e (./mist5e.ts) : un maillage transparent, caché sur la Carte. */
-export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'failles' | 'départ' | 'habitants' };
+export type OpenWorldCost5e = Omit<OpenWorldCost, "poste"> & {
+  poste: OpenWorldCost["poste"] | "failles" | "départ" | "habitants";
+};
 
 /**
  * Les habitants du 5e hors de leur scénette (choix du mainteneur du 21 octobre 2026, « Garder au 5e » ;
@@ -463,24 +650,49 @@ export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldC
  * appel de plus). Ni sur la Carte, ni pendant une scénette : le monde hors scénette et le départ seuls les comptent.
  */
 export function worldHabitantsCost5e(): { triangles: number; calls: number } {
-  const triangles = PLAN_5E.places.reduce((s, p) => s + (hasWorldHabitant(p.id) ? (habitantPawn(p.id)?.triangles ?? 0) : 0), 0);
+  const triangles = PLAN_5E.places.reduce(
+    (s, p) =>
+      s + (hasWorldHabitant(p.id) ? (habitantPawn(p.id)?.triangles ?? 0) : 0),
+    0,
+  );
   return { triangles, calls: 0 };
 }
 
 /** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
-function groundCost5e(): { triangles: number; calls: number; near: number; far: number } {
+function groundCost5e(): {
+  triangles: number;
+  calls: number;
+  near: number;
+  far: number;
+} {
   const field = buildHeightField5e();
-  const near = tileCounts5e(field, 'near');
-  const far = tileCounts5e(field, 'far');
+  const near = tileCounts5e(field, "near");
+  const far = tileCounts5e(field, "far");
   let worstNear = 0;
   let worstFar = 0;
   for (const p of NETWORK_5E.networkSamples(SAMPLE_STEP))
     for (let y = 0; y < SAMPLE_YAWS; y++) {
-      const rings = tileRings(p, WORLD_FOG.far, (2 * Math.PI * y) / SAMPLE_YAWS, TERRAIN_5E);
-      worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
-      worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+      const rings = tileRings(
+        p,
+        WORLD_FOG.far,
+        (2 * Math.PI * y) / SAMPLE_YAWS,
+        TERRAIN_5E,
+      );
+      worstNear = Math.max(
+        worstNear,
+        rings.near.reduce((s, t) => s + near[t], 0),
+      );
+      worstFar = Math.max(
+        worstFar,
+        rings.far.reduce((s, t) => s + far[t], 0),
+      );
     }
-  return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
+  return {
+    triangles: worstNear + worstFar,
+    calls: 2,
+    near: worstNear,
+    far: worstFar,
+  };
 }
 
 /**
@@ -488,8 +700,22 @@ function groundCost5e(): { triangles: number; calls: number; near: number; far: 
  * missions, et ses passages, chacun au plus chargé de ses deux états (tombé, ou relevé), en deux maillages comme au 6e.
  */
 function placesCost5e(): { triangles: number; calls: number } {
-  const ruins = PLAN_5E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
-  const passages = LINKED_LANDS_5E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
+  const ruins = PLAN_5E.places.reduce(
+    (s, p) =>
+      s +
+      modelOfPlace(p.id).facets.triangles +
+      (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0),
+    0,
+  );
+  const passages = LINKED_LANDS_5E.reduce(
+    (s, l) =>
+      s +
+      Math.max(
+        bridgeFacets(l, false).triangles,
+        bridgeFacets(l, true).triangles,
+      ),
+    0,
+  );
   return { triangles: ruins + passages + lisiereCost(), calls: 2 };
 }
 
@@ -499,7 +725,10 @@ function placesCost5e(): { triangles: number; calls: number } {
  */
 export function reachCost5e(): number {
   const origin = { x: 0, y: 0, z: 0 };
-  return PLAN_5E.places.reduce((s, p) => s + (placeArt(p.id)?.reach?.(origin, () => true)?.triangles ?? 0), 0);
+  return PLAN_5E.places.reduce(
+    (s, p) => s + (placeArt(p.id)?.reach?.(origin, () => true)?.triangles ?? 0),
+    0,
+  );
 }
 
 /**
@@ -508,7 +737,10 @@ export function reachCost5e(): number {
  * maillage des lieux : aucun appel de plus.
  */
 export function lisiereCost(): number {
-  return portFacets(PORT_WORST, { assembling: false }, LISIERE_SITE).triangles + lisiereDecorFacets().triangles;
+  return (
+    portFacets(PORT_WORST, { assembling: false }, LISIERE_SITE).triangles +
+    lisiereDecorFacets().triangles
+  );
 }
 
 /**
@@ -518,7 +750,10 @@ export function lisiereCost(): number {
  */
 function nefCost5e(): { triangles: number; calls: number } {
   const site = nef5eSiteTriangles();
-  return { triangles: NEF_5E_MODEL_TRIANGLES + site.ber + site.wall + site.plume, calls: 0 };
+  return {
+    triangles: NEF_5E_MODEL_TRIANGLES + site.ber + site.wall + site.plume,
+    calls: 0,
+  };
 }
 
 /**
@@ -528,10 +763,25 @@ function nefCost5e(): { triangles: number; calls: number } {
 function poseCost5e(): { triangles: number; calls: number } {
   const field = buildHeightField5e();
   const ground = (x: number, z: number) => groundOn5e(field, x, z);
-  const lays = Math.max(...LINKED_LANDS_5E.map((l) => (isCabin(l) ? bridgeFacets(l, true).triangles : bridgeLay(l).facets.triangles)));
-  const parts = Math.max(...PLAN_5E.places.filter((p) => p.scenes.length).map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
-  const car = Math.max(...LINKED_LANDS_5E.filter(isCabin).map((l) => cabinCarFacets(l).triangles));
-  return { triangles: Math.max(lays, parts, car, monteeGlowBand().triangles), calls: 1 };
+  const lays = Math.max(
+    ...LINKED_LANDS_5E.map((l) =>
+      isCabin(l)
+        ? bridgeFacets(l, true).triangles
+        : bridgeLay(l).facets.triangles,
+    ),
+  );
+  const parts = Math.max(
+    ...PLAN_5E.places
+      .filter((p) => p.scenes.length)
+      .map((p) => constructionFacets(p.id, [WHOLE], ground).triangles),
+  );
+  const car = Math.max(
+    ...LINKED_LANDS_5E.filter(isCabin).map((l) => cabinCarFacets(l).triangles),
+  );
+  return {
+    triangles: Math.max(lays, parts, car, monteeGlowBand().triangles),
+    calls: 1,
+  };
 }
 
 /**
@@ -542,10 +792,21 @@ function questionCost5e(): { triangles: number; calls: number } {
   let triangles = 0;
   for (const p of PLAN_5E.places.filter((q) => q.scenes.length)) {
     const s = sceneSpot(p.id);
-    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
-    const item = itemScene(p.id, { kind: 'rest' }, true, points, 1);
-    const objects = answerObjects(scenePlace(p.id), points, 1, { picked: [0, 1, 2, 3, 4, 5] });
-    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+    const points = Array.from({ length: 6 }, (_, i) => ({
+      x: s.x - 5 + 2 * i,
+      y: s.y,
+      z: s.z + 6,
+    }));
+    const item = itemScene(p.id, { kind: "rest" }, true, points, 1);
+    const objects = answerObjects(scenePlace(p.id), points, 1, {
+      picked: [0, 1, 2, 3, 4, 5],
+    });
+    triangles = Math.max(
+      triangles,
+      item.still.triangles +
+        objects.triangles +
+        (item.reaction?.facets.triangles ?? 0),
+    );
   }
   return { triangles, calls: 2 };
 }
@@ -557,15 +818,28 @@ function questionCost5e(): { triangles: number; calls: number } {
  * texturé : un appel de plus. Deux scénettes ne s'ouvrent jamais ensemble : la plus chargée compte seule.
  */
 function scenetteCost5e(): { triangles: number; calls: number } {
-  const places = PLAN_5E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
+  const places = PLAN_5E.places
+    .filter((p) => p.scenes.length)
+    .map((p) => scenePlace(p.id));
   const decor = (place: ScenePlaceId, open: boolean) => {
     const full = scenetteDecor(place, open).triangles;
-    return hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_5E : full;
+    return hasHabitantModel(place)
+      ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_5E
+      : full;
   };
-  const worst = Math.max(...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  const worst = Math.max(
+    ...places.map((p) => Math.max(decor(p, false), decor(p, true))),
+  );
   // La scénette d'assemblage de la Lisière (lot 4), jamais en même temps qu'une autre : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST, LISIERE_SITE);
-  return { triangles: Math.max(worst, assembly.pieces.triangles, assembly.made.triangles), calls: places.some(hasHabitantModel) ? 2 : 1 };
+  return {
+    triangles: Math.max(
+      worst,
+      assembly.pieces.triangles,
+      assembly.made.triangles,
+    ),
+    calls: places.some(hasHabitantModel) ? 2 : 1,
+  };
 }
 
 /**
@@ -583,35 +857,63 @@ function scenetteCost5e(): { triangles: number; calls: number } {
  * avec les lieux. Hors scénette et au départ, les habitants près de leur porte (`worldHabitantsCost5e`), dans le même
  * maillage ; cachés pendant une scénette.
  */
-export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenette'): OpenWorldCost5e[] {
+export function openWorldCost5e(
+  view: "scenette" | "monde" | "depart" = "scenette",
+): OpenWorldCost5e[] {
   const field = buildHeightField5e();
   const ground = groundCost5e();
   const paths = pathRibbons5e((x, z) => groundOn5e(field, x, z));
   const places = placesCost5e();
   return [
-    { poste: 'ciel', ...SKY },
-    { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
-    { poste: 'mer', triangles: 2, calls: 1 },
-    { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', triangles: places.triangles + reachCost5e(), calls: places.calls },
-    { poste: 'brume', triangles: veilFacets(LINKED_LANDS_5E).triangles, calls: 1 },
-    { poste: 'failles', triangles: riftMistFacets().triangles, calls: 1 },
+    { poste: "ciel", ...SKY },
+    { poste: "sol", triangles: ground.triangles, calls: ground.calls },
+    { poste: "mer", triangles: 2, calls: 1 },
+    { poste: "chemins", triangles: paths.triangles, calls: 1 },
+    {
+      poste: "lieux",
+      triangles: places.triangles + reachCost5e(),
+      calls: places.calls,
+    },
+    {
+      poste: "brume",
+      triangles: veilFacets(LINKED_LANDS_5E).triangles,
+      calls: 1,
+    },
+    { poste: "failles", triangles: riftMistFacets().triangles, calls: 1 },
     // Le Creux (lot 6), la Hutte (lot 8), la Faille (lot 11) et le Perchoir (lot 16), leurs sentes tracées, dans le maillage des lieux : aucun
     // appel de plus.
-    { poste: 'détours', triangles: creuxTriangles().withSente + hutteFacets(true, (x, z) => groundOn5e(field, x, z)).triangles + failleTriangles().withSente + perchoirTriangles().withSente, calls: 0 },
+    {
+      poste: "détours",
+      triangles:
+        creuxTriangles().withSente +
+        hutteFacets(true, (x, z) => groundOn5e(field, x, z)).triangles +
+        failleTriangles().withSente +
+        perchoirTriangles().withSente,
+      calls: 0,
+    },
     // La vie animale du 5e (piste « Ambiance par terre », 19 octobre 2026, ./wildlife5e.ts) : toutes les bêtes à la fois,
     // un maillage (celui de la baleine au 6e).
-    { poste: 'faune', triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()), calls: 1 },
-    { poste: 'kéo', ...KEO },
-    { poste: 'nef', ...nefCost5e() },
-    ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost5e() }]
-      : view === 'monde'
-      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost5e() }]
-      : [
-          { poste: 'question' as const, ...questionCost5e() },
-          { poste: 'scénette' as const, ...scenetteCost5e() },
-        ]),
+    {
+      poste: "faune",
+      triangles: groupsTriangles(wildlifeGroups5e(), allCritterForms()),
+      calls: 1,
+    },
+    { poste: "kéo", ...KEO },
+    { poste: "nef", ...nefCost5e() },
+    ...(view === "depart"
+      ? [
+          { poste: "départ" as const, triangles: 0, calls: 2 },
+          { poste: "habitants" as const, ...worldHabitantsCost5e() },
+        ]
+      : view === "monde"
+        ? [
+            { poste: "pose" as const, ...poseCost5e() },
+            { poste: "habitants" as const, ...worldHabitantsCost5e() },
+          ]
+        : [
+            { poste: "question" as const, ...questionCost5e() },
+            { poste: "scénette" as const, ...scenetteCost5e() },
+          ]),
   ];
 }
 
@@ -623,21 +925,46 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
  */
 export function mapCost5e(): { triangles: number; calls: number } {
   const field = buildHeightField5e();
-  const far = tileCounts5e(field, 'far').reduce((s, n) => s + n, 0);
+  const far = tileCounts5e(field, "far").reduce((s, n) => s + n, 0);
   const ground = (x: number, z: number) => groundOn5e(field, x, z);
   const paths = pathRibbons5e(ground).triangles;
   const places = placesCost5e();
-  const marks = LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + cliffMapLine().triangles + pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark).triangles;
+  const marks =
+    LINKED_LANDS_5E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) +
+    cliffMapLine().triangles +
+    pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark).triangles;
   const veil = veilFacets(LINKED_LANDS_5E).triangles;
   // Le repère des lieux de loin, sur la Carte seulement (les Radeaux : le dessus des radeaux, éclairci), au plus chargé.
   const origin = { x: 0, y: 0, z: 0 };
   const placeMarks = PLAN_5E.places.reduce((s, p) => {
     const mark = placeArt(p.id)?.mapMark;
-    return s + (mark ? Math.max(mark(origin, () => true).triangles, mark(origin, () => false).triangles) : 0);
+    return (
+      s +
+      (mark
+        ? Math.max(
+            mark(origin, () => true).triangles,
+            mark(origin, () => false).triangles,
+          )
+        : 0)
+    );
   }, 0);
   const hutte = hutteFacets(true, ground).triangles;
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + creuxTriangles().withSente + hutte + failleTriangles().withSente + perchoirTriangles().withSente + marks + placeMarks + veil + KEO.triangles + nefCost5e().triangles,
+    triangles:
+      SKY.triangles +
+      far +
+      2 +
+      paths +
+      places.triangles +
+      creuxTriangles().withSente +
+      hutte +
+      failleTriangles().withSente +
+      perchoirTriangles().withSente +
+      marks +
+      placeMarks +
+      veil +
+      KEO.triangles +
+      nefCost5e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }
@@ -645,26 +972,49 @@ export function mapCost5e(): { triangles: number; calls: number } {
 // ---------- Le 4e (lot 1 du monde ouvert du 4e ; lot 2 : la Forge) ----------
 
 /** Le plan du 4e et ses terres qu'on relie (trois ponts). */
-const PLAN_4E = planFor('4e');
+const PLAN_4E = planFor("4e");
 const LINKED_LANDS_4E = linkedLands(PLAN_4E);
 
 /** Le poste du départ du 4e : la Nef dans son maillage à part. */
-export type OpenWorldCost4e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'départ' };
+export type OpenWorldCost4e = Omit<OpenWorldCost, "poste"> & {
+  poste: OpenWorldCost["poste"] | "départ";
+};
 
 /** Le sol du 4e, compté comme celui du 6e et du 5e : autour des points de son réseau, dans huit directions. */
-function groundCost4e(): { triangles: number; calls: number; near: number; far: number } {
+function groundCost4e(): {
+  triangles: number;
+  calls: number;
+  near: number;
+  far: number;
+} {
   const field = buildHeightField4e();
-  const near = tileCounts4e(field, 'near');
-  const far = tileCounts4e(field, 'far');
+  const near = tileCounts4e(field, "near");
+  const far = tileCounts4e(field, "far");
   let worstNear = 0;
   let worstFar = 0;
   for (const p of NETWORK_4E.networkSamples(SAMPLE_STEP))
     for (let y = 0; y < SAMPLE_YAWS; y++) {
-      const rings = tileRings(p, FOG_4E.far, (2 * Math.PI * y) / SAMPLE_YAWS, TERRAIN_4E);
-      worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
-      worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+      const rings = tileRings(
+        p,
+        FOG_4E.far,
+        (2 * Math.PI * y) / SAMPLE_YAWS,
+        TERRAIN_4E,
+      );
+      worstNear = Math.max(
+        worstNear,
+        rings.near.reduce((s, t) => s + near[t], 0),
+      );
+      worstFar = Math.max(
+        worstFar,
+        rings.far.reduce((s, t) => s + far[t], 0),
+      );
     }
-  return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
+  return {
+    triangles: worstNear + worstFar,
+    calls: 2,
+    near: worstNear,
+    far: worstFar,
+  };
 }
 
 /**
@@ -672,7 +1022,10 @@ function groundCost4e(): { triangles: number; calls: number; near: number; far: 
  * le Rafiot), dans le maillage des lieux : aucun appel de plus.
  */
 function criqueCost(): number {
-  return portFacets(PORT_WORST, { assembling: false }, CRIQUE_SITE).triangles + criqueDecorFacets().triangles;
+  return (
+    portFacets(PORT_WORST, { assembling: false }, CRIQUE_SITE).triangles +
+    criqueDecorFacets().triangles
+  );
 }
 
 /**
@@ -680,13 +1033,30 @@ function criqueCost(): number {
  * missions, leurs trois ponts au plus chargé de leurs deux états, la Crique ; deux maillages.
  */
 function placesCost4e(): { triangles: number; calls: number } {
-  const ruins = PLAN_4E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
-  const passages = LINKED_LANDS_4E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
+  const ruins = PLAN_4E.places.reduce(
+    (s, p) =>
+      s +
+      modelOfPlace(p.id).facets.triangles +
+      (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0),
+    0,
+  );
+  const passages = LINKED_LANDS_4E.reduce(
+    (s, l) =>
+      s +
+      Math.max(
+        bridgeFacets(l, false).triangles,
+        bridgeFacets(l, true).triangles,
+      ),
+    0,
+  );
   return { triangles: ruins + passages + criqueCost(), calls: 2 };
 }
 
 /** L'aéronef du 4e, entier, sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
-const nefCost4e = (): { triangles: number; calls: number } => ({ triangles: NEF_4E_MODEL_TRIANGLES, calls: 0 });
+const nefCost4e = (): { triangles: number; calls: number } => ({
+  triangles: NEF_4E_MODEL_TRIANGLES,
+  calls: 0,
+});
 
 /**
  * Ce que les lieux du 4e posent hors de leur emprise (`PlaceArt.reach` : la vanne et les regards de la rigole de la
@@ -697,7 +1067,11 @@ export function reachCost4e(): number {
   const origin = { x: 0, y: 0, z: 0 };
   return PLAN_4E.places.reduce((s, p) => {
     const art = placeArt(p.id);
-    return s + (art?.reach?.(origin, () => true)?.triangles ?? 0) + (art?.restoration?.draw(origin, Infinity).triangles ?? 0);
+    return (
+      s +
+      (art?.reach?.(origin, () => true)?.triangles ?? 0) +
+      (art?.restoration?.draw(origin, Infinity).triangles ?? 0)
+    );
   }, 0);
 }
 
@@ -707,7 +1081,9 @@ function restorationCost4e(): number {
   let worst = 0;
   for (const p of PLAN_4E.places) {
     const r = placeArt(p.id)?.restoration;
-    if (r) for (let t = 0; t <= r.seconds + 1e-9; t += 0.05) worst = Math.max(worst, r.draw(origin, t).triangles);
+    if (r)
+      for (let t = 0; t <= r.seconds + 1e-9; t += 0.05)
+        worst = Math.max(worst, r.draw(origin, t).triangles);
   }
   return worst;
 }
@@ -719,8 +1095,15 @@ function restorationCost4e(): number {
 function poseCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();
   const ground = (x: number, z: number) => groundOn4e(field, x, z);
-  const lays = Math.max(...LINKED_LANDS_4E.map((l) => bridgeLay(l).facets.triangles));
-  const parts = Math.max(0, ...PLAN_4E.places.filter((p) => p.scenes.length).map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  const lays = Math.max(
+    ...LINKED_LANDS_4E.map((l) => bridgeLay(l).facets.triangles),
+  );
+  const parts = Math.max(
+    0,
+    ...PLAN_4E.places
+      .filter((p) => p.scenes.length)
+      .map((p) => constructionFacets(p.id, [WHOLE], ground).triangles),
+  );
   return { triangles: Math.max(lays, parts, restorationCost4e()), calls: 1 };
 }
 
@@ -732,10 +1115,21 @@ function questionCost4e(): { triangles: number; calls: number } {
   let triangles = 0;
   for (const p of PLAN_4E.places.filter((q) => q.scenes.length)) {
     const s = sceneSpot(p.id);
-    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
-    const item = itemScene(p.id, { kind: 'rest' }, true, points, 1);
-    const objects = answerObjects(scenePlace(p.id), points, 1, { picked: [0, 1, 2, 3, 4, 5] });
-    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+    const points = Array.from({ length: 6 }, (_, i) => ({
+      x: s.x - 5 + 2 * i,
+      y: s.y,
+      z: s.z + 6,
+    }));
+    const item = itemScene(p.id, { kind: "rest" }, true, points, 1);
+    const objects = answerObjects(scenePlace(p.id), points, 1, {
+      picked: [0, 1, 2, 3, 4, 5],
+    });
+    triangles = Math.max(
+      triangles,
+      item.still.triangles +
+        objects.triangles +
+        (item.reaction?.facets.triangles ?? 0),
+    );
   }
   return { triangles, calls: 2 };
 }
@@ -745,9 +1139,17 @@ function questionCost4e(): { triangles: number; calls: number } {
  * l'habitante en modèle 3D, au plus `HABITANT_TRIANGLES_4E`, dans un maillage à part : un appel de plus.
  */
 function scenetteCost4e(): { triangles: number; calls: number } {
-  const places = PLAN_4E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
-  const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E : scenetteDecor(place, open).triangles);
-  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  const places = PLAN_4E.places
+    .filter((p) => p.scenes.length)
+    .map((p) => scenePlace(p.id));
+  const decor = (place: ScenePlaceId, open: boolean) =>
+    hasHabitantModel(place)
+      ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E
+      : scenetteDecor(place, open).triangles;
+  const worst = Math.max(
+    0,
+    ...places.map((p) => Math.max(decor(p, false), decor(p, true))),
+  );
   return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
@@ -761,36 +1163,47 @@ function scenetteCost4e(): { triangles: number; calls: number } {
  * L'Épave (lot 2, ./epave4e.ts), le Recoin et la Dalle (lot 3, ./recoin4e.ts, ./dalle4e.ts) et le Replat (les Coteaux,
  * ./replat4e.ts), les Détours du 4e, et leurs sentes tracées, dans le maillage des lieux. Pas de faune encore.
  */
-export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {
+export function openWorldCost4e(
+  view: "monde" | "scenette" | "depart" = "monde",
+): OpenWorldCost4e[] {
   const field = buildHeightField4e();
   const ground = groundCost4e();
   const paths = pathRibbons4e((x, z) => groundOn4e(field, x, z));
   const places = placesCost4e();
   return [
-    { poste: 'ciel', ...SKY },
-    { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
-    { poste: 'mer', triangles: 2, calls: 1 },
-    { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...places, triangles: places.triangles + reachCost4e() },
-    { poste: 'brume', triangles: veilFacets(LINKED_LANDS_4E).triangles, calls: 1 },
-    { poste: 'détours', triangles: detourCost4e(field), calls: 0 },
-    { poste: 'kéo', ...KEO },
-    { poste: 'nef', ...nefCost4e() },
-    ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
-      : view === 'scenette'
-      ? [
-          { poste: 'question' as const, ...questionCost4e() },
-          { poste: 'scénette' as const, ...scenetteCost4e() },
-        ]
-      : [{ poste: 'pose' as const, ...poseCost4e() }]),
+    { poste: "ciel", ...SKY },
+    { poste: "sol", triangles: ground.triangles, calls: ground.calls },
+    { poste: "mer", triangles: 2, calls: 1 },
+    { poste: "chemins", triangles: paths.triangles, calls: 1 },
+    { poste: "lieux", ...places, triangles: places.triangles + reachCost4e() },
+    {
+      poste: "brume",
+      triangles: veilFacets(LINKED_LANDS_4E).triangles,
+      calls: 1,
+    },
+    { poste: "détours", triangles: detourCost4e(field), calls: 0 },
+    { poste: "kéo", ...KEO },
+    { poste: "nef", ...nefCost4e() },
+    ...(view === "depart"
+      ? [{ poste: "départ" as const, triangles: 0, calls: 2 }]
+      : view === "scenette"
+        ? [
+            { poste: "question" as const, ...questionCost4e() },
+            { poste: "scénette" as const, ...scenetteCost4e() },
+          ]
+        : [{ poste: "pose" as const, ...poseCost4e() }]),
   ];
 }
 
 /** Les Détours du 4e, leur sente tracée : l'Épave, le Recoin et la Dalle. */
 function detourCost4e(field: ReturnType<typeof buildHeightField4e>): number {
   const ground = (x: number, z: number) => groundOn4e(field, x, z);
-  return epaveFacets(true, ground).triangles + recoinFacets(true, ground).triangles + dalleFacets(true, ground).triangles + replatFacets(true, ground).triangles;
+  return (
+    epaveFacets(true, ground).triangles +
+    recoinFacets(true, ground).triangles +
+    dalleFacets(true, ground).triangles +
+    replatFacets(true, ground).triangles
+  );
 }
 
 /**
@@ -800,14 +1213,26 @@ function detourCost4e(field: ReturnType<typeof buildHeightField4e>): number {
  */
 export function mapCost4e(): { triangles: number; calls: number } {
   const field = buildHeightField4e();
-  const far = tileCounts4e(field, 'far').reduce((s, n) => s + n, 0);
+  const far = tileCounts4e(field, "far").reduce((s, n) => s + n, 0);
   const paths = pathRibbons4e((x, z) => groundOn4e(field, x, z)).triangles;
   const places = placesCost4e();
-  const marks = LINKED_LANDS_4E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay4e().triangles;
+  const marks =
+    LINKED_LANDS_4E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) +
+    mapOverlay4e().triangles;
   const veil = veilFacets(LINKED_LANDS_4E).triangles;
   const epave = detourCost4e(field);
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + epave + marks + veil + KEO.triangles + nefCost4e().triangles,
+    triangles:
+      SKY.triangles +
+      far +
+      2 +
+      paths +
+      places.triangles +
+      epave +
+      marks +
+      veil +
+      KEO.triangles +
+      nefCost4e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + 1 + KEO.calls,
   };
 }
@@ -815,23 +1240,44 @@ export function mapCost4e(): { triangles: number; calls: number } {
 // ---------- Le 3e (lot 1 du monde ouvert du 3e, GD-25) ----------
 
 /** Le plan du 3e et ses terres qu'on relie (trois passages). */
-const PLAN_3E = planFor('3e');
+const PLAN_3E = planFor("3e");
 const LINKED_LANDS_3E = linkedLands(PLAN_3E);
 
 /** Le sol du 3e, compté comme celui des autres niveaux : autour des points de son réseau, dans huit directions. */
-function groundCost3e(): { triangles: number; calls: number; near: number; far: number } {
+function groundCost3e(): {
+  triangles: number;
+  calls: number;
+  near: number;
+  far: number;
+} {
   const field = buildHeightField3e();
-  const near = tileCounts3e(field, 'near');
-  const far = tileCounts3e(field, 'far');
+  const near = tileCounts3e(field, "near");
+  const far = tileCounts3e(field, "far");
   let worstNear = 0;
   let worstFar = 0;
   for (const p of NETWORK_3E.networkSamples(SAMPLE_STEP))
     for (let y = 0; y < SAMPLE_YAWS; y++) {
-      const rings = tileRings(p, FOG_3E.far, (2 * Math.PI * y) / SAMPLE_YAWS, TERRAIN_3E);
-      worstNear = Math.max(worstNear, rings.near.reduce((s, t) => s + near[t], 0));
-      worstFar = Math.max(worstFar, rings.far.reduce((s, t) => s + far[t], 0));
+      const rings = tileRings(
+        p,
+        FOG_3E.far,
+        (2 * Math.PI * y) / SAMPLE_YAWS,
+        TERRAIN_3E,
+      );
+      worstNear = Math.max(
+        worstNear,
+        rings.near.reduce((s, t) => s + near[t], 0),
+      );
+      worstFar = Math.max(
+        worstFar,
+        rings.far.reduce((s, t) => s + far[t], 0),
+      );
     }
-  return { triangles: worstNear + worstFar, calls: 2, near: worstNear, far: worstFar };
+  return {
+    triangles: worstNear + worstFar,
+    calls: 2,
+    near: worstNear,
+    far: worstFar,
+  };
 }
 
 /**
@@ -840,7 +1286,12 @@ function groundCost3e(): { triangles: number; calls: number; near: number; far: 
  * posées (le pire, avant que leur fiche ne les montre : GD-25), dans le maillage des lieux : aucun appel de plus.
  */
 function parvisCost(onMap: boolean): number {
-  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles + nefParuresFacets(NEF_PARURES).triangles + (onMap ? 0 : zeppelinFacets().triangles);
+  return (
+    portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles +
+    parvisDecorFacets().triangles +
+    nefParuresFacets(NEF_PARURES).triangles +
+    (onMap ? 0 : zeppelinFacets().triangles)
+  );
 }
 
 /**
@@ -849,8 +1300,22 @@ function parvisCost(onMap: boolean): number {
  * `onMap`, sans le zeppelin) ; deux maillages.
  */
 function placesCost3e(onMap = false): { triangles: number; calls: number } {
-  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0), 0);
-  const passages = LINKED_LANDS_3E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
+  const ruins = PLAN_3E.places.reduce(
+    (s, p) =>
+      s +
+      modelOfPlace(p.id).facets.triangles +
+      (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0),
+    0,
+  );
+  const passages = LINKED_LANDS_3E.reduce(
+    (s, l) =>
+      s +
+      Math.max(
+        bridgeFacets(l, false).triangles,
+        bridgeFacets(l, true).triangles,
+      ),
+    0,
+  );
   return { triangles: ruins + passages + parvisCost(onMap), calls: 2 };
 }
 
@@ -861,14 +1326,24 @@ function veilCost3e(): { triangles: number; calls: number } {
 }
 
 /** L'aéronef du 3e, le modèle du 4e entier (`3-aeronef/final-1464.glb`), sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
-const nefCost3e = (): { triangles: number; calls: number } => ({ triangles: NEF_4E_MODEL_TRIANGLES, calls: 0 });
+const nefCost3e = (): { triangles: number; calls: number } => ({
+  triangles: NEF_4E_MODEL_TRIANGLES,
+  calls: 0,
+});
 
 /** La pose au 3e : un passage qui se relève, ou une partie d'un lieu construit qui descend (le Versant). Un appel. */
 function poseCost3e(): { triangles: number; calls: number } {
   const field = buildHeightField3e();
   const ground = ground3e(field);
-  const lays = Math.max(...LINKED_LANDS_3E.map((l) => bridgeLay(l).facets.triangles));
-  const parts = Math.max(0, ...PLAN_3E.places.filter((p) => p.scenes.length).map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  const lays = Math.max(
+    ...LINKED_LANDS_3E.map((l) => bridgeLay(l).facets.triangles),
+  );
+  const parts = Math.max(
+    0,
+    ...PLAN_3E.places
+      .filter((p) => p.scenes.length)
+      .map((p) => constructionFacets(p.id, [WHOLE], ground).triangles),
+  );
   return { triangles: Math.max(lays, parts), calls: 1 };
 }
 
@@ -880,10 +1355,21 @@ function questionCost3e(): { triangles: number; calls: number } {
   let triangles = 0;
   for (const p of PLAN_3E.places.filter((q) => q.scenes.length)) {
     const s = sceneSpot(p.id);
-    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
-    const item = itemScene(p.id, { kind: 'rest' }, true, points, 1);
-    const objects = answerObjects(scenePlace(p.id), points, 1, { picked: [0, 1, 2, 3, 4, 5] });
-    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+    const points = Array.from({ length: 6 }, (_, i) => ({
+      x: s.x - 5 + 2 * i,
+      y: s.y,
+      z: s.z + 6,
+    }));
+    const item = itemScene(p.id, { kind: "rest" }, true, points, 1);
+    const objects = answerObjects(scenePlace(p.id), points, 1, {
+      picked: [0, 1, 2, 3, 4, 5],
+    });
+    triangles = Math.max(
+      triangles,
+      item.still.triangles +
+        objects.triangles +
+        (item.reaction?.facets.triangles ?? 0),
+    );
   }
   return { triangles, calls: 2 };
 }
@@ -893,9 +1379,17 @@ function questionCost3e(): { triangles: number; calls: number } {
  * `3e-habitant-<lieu>` n'existe encore), dans un maillage.
  */
 function scenetteCost3e(): { triangles: number; calls: number } {
-  const places = PLAN_3E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
-  const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E : scenetteDecor(place, open).triangles);
-  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  const places = PLAN_3E.places
+    .filter((p) => p.scenes.length)
+    .map((p) => scenePlace(p.id));
+  const decor = (place: ScenePlaceId, open: boolean) =>
+    hasHabitantModel(place)
+      ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E
+      : scenetteDecor(place, open).triangles;
+  const worst = Math.max(
+    0,
+    ...places.map((p) => Math.max(decor(p, false), decor(p, true))),
+  );
   return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
@@ -907,51 +1401,69 @@ function scenetteCost3e(): { triangles: number; calls: number } {
  * scénette ouverte (`scenette`, la question et le décor de près d'un lieu construit, l'habitant en pion) ou le départ
  * (`depart`, la Nef et l'obstacle dans deux maillages à part). Pas de faune.
  */
-export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' = 'monde'): OpenWorldCost4e[] {
+export function openWorldCost3e(
+  view: "monde" | "scenette" | "depart" = "monde",
+): OpenWorldCost4e[] {
   const field = buildHeightField3e();
   const ground = groundCost3e();
   const paths = pathRibbons3e(ground3e(field));
   return [
-    { poste: 'ciel', ...SKY },
-    { poste: 'sol', triangles: ground.triangles, calls: ground.calls },
-    { poste: 'mer', triangles: 2, calls: 1 },
-    { poste: 'chemins', triangles: paths.triangles, calls: 1 },
-    { poste: 'lieux', ...placesCost3e() },
-    { poste: 'brume', ...veilCost3e() },
-    { poste: 'détours', triangles: detourCost3e(field), calls: 0 },
-    { poste: 'kéo', ...KEO },
-    { poste: 'nef', ...nefCost3e() },
-    ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
-      : view === 'scenette'
-      ? [
-          { poste: 'question' as const, ...questionCost3e() },
-          { poste: 'scénette' as const, ...scenetteCost3e() },
-        ]
-      : [{ poste: 'pose' as const, ...poseCost3e() }]),
+    { poste: "ciel", ...SKY },
+    { poste: "sol", triangles: ground.triangles, calls: ground.calls },
+    { poste: "mer", triangles: 2, calls: 1 },
+    { poste: "chemins", triangles: paths.triangles, calls: 1 },
+    { poste: "lieux", ...placesCost3e() },
+    { poste: "brume", ...veilCost3e() },
+    { poste: "détours", triangles: detourCost3e(field), calls: 0 },
+    { poste: "kéo", ...KEO },
+    { poste: "nef", ...nefCost3e() },
+    ...(view === "depart"
+      ? [{ poste: "départ" as const, triangles: 0, calls: 2 }]
+      : view === "scenette"
+        ? [
+            { poste: "question" as const, ...questionCost3e() },
+            { poste: "scénette" as const, ...scenetteCost3e() },
+          ]
+        : [{ poste: "pose" as const, ...poseCost3e() }]),
   ];
 }
 
-/** Les Détours du 3e, leur sente tracée : le Cadran (le Versant), la Bergerie (les Alpages). */
+/** Les Détours du 3e, leur sente tracée : le Cadran (le Versant), la Bergerie (les Alpages), le Cèdre (les Prairies). */
 const detourCost3e = (field: ReturnType<typeof buildHeightField3e>): number => {
   const ground = ground3e(field);
-  return cadranFacets(true, ground).triangles + bergerieFacets(true, ground).triangles;
+  return (
+    cadranFacets(true, ground).triangles +
+    bergerieFacets(true, ground).triangles +
+    cedreFacets(true, ground).triangles
+  );
 };
 
 /**
  * La Carte du 3e, en un seul plan : le ciel, toutes les terres de loin, la mer de nuages, les chemins, les lieux (deux
  * appels, le pire), le trait double des passages, les hachures du pic et des arêtes et la bande de la langue de glace
- * (dans le maillage des lieux), le Cadran, la Bergerie et leur sente, la brume des terres fermées, Kéo.
+ * (dans le maillage des lieux), le Cadran, la Bergerie, le Cèdre et leur sente, la brume des terres fermées, Kéo.
  */
 export function mapCost3e(): { triangles: number; calls: number } {
   const field = buildHeightField3e();
-  const far = tileCounts3e(field, 'far').reduce((s, n) => s + n, 0);
+  const far = tileCounts3e(field, "far").reduce((s, n) => s + n, 0);
   const paths = pathRibbons3e(ground3e(field)).triangles;
   const places = placesCost3e(true);
-  const marks = LINKED_LANDS_3E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay3e().triangles;
+  const marks =
+    LINKED_LANDS_3E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) +
+    mapOverlay3e().triangles;
   const veil = veilCost3e();
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + detourCost3e(field) + marks + veil.triangles + KEO.triangles + nefCost3e().triangles,
+    triangles:
+      SKY.triangles +
+      far +
+      2 +
+      paths +
+      places.triangles +
+      detourCost3e(field) +
+      marks +
+      veil.triangles +
+      KEO.triangles +
+      nefCost3e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + veil.calls + KEO.calls,
   };
 }
