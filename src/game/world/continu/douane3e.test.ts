@@ -23,7 +23,6 @@ import { BUILT_PLACES_3E, COLORS_3E, PATH_EDGES_3E, PATH_NODES_3E, UNPRICED_PLAC
 import { landDistance3e } from './terrain3e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace } from './questionScene';
-import { RUINS_3E } from './ruins3e';
 import { scenetteOf } from './scenette';
 import { standingHeight } from './terrain';
 import { heightAt3e } from './terrain3e';
@@ -77,7 +76,6 @@ describe('La Douane, lieu d’option complet', () => {
         lv2,
       ).toEqual([[[0, 0, 1 / 3]], [[0, 1 / 3, 2 / 3]], [[0, 2 / 3, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
     }
-    expect(Object.hasOwn(RUINS_3E, 'douane')).toBe(false);
     expect(UNPRICED_PLACES_3E).toContain('douane');
   });
 

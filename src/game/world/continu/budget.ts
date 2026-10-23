@@ -862,15 +862,17 @@ function placesCost3e(onMap = false): { triangles: number; calls: number } {
 }
 
 /**
- * Ce qu'un lieu du 3e montre hors de son modèle à sa restauration (`PlaceArt.restoration` : au Fanal, la fin des
- * Ferrailleurs, les pièces de la gondole puis le râtelier, Grappin et la lumière de leur port), à son état le plus
- * chargé ; dans le monde seulement, jamais sur la Carte.
+ * Ce qu'un lieu du 3e montre hors de son modèle, à son état le plus chargé : sa restauration (`PlaceArt.restoration` :
+ * au Fanal, la fin des Ferrailleurs, les pièces de la gondole puis le râtelier, Grappin et la lumière de leur port) et ce
+ * qu'il pose au-delà de son emprise (`PlaceArt.reach` : au Standard, la ligne des poteaux et leurs fils jusqu'au Fanal) ;
+ * dans le monde seulement, jamais sur la Carte.
  */
 function restorationCost3e(id: (typeof PLAN_3E.places)[number]['id']): number {
-  const art = placeArt(id)?.restoration;
-  if (!art) return 0;
+  const art = placeArt(id);
   const origin = { x: 0, y: 0, z: 0 };
-  return Math.max(art.draw(origin, 0).triangles, art.draw(origin, Infinity).triangles);
+  const shown = art?.restoration ? Math.max(art.restoration.draw(origin, 0).triangles, art.restoration.draw(origin, Infinity).triangles) : 0;
+  const far = art?.reach ? Math.max(art.reach(origin, () => false)?.triangles ?? 0, art.reach(origin, () => true)?.triangles ?? 0) : 0;
+  return shown + far;
 }
 
 /** La brume des terres fermées du 3e (au départ, les trois) : aucun voile retenu (retouche 1 du lot 1), aucun appel alors. */

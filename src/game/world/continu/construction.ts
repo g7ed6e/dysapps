@@ -186,6 +186,7 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   ondes: placeArt('ondes')!.traceStage,
   fanal: placeArt('fanal')!.traceStage,
   rampe: placeArt('rampe')!.traceStage,
+  standard: placeArt('standard')!.traceStage,
 };
 
 /**

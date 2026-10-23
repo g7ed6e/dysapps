@@ -18,7 +18,6 @@ import { PATH_NODES_4E } from './plan4e';
 import { PATH_NODES_3E } from './plan3e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
-import { RUINS_3E } from './ruins3e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
 
@@ -2481,12 +2480,6 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
-/** Une ruine du 3e (./ruins3e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
-const ruinOnly =
-  (draw: (b: FacetBuilder) => void) =>
-  (add: Add): void =>
-    add('ruine', 0, draw);
-
 const DRAWN: Record<PlaceId, (add: Add) => void> = {
   phare,
   quais,
@@ -2541,15 +2534,15 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   terminus: northPlace('terminus'),
   orgues: northPlace('orgues'),
   dynamo: northPlace('dynamo'),
-  // Le 3e : le Belvédère, le Grenier, l'Abri et le Jardin (le Versant, lot 2 du monde ouvert du 3e), puis les lieux des Alpages (lot 3) et des Prairies (lot 4), dessinés dans leur fichier ; les autres, des ruines
-  // simples (lot 1, ./ruins3e.ts).
+  // Le 3e : les lieux du Versant (lot 2 du monde ouvert du 3e), des Alpages (lot 3), des Prairies (lot 4) et du Cirque
+  // (lot 5), chacun dessiné dans son fichier ; les ruines simples du lot 1 sont toutes remplacées.
   belvedere: northPlace('belvedere'),
   grenier: northPlace('grenier'),
   abri: northPlace('abri'),
   jardin: northPlace('jardin'),
   fanal: northPlace('fanal'),
   rampe: northPlace('rampe'),
-  standard: ruinOnly(RUINS_3E.standard),
+  standard: northPlace('standard'),
   kiosque: northPlace('kiosque'),
   maquette: northPlace('maquette'),
   tribune: northPlace('tribune'),

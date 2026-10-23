@@ -22,7 +22,6 @@ import { C3E } from './place3eKit';
 import { BUILT_PLACES_3E, COLORS_3E, PATH_EDGES_3E, PATH_NODES_3E, UNPRICED_PLACES_3E } from './plan3e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace } from './questionScene';
-import { RUINS_3E } from './ruins3e';
 import { scenetteOf } from './scenette';
 import { standingHeight } from './terrain';
 import { heightAt3e } from './terrain3e';
@@ -76,7 +75,6 @@ describe('L’Ermitage, lieu d’option complet', () => {
         lca,
       ).toEqual([[[0, 0, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
     }
-    expect(Object.hasOwn(RUINS_3E, 'ermitage')).toBe(false);
     expect(UNPRICED_PLACES_3E).toContain('ermitage');
   });
 

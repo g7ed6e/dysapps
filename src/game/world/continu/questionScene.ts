@@ -288,6 +288,8 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   fanal: placeArt('fanal')!.sceneSpot,
   // La Rampe : sur l'herbe au sud de la rampe, à l'ouest de la porte, la rampe de trois quarts et le Fanal au fond.
   rampe: placeArt('rampe')!.sceneSpot,
+  // Le Standard : sur l'herbe devant la salle, à gauche du chemin, la salle et le Lac au-delà.
+  standard: placeArt('standard')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -615,6 +617,8 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   fanal: 'lieu',
   // La Rampe : les poulies de fer bruni, en rang sur un établi.
   rampe: 'lieu',
+  // Le Standard : les fiches de bois à tête ronde, en rang sur un petit bureau.
+  standard: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

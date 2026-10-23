@@ -22,7 +22,6 @@ import { BUILT_PLACES_3E, COLORS_3E, PATH_NODES_3E } from './plan3e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace } from './questionScene';
 import { ONDES, ONDES_LAYOUT } from './ondes3e';
-import { RUINS_3E } from './ruins3e';
 import { scenetteOf } from './scenette';
 import { standingHeight } from './terrain';
 import { heightAt3e, landDistance3e } from './terrain3e';
@@ -69,7 +68,6 @@ describe('Les Ondes, lieu complet', () => {
     expect(hasScenette('ondes')).toBe(true);
     expect(hasHabitantModel('ondes')).toBe(false);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, +s.from.toFixed(3), +s.to.toFixed(3)]))).toEqual([[[0, 0, 0.5]], [[0, 0.5, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
-    expect(Object.hasOwn(RUINS_3E, 'ondes')).toBe(false);
   });
 
   it('chaque partie pose quelque chose ; la ruine part avec la partie qui la remplace', () => {

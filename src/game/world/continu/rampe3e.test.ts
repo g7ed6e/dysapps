@@ -22,7 +22,6 @@ import { BUILT_PLACES_3E, COLORS_3E, PATH_NODES_3E, PEAK_3E } from './plan3e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace } from './questionScene';
 import { RAMPE, RAMPE_LAYOUT } from './rampe3e';
-import { RUINS_3E } from './ruins3e';
 import { scenetteOf } from './scenette';
 import { standingHeight } from './terrain';
 import { heightAt3e } from './terrain3e';
@@ -71,7 +70,6 @@ describe('La Rampe, lieu complet', () => {
     expect(hasScenette('rampe')).toBe(true);
     expect(hasHabitantModel('rampe')).toBe(false);
     expect(SHAPES.map((p) => p.map((s) => [s.stage, s.from, s.to]))).toEqual([[[0, 0, 1]], [[1, 0, 1]], [[2, 0, 1]]]);
-    expect(Object.hasOwn(RUINS_3E, 'rampe')).toBe(false);
   });
 
   it('chaque partie pose quelque chose ; la ruine part avec la partie qui la remplace', () => {

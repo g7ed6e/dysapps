@@ -481,6 +481,18 @@ const SCENETTES: Record<PlaceId, Scenette> = {
       end: 'Ici, on a hissé toutes les pierres du Fanal.',
     },
   },
+  // Le Standard (le Cirque du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 5), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« poste », « toit », « piquets », « ruche », « Navette ») ni « standard » en mot commun.
+  standard: {
+    role: placeArt('standard')!.role,
+    greeting: 'La télégraphiste envoie les messages par les fils.',
+    placement: 'rangee',
+    words: {
+      pose: ['Les ardoises sont remises.', 'Le tableau est remis.', 'Les lampes sont allumées.', 'Les fils vont jusqu’au Fanal.'],
+      end: 'Ici, les fils portaient les messages jusqu’au Fanal.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -939,6 +951,7 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   tribune: northSite('tribune'),
   douane: northSite('douane'),
   ermitage: northSite('ermitage'),
+  standard: northSite('standard'),
   rampe: northSite('rampe'),
   fanal: northSite('fanal'),
   ondes: northSite('ondes'),
@@ -2541,6 +2554,8 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   fanal: 'earth',
   // La Rampe : l'herbe grise du Cirque.
   rampe: 'earth',
+  // Le Standard : l'herbe grise du Cirque.
+  standard: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 
