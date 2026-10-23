@@ -24,7 +24,11 @@ const PORT_3E: BiomeId = 'maths-3e-functions';
 
 const row = (n: number, z: number, block: BlockId): PlanCell[] => Array.from({ length: n }, (_, x) => ({ x, y: 0, z, block }));
 
-/** Le plan des parures : la figure de proue en bas (z = 0), puis le pavois (z = 1). */
+/**
+ * Le plan des parures : la figure de proue en bas (z = 0), puis le pavois (z = 1). Ne jamais changer le nombre ni la
+ * place de ses 16 cases : à la lecture de la sauvegarde, une clé hors du plan est jetée sans remboursement (les blocs
+ * posés seraient perdus). Le test des parures fige ce nombre et ces clés.
+ */
 export const NEF_PARURES_PLAN: PlanDef = {
   id: NEF_PARURES_ID,
   biome: PORT_3E,

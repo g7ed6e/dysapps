@@ -361,6 +361,17 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // pose ; un panneau ouvert les retient aussi (PortPanels).
   const [assembling, setAssembling] = useState(false);
   useHoldCelebrations(posePending || assembling || Boolean(remise) || finalPlaying);
+  // La vue finale se termine aussi au clavier, comme au toucher : Échap, Entrée ou Espace (référent dys).
+  useEffect(() => {
+    if (!finalPlaying) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape' && e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
+      world.current?.endFinal();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [finalPlaying]);
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
@@ -880,6 +891,24 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     // La voix et son réglage ne relancent pas la phrase : seule une nouvelle pose (`said`) la relance.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [said]);
+  // La vue finale (au 3e) cache la phrase de la restauration du Fanal, posée juste avant elle : à la fin de la vue, la
+  // phrase revient et reste écrite toute sa durée, sans que la voix la redise (consultant UX UI, « Le temps de lire »).
+  const saidAtFinal = useRef<number | null>(null);
+  useEffect(() => {
+    if (finalPlaying) {
+      saidAtFinal.current = said?.n ?? null;
+      return;
+    }
+    const n = saidAtFinal.current;
+    saidAtFinal.current = null;
+    if (n === null || !said || said.n !== n) return;
+    saidAt.current = { step: 0, lines: said.lines.length };
+    setSaidStep(0);
+    setSaidShown(true);
+    nextSaid(smallNow.current ? SAID_MS : SAID_MS * said.lines.length);
+    // Seule la fin de la vue finale relance la phrase ; une nouvelle pose passe par l'effet de `said`.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [finalPlaying]);
   // Une ligne touchée : comme une pastille de la Carte ; la voix dit le nom du lieu, celui du panneau qui s'ouvre à
   // l'arrivée (référent dys).
   const pickFromList = useCallback(

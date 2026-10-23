@@ -353,6 +353,8 @@ export interface OpenWorld {
    * (les captures seulement) ; rien ailleurs, sur la Carte ou pendant une question.
    */
   playFinal(): void;
+  /** Termine la vue finale en cours, comme un toucher (Échap, Entrée ou Espace) ; rien s'il n'y en a pas. */
+  endFinal(): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, la Nef comprise, sans rien faire (la mesure des cibles). */
@@ -4567,6 +4569,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeVisibility();
     },
     playFinal: () => startFinal(null),
+    endFinal: () => finishFinal(),
     departNef: (done) => {
       if (nefTrip || nefLookNow === 4) return done();
       startNefTrip(done);

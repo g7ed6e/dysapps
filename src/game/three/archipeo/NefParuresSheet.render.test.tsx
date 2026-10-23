@@ -65,6 +65,14 @@ describe('la fiche de la Nef au repos du 3e (GD-25)', () => {
     expect(screen.queryByRole('button', { name: /Poser/ })).toBeNull();
   });
 
+  it('la phrase du bloc qui manque est en syllabes colorées, son lieu compris, comme les autres phrases de la fiche', () => {
+    show(keys.slice(0, 6), {}, 0);
+    const line = [...document.querySelectorAll('#panneau-nef .world-fiche-phrase')].find((p) => /quartz/.test(p.textContent ?? ''))!;
+    expect(line.querySelectorAll('.syllables').length).toBeGreaterThanOrEqual(3);
+    const lien = line.querySelector('a')!;
+    expect(lien.querySelector('.syl')).not.toBeNull();
+  });
+
   it('les deux posées, les feux attendent un lieu : « Carte » à la place de l’action', async () => {
     const { onMap } = show(keys, {}, 1);
     expect(done()).toEqual(['faite', 'faite', 'en-cours']);

@@ -117,3 +117,49 @@ test('toucher l’aéronef ouvre la fiche de la Nef et de ses parures (GD-25), j
   await vi.waitFor(() => expect(scene.world!.setParures).toHaveBeenLastCalledWith(1));
   expect(within(sheet).getByRole('status').textContent).toBe('La figure de proue est posée.');
 });
+
+test('la phrase de la restauration du Fanal, cachée pendant la vue finale, revient à sa fin et reste écrite toute sa durée', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    act(() => {
+      scene.options!.onRestored!('fanal');
+      scene.options!.onFinalView!(true);
+    });
+    const box = document.querySelector('.open-world-said')!;
+    // La vue finale dure plus longtemps que la phrase : elle n'est jamais écrite pendant la vue.
+    act(() => vi.advanceTimersByTime(22_000));
+    expect(box.getAttribute('data-shown')).toBe('non');
+    act(() => scene.options!.onFinalView!(false));
+    expect(box.getAttribute('data-shown')).toBe('oui');
+    expect(box.textContent).toMatch(/Fanal/);
+    // Deux phrases (l'état, puis la réplique) : 8 s ensemble, ou 4 s chacune sur un petit écran.
+    act(() => vi.advanceTimersByTime(7_000));
+    expect(box.getAttribute('data-shown')).toBe('oui');
+    act(() => vi.advanceTimersByTime(1_500));
+    expect(box.getAttribute('data-shown')).toBe('non');
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test('la vue finale se termine aussi au clavier : Échap, Entrée ou Espace', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  for (const key of ['Escape', 'Enter', ' ']) {
+    act(() => scene.options!.onFinalView!(true));
+    const before = vi.mocked(scene.world!.endFinal).mock.calls.length;
+    act(() => {
+      window.dispatchEvent(new KeyboardEvent('keydown', { key }));
+    });
+    expect(vi.mocked(scene.world!.endFinal).mock.calls.length).toBe(before + 1);
+    act(() => scene.options!.onFinalView!(false));
+  }
+  // Hors de la vue finale, ces touches ne la demandent pas.
+  const after = vi.mocked(scene.world!.endFinal).mock.calls.length;
+  act(() => {
+    window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
+  });
+  expect(vi.mocked(scene.world!.endFinal).mock.calls.length).toBe(after);
+});

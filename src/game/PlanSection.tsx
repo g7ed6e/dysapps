@@ -50,23 +50,27 @@ export function useEarnWhere(): (block: BlockId) => string {
   };
 }
 
-/** « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou un coffre (`whereToEarn`). */
-export function EarnLink({ block, here }: { block: BlockId; here?: BiomeId }) {
+/**
+ * « à gagner dans Forêt des sons » (un lien vers l'île), « ici, dans les missions », ou un coffre (`whereToEarn`) ;
+ * `syllables`, en syllabes colorées, comme le reste de la phrase qui le porte (la fiche de la Nef).
+ */
+export function EarnLink({ block, here, syllables = false }: { block: BlockId; here?: BiomeId; syllables?: boolean }) {
   const lieu = useTextes().assemblage;
   const placeOf = useContext(EarnPlaces);
+  const say = (text: string) => (syllables ? <Syllabified text={frenchTypography(text)} /> : text);
   if (BLOCKS[block].assemble)
     return (
       <>
-        à assembler <Link to={`${ASSEMBLAGE_PATH}?bloc=${block}`}>{lieu.a}</Link>
+        {say('à assembler')} <Link to={`${ASSEMBLAGE_PATH}?bloc=${block}`}>{say(lieu.a)}</Link>
       </>
     );
   const island = earnIsland(block);
-  if (!island) return <>à gagner dans {whereToEarn(block)}</>;
-  if (island.id === here) return <>à gagner ici, dans les missions</>;
+  if (!island) return <>{say(`à gagner dans ${whereToEarn(block)}`)}</>;
+  if (island.id === here) return <>{say('à gagner ici, dans les missions')}</>;
   const place = placeOf?.(island.id);
   return (
     <>
-      {place ? 'à gagner ' : 'à gagner dans '}<Link to={place?.to ?? `/adventure/${island.id}`}>{place?.at ?? island.name}</Link>
+      {say(place ? 'à gagner' : 'à gagner dans')} <Link to={place?.to ?? `/adventure/${island.id}`}>{say(place?.at ?? island.name)}</Link>
     </>
   );
 }

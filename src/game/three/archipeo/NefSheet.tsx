@@ -180,7 +180,7 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
           </p>
           {manque && (
             <p className="world-fiche-phrase">
-              {blockCount(manque[0], manquants)} <EarnLink block={manque[0]} here={port} />.
+              <Syllabified text={frenchTypography(blockCount(manque[0], manquants))} /> <EarnLink block={manque[0]} here={port} syllables />.
             </p>
           )}
           {waiting && (
@@ -313,7 +313,7 @@ export function NefParuresSheet({ look, feux, missing, onMap, onClose }: Parures
       </p>
       {bloc && manquants > 0 && (
         <p className="world-fiche-phrase" aria-hidden="true">
-          {blockCount(bloc, manquants)}, <EarnLink block={bloc} here={NEF_PARURES_PLAN.biome} />.
+          <Syllabified text={frenchTypography(`${blockCount(bloc, manquants)},`)} /> <EarnLink block={bloc} here={NEF_PARURES_PLAN.biome} syllables />.
         </p>
       )}
       <div className="nef-sheet-actions">

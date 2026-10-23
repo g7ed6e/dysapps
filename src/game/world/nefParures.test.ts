@@ -38,6 +38,14 @@ describe('le plan des parures (GD-25)', () => {
     expect(getParures('navire-reacteur')).toBeUndefined();
   });
 
+  it('garde à jamais ses 16 cases, aux mêmes clés : une clé hors du plan serait jetée sans remboursement', () => {
+    expect(NEF_PARURES_PLAN.cells).toHaveLength(16);
+    expect(keys).toEqual([
+      ...Array.from({ length: 6 }, (_, x) => `${x},0,0`),
+      ...Array.from({ length: 10 }, (_, x) => `${x},0,1`),
+    ]);
+  });
+
   it('se lit en trois temps, jamais les feux avant le pavois', () => {
     expect(paruresLook({}, {}, 5)).toBe(0);
     expect(paruresLook({ [NEF_PARURES_ID]: proue.slice(0, 5) }, {}, 5)).toBe(0);
