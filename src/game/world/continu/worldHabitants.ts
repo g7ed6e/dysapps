@@ -128,6 +128,9 @@ export const WORLD_HABITANT_TRIANGLES = 1_500;
 /** Le lieu a-t-il un habitant qui se tient près de lui hors de sa scénette ? Chaque lieu qui a sa scénette (un lieu fini). */
 export const hasWorldHabitant = (place: PlaceId): place is ScenePlaceId => Object.hasOwn(WORLD_HABITANT_SPOTS, place) && hasScenette(place);
 
+/** Le rayon de ses pieds, autour du point où il se tient. */
+const FOOT = 0.5;
+
 /** Où se tient l'habitant d'un lieu hors de sa scénette (ses pieds), ou rien. */
 export function worldHabitantAt(place: PlaceId, ground: (x: number, z: number) => number): Vec3 | null {
   if (!hasWorldHabitant(place)) return null;
@@ -136,7 +139,10 @@ export function worldHabitantAt(place: PlaceId, ground: (x: number, z: number) =
   const c = placeById(place).center;
   const x = c.x + s.dx;
   const z = c.z + s.dz;
-  return { x, y: ground(x, z) + (s.lift ?? 0), z };
+  // Sur une pente, au plus haut du sol sous ses pieds : le sol à facettes ne passe pas devant ses jambes (aux Écluses, il
+  // coupait ses tibias, ses chaussures au-dessous : directeur artistique, consultant Archipéo).
+  const y = Math.max(...[[0, 0], [FOOT, 0], [-FOOT, 0], [0, FOOT], [0, -FOOT]].map(([u, v]) => ground(x + u, z + v)));
+  return { x, y: y + (s.lift ?? 0), z };
 }
 
 /**
