@@ -103,12 +103,16 @@ const TOWER = { x0: 2.7, x1: 6.15, z0: -4.65, z1: -1.2, stump: 7.0, ruin: [8.2, 
 /**
  * La grue (intention : x 9, z 0 ; retouche 1 du Bastion, point 1, Bloquant du directeur artistique : jamais un gibet) :
  * son pied, le côté de son poteau carré plein, sa hauteur ; la flèche, articulée au poteau à `pivot` et tendue vers le
- * plancher, longue (`boom`) et nettement relevée (`rise`, 40°), retenue par un hauban du haut du poteau ; la contre-flèche,
+ * plancher, longue (`boom`) et nettement relevée (`rise`, 50° : restes du monde ouvert du 4e, point 4, de dos son bout
+ * passe au-dessus de la tête du poteau ; tournée vers le sud, `toward`, pour que son bout reste au-dessus du plancher ;
+ * articulée un mètre plus bas, `pivot` 10,4 au lieu de 11,4, pour que son bout reste dans la vue d'arrivée : à 11,4, il en
+ * sortait par le haut même à 45°),
+ * retenue par un hauban du haut du poteau, épais et du bois de la flèche (le triangle fermé d'une grue) ; la contre-flèche,
  * courte, en haut, de l'autre côté, son contrepoids de pierre pendu à son bout ; au bout de la flèche, la poulie, un câble
  * court (`rope`) et une moufle épaisse, le crochet dessous ; le gros contrepoids de pierre au pied. Le bout de la flèche
  * reste dans la vue d'arrivée (articulée plus haut, elle sortait du cadre).
  */
-const CRANE_BOOM = { length: 9.5, rise: (40 * Math.PI) / 180, pivot: 11.4, toward: { x: -3, z: 6.6 } } as const;
+const CRANE_BOOM = { length: 9.5, rise: (50 * Math.PI) / 180, pivot: 10.4, toward: { x: -1, z: 7 } } as const;
 const CRANE_DIR = (() => {
   const l = Math.hypot(CRANE_BOOM.toward.x, CRANE_BOOM.toward.z);
   return { x: CRANE_BOOM.toward.x / l, z: CRANE_BOOM.toward.z / l };
@@ -129,6 +133,17 @@ const CRANE = {
   jib: 2.6,
   rope: 1.4,
 } as const;
+
+/**
+ * Le tronçon de flèche de la ruine (2,2 de long, la section de la flèche), couché au pied du poteau : un bout contre sa
+ * face sud, l'autre vers le plancher, relevé de `lift` sur une pierre basse.
+ */
+const FALLEN_BOOM = (() => {
+  const dir = { x: -0.45, z: 0.89 };
+  const l = Math.hypot(dir.x, dir.z);
+  const from = { x: CRANE.x - 0.1, z: CRANE.z + CRANE.side / 2 + 0.2 };
+  return { from, to: { x: from.x + (dir.x / l) * 2.2, z: from.z + (dir.z / l) * 2.2 }, section: 0.36, lift: 0.3 };
+})();
 
 /** La balance à fléau, devant l'arcade, à droite de la porte : son pied, sa hauteur, la longueur du fléau, ses plateaux. */
 const BALANCE = { x: 1.9, z: 6.4, h: 1.8, beam: 2.4, pan: 0.42, hang: 0.9 } as const;
@@ -397,14 +412,17 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // Le reste de la flèche, couché en travers du haut des murs, du mur est au pilier du milieu de la façade : l'étage
   // remonté (le corps 2) le relève, sans quoi ses murs le traverseraient.
   add('ruine', 0, (b) => b.beam({ x: 7.2, y: G() + A.ground + 0.22, z: -1.0 }, { x: 0, y: G() + A.ground + 0.22, z: A.z1 + 0.1 }, 0.38, C.woodShade), corps2);
-  // Le haut la relève : le tronçon de flèche resté en haut du poteau.
+  // Le haut la relève : le tronçon de flèche tombé au pied du poteau (restes du monde ouvert du 4e, point 4 : rien ne part
+  // du poteau en hauteur), couché en biais vers le plancher, un bout contre le pied, l'autre relevé sur une pierre.
   add(
     'ruine',
     0,
     (b) => {
-      const cg = planeY(CRANE.x, CRANE.z);
-      const l = 2.2 * Math.cos(CRANE.rise);
-      b.beam({ x: CRANE.x + CRANE_DIR.x * 0.35, y: cg + CRANE.pivot, z: CRANE.z + CRANE_DIR.z * 0.35 }, { x: CRANE.x + CRANE_DIR.x * (0.35 + l), y: cg + CRANE.pivot + 2.2 * Math.sin(CRANE.rise), z: CRANE.z + CRANE_DIR.z * (0.35 + l) }, 0.36, C.wood);
+      const F = FALLEN_BOOM;
+      const [a, c] = [F.from, F.to];
+      const t = F.section / 2;
+      b.beam({ x: a.x, y: planeY(a.x, a.z) + t - 0.05, z: a.z }, { x: c.x, y: planeY(c.x, c.z) + t + F.lift, z: c.z }, F.section, C.wood);
+      b.prism({ x: c.x, y: planeY(c.x, c.z) - 0.04, z: c.z, yaw: 0.4 }, 0.32, 0, F.lift + 0.04, 4, C.stoneShade);
     },
     haut,
   );
@@ -544,8 +562,9 @@ function crane(b: FacetBuilder): void {
   const tip = { x: CRANE.tip.x, y: cg + CRANE.tip.y, z: CRANE.tip.z };
   const yaw = Math.atan2(CRANE_DIR.x, CRANE_DIR.z);
   b.beam(foot, tip, 0.42, C.newShade);
-  // Le hauban, du haut du poteau au bout de la flèche.
-  b.beam({ x: head.x, y: head.y + 0.2, z: head.z }, { x: tip.x, y: tip.y - 0.1, z: tip.z }, 0.06, C.hemp);
+  // Le hauban, du haut du poteau au bout de la flèche : épais, du bois de la flèche (le chanvre clair disparaissait sur le
+  // ciel du 4e) ; le triangle poteau-hauban-flèche se lit.
+  b.beam({ x: head.x, y: head.y + 0.2, z: head.z }, { x: tip.x, y: tip.y - 0.1, z: tip.z }, 0.12, C.newShade);
   // La contre-flèche, à peine penchée, et son contrepoids de pierre pendu à son bout.
   const back = { x: head.x - CRANE_DIR.x * CRANE.jib, y: head.y - 0.35, z: head.z - CRANE_DIR.z * CRANE.jib };
   b.beam({ x: head.x, y: head.y + 0.05, z: head.z }, back, 0.32, C.newShade);

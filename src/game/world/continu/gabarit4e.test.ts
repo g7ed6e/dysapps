@@ -127,12 +127,12 @@ describe('Le Gabarit, lieu complet', () => {
       expect(topNear(f, (T.x0 + T.x1) / 2, (T.z0 + T.z1) / 2, 1.0)).toBeLessThan(crane - 2.5);
     }
     // Restaurée : la tour à environ 13 avec son pavillon (elle dépasse le toit de l'atelier, vue de la porte), le bout de
-    // la flèche de la grue, le plus haut du lieu, vers 17,5.
+    // la flèche de la grue, le plus haut du lieu, vers 18 (restes du monde ouvert du 4e, point 4 : la flèche à 50°).
     const whole = shown(5);
     let top = -Infinity;
     for (let i = 1; i < whole.positions.length; i += 3) top = Math.max(top, whole.positions[i]);
     expect(top - L.base).toBeGreaterThan(17);
-    expect(top - L.base).toBeLessThan(18.5);
+    expect(top - L.base).toBeLessThan(19.5);
     expect(topNear(whole, (L.tower.x0 + L.tower.x1) / 2, (L.tower.z0 + L.tower.z1) / 2, 0.3) - L.base).toBeCloseTo(13.3, 0);
     expect(L.tower.top).toBeGreaterThan(L.atelier.ridge + 2);
   });
@@ -145,11 +145,13 @@ describe('Le Gabarit, lieu complet', () => {
     expect(C.tip.x).toBeLessThan(F.x1);
     expect(C.tip.z).toBeGreaterThan(F.z0);
     expect(C.tip.z).toBeLessThan(F.z1);
-    // La flèche monte nettement (entre 35 et 45°), longue ; le câble fait 2 au plus.
+    // La flèche monte nettement (entre 45 et 55° : restes du monde ouvert du 4e, point 4), longue, son bout au-dessus de
+    // la tête du poteau ; le câble fait 2 au plus.
     const run = Math.hypot(C.tip.x - C.x, C.tip.z - C.z);
     const angle = (Math.atan2(C.tip.y - C.pivot, run) * 180) / Math.PI;
-    expect(angle).toBeGreaterThanOrEqual(35);
-    expect(angle).toBeLessThanOrEqual(45);
+    expect(angle).toBeGreaterThanOrEqual(45);
+    expect(angle).toBeLessThanOrEqual(55);
+    expect(C.tip.y).toBeGreaterThan(C.h);
     expect(C.boom).toBeGreaterThan(8);
     expect(C.rope).toBeLessThanOrEqual(2);
     // De l'autre côté du poteau, au-dessus de 12 : seule la contre-flèche courte et son contrepoids, jamais un bras.
