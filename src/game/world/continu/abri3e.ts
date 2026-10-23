@@ -64,8 +64,8 @@ const MAST = {
   socks: [2.4, 3.1, 3.8] as const,
 } as const;
 
-/** La roue de tirage sur son socle, à l'ouest : son milieu, son rayon, sa longueur. */
-const DRUM = { x: -3.6, z: 0.9, r: 0.42, len: 0.7 } as const;
+/** La roue de tirage sur son socle, à l'ouest, à gauche de Kéo dans la vue d'arrivée, jamais derrière sa tête (relecture des Alpages, (a) 9) : son milieu, son rayon, sa longueur. */
+const DRUM = { x: -5.4, z: 0.9, r: 0.42, len: 0.7 } as const;
 
 /** La table de relevés sous son petit toit, à l'est : son milieu, sa longueur (x), sa largeur. */
 const TABLE = { x: 4.0, z: 1.4, len: 1.8, w: 0.8, h: 0.8, roof: 2.2 } as const;

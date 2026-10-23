@@ -18,7 +18,7 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
+import { C3E, SINK_3E, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
 import { COLORS_3E } from './plan3e';
 import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
 
@@ -52,7 +52,7 @@ const planeY = groundPlane4e(SITE.ground, [-9, 9], [-9, 9]);
 const ROWS = { from: 235, to: 355, segments: 6, r0: 4.4, depth: 0.9, rise: 0.5, count: 3 } as const;
 
 /** Le talus d'herbe derrière le dernier rang, jusqu'au pâturage. */
-const BERM = { r: 8.8 } as const;
+const BERM = { r: 10.2, taper: 22 } as const;
 
 /** Les deux gradins tombés de la ruine, au bout sud (côté porte) : leur rang et leur tronçon. */
 const FALLEN = [
@@ -65,6 +65,12 @@ const STAGE = { x: 1.6, w: 2.4, d: 2.6, h: 0.6, step: 0.3 } as const;
 
 /** L'auvent de la cloche, au sud de l'estrade : ses deux piliers, leur hauteur, le toit. */
 const BELL = { z: 3.1, xs: [1.0, 2.4] as const, h: 2.5, roof: { w: 2.1, d: 1.3, rise: 0.45 } } as const;
+
+/**
+ * La lanterne de la conseillère (la ruine), sur son poteau, à l'est de l'auvent : plus de bras sorti du pilier, qui se
+ * lisait comme une poutre dépassant du toit, et rien qui flanque la cloche (relecture des Alpages, (a) 4).
+ */
+const RUIN_LANTERN = { x: 3.4, z: 3.9 } as const;
 
 /** Le tableau des votes, debout à part au nord-est de l'estrade, tourné vers les gradins. */
 const BOARD = { x: 3.2, z: -3.4, w: 1.4, h: 1.0, foot: 0.75 } as const;
@@ -137,7 +143,10 @@ function quadOut(b: FacetBuilder, q: readonly [P3, P3, P3, P3], out: P3, color: 
   else b.quad(q[3], q[2], q[1], q[0], color);
 }
 
-/** Le talus d'herbe derrière le dernier rang : de son dessus au pâturage, tronçon par tronçon, ses deux bouts fermés. */
+/**
+ * Le talus d'herbe derrière le dernier rang : de son dessus au pâturage, tronçon par tronçon, en pente douce et de
+ * l'herbe même du pâturage ; ses deux bouts descendent en biais dans la pente.
+ */
 function berm(b: FacetBuilder): void {
   const top = rowTop(ROWS.count - 1);
   const rIn = rowIn(ROWS.count - 1) + ROWS.depth;
@@ -153,7 +162,7 @@ function berm(b: FacetBuilder): void {
     const c0 = ROWS.from + SEG * k,
       c1 = c0 + SEG;
     const mid = onCircle(1, (c0 + c1) / 2);
-    quadOut(b, [at(rIn, c0, top), at(rIn, c1, top), at(BERM.r, c1, ground(BERM.r, c1)), at(BERM.r, c0, ground(BERM.r, c0))], [mid.x, 1, mid.z], k % 2 ? C.grass : C.grassSun);
+    quadOut(b, [at(rIn, c0, top), at(rIn, c1, top), at(BERM.r, c1, ground(BERM.r, c1)), at(BERM.r, c0, ground(BERM.r, c0))], [mid.x, 1, mid.z], C.grass);
   }
   // Les deux bouts : un coin de talus, de granit, au bout de chaque aile.
   for (const [deg, side] of [
@@ -163,7 +172,10 @@ function berm(b: FacetBuilder): void {
     const t = onCircle(1, deg + side * 90);
     const lo = (r: number): P3 => at(r, deg, ground(r, deg));
     quadOut(b, [lo(ROWS.r0), at(ROWS.r0, deg, rowTop(0)), at(rIn, deg, top), lo(rIn)], [t.x, 0, t.z], C3E.graniteShade);
-    quadOut(b, [lo(rIn), at(rIn, deg, top), lo(BERM.r), lo(BERM.r)], [t.x, 0, t.z], C.grass);
+    // Le bout du talus se fond dans la pente (relecture des Alpages, (a) 8) : un pan d'herbe qui descend en biais, jamais
+    // un coin taillé.
+    const far = deg + side * BERM.taper;
+    quadOut(b, [at(rIn, deg, top), lo(BERM.r), at(BERM.r, far, ground(BERM.r, far)), at(rIn, far, ground(rIn, far))], [t.x, 1, t.z], C.grass);
   }
 }
 
@@ -215,8 +227,9 @@ function pillars(b: FacetBuilder): void {
 
 /** La cloche de fer bruni, sa bouche en bas (`up`) ou posée de côté au sol (la ruine), dans un repère à son sommet. */
 function bell(l: FacetBuilder): void {
-  l.prism({ x: 0, y: -0.62, z: 0 }, 0.4, 0.22, 0.5, 8, C3E.iron, C3E.ironTop);
-  l.prism({ x: 0, y: -0.12, z: 0 }, 0.22, 0.1, 0.12, 8, C3E.ironTop);
+  l.prism({ x: 0, y: -0.86, z: 0 }, 0.47, 0.27, 0.66, 8, C3E.iron, C3E.ironTop);
+  l.prism({ x: 0, y: -0.2, z: 0 }, 0.27, 0.12, 0.14, 8, C3E.ironTop);
+  l.box({ x: 0, y: -0.06, z: 0 }, [0.06, 0.08, 0.06], C3E.iron);
 }
 
 /** L'auvent : la poutre de bois sur les deux piliers, le petit toit d'ardoise à deux pans, épais, son dessous de bois. */
@@ -274,7 +287,7 @@ function model(add: AddPiece): void {
     rows(b, isFallen);
     berm(b);
     pillars(b);
-    armLantern3e(b, BELL.xs[0] - 0.18, planeY(BELL.xs[0], BELL.z) + BELL.h - 0.45, BELL.z, -1, 0, true);
+    postLantern3e(b, RUIN_LANTERN.x, planeY(RUIN_LANTERN.x, RUIN_LANTERN.z), RUIN_LANTERN.z, 1.5, true);
   });
   // Le corps relève les pierres des deux gradins tombés et l'estrade fendue.
   add(
@@ -293,7 +306,7 @@ function model(add: AddPiece): void {
     (b) => {
       const x = (BELL.xs[0] + BELL.xs[1]) / 2;
       drawPosed(b, { x: x + 0.3, y: planeY(x, BELL.z + 1.3) + 0.05, z: BELL.z + 1.4, yaw: 0.25, pitch: 1.2 }, awning);
-      drawPosed(b, { x: x - 0.9, y: planeY(x - 0.9, BELL.z - 0.2) + 0.62, z: BELL.z - 0.2, yaw: 0 }, bell);
+      drawPosed(b, { x: x - 0.9, y: planeY(x - 0.9, BELL.z - 0.2) + 0.86, z: BELL.z - 0.2, yaw: 0 }, bell);
     },
     haut,
   );
@@ -320,8 +333,8 @@ function model(add: AddPiece): void {
     const x = (BELL.xs[0] + BELL.xs[1]) / 2;
     const top = planeY(x, BELL.z) + BELL.h;
     drawPosed(b, { x, y: top, z: BELL.z, yaw: 0 }, awning);
-    drawPosed(b, { x: x - 0.25, y: top, z: BELL.z, yaw: 0 }, bell);
-    lantern3e(b, { x: x + 0.45, y: top, z: BELL.z }, true);
+    drawPosed(b, { x, y: top, z: BELL.z, yaw: 0 }, bell);
+    lantern3e(b, { x: BELL.xs[1] + 0.4, y: top, z: BELL.z }, true);
   });
   // ---- Les abords : le tableau des votes debout et ses jetons, les bancs sur les gradins, la lanterne du chemin.
   add(2, 0, (b) => {

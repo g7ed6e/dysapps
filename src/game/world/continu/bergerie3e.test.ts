@@ -22,10 +22,12 @@ const EDGES = PATH_EDGES_3E.map(([a, b]) => [node(a), node(b)]);
 const pathDistance = (p: Vec2) => Math.min(...EDGES.map((l) => distanceToPolyline(p, l)));
 const capTo = (from: Vec2, to: Vec2) => ((Math.atan2(to.x - from.x, -(to.z - from.z)) * 180) / Math.PI + 360) % 360;
 /** La caméra des Détours, à une douzaine d'unités derrière Kéo, dans l'axe de la vue. */
-const LOOK = { x: Math.sin((80 * Math.PI) / 180), z: -Math.cos((80 * Math.PI) / 180) };
+/** Le cap de la vue : 80°, tourné de `turn` vers le pic, qui sort du cartouche du nom (relecture des Alpages, (a) 7). */
+const VIEW_CAP = 80 - (0.1 * 180) / Math.PI;
+const LOOK = { x: Math.sin((VIEW_CAP * Math.PI) / 180), z: -Math.cos((VIEW_CAP * Math.PI) / 180) };
 const CAMERA = { x: BERGERIE.at.x - LOOK.x * 12, z: BERGERIE.at.z - LOOK.z * 12 };
 /** Le cap de `to` vu de la caméra, moins celui de la vue, en degrés de −180 à 180 (positif : à droite). */
-const offView = (to: Vec2) => ((capTo(CAMERA, to) - 80 + 540) % 360) - 180;
+const offView = (to: Vec2) => ((capTo(CAMERA, to) - VIEW_CAP + 540) % 360) - 180;
 /** Le demi-champ de la tablette (4:3, 56° en hauteur), en degrés. */
 const HALF_TABLET = (Math.atan(Math.tan((28 * Math.PI) / 180) * (4 / 3)) * 180) / Math.PI;
 
@@ -63,11 +65,11 @@ describe('La Bergerie, le Détour des Alpages', () => {
     expect(detourAtPoint(at, '4e')).toBeNull();
   });
 
-  it('à l’arrivée, la caméra se tourne au cap de 80° : la bergerie à gauche, le pic au tiers droit, le Fanal dans le cadre', () => {
+  it('à l’arrivée, la caméra se tourne au cap de 75° environ : la bergerie à gauche, le pic au tiers droit, le Fanal dans le cadre', () => {
     const cap = detourCap(BERGERIE)!;
     const look = { x: -Math.sin(cap), z: -Math.cos(cap) };
     const deg = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
-    expect(deg).toBeCloseTo(80, 6);
+    expect(deg).toBeCloseTo(VIEW_CAP, 6);
     const peak = offView(PEAK_3E.at);
     expect(peak).toBeGreaterThan(HALF_TABLET / 3);
     expect(peak).toBeLessThan(HALF_TABLET - 6);

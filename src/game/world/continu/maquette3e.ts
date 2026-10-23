@@ -68,7 +68,7 @@ const g = (a: number, c: number): number => {
 };
 
 /** Les huit poteaux : leurs places le long du faîtage, en travers ; leur hauteur, leur section ; ceux du bout cassé. */
-const POSTS = { a: [-4.8, -1.6, 1.6, 4.8] as const, c: 3.0, h: 3.0, w: 0.32, broken: { a: 4.8, h: [1.0, 1.5] as const } } as const;
+const POSTS = { a: [-4.8, -1.6, 1.6, 4.8] as const, c: 3.0, h: 3.0, w: 0.32, broken: { a: 4.8, h: [1.5, 1.0] as const } } as const;
 
 /** Le toit à deux pans : la demi-largeur, le débord, la montée, l'épaisseur, la demi-longueur ; la neige au faîtage. */
 const ROOF = { y: 3.2, half: 3.6, rise: 1.5, thick: 0.16, len: 5.4, snow: 1.0 } as const;
@@ -176,6 +176,24 @@ function post(l: FacetBuilder, a: number, c: number, h: number): void {
 function stump(l: FacetBuilder, a: number, c: number, h: number): void {
   post(l, a, c, h);
   l.box({ x: a + 0.05, y: h - 0.05, z: c, pitch: 0.5 }, [POSTS.w * 0.8, 0.35, POSTS.w * 0.5], C3E.woodShade, C3E.newWood);
+}
+
+/**
+ * Le pan du toit tombé (la ruine) : de la table (`c` = 0,8) au haut du poteau cassé du côté de la porte (`c` = 3,15),
+ * penché vers la halle ; dessus, l'ardoise ; dessous, les planches et trois chevrons, tournés vers la porte.
+ */
+function fallenPan(l: FacetBuilder): void {
+  const lo = { c: 0.8, y: TABLE.h + 0.02 };
+  const hi = { c: POSTS.c + 0.15, y: POSTS.broken.h[0] + 0.05 };
+  const tilt = Math.atan2(hi.y - lo.y, hi.c - lo.c);
+  const run = Math.hypot(hi.c - lo.c, hi.y - lo.y) + 0.5;
+  drawPosed(l, { x: 3.0, y: (lo.y + hi.y) / 2, z: (lo.c + hi.c) / 2, yaw: 0, pitch: -tilt }, (k) => {
+    k.box({ x: 0, y: 0, z: 0 }, [4.4, ROOF.thick, run], C3E.woodShade, C3E.slate);
+    drawPosed(k, { x: 0, y: 0, z: 0, yaw: 0, pitch: Math.PI }, (u) => {
+      u.box({ x: 0, y: 0, z: 0 }, [4.3, 0.03, run - 0.1], C3E.woodShade, C3E.wood);
+      for (const a of [-1.5, 0, 1.5]) u.box({ x: a, y: 0.03, z: 0 }, [0.14, 0.12, run - 0.2], C3E.woodShade, C3E.newWood);
+    });
+  });
 }
 
 /** Les sablières (le long), les entraits (en travers) et le faîtage, de `a0` à `a1`. */
@@ -321,9 +339,9 @@ function model(add: AddPiece): void {
     (b) =>
       hall(b, (l) => {
         POSTS.broken.h.forEach((h, k) => stump(l, POSTS.broken.a, k === 0 ? POSTS.c : -POSTS.c, h));
-        // Le pan : son bord haut posé sur la plaine, juste en dedans du bord de la table, l'autre dans l'herbe.
-        const tilt = Math.atan2(TABLE.h + 0.1, 3.6);
-        l.box({ x: 3.0, y: g(3, 3.8) + (TABLE.h + 0.1) / 2, z: 3.8, pitch: tilt }, [4.4, ROOF.thick, 3.6], C3E.woodShade, C3E.slate);
+        // Le pan (relecture des Alpages, (a) 2) : son bord bas posé sur la table, son bord haut appuyé au poteau cassé du
+        // côté de la porte ; penché, il montre son dessous de bois et ses chevrons, jamais un aplat d'ardoise dans l'herbe.
+        fallenPan(l);
         l.box({ x: 5.9, y: g(5.9, 3.0) - 0.05, z: 3.0, yaw: -1.2 }, [2.6, 0.2, 0.22], C3E.woodShade, C3E.wood);
       }),
     corps,

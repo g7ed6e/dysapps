@@ -243,7 +243,8 @@ function facet3e(a: P3, b: P3, c: P3): number {
 /** Le 3e n'a pas d'écume : la mer de nuages est immobile et mate. */
 const noFoam = (): number => 0;
 
-const PAINT_3E: GroundPaint = { facet: facet3e, flat: flat3e, foam: noFoam };
+/** La peinture du sol du 3e ; la jupe des tuiles un peu sous leur bord, qui ne trace plus de trait dans l'herbe. */
+const PAINT_3E: GroundPaint = { facet: facet3e, flat: flat3e, foam: noFoam, skirtDrop: 0.06 };
 
 // ---------- Ce qui pousse, et les rochers ----------
 

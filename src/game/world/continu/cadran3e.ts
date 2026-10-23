@@ -21,12 +21,12 @@ import { C3E } from './place3eKit';
 import type { P3 } from './place4eKit';
 import { DETOUR_SPOTS_3E, PATH_NODES_3E } from './plan3e';
 
-/** Le cap de l'arrivée (proposition, § 7) : 335°, le pic un peu à droite du milieu, le Fanal à sa droite. */
+/** Le cap de l'arrivée (proposition, § 7) : 335° ; la vue le tourne encore un peu à droite (`CADRAN_VIEW.turn`), le Fanal à droite du pic. */
 const CAP = (335 * Math.PI) / 180;
 const LOOK: Vec2 = { x: Math.sin(CAP), z: -Math.cos(CAP) };
 
-/** La vue du Cadran à l'arrivée : la caméra monte un peu, assez pour voir le dessus du disque. */
-const CADRAN_VIEW = { height: -1.6, back: 1.35, turn: 0 } as const;
+/** La vue du Cadran à l'arrivée : la caméra monte à peine, le dessus du disque en vue ; tournée de 0,42 vers la droite, la pointe du pic à gauche du cartouche du nom, jamais dessous (relecture des Alpages, (a) 7). */
+const CADRAN_VIEW = { height: -4, back: 1.6, turn: -0.42 } as const;
 
 /**
  * Le budget du Cadran (proposition, § 7) : 175 triangles au plus sans la sente, dans le maillage des lieux, sans appel de

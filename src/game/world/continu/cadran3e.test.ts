@@ -54,18 +54,20 @@ describe('Le Cadran, le Détour du Versant', () => {
     expect(detourAtPoint(at, '4e')).toBeNull();
   });
 
-  it('à l’arrivée, la caméra se tourne au cap de 335° : le pic un peu à droite du milieu, le Fanal à sa droite, dégagé', () => {
+  it('à l’arrivée, la caméra se tourne au cap de 359° environ : le pic à gauche du milieu, hors du cartouche du nom, le Fanal à sa droite, dégagé', () => {
     const cap = detourCap(CADRAN)!;
     const look = { x: -Math.sin(cap), z: -Math.cos(cap) };
     const deg = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
-    expect(deg).toBeCloseTo(335, 6);
+    // 335°, tourné de 0,42 vers la droite : la pointe du pic sort du cartouche du nom, au milieu en haut (relecture des
+    // Alpages, (a) 7).
+    expect(deg).toBeCloseTo(335 + (0.42 * 180) / Math.PI, 6);
     const off = (to: { x: number; z: number }) => ((capTo(CADRAN.at, to) - deg + 540) % 360) - 180;
     const peak = off(PEAK_3E.at);
     const fanal = off(PLACES_3E.find((p) => p.id === 'fanal')!.center);
-    expect(peak).toBeGreaterThan(0);
-    expect(peak).toBeLessThan(10);
+    expect(peak).toBeLessThan(-2);
+    expect(peak).toBeGreaterThan(-22);
     expect(fanal).toBeGreaterThan(peak);
-    expect(fanal).toBeLessThan(25);
+    expect(fanal).toBeLessThan(14);
     // Le Fanal dégagé du pic : à côté de sa pente, à la hauteur de la tour (les quatre cinquièmes de sa base), jamais derrière.
     const flank = (Math.atan((PEAK_3E.radius * 0.8) / distance(CADRAN.at, PEAK_3E.at)) * 180) / Math.PI;
     expect(fanal - peak).toBeGreaterThan(flank + 1.5);

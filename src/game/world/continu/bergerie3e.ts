@@ -30,8 +30,8 @@ const CAP = (CAP_DEG * Math.PI) / 180;
 const LOOK: Vec2 = { x: Math.sin(CAP), z: -Math.cos(CAP) };
 const RIGHT: Vec2 = { x: Math.cos(CAP), z: Math.sin(CAP) };
 
-/** La vue de la Bergerie à l’arrivée : la caméra un peu plus bas que celle qui suit, le pic et le Fanal dans le cadre, les moutons au-dessus du muret. */
-const BERGERIE_VIEW = { height: -0.6, back: 1.3, turn: 0 } as const;
+/** La vue de la Bergerie à l’arrivée : la caméra plus bas que celle qui suit, le pic entier, sa pointe comprise, et le Fanal dans le cadre, les moutons au-dessus du muret (relecture des Alpages, (a) 7). */
+const BERGERIE_VIEW = { height: -4, back: 1.3, turn: 0.1 } as const;
 
 /**
  * Le budget de la Bergerie (proposition, § 8) : 175 triangles au plus sans la sente, moutons compris, dans le maillage des
@@ -69,9 +69,9 @@ const HUT = { f: (PEN.f0 + PEN.f1) / 2, s: PEN.s0 - 1.7, w: 3.4, d: PEN.f1 - PEN
 
 /** Les trois moutons couchés : leur place dans l'enclos, leur sens (la tête au bout de leur x), de profil pour Kéo. */
 export const SHEEP = [
-  { f: 5.3, s: -1.9, yaw: 0.25 },
-  { f: 7.2, s: -3.1, yaw: 2.9 },
-  { f: 5.6, s: -4.5, yaw: -0.3 },
+  { f: 5.0, s: -1.7, yaw: 0.25 },
+  { f: 7.3, s: -3.2, yaw: 2.9 },
+  { f: 5.2, s: -4.7, yaw: -0.3 },
 ] as const;
 
 /** Le point du chemin du Kiosque (de `al-1` au Kiosque, puis à `al-2`) le plus proche de Kéo, d'où part la sente. */
@@ -194,20 +194,24 @@ function pen(b: FacetBuilder, ground: Ground): void {
 }
 
 /**
- * Un mouton couché : le corps de laine, un tronc à cinq pans couché dans l'herbe, le dos plus clair, arrondi au bout ; la
- * tête brune au bout de son x, relevée au-dessus du dos, qui ferme le tronc de ce côté.
+ * Un mouton couché (relecture des Alpages, (a) 6) : le corps de laine, un tronc à cinq pans couché dans l'herbe, rond,
+ * le dos plus clair et plus haut que les flancs ; la petite tête brune devant, plus basse, qui dépasse du corps, en
+ * tronc à quatre pans qui s'affine vers le museau. Plus petit qu'au lot 3, aucun angle droit.
  */
 function sheep(b: FacetBuilder, ground: Ground): void {
-  const BODY = { r: 0.5, tail: 0.43, len: 1.35 } as const;
+  const BODY = { r: 0.4, tail: 0.34, len: 1.05 } as const;
+  const HEAD = { r: 0.19, nose: 0.12, len: 0.42, y: 0.36 } as const;
   for (const m of SHEEP) {
     const p = local(m.f, m.s);
     const g = ground(p.x, p.z);
     const yaw = YAW + m.yaw;
     const dx = Math.cos(yaw),
       dz = -Math.sin(yaw);
-    // Le tronc part de la tête et va vers la queue : un quart de tour couche son axe, un autre le tourne vers l'arrière.
-    b.prism({ x: p.x + dx * (BODY.len / 2), y: g + BODY.r * 0.7, z: p.z + dz * (BODY.len / 2), yaw: yaw - Math.PI / 2, pitch: Math.PI / 2 }, BODY.r, BODY.tail, BODY.len, 5, C.wool, C.woolTop);
-    b.box({ x: p.x + dx * (BODY.len / 2 + 0.1), y: g + 0.45, z: p.z + dz * (BODY.len / 2 + 0.1), yaw }, [0.46, 0.48, 0.4], C.head);
+    // Le tronc part de l'avant et va vers la queue : un quart de tour couche son axe, un autre le tourne vers l'arrière.
+    b.prism({ x: p.x + dx * (BODY.len / 2), y: g + BODY.r * 0.9, z: p.z + dz * (BODY.len / 2), yaw: yaw - Math.PI / 2, pitch: Math.PI / 2 }, BODY.r, BODY.tail, BODY.len, 5, C.wool, C.woolTop);
+    // La tête, plus basse, part du devant du corps et s'avance.
+    const h = BODY.len / 2 - 0.08;
+    b.prism({ x: p.x + dx * h, y: g + HEAD.y, z: p.z + dz * h, yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 }, HEAD.r, HEAD.nose, HEAD.len, 4, C.head, C.head);
   }
 }
 

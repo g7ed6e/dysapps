@@ -49,7 +49,7 @@ const PLINTH = { r: 4.0, h: 0.3, sides: 10, floor: 3.65 } as const;
 const POSTS = { r: 3.4, caps: [30, 90, 150, 210, 270, 330] as const, h: 2.5, w: 0.22, leaning: [150, 210] as const } as const;
 
 /** La coupole basse d'ardoise : son avant-toit, son dôme, son chapeau, l'épi de fer. */
-const DOME = { eave: 4.1, mid: 3.2, top: 1.0, cap: 0.28, eaveH: 0.32, domeH: 0.9, capH: 0.32, spike: 0.75 } as const;
+const DOME = { eave: 4.1, mid: 3.2, top: 1.0, cap: 0.28, eaveH: 0.32, domeH: 0.9, capH: 0.32, spike: 0.75, snow: 0.45 } as const;
 
 /** Le comptoir rond, au milieu ; le poste de radio sur lui, au nord. */
 const COUNTER = { r0: 1.0, r1: 1.45, h: 1.0, low: 0.72 } as const;
@@ -132,8 +132,27 @@ function dome(l: FacetBuilder): void {
   const D = DOME;
   l.prism({ x: 0, y: 0, z: 0 }, D.eave, D.mid, D.eaveH, 12, C3E.slate, C3E.slateTop);
   l.prism({ x: 0, y: D.eaveH, z: 0 }, D.mid, D.top, D.domeH, 12, C3E.slateTop, C3E.slate);
-  l.prism({ x: 0, y: D.eaveH + D.domeH, z: 0 }, D.top, D.cap, D.capH, 8, C3E.slate, C3E.slateTop);
+  // La couronne de neige sur le haut de la coupole (relecture des Alpages, (a) 3) : seule la Coupole se lit en dôme bleu.
+  const k = D.snow;
+  l.prism({ x: 0, y: D.eaveH + D.domeH * (1 - k) - 0.01, z: 0 }, D.top + (D.mid - D.top) * k + 0.03, D.top + 0.03, D.domeH * k + 0.02, 12, C3E.snow, C3E.snow);
+  l.prism({ x: 0, y: D.eaveH + D.domeH, z: 0 }, D.top, D.cap, D.capH, 8, C3E.snow, C3E.snow);
   l.prism({ x: 0, y: D.eaveH + D.domeH + D.capH, z: 0 }, 0.1, 0, D.spike, 6, C3E.iron);
+}
+
+/**
+ * La coupole tombée (la ruine) : penchée de `FALLEN_DOME.pitch` vers le nord-ouest, son bord bas sur le socle, son bord
+ * haut vers la porte ; dessous, le plancher de bois de l'avant-toit et trois chevrons, que la porte voit.
+ */
+const FALLEN_DOME = { x: -0.6, z: -0.4, lift: 1.05, pitch: 0.3 } as const;
+function domeFallen(b: FacetBuilder): void {
+  const F = FALLEN_DOME;
+  drawPosed(b, { x: F.x, y: deck() + F.lift, z: F.z, yaw: (-3 * Math.PI) / 4, pitch: F.pitch }, (l) => {
+    dome(l);
+    drawPosed(l, { x: 0, y: 0, z: 0, yaw: 0, pitch: Math.PI }, (u) => {
+      u.prism({ x: 0, y: 0, z: 0 }, DOME.eave - 0.08, DOME.eave - 0.08, 0.04, 12, C3E.woodShade, C3E.wood);
+      for (const x of [-1.6, 0, 1.6]) u.box({ x, y: 0.04, z: 0 }, [0.16, 0.14, 2 * Math.sqrt(DOME.eave ** 2 - x * x) - 0.6], C3E.woodShade, C3E.newWood);
+    });
+  });
 }
 
 /** Le comptoir rond, haut (`h`) ou bas et fendu (la ruine), et le poste dessus, son couvercle fermé ou ouvert. */
@@ -238,9 +257,10 @@ function model(add: AddPiece): void {
     },
     corps,
   );
-  // Le haut relève la coupole tombée de travers sur le comptoir, penchée vers la porte.
-  // Elle a glissé vers le sud-ouest, un bord sur le socle, l'autre dans l'herbe : le comptoir et le poste se voient.
-  add('ruine', 0, (b) => drawPosed(b, { x: -2.3, y: deck() - 0.6, z: 2.0, yaw: Math.PI / 4, pitch: 0.55 }, dome), haut);
+  // Le haut relève la coupole tombée de travers sur le comptoir (relecture des Alpages, (a) 2) : son bord du nord-ouest
+  // dans l'herbe, celui du sud-est relevé sur le haut du poteau de l'est, vers la porte ; on voit son volume, son épi et
+  // son dessous de bois, jamais un aplat d'ardoise couché dans l'herbe.
+  add('ruine', 0, (b) => domeFallen(b), haut);
   // Les abords relèvent les présentoirs couchés, les cadres à plat, la porte ouverte de la boîte et l'herbe sèche.
   add(
     'ruine',

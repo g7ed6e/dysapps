@@ -249,28 +249,29 @@ function track(l: FacetBuilder): void {
 function gatePosts(l: FacetBuilder, pivotBroken: boolean): void {
   const G = GATE;
   const ph = pivotBroken ? 0.6 : G.y + 0.12;
-  l.box({ x: G.x, y: g(G.x, G.pivot) + SINK_3E, z: G.pivot }, [0.22, ph - g(G.x, G.pivot) - SINK_3E, 0.22], C3E.woodShade, C3E.wood);
-  const rh = G.y - 0.08;
-  l.box({ x: G.x, y: g(G.x, G.rest) + SINK_3E, z: G.rest }, [0.18, rh - g(G.x, G.rest) - SINK_3E, 0.18], C3E.woodShade, C3E.wood);
-  for (const s of [-1, 1]) l.box({ x: G.x + s * 0.09, y: rh, z: G.rest }, [0.05, 0.18, 0.14], C3E.woodShade);
+  l.box({ x: G.x, y: g(G.x, G.pivot) + SINK_3E, z: G.pivot }, [0.32, ph - g(G.x, G.pivot) - SINK_3E, 0.32], C3E.woodShade, C3E.wood);
+  const rh = G.y - 0.16;
+  l.box({ x: G.x, y: g(G.x, G.rest) + SINK_3E, z: G.rest }, [0.28, rh - g(G.x, G.rest) - SINK_3E, 0.28], C3E.woodShade, C3E.wood);
+  for (const s of [-1, 1]) l.box({ x: G.x + s * 0.17, y: rh, z: G.rest }, [0.07, 0.3, 0.2], C3E.woodShade);
 }
 
 /** La lisse levée d'un quart sur son pivot, son contrepoids de pierre au bout court ; basse, jamais un bras. */
 function gateRaised(l: FacetBuilder): void {
   const G = GATE;
   drawPosed(l, { x: G.x, y: G.y, z: G.pivot, yaw: 0, pitch: -G.raise }, (r) => {
-    r.box({ x: 0, y: -0.06, z: G.len / 2 - 0.4 }, [0.12, 0.12, G.len + 0.8], C3E.woodShade, C3E.newWood);
-    r.box({ x: 0, y: -0.3, z: -0.55 }, [0.4, 0.36, 0.34], C3E.graniteShade, C3E.granite);
+    // La lisse épaisse de bois clair (relecture des Alpages, (a) 5) ; au bout court, le gros contrepoids de pierre.
+    r.box({ x: 0, y: -0.13, z: G.len / 2 - 0.4 }, [0.26, 0.26, G.len + 0.8], C3E.newWood, 0xc2b49e);
+    r.box({ x: 0, y: -0.42, z: -0.62 }, [0.62, 0.56, 0.5], C3E.graniteShade, C3E.granite);
   });
   // L'axe de fer du pivot, de part et d'autre du poteau.
-  l.drum({ x: G.x - 0.17, y: G.y, z: G.pivot, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 0.06, 0.34, 6, C3E.iron, C3E.ironTop);
+  l.drum({ x: G.x - 0.22, y: G.y, z: G.pivot, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 0.07, 0.44, 6, C3E.iron, C3E.ironTop);
 }
 
 /** La barrière rompue (la ruine) : la moitié de la lisse dans l'herbe, en travers du chemin de dalles ; le contrepoids au sol. */
 function gateBroken(l: FacetBuilder): void {
   const G = GATE;
-  l.box({ x: G.x + 0.5, y: g(G.x, TRACK.z) - 0.02, z: TRACK.z + 0.6, yaw: 0.5 }, [0.12, 0.12, 1.7], C3E.woodShade, C3E.wood);
-  l.box({ x: G.x - 0.4, y: g(G.x - 0.4, G.pivot - 0.6) - 0.1, z: G.pivot - 0.6, yaw: 0.4, pitch: 0.2 }, [0.4, 0.36, 0.34], C3E.graniteShade, C3E.granite);
+  l.box({ x: G.x + 0.5, y: g(G.x, TRACK.z) - 0.02, z: TRACK.z + 0.6, yaw: 0.5 }, [0.26, 0.26, 1.7], C3E.woodShade, C3E.newWood);
+  l.box({ x: G.x - 0.4, y: g(G.x - 0.4, G.pivot - 0.6) - 0.1, z: G.pivot - 0.6, yaw: 0.4, pitch: 0.2 }, [0.62, 0.56, 0.5], C3E.graniteShade, C3E.granite);
 }
 
 /** Une malle de bois cerclée de fer, couchée ; dans un repère à son pied. */
