@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
+import { NIVEAUX_MESURES, ileDuNiveau, partieDeLaPose, partieDeMesure, resumeParNiveau, resumerLesImages, tableauDesMesures } from './autoMeasure';
+import { getBiome } from './biomes';
 import { adresseDeLaMesure, adresseSansMesure, mesuresAutoDepuis, mesuresDepuis } from './rendering';
 
 describe('la mesure automatique', () => {
@@ -46,5 +47,26 @@ describe('la mesure automatique', () => {
     expect(t).toContain('| île | 39 | 12');
     expect(t.split('\n')[0]).toBe('Mesure automatique · iPad');
     expect(tableauDesMesures([], 'iPad', ['« Annuler » : bouton non trouvé.'])).toMatch(/\n\n« Annuler » : bouton non trouvé\.$/);
+  });
+
+  it('fait le tour des quatre niveaux, chacun depuis une île à lui', () => {
+    expect(NIVEAUX_MESURES).toEqual(['6e', '5e', '4e', '3e']);
+    for (const niveau of NIVEAUX_MESURES) expect(getBiome(ileDuNiveau(niveau) ?? '')?.classe).toBe(niveau);
+  });
+
+  it('résume chaque niveau par son pire : le tableau commence par une ligne par niveau', () => {
+    const lignes = [
+      { niveau: '6e', etape: 'à l’arrivée', appels: 30, triangles: 90000, ips: 58, pire: 40 },
+      { niveau: '6e', etape: 'Carte', appels: 45, triangles: 80000, ips: 50, pire: 70 },
+      { niveau: '5e', etape: 'à l’arrivée', appels: 20, triangles: 100000, ips: 60, pire: 20 },
+    ];
+    expect(resumeParNiveau(lignes)).toEqual([
+      { niveau: '6e', ips: 50, pire: 70, triangles: 90000, appels: 45 },
+      { niveau: '5e', ips: 60, pire: 20, triangles: 100000, appels: 20 },
+    ]);
+    const t = tableauDesMesures(lignes, 'iPad').split('\n');
+    expect(t[2]).toMatch(/^\| Niveau \| Images\/s/);
+    expect(t[4]).toMatch(/^\| 6e \| 50 \| 70 \| 90/);
+    expect(t).toContain('| 5e | à l’arrivée | 20 | 100\u202f000 | 60 | 20 |');
   });
 });

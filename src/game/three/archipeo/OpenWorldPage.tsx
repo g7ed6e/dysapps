@@ -68,6 +68,7 @@ import { portState } from './portState';
 import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
+import { measureTour, type TourDeMesure } from './measureTour';
 import { WorldRevision } from './WorldRevision';
 import { revisionPlanOf, type RevisionPlan } from './revisionOf';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
@@ -83,6 +84,8 @@ declare global {
     __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride' | 'view' | 'playFinal'> & {
       /** La dernière partie d'un lieu, posée de nouveau sous les yeux (la pose, puis la lueur de la Montée : les captures). */
       poseAgain(place: PlaceId): boolean;
+      /** Le tour de la mesure automatique dans ce niveau (`?mesures=auto`, ./measureTour.ts). */
+      tour: TourDeMesure;
     };
   }
 }
@@ -577,6 +580,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           const parts = now?.built[place] ?? [];
           return now !== null && parts.length > 0 && w.setPlaces(now, { place, parts: parts.slice(-1) });
         },
+        tour: measureTour(plan),
       };
     return () => {
       w.dispose();

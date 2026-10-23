@@ -9,15 +9,22 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useBlocland } from './BloclandContext';
-import { BIOMES, type BiomeId } from './biomes';
+import type { BiomeId } from './biomes';
+import type { World } from './engine/state';
 import { toutConstruitAvecLesCommandes } from './world/budget';
 import { adresseSansMesure, mondeOuvertDArchipeo } from './rendering';
-import { type LigneDeMesure, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
+import { type LigneDeMesure, NIVEAUX_MESURES, ileDuNiveau, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
 import { MODIFIER_LE_PLAN } from './ArrangeBar';
 import { Icon } from '../components/Icon';
 
 /** L'île de la pose : la Forêt des sons, comme les captures de la famille `pose`. */
 const ILE_DE_LA_POSE: BiomeId = 'french-6e-phonology';
+
+/** La partie toute construite, telle que world/budget.ts la prépare. */
+type Progression = ReturnType<typeof toutConstruitAvecLesCommandes>['progress'];
+
+/** Une étape mesurée : son nom, et la durée de sa fenêtre en millisecondes. */
+type Mesure = (nom: string, fenetre?: number) => Promise<void>;
 
 const attendre = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
@@ -59,20 +66,22 @@ async function attendreLeMonde(ancienne: string): Promise<boolean> {
 }
 
 /**
- * Le monde ouvert dessine (`window.__dysappsMondeOuvert`, posé avec `?mesures`) et ses chiffres ne bougent plus depuis
- * une seconde ; au plus 30 s. Puis la caméra a le temps de se poser. Faux s'il ne vient pas.
+ * Le monde ouvert d'un niveau dessine (`window.__dysappsMondeOuvert`, posé avec `?mesures`, un autre que `ancien`, celui
+ * du niveau d'avant) et ses chiffres ne bougent plus depuis une seconde ; au plus 30 s. Puis la caméra a le temps de se
+ * poser. Faux s'il ne vient pas.
  */
-async function attendreLeMondeOuvert(): Promise<boolean> {
+async function attendreLeMondeOuvert(ancien: Window['__dysappsMondeOuvert']): Promise<boolean> {
   let avant = '';
   let stable = 0;
+  const nouveau = () => window.__dysappsMondeOuvert !== undefined && window.__dysappsMondeOuvert !== ancien;
   for (let i = 0; i < 300 && stable < 10; i++) {
     await attendre(100);
-    const cle = window.__dysappsMondeOuvert ? chiffres() : '';
+    const cle = nouveau() ? chiffres() : '';
     stable = cle && cle === avant ? stable + 1 : 0;
     avant = cle;
   }
   await attendre(2000);
-  return Boolean(window.__dysappsMondeOuvert);
+  return nouveau();
 }
 
 /** Touche le bouton qui répond à `selecteur`, puis laisse la vue se poser ; faux s'il n'est pas à l'écran. */
@@ -122,12 +131,15 @@ export default function AutoMeasure() {
     lancee.current = true;
     const lignes: LigneDeMesure[] = [];
     const notes: string[] = [];
-    const ligne = async (nom: string, fenetre = 4000) => {
-      setEtape(`Mesure : ${nom}…`);
-      const images = resumerLesImages(await ecartsPendant(fenetre));
-      const s = window.__dysappsRendu;
-      lignes.push({ etape: nom, appels: s?.calls ?? 0, triangles: s?.triangles ?? 0, ...images });
-    };
+    // Une étape mesurée d'un niveau : ses images pendant `fenetre` ms, ce que dessine sa dernière image.
+    const mesurer =
+      (niveau: string, rang: string): Mesure =>
+      async (nom, fenetre = 4000) => {
+        setEtape(`Mesure${rang ? ` (${rang})` : ''} : ${niveau}, ${nom}…`);
+        const images = resumerLesImages(await ecartsPendant(fenetre));
+        const s = window.__dysappsRendu;
+        lignes.push({ niveau, etape: nom, appels: s?.calls ?? 0, triangles: s?.triangles ?? 0, ...images });
+      };
     const finir = (etape: string) => {
       const appareil = `${screen.width}×${screen.height} px, ×${window.devicePixelRatio} · ${window.__dysappsRendu?.rendu ?? '?'}${moinsDAnimations() ? ' · Réduire les animations' : ''} · ${navigator.userAgent}`;
       setResultat(tableauDesMesures(lignes, appareil, notes));
@@ -135,46 +147,77 @@ export default function AutoMeasure() {
     };
     // Sans annulation : le composant vit aussi longtemps que la page (l'adresse ne change pas pendant la mesure).
     void (async () => {
-      const ile = BIOMES.find((b) => b.classe === '6e')?.id;
-      if (!ile) return setEtape('Aucune île de 6e : rien à mesurer.');
       const { progress, world } = toutConstruitAvecLesCommandes();
-      chargerPourLesMesures(partieDeMesure(progress, world, ile));
-      navigate(`/adventure/${ile}`);
-      if (mondeOuvertDArchipeo()) {
-        // Le monde ouvert : tous les lieux reconstruits (la partie toute construite), Kéo devant le lieu de l'île.
-        if (!(await attendreLeMondeOuvert())) return setEtape('Pas de monde ouvert en 3D : rien à mesurer.');
-        await ligne('monde ouvert, à l’arrivée');
-        // La marche, du Phare aux Balises, au large : l'île traversée, les lieux qui entrent et sortent du champ.
-        window.__dysappsMondeOuvert?.goTo('phare', true);
-        await attendre(2500);
-        window.__dysappsMondeOuvert?.goTo('beacons');
-        await ligne('marche, du Phare aux Balises', 6000);
-        window.__dysappsMondeOuvert?.skip();
-        await attendre(2500);
-        // Le panneau des Balises, ouvert à l'arrivée, fermé (Échap) : la Carte s'ouvre sur le monde seul.
-        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-        await attendre(500);
-        const carte = '.open-world-map-button:not(.open-world-lieux-button)';
-        if (!(await toucherPuisAttendre(carte, 3000))) notes.push('« Carte » : bouton non trouvé.');
-        else {
-          await ligne('Carte');
-          await toucherPuisAttendre(carte);
+      // Chaque niveau, l'un après l'autre : la partie toute construite, Kéo à la première île du niveau (le monde du
+      // niveau refait, comme après le voyage entre niveaux), puis le tour de ses vues.
+      const niveaux = NIVEAUX_MESURES.flatMap((niveau) => {
+        const ile = ileDuNiveau(niveau);
+        return ile ? [{ niveau, ile }] : [];
+      });
+      if (!niveaux.length) return setEtape('Aucune île : rien à mesurer.');
+      const ouvert = mondeOuvertDArchipeo();
+      for (const [i, { niveau, ile }] of niveaux.entries()) {
+        const ligne = mesurer(niveau, `${i + 1}/${niveaux.length}`);
+        const ancienMonde = window.__dysappsMondeOuvert;
+        const anciens = chiffres();
+        chargerPourLesMesures(partieDeMesure(progress, world, ile));
+        navigate(`/adventure/${ile}`);
+        if (ouvert) {
+          if (!(await attendreLeMondeOuvert(ancienMonde))) {
+            notes.push(`${niveau} : pas de monde ouvert en 3D.`);
+            continue;
+          }
+          await tourDuMondeOuvertDe(niveau, ligne);
+          continue;
         }
-        // Une scénette des Quais : la liste du lieu ouverte à l'arrivée, sa première mission jouée au lieu.
-        window.__dysappsMondeOuvert?.goTo('quais', true);
-        await attendre(2500);
-        const mission = [...document.querySelectorAll<HTMLButtonElement>('#panneau-lieu button.app-card')].find((b) => b.querySelector('.mission-sign'));
-        if (!mission) notes.push('Scénette : aucune mission des Quais jouée au lieu trouvée.');
-        else {
-          mission.click();
-          await attendre(3000);
-          await ligne('scénette des Quais');
-          // Une mission avec un récit d'abord (« Commencer ») : la question posée se mesure aussi.
-          if (await toucherPuisAttendre('.world-question-start', 3000)) await ligne('scénette, la question posée');
+        if (!(await attendreLeMonde(anciens))) {
+          notes.push(`${niveau} : pas de monde en 3D (vue simple ?).`);
+          continue;
         }
-        return finir('Mesure finie.');
+        await tourDeLaGrille(ligne);
+        // « Modifier le plan » et la pose, au 6e seulement : sur sa Carte, où le tour vient de finir.
+        if (niveau === '6e') await poseEtPlan(ligne, progress, world);
       }
-      if (!(await attendreLeMonde(''))) return setEtape('Pas de monde en 3D (vue simple ?) : rien à mesurer.');
+      finir(lignes.length ? 'Mesure finie.' : 'Rien à mesurer.');
+    })();
+
+    /** Le tour du monde ouvert d'un niveau : l'arrivée, la marche, la Carte, une scénette (et sa question). */
+    async function tourDuMondeOuvertDe(niveau: string, ligne: Mesure) {
+      // Le tour du niveau, que tient sa vue (three/archipeo/measureTour.ts) : rien ici ne lit world/continu/.
+      const tour = window.__dysappsMondeOuvert?.tour;
+      if (!tour) return notes.push(`${niveau} : pas de tour du monde ouvert.`);
+      await ligne('à l’arrivée');
+      // La marche d'un lieu au plus loin : l'île traversée, les lieux qui entrent et sortent du champ.
+      window.__dysappsMondeOuvert?.goTo(tour.depart.id, true);
+      await attendre(2500);
+      window.__dysappsMondeOuvert?.goTo(tour.arrivee.id);
+      await ligne(`marche, ${tour.depart.nom} → ${tour.arrivee.nom}`, 6000);
+      window.__dysappsMondeOuvert?.skip();
+      await attendre(2500);
+      // Le panneau du lieu, ouvert à l'arrivée, fermé (Échap) : la Carte s'ouvre sur le monde seul.
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      await attendre(500);
+      const carte = '.open-world-map-button:not(.open-world-lieux-button)';
+      if (!(await toucherPuisAttendre(carte, 3000))) notes.push(`${niveau} : « Carte », bouton non trouvé.`);
+      else {
+        await ligne('Carte');
+        await toucherPuisAttendre(carte);
+      }
+      // Une scénette : la liste du lieu ouverte à l'arrivée, sa première mission jouée au lieu.
+      if (!tour.scene) return notes.push(`${niveau} : aucun lieu à scénette.`);
+      window.__dysappsMondeOuvert?.goTo(tour.scene.id, true);
+      await attendre(2500);
+      const mission = [...document.querySelectorAll<HTMLButtonElement>('#panneau-lieu button.app-card')].find((b) => b.querySelector('.mission-sign'));
+      if (!mission) return notes.push(`${niveau} : aucune mission jouée au lieu (${tour.scene.nom}).`);
+      mission.click();
+      await attendre(3000);
+      await ligne(`scénette, ${tour.scene.nom}`);
+      // Une mission avec un récit d'abord (« Commencer ») : la question posée se mesure aussi.
+      if (await toucherPuisAttendre('.world-question-start', 3000)) await ligne('scénette, la question posée');
+    }
+
+    /** Le tour d'un niveau dans la grille : l'île, l'archipel, chacun reculé, la Carte. */
+    async function tourDeLaGrille(ligne: Mesure) {
       await ligne('île');
       await reculer(10);
       await ligne('île, au plus reculé');
@@ -188,6 +231,10 @@ export default function AutoMeasure() {
       navigate('/adventure/map');
       await attendreLeMonde(archipelRecule);
       await ligne('Carte');
+    }
+
+    /** Au 6e, dans la grille, depuis sa Carte : « Modifier le plan » ouvert et fermé, puis la pose d'une partie en vague. */
+    async function poseEtPlan(ligne: Mesure, progress: Progression, world: World) {
       // « Modifier le plan » ouvert puis annulé : la plus longue image vient du terrain refait (sans faces fondues).
       if (!toucher(MODIFIER_LE_PLAN)) notes.push('« Modifier le plan » : bouton non trouvé.');
       else {
@@ -213,8 +260,7 @@ export default function AutoMeasure() {
       } catch {
         // Stockage indisponible : rien n'a été écrit.
       }
-      finir('Mesure finie.');
-    })();
+    }
   }, [chargerPourLesMesures, navigate]);
 
   const copier = async () => {
@@ -224,6 +270,17 @@ export default function AutoMeasure() {
       setCopie(true);
     } catch {
       setCopie(false);
+    }
+  };
+
+  // Le partage de l'appareil (sur la tablette : Messages, Mail, Notes…), quand il existe : le résultat part tel quel.
+  const partageable = typeof navigator.share === 'function';
+  const envoyer = async () => {
+    if (!resultat) return;
+    try {
+      await navigator.share({ title: 'Mesure automatique', text: resultat });
+    } catch {
+      // Partage refermé sans envoyer : rien à faire.
     }
   };
 
@@ -261,6 +318,11 @@ export default function AutoMeasure() {
         {resultat && (
           <button type="button" className="button" onClick={copier}>
             {copie ? 'Copié' : 'Copier'}
+          </button>
+        )}
+        {resultat && partageable && (
+          <button type="button" className="button" onClick={envoyer}>
+            Envoyer
           </button>
         )}
         <button type="button" className="button" onClick={revenir}>
