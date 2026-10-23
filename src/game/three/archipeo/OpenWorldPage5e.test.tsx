@@ -11,6 +11,7 @@ import { BloclandProvider, useBlocland } from '../../BloclandContext';
 import { getArchipelago, voyageId } from '../../world/archipelago';
 import type { LinkedLand } from '../../world/continu/lands';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
+import { LEVEL_PICKER_FOLD_MS } from './LevelPicker';
 import OpenWorldPage from './OpenWorldPage';
 
 const scene = vi.hoisted(() => ({
@@ -89,31 +90,39 @@ function renderPage() {
   );
 }
 
-test('le niveau où l’on est, un seul bouton qui déplie les autres niveaux atteints ; « 6e » lance le fondu vers l’Escale ; rien sur la Carte (choix du mainteneur du 23 octobre 2026)', async () => {
+test('le niveau où l’on est, une seule pastille qui glisse vers les autres niveaux atteints et se replie seule ; « 6e » lance le fondu vers l’Escale ; rien sur la Carte (choix du mainteneur du 23 octobre 2026)', async () => {
   localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
   renderPage();
   const user = userEvent.setup();
   const level = await screen.findByRole('button', { name: /^Changer de niveau\. Tu es en 5e/ });
   expect(level).toHaveAttribute('aria-expanded', 'false');
+  // Repliée, les autres niveaux sont là pour glisser, mais hors d'atteinte.
   expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
   await user.click(screen.getByRole('button', { name: /Carte/ }));
   expect(screen.queryByRole('button', { name: /^Changer de niveau/ })).toBeNull();
   await user.click(screen.getByRole('button', { name: /Retour/ }));
-  await user.click(screen.getByRole('button', { name: /^Changer de niveau/ }));
-  expect(screen.getByRole('button', { name: /^Changer de niveau/ })).toHaveAttribute('aria-expanded', 'true');
-  // Déplié : le focus va au premier niveau ; Échap replie et rend le focus au bouton.
+  const toggle = () => screen.getByRole('button', { name: /^Changer de niveau/ });
+  await user.click(toggle());
+  expect(toggle()).toHaveAttribute('aria-expanded', 'true');
+  // Dépliée : le focus va au premier niveau ; Échap replie et rend le focus au bouton.
   expect(screen.getByRole('button', { name: /^Aller en 6e/ })).toHaveFocus();
   await user.keyboard('{Escape}');
   expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
-  expect(screen.getByRole('button', { name: /^Changer de niveau/ })).toHaveFocus();
+  expect(toggle()).toHaveFocus();
   // Un toucher ailleurs replie aussi.
-  await user.click(screen.getByRole('button', { name: /^Changer de niveau/ }));
+  await user.click(toggle());
   await user.click(document.querySelector('.open-world-canvas')!);
-  expect(screen.queryByRole('button', { name: /^Aller en 6e/ })).toBeNull();
-  await user.click(screen.getByRole('button', { name: /^Changer de niveau/ }));
+  expect(toggle()).toHaveAttribute('aria-expanded', 'false');
+  // Elle se replie seule après un moment sans toucher.
+  await user.click(toggle());
+  expect(toggle()).toHaveAttribute('aria-expanded', 'true');
+  await act(() => new Promise((r) => setTimeout(r, LEVEL_PICKER_FOLD_MS + 50)));
+  expect(toggle()).toHaveAttribute('aria-expanded', 'false');
+  expect(toggle()).toHaveFocus();
+  await user.click(toggle());
   await user.click(screen.getByRole('button', { name: /^Aller en 6e/ }));
   expect(document.querySelector('.open-world-fondu')).toHaveClass('on');
-});
+}, 15000);
 
 test('un seul niveau atteint : pas de bouton du niveau', async () => {
   renderPage();
