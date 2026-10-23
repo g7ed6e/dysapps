@@ -128,9 +128,12 @@ export function createRemiseRun({ mesh, reaction, material, reduceMotion, delive
   };
 }
 
-/** La pastille de l'habitant d'un lieu, à l'écran : en pixels, et si elle se voit. */
+/** Où se tient une pastille : le lieu d'un habitant, ou `'nef'`, la Nef sur laquelle on peut poser (GD-25). */
+export type SignSpot = PlaceId | 'nef';
+
+/** La pastille de l'habitant d'un lieu (ou celle de la Nef), à l'écran : en pixels, et si elle se voit. */
 export interface SignOnScreen {
-  place: PlaceId;
+  place: SignSpot;
   x: number;
   y: number;
   shown: boolean;
@@ -141,11 +144,11 @@ export interface SignOnScreen {
  * tombe à l'écran et si elle se voit (sur place : rien n'est alloué à chaque image) ; `onSigns` les rend à la page
  * (aucune n'est dessinée dans la 3D).
  */
-export function createSignsTracker({ anchorOf, place, onSigns }: { anchorOf(place: PlaceId): Vec3; place(anchor: THREE.Vector3, sign: SignOnScreen): void; onSigns?(signs: readonly SignOnScreen[]): void }) {
+export function createSignsTracker({ anchorOf, place, onSigns }: { anchorOf(place: SignSpot): Vec3; place(anchor: THREE.Vector3, sign: SignOnScreen): void; onSigns?(signs: readonly SignOnScreen[]): void }) {
   let signs: SignOnScreen[] = [];
-  const anchors = new Map<PlaceId, THREE.Vector3>();
+  const anchors = new Map<SignSpot, THREE.Vector3>();
   return {
-    set(places: readonly PlaceId[]) {
+    set(places: readonly SignSpot[]) {
       if (places.length === signs.length && places.every((p, i) => signs[i].place === p)) return;
       signs = places.map((p) => ({ place: p, x: 0, y: 0, shown: false }));
       for (const p of places) {

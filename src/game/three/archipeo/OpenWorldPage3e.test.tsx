@@ -118,6 +118,34 @@ test('toucher l’aéronef ouvre la fiche de la Nef et de ses parures (GD-25), j
   expect(within(sheet).getByRole('status').textContent).toBe('La figure de proue est posée.');
 });
 
+test('la pastille de la Nef au 3e (GD-25) : le marbre de la figure de proue tant qu’on peut le poser ; la toucher ouvre la fiche des parures ; la pose faite, elle se retire', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'maths-3e-geometry': 6 } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  // La scène la pose au-dessus de la Nef, à l'écran : elle se montre, son nom lu.
+  act(() => scene.options!.onSigns!([{ place: 'nef', x: 200, y: 120, shown: true }]));
+  const sign = screen.getByRole('button', { name: 'La Nef : on peut poser' });
+  expect(sign.dataset.lieu).toBe('nef');
+  expect(sign).not.toHaveClass('suggested');
+  expect(sign.textContent).toBe('');
+  expect(vi.mocked(scene.world!.setSigns).mock.lastCall?.[0]).toEqual(['nef']);
+  await userEvent.setup().click(sign);
+  expect(scene.world!.goToPort).toHaveBeenLastCalledWith('quai');
+  const sheet = await screen.findByRole('dialog', { name: 'La Nef' });
+  await userEvent.setup().click(within(sheet).getByRole('button', { name: /Poser/ }));
+  await vi.waitFor(() => expect(scene.world!.setParures).toHaveBeenLastCalledWith(1));
+  expect(document.querySelector('.open-world-sign[data-lieu="nef"]')).toBeNull();
+  expect(vi.mocked(scene.world!.setSigns).mock.lastCall?.[0]).toEqual([]);
+});
+
+test('au 3e, sans marbre ni quartz à poser, pas de pastille de la Nef', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'maths-3e-statistics': 4 } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  // Le quartz du pavois attend la figure de proue : « Poser » n'est pas actif.
+  expect(document.querySelector('.open-world-sign[data-lieu="nef"]')).toBeNull();
+});
+
 test('la phrase de la restauration du Fanal, cachée pendant la vue finale, revient à sa fin et reste écrite toute sa durée', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });

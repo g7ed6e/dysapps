@@ -291,6 +291,51 @@ test('la Nef prête porte la suggestion, avant une commande prête (GD-21, « Pr
   expect(document.querySelector('.open-world-mark')).toBeNull();
 });
 
+// La pastille de la Nef (GD-25, sujet 6 des restes du 3e, piste A, choix du mainteneur du 23 octobre 2026).
+const nefSign = () => document.querySelector<HTMLButtonElement>('.open-world-sign[data-lieu="nef"]');
+
+test('la pastille de la Nef paraît quand « Poser » serait actif sur sa fiche : l’icône du bloc à poser, jamais pleine, sans texte, « La Nef : on peut poser » ; la toucher mène au quai et ouvre la fiche ; la pose faite, elle se retire', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 2 }, world: { links: [] } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  const w = scene.world!;
+  expect(vi.mocked(w.setSigns).mock.lastCall?.[0]).toContain('nef');
+  // La scène la pose au-dessus de la Nef, à l'écran : elle se montre, son nom lu.
+  act(() => scene.options!.onSigns!([{ place: 'nef', x: 200, y: 120, shown: true }]));
+  const sign = screen.getByRole('button', { name: 'La Nef : on peut poser' });
+  expect(sign.dataset.lieu).toBe('nef');
+  expect(sign).not.toHaveClass('suggested');
+  expect(sign.textContent).toBe('');
+  expect(sign.querySelector('.voxel-icon, svg')).not.toBeNull();
+  vi.mocked(w.goToPort).mockImplementation((spot) => scene.options!.onPort(spot));
+  fireEvent.click(sign);
+  expect(w.goToPort).toHaveBeenLastCalledWith('quai');
+  const sheet = await screen.findByRole('dialog', { name: 'La Nef' });
+  await userEvent.setup().click(within(sheet).getByRole('button', { name: /Poser/ }));
+  // Les deux blocs posés, l'inventaire n'en a plus : « Poser » n'est plus actif, la pastille se retire.
+  await vi.waitFor(() => expect(nefSign()).toBeNull());
+  expect(vi.mocked(w.setSigns).mock.lastCall?.[0]).not.toContain('nef');
+});
+
+test('sans bloc à poser sur la Nef, pas de pastille de la Nef', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'maths-5e-signed-numbers': 4 }, world: { links: [] } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(nefSign()).toBeNull();
+  expect(vi.mocked(scene.world!.setSigns).mock.lastCall?.[0]).not.toContain('nef');
+});
+
+test('la marque de la suggestion sur la Nef prête : pas de pastille de la Nef', async () => {
+  const stage = VEHICLE_STAGES[0];
+  nef.kit = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ stock: { 'french-6e-phonology': 2 }, world: { links: [], parts: { [stage.id]: planCells(stage).map((c) => c.key) } } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(scene.world!.setMark).toHaveBeenLastCalledWith('nef');
+  expect(nefSign()).toBeNull();
+  expect(vi.mocked(scene.world!.setSigns).mock.lastCall?.[0]).not.toContain('nef');
+});
+
 test('la Nef pas encore prête ne porte pas la marque', async () => {
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });

@@ -30,6 +30,8 @@ import { useMoinsDAnimations } from '../../../core/motion';
 import { isSpeechAvailable } from '../../../core/speech';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
+import { paruresPoseBlock } from '../../useParuresBuilder';
+import { vehiclePoseBlock } from '../../useVehicleBuilder';
 import { getIle, type BiomeId, type IleId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
 import { todayISO } from '../../engine';
@@ -217,6 +219,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // mission, aux deux niveaux ; la marque se pose sur elle, « Y aller » mène au quai et ouvre sa fiche. Partie (le
   // voyage fait), elle n'est plus prête.
   const nefFirst = useMemo(() => !nefResting && nefReady(state, nefStage, sail.kit), [nefResting, state, nefStage, sail.kit]);
+  // La pastille de la Nef (GD-25, choix du mainteneur du 23 octobre 2026) : le bloc que « Poser » poserait sur sa fiche
+  // (une parure au 3e, le temps en cours ailleurs), ou rien ; jamais quand la marque de la suggestion est sur elle.
+  const nefSign = useMemo(() => (nefFirst ? null : nefResting ? paruresPoseBlock(state) : vehiclePoseBlock(state, nefStage.biome)), [nefFirst, nefResting, state, nefStage.biome]);
   // Le lieu où se tient Kéo, arrivé (rien pendant la marche, ni à l'Escale) : la suggestion et les pastilles le lisent.
   const [here, setHere] = useState<PlaceId | null>(null);
   // La prochaine mission, jamais celle d'un lieu fermé : aucune ne s'y joue. Celle du lieu où se tient Kéo d'abord, tant
@@ -623,8 +628,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     world.current?.setMark(nefFirst ? 'nef' : (nextPlace?.id ?? null));
   }, [nefFirst, nextPlace, ready]);
   useEffect(() => {
-    world.current?.setSigns(signs.map((s) => s.place));
-  }, [signs, ready]);
+    world.current?.setSigns(nefSign ? [...signs.map((s) => s.place), 'nef'] : signs.map((s) => s.place));
+  }, [signs, nefSign, ready]);
 
   // L'Escale (GD-20, lot 2) : ses portes, ses trophées, l'état de la région, la pile, tirés de la sauvegarde.
   useEffect(() => {
@@ -1122,15 +1127,17 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     setLieu({ place: backTo.place, focus: backTo.mission });
     setBackTo(null);
   }, [backTo, asking, posePending]);
+  // Kéo au quai, la fiche de la Nef ouverte : « Y aller » vers la Nef prête, ou sa pastille touchée.
+  const goNef = () => {
+    if (settings.autoRead) speak(frenchTypography(NEF_TITLE));
+    world.current?.goToPort('quai');
+    setLieu(null);
+    setCommandsOpen(false);
+    setPanel('nef');
+  };
   const goNext = () => {
     // La Nef prête : Kéo au quai, sa fiche ouverte (« Partir »).
-    if (nefFirst) {
-      if (settings.autoRead) speak(frenchTypography(NEF_TITLE));
-      world.current?.goToPort('quai');
-      setLieu(null);
-      setPanel('nef');
-      return;
-    }
+    if (nefFirst) return goNef();
     // La commande prête que porte la suggestion : « Livrer » chez l'habitant, sinon Kéo y va.
     if (suggestedCmd) {
       if (here === suggestedCmd.place) return actAt(suggestedCmd);
@@ -1214,7 +1221,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           )}
           {/* Un cadenas sur le pont de chaque terre fermée : une icône sans texte, dite aux lecteurs d'écran (référent dys). */}
           {/* Les pastilles des habitants : jamais pendant une question, une remise, un panneau ni sur la Carte. */}
-          <HabitantSigns signs={signs} hidden={playing || mapOpen || sheetOpen} onPick={(place) => world.current?.goTo(place)} root={signsRef} />
+          <HabitantSigns signs={signs} hidden={playing || mapOpen || sheetOpen} onPick={(place) => world.current?.goTo(place)} root={signsRef} nef={nefSign} onNef={goNef} />
           <div ref={locksRef} className="open-world-locks" hidden={playing || mapOpen || sheetOpen}>
             {lands.closed.map((land) => (
               <span key={land} className="open-world-lock" data-terre={land} role="img" aria-label={closedLandLabel(land, afterOf(land))} hidden>

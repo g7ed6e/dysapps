@@ -107,7 +107,7 @@ import { placedAmenagement } from './amenagements';
 import { amenagementById, remiseFrame, remisePosed, showsAmenagements, type WorldBox } from '../../world/continu/amenagements';
 import { placedCaisse } from '../../world/continu/caisse';
 import { REMISE_DROP, REMISE_TIMING } from '../../world/continu/remise';
-import { createRemiseRun, createSignsTracker, type RemiseEvents, type SignOnScreen } from './remiseRun';
+import { createRemiseRun, createSignsTracker, type RemiseEvents, type SignOnScreen, type SignSpot } from './remiseRun';
 import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 import { assignSpots, wildlifeGroups6e, type CritterPose } from '../../world/continu/wildlife';
 import { allCritterForms, wildlifeGroups5e } from '../../world/continu/wildlife5e';
@@ -330,8 +330,11 @@ export interface OpenWorld {
   remiseStart(): void;
   /** L'état final de la remise, tout de suite : tout est posé (un toucher qui saute, une sortie). */
   remiseFinish(): void;
-  /** Les lieux dont l'habitant a une pastille (trois au plus), ou aucun. */
-  setSigns(places: readonly PlaceId[]): void;
+  /**
+   * Les lieux dont l'habitant a une pastille (trois au plus), ou aucun ; et `'nef'`, la pastille de la Nef sur laquelle
+   * on peut poser (GD-25), au-dessus d'elle, là où se pose sa marque.
+   */
+  setSigns(places: readonly SignSpot[]): void;
   /**
    * Les Détours trouvés (leur sente tracée, dans le monde et sur la Carte) et les cairns rallumés (GD-20, déplacement
    * libre, lot 2), dans le maillage des lieux : refait seulement s'ils changent.
@@ -2417,6 +2420,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // et où l'aménagement se pose (au Phare, au pied de la tour), comme un cadenas au-dessus de son pont (./remiseRun.ts).
   const signsTracker = createSignsTracker({
     anchorOf: (place) => {
+      // La Nef : là où se pose sa marque (`nefMark`, relu à chaque image, sa hauteur venant avec le modèle).
+      if (place === 'nef') return nefMark;
       // Au-dessus de l'habitant près de sa porte (au 5e, à sa taille dans le monde), sinon de sa place dans la scénette,
       // là où se joue la remise ; autant au-dessus de sa tête que dans la scénette.
       const w = worldHabitantAt(place, ground);
@@ -2425,12 +2430,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },
     place: (anchor, sign) => {
-      projected.copy(anchor).project(camera);
+      const nef = sign.place === 'nef';
+      projected.copy(nef ? nefMark : anchor).project(camera);
       const x = sx(projected);
       const y = sy(projected);
       sign.x = x;
       sign.y = y;
-      sign.shown = projected.z < 1 && distance(here, placeById(sign.place).center) < FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN;
+      sign.shown = projected.z < 1 && distance(here, nef ? nefSite.berth : placeById(sign.place as PlaceId).center) < FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN;
     },
     onSigns: options.onSigns,
   });

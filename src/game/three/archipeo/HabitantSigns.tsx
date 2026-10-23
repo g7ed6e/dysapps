@@ -5,23 +5,32 @@
 // différence ne tient pas à la seule couleur. Son icône : le bloc demandé pour une commande, l'icône de l'île (la
 // notion) pour des révisions ; jamais celle de « Scène ». Son nom est lu (« Commande, pierres, au Phare »). Un toucher y
 // fait marcher Kéo, puis le panneau du lieu s'ouvre. Rien sur la Carte dans ce lot.
+// La pastille de la Nef (GD-25, sujet 6 des restes du 3e, piste A, choix du mainteneur du 23 octobre 2026) : le même rond
+// au-dessus de la Nef, l'icône du bloc à poser, jamais pleine, tant que « Poser » serait actif sur sa fiche ; un toucher
+// mène Kéo au quai et ouvre la fiche.
 import type { RefObject } from 'react';
 import { Icon } from '../../../components/Icon';
-import { BLOCKS, getBiome } from '../../biomes';
+import { BLOCKS, getBiome, type BlockId } from '../../biomes';
 import { BlockIcon } from '../../Voxel';
 import { keepClear, type Obstacle, type ScreenRect } from '../../world/continu/mission';
 import { placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { entraideIcon, type HabitantSign } from './remiseOf';
 import type { SignOnScreen } from './scene';
 
+/** Ce que lit le lecteur d'écran sur la pastille de la Nef : elle ne porte aucun texte. */
+const NEF_SIGN_LABEL = 'La Nef : on peut poser';
+
 interface Props {
   signs: readonly HabitantSign[];
   hidden: boolean;
   onPick(place: PlaceId): void;
   root: RefObject<HTMLDivElement | null>;
+  /** Le bloc que « Poser » poserait sur la Nef, ou `null` : pas de pastille de la Nef. */
+  nef?: BlockId | null;
+  onNef?(): void;
 }
 
-export function HabitantSigns({ signs, hidden, onPick, root }: Props) {
+export function HabitantSigns({ signs, hidden, onPick, root, nef = null, onNef }: Props) {
   return (
     <div ref={root} className="open-world-signs" hidden={hidden}>
       {signs.map((s) => {
@@ -33,6 +42,11 @@ export function HabitantSigns({ signs, hidden, onPick, root }: Props) {
           </button>
         );
       })}
+      {nef && (
+        <button type="button" className="open-world-sign" data-lieu="nef" aria-label={NEF_SIGN_LABEL} hidden onClick={onNef}>
+          <BlockIcon top={BLOCKS[nef].top} side={BLOCKS[nef].side} size={28} />
+        </button>
+      )}
     </div>
   );
 }

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useSettings } from '../core/SettingsContext';
 import { useHaptics } from '../core/haptics';
 import { useBlocland } from './BloclandContext';
-import { planStatus, type PlanStatus } from './engine';
+import type { BlockId } from './biomes';
+import { planStatus, type GameState, type PlanStatus } from './engine';
 import { playDone, sonDePose } from './sound';
 import { habillageDuMonde } from './skin';
 import { NEF_COMPLETE, NEF_PARURES_PLAN, PARURE_POSED, paruresOpenCells } from './world/nefParures';
@@ -15,6 +16,14 @@ export interface ParuresBuilder {
   notice: string | null;
   /** Pose d'un coup ce que l'inventaire permet de la parure en cours : jamais le pavois avant la figure de proue. */
   fillAll: () => void;
+}
+
+/**
+ * Le bloc que « Poser » poserait d'abord sur la parure en cours (le marbre de la figure de proue, puis le quartz du
+ * pavois), ou `null` : « Poser » n'est pas actif. La pastille de la Nef du monde ouvert le montre (GD-25).
+ */
+export function paruresPoseBlock(state: GameState): BlockId | null {
+  return paruresOpenCells(state.world.parts).find((c) => (state.stock[c.block] ?? 0) > 0)?.block ?? null;
 }
 
 /**
@@ -31,7 +40,7 @@ export function useParuresBuilder(feux: boolean): ParuresBuilder {
   const plan = NEF_PARURES_PLAN;
   const status = planStatus(state, plan);
   const open = paruresOpenCells(state.world.parts);
-  const canFill = open.some((c) => (state.stock[c.block] ?? 0) > 0);
+  const canFill = paruresPoseBlock(state) !== null;
   const sound = (f: () => void) => settings.sounds && f();
 
   const fillAll = () => {
