@@ -79,7 +79,7 @@ export const CRIQUE_SITE: PortSite = {
     habitants: { z: 14.5, xs: [6, 16, 30] },
     boats: [[CRIQUE_PAVING.quay.x1 + 2.4, 22]],
   },
-  masonry: { courseHeights: (top) => brickCourseHeights(top), course: brickCourse, stone: COLORS_4E.stoneSun },
+  masonry: { courseHeights: (top) => brickCourseHeights(top), course: brickCourse, stone: COLORS_4E.stoneSun, backQuoinsToFoot: 6 },
 };
 
 /**
@@ -125,10 +125,23 @@ const DIGUE_COLORS = { top: COLORS_4E.stone, bevel: COLORS_4E.stone, side: COLOR
 const DIGUE_PROFILE = { foot: 2.2, shoulder: 0.5, crown: 0.36, bottom: -1.8, bevel: 0.25 } as const;
 
 /**
+ * Les gros blocs de pierre brute posés en saillie sur un bloc de la digue sur deux, aux dessus les plus bas (restes du
+ * monde ouvert du 4e, point 5b : de loin, chaque bloc se lisait comme une longue planche basse, la ligne comme un ruban en
+ * tirets ; avec eux, une jetée d'enrochement aux têtes inégales) : le bloc qui le porte, sa taille (le long du bloc, en
+ * travers, en haut), de combien il dépasse son dessus, son lacet et son tangage, et son décalage vers le large.
+ */
+export const DIGUE_ROCKS = [
+  { block: 1, size: [1.6, 1.4, 1.2] as P3, above: 0.55, yaw: 0.25, pitch: 0.1, out: 0.5 },
+  { block: 3, size: [1.5, 1.4, 1.25] as P3, above: 0.6, yaw: 0.45, pitch: -0.12, out: 0.45 },
+  { block: 5, size: [1.65, 1.4, 1.15] as P3, above: 0.65, yaw: 0.32, pitch: 0.08, out: 0.55 },
+] as const;
+
+/**
  * La digue de la Crique (intention, § 2 ; retouche 1 du directeur artistique) : un bras bas de pierre grise dans l'eau,
  * six blocs séparés en ligne brisée (un par coude de `CRIQUE_DIGUE`), chacun son haut, l'eau visible entre eux, en
  * grandes facettes : le dessus plat, un biseau de chaque côté, des flancs qui s'évasent jusque sous l'eau ; ni parapet
- * ni rail. Le vide entre deux blocs se mesure au bord intérieur du dessus, là où le coude le resserre.
+ * ni rail ; un bloc sur deux porte un gros bloc de pierre brute en saillie (`DIGUE_ROCKS`). Le vide entre deux blocs se
+ * mesure au bord intérieur du dessus, là où le coude le resserre.
  */
 export function digueFacets(): Facets {
   const b = new FacetBuilder();
@@ -175,6 +188,15 @@ export function digueFacets(): Facets {
       ] as const)
         if (flip) b.triangle(s[p], s[w], s[q], DIGUE_COLORS.side);
         else b.triangle(s[p], s[q], s[w], DIGUE_COLORS.side);
+    // Le bloc en saillie, vers le milieu du bloc, un peu vers le large (à gauche du sens de la digue, l'anse à droite) ;
+    // ses flancs à l'ombre, son dessus dans la pierre grise, jamais la pierre claire.
+    const rock = DIGUE_ROCKS.find((k) => k.block === i);
+    if (rock) {
+      const mx = (ax + cx) / 2 - r.x * rock.out,
+        mz = (az + cz) / 2 - r.z * rock.out;
+      const [along, high, across] = rock.size;
+      b.box({ x: mx, y: y + rock.above - high, z: mz, yaw: Math.atan2(-u.z, u.x) + rock.yaw, pitch: rock.pitch }, [along, high, across], DIGUE_COLORS.side, DIGUE_COLORS.top);
+    }
   }
   return placeFacets(b.build(), { x: CRIQUE.origin.x, y: 0, z: CRIQUE.origin.z, yaw: CRIQUE.yaw });
 }

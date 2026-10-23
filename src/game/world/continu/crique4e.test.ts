@@ -17,6 +17,7 @@ import {
   CRIQUE_VIEW,
   DEPOSIT_SISTERS,
   DEPOSIT_SPOTS,
+  DIGUE_ROCKS,
   FOLLOW_FAR_4E,
   NEF_4E,
   NEF_4E_DEPARTURE,
@@ -156,10 +157,19 @@ describe('La digue', () => {
       expect(t).toBeGreaterThanOrEqual(0.45);
       expect(t).toBeLessThanOrEqual(0.75);
     }
+    // Les blocs à leur haut ; les blocs en saillie (restes du monde ouvert, point 5b) dépassent leur dessus de 0,5 à 0,7,
+    // tout reste sous le quai.
     let top = -Infinity;
     for (const v of vertices(digueFacets())) top = Math.max(top, v.y);
-    expect(top).toBeCloseTo(Math.max(...CRIQUE_DIGUE.tops));
+    expect(top).toBeGreaterThan(Math.max(...CRIQUE_DIGUE.tops));
     expect(top).toBeLessThan(CRIQUE_LEVEL);
+    expect(DIGUE_ROCKS.map((k) => k.block)).toEqual([1, 3, 5]);
+    for (const k of DIGUE_ROCKS) {
+      expect(k.above).toBeGreaterThanOrEqual(0.5);
+      expect(k.above).toBeLessThanOrEqual(0.7);
+      expect(Math.abs(k.pitch)).toBeLessThanOrEqual(0.15);
+    }
+    expect(new Set(DIGUE_ROCKS.map((k) => k.yaw)).size).toBe(3);
     const end = points[points.length - 1];
     expect(end.x).toBeGreaterThan(NEF_4E.berth.x + CRIQUE_PAD.radius);
     expect(end.z).toBeGreaterThan(NEF_4E.berth.z);
@@ -172,6 +182,8 @@ describe('La digue', () => {
     for (let k = 0; k < f.positions.length; k += 9) {
       if (f.normals[k + 1] < 0.99) continue;
       const tri = [0, 3, 6].map((o) => ({ x: f.positions[k + o], y: f.positions[k + o + 1], z: f.positions[k + o + 2] }));
+      // Les dessus des blocs seuls, à leur haut (les blocs en saillie, plus haut, n'en sont pas).
+      if (!CRIQUE_DIGUE.tops.some((t) => tri.every((p) => Math.abs(p.y - t) < 1e-4))) continue;
       const block = tops.find((t) => Math.abs(t[0].y - tri[0].y) < 1e-4);
       if (block) block.push(...tri);
       else tops.push(tri);
