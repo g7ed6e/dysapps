@@ -3365,6 +3365,20 @@
 .open-world-needle {
   display: inline-flex;
 }
+/* Les niveaux atteints (la rangée de la grille, ../../ArchipelagoSwitcher.tsx) : en ligne en haut, à gauche de Réglages,
+   la colonne de droite étant celle de la caméra ; sur deux lignes au besoin, sans couvrir la colonne de gauche. */
+.open-world .world-archipel.open-world-archipel {
+  top: 0.6rem;
+  right: calc(0.6rem + env(safe-area-inset-right, 0px) + 56px + 0.5rem);
+  left: calc(var(--gauche-droite, 0px) + 0.6rem + 56px + 0.5rem);
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+.open-world .world-archipel.open-world-archipel > li {
+  pointer-events: auto;
+}
 /* La rangée « Revenir » de la fiche de la Nef (voyage entre niveaux, piste A) : des boutons secondaires, sous l'action
    principale, de 48 px au moins. */
 .nef-returns {

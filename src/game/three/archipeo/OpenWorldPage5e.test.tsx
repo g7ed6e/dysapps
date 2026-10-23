@@ -7,6 +7,7 @@ import { afterEach, beforeEach, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
+import { getArchipelago, voyageId } from '../../world/archipelago';
 import type { LinkedLand } from '../../world/continu/lands';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
@@ -78,6 +79,26 @@ function renderPage() {
     </SettingsProvider>,
   );
 }
+
+test('les niveaux atteints, en haut comme dans la grille : le 5e coché, « 6e » lance le fondu vers l’Escale ; rien sur la Carte (demande du mainteneur du 23 octobre 2026)', async () => {
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  renderPage();
+  const user = userEvent.setup();
+  const row = await screen.findByRole('list', { name: 'Changer de classe' });
+  expect(row).toHaveClass('open-world-archipel');
+  expect(row.querySelector('[aria-current="true"]')?.textContent).toContain('5e');
+  await user.click(screen.getByRole('button', { name: /Carte/ }));
+  expect(screen.queryByRole('list', { name: 'Changer de classe' })).toBeNull();
+  await user.click(screen.getByRole('button', { name: /Retour/ }));
+  await user.click(screen.getByRole('button', { name: /^Aller en 6e/ }));
+  expect(document.querySelector('.open-world-fondu')).toHaveClass('on');
+});
+
+test('un seul niveau atteint : pas de rangée des niveaux', async () => {
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(screen.queryByRole('list', { name: 'Changer de classe' })).toBeNull();
+});
 
 test('la scène reçoit le plan du 5e, la Lisière et le dirigeable (lot 4), et ses Détours (lot 6)', async () => {
   renderPage();

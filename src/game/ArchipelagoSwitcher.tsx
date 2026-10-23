@@ -12,15 +12,17 @@ interface Props {
   bridges: string[];
   /** Aller dans un archipel déjà atteint. */
   onGo: (to: ArchipelagoId) => void;
+  /** Une place à part (le monde ouvert la met en ligne, à gauche de Réglages). */
+  className?: string;
 }
 
-export function ArchipelagoSwitcher({ current, bridges, onGo }: Props) {
+export function ArchipelagoSwitcher({ current, bridges, onGo, className }: Props) {
   const textes = useTextes();
   const reached = ARCHIPELAGOS.filter((a) => isArchipelagoReached(a.classe, bridges));
   // Une seule classe atteinte : rien à choisir.
   if (reached.length < 2) return null;
   return (
-    <ul className="world-archipel" data-couvre="bouton" aria-label="Changer de classe">
+    <ul className={`world-archipel${className ? ` ${className}` : ''}`} data-couvre="bouton" aria-label="Changer de classe">
       {reached.map((a) =>
         a.classe === current ? (
           <li key={a.classe}>
