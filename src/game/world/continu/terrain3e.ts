@@ -53,7 +53,7 @@ const LEVEL = { mountain: 1.25, swell: 0.35, prairie: 0.55, prairieSwell: 0.1 } 
  * « Partout » : une table, son liseré d'ardoise arrondi, jamais de falaise) : la table garde son niveau jusque sous le
  * liseré (`edge`, en unités de la rive), puis plonge d'un coup sous les nuages (`under`) ; le liseré seul se voit au bord.
  */
-const PRAIRIE_BANK = { edge: [0.5, 1.5], under: -0.9 } as const;
+const PRAIRIE_BANK = { edge: [0.5, 1.5], under: -0.9, deep: { y: -3, over: 1 } } as const;
 /** La levée douce le long de la rive nord du Cirque : sa hauteur, de `rise[0]` à `rise[1]` unités de la rive, jusqu'à `fade`. */
 const CIRQUE_RIM = { height: 2.2, rise: [3, 10], fade: [13, 28] } as const;
 
@@ -123,7 +123,10 @@ export function heightAt3e(p: Vec2): number {
   const pr = prairieDistance(p);
   const coast = Math.max(m, pr);
   if (pr >= m) {
-    const under = pr >= 0 ? PRAIRIE_BANK.under : PRAIRIE_BANK.under + (CLOUD_FLOOR - PRAIRIE_BANK.under) * smoothstep(0, BANK.under, -pr);
+    // Au-delà de la rive, le fond plonge bien plus bas que les nuages : vue de loin, la grille plus lâche ne tire plus de
+    // dents de scie sous le liseré (relecture des Prairies, (a) 2).
+    const D = PRAIRIE_BANK.deep;
+    const under = pr >= 0 ? PRAIRIE_BANK.under : PRAIRIE_BANK.under + (D.y - PRAIRIE_BANK.under) * smoothstep(0, D.over, -pr);
     if (pr <= PRAIRIE_BANK.edge[0]) return under;
     return under + (LEVEL.prairie + LEVEL.prairieSwell * wave(p) - under) * smoothstep(PRAIRIE_BANK.edge[0], PRAIRIE_BANK.edge[1], pr);
   }
@@ -190,6 +193,32 @@ function underPrairieRim(x: number, z: number): boolean {
   return pr < PRAIRIE_BANK.edge[0] + 0.15 && pr >= mountainDistance(p);
 }
 
+/**
+ * Une facette de la rive d'une Prairie qui touche la table en deçà du liseré (un de ses sommets passé le milieu du
+ * liseré) se voit de la table : elle reste de l'herbe, quelle que soit la teinte de son milieu, caché sous le liseré.
+ * Peinte de la teinte des nuages ou du granit, elle dessinait des dents de scie entre l'herbe et le liseré, surtout de
+ * loin, où la grille est plus lâche (relecture des Prairies, (a) 2).
+ */
+function touchesPrairieTable(a: P3, b: P3, c: P3): boolean {
+  // Le milieu du liseré, et non son bord intérieur : entre deux points de son tracé, le liseré passe en corde, en deçà.
+  const inner = RIM_3E.inset.prairie;
+  const mid = { x: (a[0] + b[0] + c[0]) / 3, z: (a[2] + b[2] + c[2]) / 3 };
+  const pr = prairieDistance(mid);
+  // Loin de toute rive de Prairie, ou à la montagne : rien à faire (le calcul par sommet n'est fait qu'au bord).
+  if (pr > inner + 2 * TERRAIN_3E.step * TERRAIN_3E.coarse || pr < -TERRAIN_3E.step * TERRAIN_3E.coarse || pr < mountainDistance(mid)) return false;
+  if (pr >= inner) return false;
+  return [a, b, c].some((v) => prairieDistance({ x: v[0], z: v[2] }) >= inner);
+}
+
+/** Sur une Prairie, en deçà du milieu du liseré. */
+const onPrairieTable = (p: Vec2): boolean => {
+  const pr = prairieDistance(p);
+  return pr >= RIM_3E.inset.prairie && pr >= mountainDistance(p);
+};
+
+/** Une facette de la table plus à plat que ceci se peint de l'herbe sans compenser sa lumière. */
+const TABLE_UP = 0.995;
+
 /** Le sens d'où vient le soleil, à plat : un flanc qui le regarde est au soleil. */
 const SUN_FLAT = { x: -SHADOW_DIR_3E.x, z: -SHADOW_DIR_3E.z } as const;
 
@@ -207,6 +236,9 @@ const patch = (x: number, z: number): number =>
 function flat3e(x: number, z: number, h: number): number {
   const p = { x, z };
   if (underPrairieRim(x, z)) return COLORS_3E.cloud;
+  // Sur une Prairie, en deçà du milieu du liseré : une herbe d'un seul aplat, même là où la table plonge déjà sous lui
+  // (relecture des Prairies, (a) 2 ; et (a) 9 : une tache plus claire s'y lisait de près comme une plaque aux bords nets).
+  if (onPrairieTable(p)) return COLORS_3E.grass;
   if (h < SHORE_ROCK) return COLORS_3E.granite;
   const k = patch(x, z);
   if (distance(p, PEAK_3E.at) < PEAK_3E.granite || areteClearance(p) < 0.4) return k < 0.6 ? COLORS_3E.granite : COLORS_3E.graniteSun;
@@ -231,17 +263,25 @@ const SHADE_OF: Readonly<Record<number, number>> = {
  * noir) ; sur une pente douce, son aplat au soleil ou à l'ombre ; sinon, le sol à plat.
  */
 function facet3e(a: P3, b: P3, c: P3): number {
-  if (underPrairieRim((a[0] + b[0] + c[0]) / 3, (a[2] + b[2] + c[2]) / 3)) return COLORS_3E.cloud;
   const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2];
   const vx = c[0] - a[0], vy = c[1] - a[1], vz = c[2] - a[2];
   const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx;
   const len = Math.hypot(nx, ny, nz) || 1;
   const up = Math.abs(ny) / len;
   const sign = ny < 0 ? -1 : 1;
-  const sunny = (sign * (nx * SUN_FLAT.x + nz * SUN_FLAT.z)) / len > 0.12;
+  const toSun = (sign * (nx * SUN_FLAT.x + nz * SUN_FLAT.z)) / len;
+  const sunny = toSun > 0.12;
   const x = (a[0] + b[0] + c[0]) / 3;
   const z = (a[2] + b[2] + c[2]) / 3;
   const h = (a[1] + b[1] + c[1]) / 3;
+  // La table d'une Prairie, et la pente sous son liseré qu'on voit d'elle : une seule herbe. Une facette penchée vers le
+  // soleil prend le ton d'ombre, une facette penchée à l'opposé le ton de soleil : éclairées, elles rendent l'herbe à
+  // plat, sans aplat plus clair au bord (relecture des Prairies, (a) 2 et 9).
+  if (touchesPrairieTable(a, b, c) || onPrairieTable({ x, z })) {
+    if (up >= TABLE_UP) return COLORS_3E.grass;
+    return toSun > 0.05 ? COLORS_3E.grassShade : toSun < -0.05 ? COLORS_3E.grassSun : COLORS_3E.grass;
+  }
+  if (underPrairieRim(x, z)) return COLORS_3E.cloud;
   if (up < ROCK_UP) return sunny ? COLORS_3E.graniteSun : COLORS_3E.graniteShade;
   const base = flat3e(x, z, h);
   if (up >= SLOPE_UP) return base;
@@ -256,7 +296,7 @@ const PAINT_3E: GroundPaint = { facet: facet3e, flat: flat3e, foam: noFoam, skir
 
 // ---------- Ce qui pousse, et les rochers ----------
 
-/** Les couleurs de ce qui pousse : des pins sombres sur les pentes basses et les Prairies, des blocs de granit au Cirque. */
+/** Les couleurs de ce qui pousse : des pins sombres sur les pentes basses (jamais sur les Prairies), des blocs de granit au Cirque. */
 export const FLORA_3E_COLORS = { pine: COLORS_3E.pine, pineTop: COLORS_3E.pineShade, boulder: COLORS_3E.graniteShade, boulderTop: COLORS_3E.granite } as const;
 
 /**
@@ -316,6 +356,8 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (landDistance3e(p) < FLORA_KEEP.coast || distance(p, PEAK_3E.at) < FLORA_KEEP.peak) continue;
       if (areteClearance(p) < FLORA_KEEP.cut || langueClearance(p) < FLORA_KEEP.cut) continue;
       if (nearPath(p, FLORA_KEEP.path) || nearPlace(p) || nearParvis(p)) continue;
+      // Pas un pin sur les Prairies : le Cèdre y est le seul arbre (relecture des Prairies, (a) 3).
+      if (prairieDistance(p) >= mountainDistance(p)) continue;
       if (SPOTS.some((s) => Math.hypot(p.x - s.x, p.z - s.z) < FLORA_KEEP.spot)) continue;
       out.push({ x: p.x, z: p.z, y: heightAt3e(p), size: 0.8 + 0.5 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), pine: !cirque });
     }

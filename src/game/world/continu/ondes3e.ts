@@ -22,17 +22,19 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise, sheet } from './place4eKit';
+import { armLantern3e, C3E, dryTuft3e, fallenPan3e, habitant3e, postLantern3e, SINK_3E, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise, sheet, type P3 } from './place4eKit';
 
 /**
- * Les couleurs propres aux Ondes, en plus des matières des Passeurs (`C3E`) : le fer bruni du pavillon et son dedans, un brun d'ombre
- * (jamais presque noir) ; le cadran rond des postes, sans lettre ; le creux d'une porte ouverte ; la gourde ; la veste de
+ * Les couleurs propres aux Ondes, en plus des matières des Passeurs (`C3E`) : le fer bruni du pavillon, sombre et un peu
+ * bleuté (relecture des Prairies, (a) 7 : jamais brun de bois), la lèvre claire de sa bouche et son dedans (jamais
+ * presque noir) ; le cadran rond des postes, sans lettre ; le creux d'une porte ouverte ; la gourde ; la veste de
  * l'annonceur.
  */
 const C = {
-  horn: 0x92785c,
-  hornInside: 0x6e5e50,
+  horn: 0x5f6878,
+  hornLip: 0x7d8796,
+  hornInside: 0x4f5766,
   dial: 0xd6d0c0,
   hollow: 0x5c5650,
   flask: 0x7d8a6e,
@@ -127,6 +129,9 @@ const HORN = {
   length: 2.0,
   mouth: 0.85,
   throat: 0.14,
+  /** Le cornet s'élargit d'abord à peine (`neck`, en part de la longueur, jusqu'au rayon `waist`), puis s'évase d'un coup. */
+  neck: 0.6,
+  waist: 0.32,
 } as const;
 
 /** L'auvent tombé (la ruine), appuyé contre la façade : de `x0` à `x1`, son pied sur l'herbe. */
@@ -206,8 +211,17 @@ function stationWalls(l: FacetBuilder): void {
   const S = STATION;
   const y = floor() - 0.05;
   l.box({ x: (S.x0 + S.x1) / 2, y, z: (S.z0 + S.z1) / 2 }, [S.x1 - S.x0, S.h + 0.05, S.z1 - S.z0], C3E.stoneShade, C3E.stone);
-  // Les deux pignons, sous le faîte.
-  l.gableRoof({ x: (S.x0 + S.x1) / 2, y: floor() + S.h, z: (S.z0 + S.z1) / 2 }, S.x1 - S.x0, S.z1 - S.z0, S.ridge - 0.05, C3E.stone, C3E.stoneShade);
+  // Les deux pignons, sous le faîte : deux triangles debout, sans pente de pierre entre eux (relecture des Prairies,
+  // (a) 10 : dans la ruine, le toit ouvert montre ses chevrons sur le ciel, jamais un toit pâle).
+  const y1 = floor() + S.h,
+    zm = (S.z0 + S.z1) / 2;
+  for (const x of [S.x0, S.x1]) {
+    const a: P3 = [x, y1, S.z0],
+      c: P3 = [x, y1, S.z1],
+      d: P3 = [x, y1 + S.ridge - 0.05, zm];
+    l.triangle(a, c, d, C3E.stone);
+    l.triangle(a, d, c, C3E.stone);
+  }
   l.box({ x: S.door.x, y: floor(), z: S.z1 + 0.02 }, [S.door.w, S.door.h, 0.06], C.hollow);
   l.box({ x: S.door.x, y: floor() + S.door.h, z: S.z1 + 0.04 }, [S.door.w + 0.25, 0.16, 0.1], C3E.graniteShade, C3E.granite);
   armLantern3e(l, S.door.x - S.door.w / 2 - 0.35, floor() + 2.05, S.z1 + 0.02, 0, 1, true);
@@ -244,6 +258,8 @@ function stationRoofOpen(l: FacetBuilder): void {
   );
   l.box({ x: (x0 + x1) / 2, y: y + S.ridge - 0.06, z: zm - 0.3 }, [x1 - x0, 0.07, 0.6], C3E.snow);
   for (const x of [1.4, 2.8, 4.2]) l.beam({ x, y: y - 0.05, z: S.z1 - 0.1 }, { x, y: y + S.ridge * 0.92, z: zm }, 0.13, C3E.woodShade);
+  // La panne du faîte, d'un pignon à l'autre, qui porte les chevrons.
+  l.beam({ x: S.x0 + 0.05, y: y + S.ridge * 0.92, z: zm }, { x: S.x1 - 0.05, y: y + S.ridge * 0.92, z: zm }, 0.14, C3E.woodShade);
 }
 
 /** L'auvent debout : ses deux poteaux, sa poutre, son toit de bois en appentis contre la façade. */
@@ -266,11 +282,14 @@ function awningUp(l: FacetBuilder): void {
   );
 }
 
-/** L'auvent tombé (la ruine), appuyé contre la façade, penché : son dessous de bois et ses lattes tournés vers la porte. */
+/**
+ * L'auvent tombé (la ruine), appuyé contre la façade, penché : son dessous de bois, ses lattes et ses chevrons tournés
+ * vers la porte, son bord d'ardoise (relecture des Prairies, (a) 5).
+ */
 function awningDown(l: FacetBuilder): void {
   const P = FALLEN_AWNING;
   const top = floor() + AWNING.wallY - 0.5;
-  sheet(
+  fallenPan3e(
     l,
     [
       [P.x0, top, STATION.z1 + 0.1],
@@ -279,14 +298,8 @@ function awningDown(l: FacetBuilder): void {
       [P.x0 - 0.1, groundAt(P.x0, P.foot) + 0.02, P.foot],
     ],
     0.1,
-    C3E.wood,
-    C3E.newWood,
+    [0.35, 0.7],
   );
-  for (const t of [0.35, 0.7]) {
-    const yy = top + (floor() - top) * t + 0.12;
-    const zz = STATION.z1 + 0.1 + (P.foot - STATION.z1) * t + 0.05;
-    l.beam({ x: P.x0 + 0.05, y: yy, z: zz }, { x: P.x1 + 0.1, y: yy, z: zz }, 0.08, C3E.woodShade);
-  }
   // Un poteau de l'auvent, couché dans l'herbe.
   l.box({ x: -0.4, y: groundAt(-0.4, 2.6) - 0.05, z: 2.6, yaw: 1.2 }, [AWNING.post, AWNING.post, AWNING.edgeY], C3E.woodShade, C3E.wood);
 }
@@ -345,8 +358,12 @@ function guys(l: FacetBuilder, taut: boolean): void {
 
 /** Le cornet du pavillon d'écoute, dans un repère où il pointe vers +z depuis son col en (0, 0, 0). */
 function horn(k: FacetBuilder): void {
-  k.prism({ x: 0, y: 0, z: 0 }, HORN.throat, HORN.mouth, HORN.length, 8, C.horn, C.hornInside);
-  k.prism({ x: 0, y: -0.25, z: 0 }, 0.09, HORN.throat, 0.25, 6, C.horn);
+  const H = HORN;
+  // Le col, presque droit, puis le pavillon bien rond qui s'évase ; sa lèvre claire fait lire la bouche ronde de loin.
+  k.prism({ x: 0, y: 0, z: 0 }, H.throat, H.waist, H.length * H.neck, 10, C.horn);
+  k.prism({ x: 0, y: H.length * H.neck, z: 0 }, H.waist, H.mouth, H.length * (1 - H.neck), 10, C.horn, C.hornInside);
+  k.annulus({ x: 0, y: H.length - 0.04, z: 0 }, H.mouth - 0.02, H.mouth + 0.08, 0.1, 10, C.hornLip, C.hornLip, false);
+  k.prism({ x: 0, y: -0.25, z: 0 }, 0.09, H.throat, 0.25, 6, C.horn);
 }
 
 /** Le pavillon remonté sur son pied, tourné vers le large (vers la gauche de la vue d'arrivée). */
@@ -368,7 +385,7 @@ function hornUp(l: FacetBuilder): void {
   );
 }
 
-/** Le pied seul et le pavillon couché dans l'herbe à côté (la ruine), sa bouche vers la porte. */
+/** Le pied seul et le pavillon couché dans l'herbe à côté (la ruine), de flanc depuis la porte, sa lèvre claire bien visible. */
 function hornDown(l: FacetBuilder): void {
   const H = HORN;
   const y = groundAt(H.x, H.z);
@@ -382,7 +399,7 @@ function hornDown(l: FacetBuilder): void {
       x: gx,
       y: groundAt(gx, gz) + 0.12,
       z: gz,
-      yaw: 0.4,
+      yaw: 0.4 + Math.PI / 2,
       pitch: Math.PI / 2 - 0.12,
     },
     horn,

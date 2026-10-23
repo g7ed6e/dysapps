@@ -373,6 +373,17 @@ const stumpsOf = (s: BridgeSite): number[] => {
 const LOCK_ASIDE: Partial<Record<LinkedLand, number>> = { cirque: 24 };
 
 /**
+ * Jusqu'où se montrent les cadenas de la galerie du col et des arches basses du 3e : de plus loin, depuis les Prairies
+ * (les arches vues de côté, la Lutherie, le Palais, la Coupole) ou les Alpages (la Bergerie), ils se posaient sur le
+ * Fanal ou au pied du pic, à côté d'un passage trop petit pour se lire (relecture des Prairies, (a) 4 et 11). Le
+ * Belvédère, qui regarde le col (à 136 de la galerie), les garde ; le Grenier (à 141) ne montre plus que celui des arches.
+ */
+const LOCK_RANGE: Partial<Record<LinkedLand, number>> = { cirque: 140, prairies: 150 };
+
+/** La distance au milieu d'un pont au-delà de laquelle son cadenas ne se montre plus (`Infinity` : partout où porte la brume). */
+export const bridgeLockRange = (land: LinkedLand): number => LOCK_RANGE[land] ?? Infinity;
+
+/**
  * Le cadenas d'un pont (le même sur les quatre) : au-dessus de l'eau, passé son milieu, du côté de la terre fermée ; à
  * côté de la galerie du col (`LOCK_ASIDE`).
  */

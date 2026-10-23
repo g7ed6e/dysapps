@@ -217,7 +217,7 @@ describe('La scénette de la Douane', () => {
     expect(house).toBeGreaterThan(18);
     expect(house).toBeLessThan(35);
     const { gate, toLocal } = DOUANE_LAYOUT;
-    const g = toLocal(gate.x, (gate.pivot + gate.rest) / 2);
+    const g = toLocal((gate.pivot + gate.rest) / 2, gate.z);
     const barrier = offOf({ x: PLACE.center.x + g.x, z: PLACE.center.z + g.z });
     expect(barrier).toBeLessThan(-8);
     expect(barrier).toBeGreaterThan(-35);

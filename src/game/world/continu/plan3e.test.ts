@@ -238,7 +238,8 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
     for (let i = 1; i < f.positions.length; i += 3) {
       const x = f.positions[i - 1],
         z = f.positions[i + 1];
-      if (Math.hypot(x - rock.x, z - rock.z) > 6) {
+      // Hors du rocher, large et à facettes, et de son liseré d'ardoise (relecture des Prairies, (a) 1).
+      if (Math.hypot(x - rock.x, z - rock.z) > ZEPPELIN_3E.rockRadius * 1.25 + 1.2) {
         min = Math.min(min, f.positions[i]);
         max = Math.max(max, f.positions[i]);
       }

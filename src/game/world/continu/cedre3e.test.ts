@@ -14,7 +14,7 @@ import type { Facets } from './facets';
 import { distance, distanceToPolyline, linearRgb, type Vec2 } from './geometry';
 import { NETWORK_3E } from './paths3e';
 import { C3E } from './place3eKit';
-import { DETOUR_SPOTS_3E, PATH_EDGES_3E, PLACES_3E, TERRAIN_3E } from './plan3e';
+import { DETOUR_SPOTS_3E, PATH_EDGES_3E, PEAK_3E, PLACES_3E, TERRAIN_3E, ZEPPELIN_3E } from './plan3e';
 import { buildHeightField3e, ground3e, landDistance3e, obstaclesIn3e, walkBlocked3e } from './terrain3e';
 
 const ground = ground3e(buildHeightField3e());
@@ -22,10 +22,19 @@ const node = (id: string) => NETWORK_3E.pathNode(id).at;
 const EDGES = PATH_EDGES_3E.map(([a, b]) => [node(a), node(b)]);
 const pathDistance = (p: Vec2) => Math.min(...EDGES.map((l) => distanceToPolyline(p, l)));
 const capTo = (from: Vec2, to: Vec2) => ((Math.atan2(to.x - from.x, -(to.z - from.z)) * 180) / Math.PI + 360) % 360;
-/** La caméra des Détours, à une douzaine d'unités derrière Kéo, dans l'axe de la vue (au nord). */
-const CAMERA = { x: CEDRE.at.x, z: CEDRE.at.z + 12 };
+/**
+ * Le cap de la vue (relecture des Prairies : tourné vers le nord-ouest, pour que le pic y soit entier, pointe comprise ;
+ * le Palais en sort, c'est accepté, et le zeppelin aussi, tout entier, au téléphone comme sur tablette).
+ */
+const CAP_DEG = 320;
+/** Le demi-champ du téléphone en paysage (844 × 390), en degrés. */
+const HALF_PHONE = (Math.atan(Math.tan((28 * Math.PI) / 180) * (844 / 390)) * 180) / Math.PI;
+const LOOK = CEDRE_LAYOUT.look;
+const RIGHT = { x: -LOOK.z, z: LOOK.x };
+/** La caméra des Détours, à une douzaine d'unités derrière Kéo, dans l'axe de la vue. */
+const CAMERA = { x: CEDRE.at.x - LOOK.x * 12, z: CEDRE.at.z - LOOK.z * 12 };
 /** Le cap de `to` vu de la caméra, moins celui de la vue, en degrés de −180 à 180 (positif : à droite). */
-const offView = (to: Vec2) => ((capTo(CAMERA, to) + 540) % 360) - 180;
+const offView = (to: Vec2) => ((capTo(CAMERA, to) - CAP_DEG + 540) % 360) - 180;
 /** Le demi-champ de la tablette (4:3, 56° en hauteur), en degrés. */
 const HALF_TABLET = (Math.atan(Math.tan((28 * Math.PI) / 180) * (4 / 3)) * 180) / Math.PI;
 
@@ -53,7 +62,7 @@ describe('Le Cèdre, le Détour des Prairies', () => {
 
   it('se tient près de sa place réservée, hors des chemins, loin des lieux et des rives', () => {
     const at = CEDRE.at;
-    expect(distance(at, DETOUR_SPOTS_3E.cedre)).toBeLessThanOrEqual(8);
+    expect(distance(at, DETOUR_SPOTS_3E.cedre)).toBeLessThanOrEqual(9);
     expect(walkBlocked3e(at)).toBe(false);
     expect(pathDistance(at)).toBeGreaterThan(8);
     expect(pathDistance(DETOUR_SPOTS_3E.cedre)).toBeGreaterThan(8);
@@ -64,13 +73,13 @@ describe('Le Cèdre, le Détour des Prairies', () => {
     expect(detourAtPoint(at, '4e')).toBeNull();
   });
 
-  it('à l’arrivée, la caméra se tourne au nord : le cèdre à droite, la petite arche et le Palais dans le cadre, rien du cèdre dans l’axe ni devant le Palais', () => {
+  it('à l’arrivée, la caméra se tourne au nord-nord-ouest : le cèdre à droite, la petite arche et le pic dans le cadre, le zeppelin tout entier dehors, rien du cèdre dans l’axe', () => {
     const cap = detourCap(CEDRE)!;
     const look = { x: -Math.sin(cap), z: -Math.cos(cap) };
     const deg = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
-    expect(Math.min(deg, 360 - deg)).toBeLessThan(1e-6);
-    const palais = offView(PLACES_3E.find((p) => p.id === 'palais')!.center);
-    expect(Math.abs(palais)).toBeLessThan(HALF_TABLET - 8);
+    expect(deg).toBeCloseTo(CAP_DEG, 6);
+    expect(Math.abs(offView(PEAK_3E.at))).toBeLessThan(HALF_TABLET - 8);
+    for (const p of [ZEPPELIN_3E.rock, ZEPPELIN_3E.tail]) expect(offView(p)).toBeGreaterThan(HALF_PHONE + 2);
     const arch = {
       x: (node('sa2-a').x + node('sa2-b').x) / 2,
       z: (node('sa2-a').z + node('sa2-b').z) / 2,
@@ -78,10 +87,14 @@ describe('Le Cèdre, le Détour des Prairies', () => {
     expect(Math.abs(offView(arch))).toBeLessThan(HALF_TABLET - 8);
     expect(offView(CEDRE_LAYOUT.spot)).toBeGreaterThan(8);
     expect(offView(CEDRE_LAYOUT.spot)).toBeLessThan(HALF_TABLET - 4);
-    // Le bord gauche de chaque plateau reste à droite de l'axe de Kéo, et à droite du Palais vu de la caméra.
+    // Le bord gauche de chaque plateau reste à droite de l'axe de Kéo ; vu de la caméra, chaque plateau passe entre le pic
+    // (à gauche) et la petite arche (à droite), sans couvrir ni l'un ni l'autre.
+    // Le cône du pic (son pied, au haut de son flanc bas) : le flanc bas, presque plat, peut passer derrière le cèdre.
+    const peakRight = offView({ x: PEAK_3E.at.x + RIGHT.x * PEAK_3E.flank.inner, z: PEAK_3E.at.z + RIGHT.z * PEAK_3E.flank.inner });
     for (const t of CEDRE_LAYOUT.tiers) {
-      expect(t.x - t.r - CEDRE.at.x).toBeGreaterThan(0.5);
-      expect(offView({ x: t.x - t.r, z: t.z })).toBeGreaterThan(palais + 2);
+      expect((t.x - CEDRE.at.x) * RIGHT.x + (t.z - CEDRE.at.z) * RIGHT.z - t.r).toBeGreaterThan(0.5);
+      expect(offView({ x: t.x - RIGHT.x * t.r, z: t.z - RIGHT.z * t.r })).toBeGreaterThan(peakRight);
+      expect(offView({ x: t.x + RIGHT.x * t.r, z: t.z + RIGHT.z * t.r })).toBeLessThan(offView(arch) - 2);
     }
     expect(detourViewOf(CEDRE).height).toBeLessThanOrEqual(COMMON_DETOUR_VIEW.height);
   });

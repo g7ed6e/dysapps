@@ -18,7 +18,7 @@ import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
 import { doorFrameOf, doorViewOf } from './northShore';
 import { C3E } from './place3eKit';
-import { BUILT_PLACES_3E, PATH_NODES_3E } from './plan3e';
+import { BUILT_PLACES_3E, PATH_NODES_3E, ZEPPELIN_3E } from './plan3e';
 import { drawPieces, placePieces } from './places';
 import { placeTrace } from './questionScene';
 import { scenetteOf } from './scenette';
@@ -177,17 +177,24 @@ describe('La scénette du Grenier', () => {
     }
   });
 
-  it('la caméra arrive par la porte, basse, au nord-nord-est (21°, le soleil de côté) : le grenier à droite de Kéo, dans le cadre', () => {
+  it('la caméra arrive par la porte, basse, au nord-nord-est (30°, le soleil de côté) : le grenier à droite de Kéo, dans le cadre, le zeppelin entier', () => {
     const door = nodes.get('grenier')!;
     const yaw = doorViewOf('grenier');
     const look = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
     const cap = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
-    expect(cap).toBeCloseTo(21, 6);
+    expect(cap).toBeCloseTo(30, 6);
     const d = { x: PLACE.center.x - door.x, z: PLACE.center.z - door.z };
     const off = (Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z) * 180) / Math.PI;
     // Le cœur à côté de Kéo, à sa droite, jamais derrière lui (relecture du Versant, (a) 5).
     expect(off).toBeGreaterThan(12);
     expect(off).toBeLessThan(30);
+    // Le zeppelin entier, à droite, en deçà de la colonne des boutons de la tablette (vers 31°).
+    for (const p of [ZEPPELIN_3E.rock, ZEPPELIN_3E.tail]) {
+      const z = { x: p.x - door.x, z: p.z - door.z };
+      const zo = (Math.atan2(look.x * z.z - look.z * z.x, look.x * z.x + look.z * z.z) * 180) / Math.PI;
+      expect(zo).toBeGreaterThan(5);
+      expect(zo).toBeLessThan(30);
+    }
     const frame = doorFrameOf('grenier')!;
     expect(frame.height).toBeLessThan(0);
     expect(frame.back).toBeLessThanOrEqual(1.6);

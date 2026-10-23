@@ -7,6 +7,7 @@
 // tourné vers le dehors, le plan du sol, la hauteur d'une scène, le cap d'un regard) restent dans ./place4eKit.ts. Code pur.
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
+import { sheet, type P3 } from './place4eKit';
 import type { Sphere } from './placeArt';
 import { COLORS_3E, PATH_NODES_3E, PLACES_3E, type PlaceId3e } from './plan3e';
 import { standingHeight } from './terrain';
@@ -123,4 +124,52 @@ export function habitant3e(b: FacetBuilder, at: Vec3, sphere: Sphere, coat: numb
   sphere(b, { x: at.x, y: at.y + 1.14, z: at.z }, 0.2, 8, 6, 0xe3b48a);
   b.prism({ x: at.x, y: at.y + 1.22, z: at.z }, 0.215, 0.17, 0.15, 8, hair);
   for (const side of [-1, 1]) b.beam({ x: at.x + side * 0.3, y: at.y + 0.95, z: at.z }, { x: at.x + side * 0.36, y: at.y + 0.52, z: at.z + 0.05 }, 0.12, coat);
+}
+
+/**
+ * Un pan de toit tombé, appuyé ou couché (relecture des Prairies, (a) 5 et (b) 2 : sinon on lit une caisse ou une
+ * palissade) : `q`, ses quatre coins (le haut, de gauche à droite, puis le pied, de droite à gauche), son épaisseur `t`.
+ * Son dessous de bois en haut, tourné vers la porte, l'ardoise contre le mur ; un bord d'ardoise qui dépasse sur le haut
+ * et les deux côtés ; ses lattes en travers (`lattes`, en part de la pente) et trois chevrons dans la pente, dont le bout
+ * dépasse au-dessus du bord.
+ */
+export function fallenPan3e(b: FacetBuilder, q: readonly [P3, P3, P3, P3], t: number, lattes: readonly number[]): void {
+  sheet(b, q, t, C3E.wood, C3E.slate);
+  const lerp = (a: P3, c: P3, k: number): P3 => [a[0] + (c[0] - a[0]) * k, a[1] + (c[1] - a[1]) * k, a[2] + (c[2] - a[2]) * k];
+  const add = (a: P3, d: P3, k: number): P3 => [a[0] + d[0] * k, a[1] + d[1] * k, a[2] + d[2] * k];
+  const unit = (a: P3, c: P3): P3 => {
+    const d: P3 = [c[0] - a[0], c[1] - a[1], c[2] - a[2]];
+    const l = Math.hypot(d[0], d[1], d[2]) || 1;
+    return [d[0] / l, d[1] / l, d[2] / l];
+  };
+  const along = unit(q[0], q[1]);
+  const down = unit(q[0], q[3]);
+  const n: P3 = [along[1] * down[2] - along[2] * down[1], along[2] * down[0] - along[0] * down[2], along[0] * down[1] - along[1] * down[0]];
+  const up: P3 = n[1] < 0 ? [-n[0], -n[1], -n[2]] : n;
+  const mid = (p: P3): P3 => [p[0], p[1] + t / 2, p[2]];
+  // Le bord d'ardoise : une bande des deux faces, dans le plan du pan, sur le haut et les deux côtés.
+  const RIM = 0.2;
+  for (const [a, c, out] of [
+    [q[0], q[1], [-down[0], -down[1], -down[2]]],
+    [q[1], q[2], along],
+    [q[3], q[0], [-along[0], -along[1], -along[2]]],
+  ] as const) {
+    const a0 = mid(a),
+      c0 = mid(c);
+    const a1 = add(a0, out, RIM),
+      c1 = add(c0, out, RIM);
+    b.quad(a0, c0, c1, a1, C3E.slateTop);
+    b.quad(a0, a1, c1, c0, C3E.slateTop);
+  }
+  // Les lattes en travers, puis les chevrons dans la pente, posés sur le bois ; leur bout dépasse du haut.
+  const on = (p: P3, k: number) => {
+    const r = add([p[0], p[1] + t, p[2]], up, k);
+    return { x: r[0], y: r[1], z: r[2] };
+  };
+  for (const k of lattes) b.beam(on(lerp(q[0], q[3], k), 0.05), on(lerp(q[1], q[2], k), 0.05), 0.08, C3E.woodShade);
+  for (const k of [0.15, 0.5, 0.85]) {
+    const top = lerp(q[0], q[1], k),
+      foot = lerp(q[3], q[2], k);
+    b.beam(on(add(top, down, -0.35), 0.12), on(lerp(top, foot, 0.92), 0.12), 0.14, C3E.woodShade);
+  }
 }

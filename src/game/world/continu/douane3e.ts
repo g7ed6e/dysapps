@@ -71,9 +71,13 @@ const FRONT = { door: { x: -2.0, w: 0.9, h: 1.85 }, map: { x: -0.55, w: 1.1, h: 
 const COUNTER = { x: 2.0, w: 1.4, d: 0.5, h: 0.95 } as const;
 const AWNING = { x0: 1.15, x1: 2.85, out: 1.35, low: 1.95 } as const;
 
-/** Le chemin de dalles devant la maison, et la barrière en travers : ses deux poteaux, la lisse, le contrepoids. */
-const TRACK = { z: 3.6, x0: -10.6, x1: -0.4, w: 1.5 } as const;
-const GATE = { x: -8.0, pivot: TRACK.z - 1.3, rest: TRACK.z + 1.3, y: 0.95, len: 3.3, raise: 0.42 } as const;
+/**
+ * Le chemin de dalles, à gauche de la maison, qui vient vers l'arrivée (de `z0` à `z1`), et la barrière en travers : ses
+ * deux poteaux, de part et d'autre du chemin, la lisse, le contrepoids. La lisse court le long de la façade : depuis la
+ * porte, elle se voit de flanc sur toute sa longueur, jamais par le bout (relecture des Prairies, (a) 12).
+ */
+const TRACK = { x: -7.0, z0: 0.4, z1: 9.6, w: 1.5 } as const;
+const GATE = { z: 4.6, pivot: TRACK.x - 1.3, rest: TRACK.x + 1.3, y: 0.95, len: 3.3, raise: 0.42 } as const;
 
 /** Le banc des voyageurs (les abords), sous la carte du col, et les bagages dessus. */
 const BENCH = { x: -0.5, z: HOUSE.hz + 0.35, w: 1.4 } as const;
@@ -83,7 +87,7 @@ const PATH_LANTERN = { x: 6.7, z: 8.5, h: 1.4 } as const;
 
 /** L'herbe sèche de la ruine, devant la façade et autour de la barrière, au repère de la maison. */
 const DRY = [
-  { x: -6.8, z: 5.4, s: 1 },
+  { x: -9.4, z: 5.8, s: 1 },
   { x: -9.2, z: 2.2, s: 0.85 },
   { x: -3.2, z: 2.6, s: 0.8 },
   { x: 3.4, z: 2.6, s: 0.9 },
@@ -234,14 +238,14 @@ function awning(l: FacetBuilder, straight: boolean): void {
   l.box({ x: mid + 0.1, y: (top + A.low) / 2 - 0.4, z: (z0 + z1) / 2 + 0.05, pitch: slope + 0.25, yaw: 0.18 }, [A.x1 - A.x0, 0.12, run], C3E.woodShade, C3E.slate);
 }
 
-/** Le chemin de dalles devant la maison, d'un bout à l'autre, des dalles à joints d'herbe. */
+/** Le chemin de dalles à gauche de la maison, d'un bout à l'autre, des dalles à joints d'herbe. */
 function track(l: FacetBuilder): void {
   const T = TRACK;
   const n = 6;
-  const step = (T.x1 - T.x0) / n;
+  const step = (T.z1 - T.z0) / n;
   for (let k = 0; k < n; k++) {
-    const x = T.x0 + step * (k + 0.5);
-    l.box({ x, y: g(x, T.z) - 0.06, z: T.z + (k % 2 ? 0.08 : -0.06), yaw: k % 2 ? 0.05 : -0.04 }, [step - 0.18, 0.1, T.w], C3E.stoneShade, C3E.stone);
+    const z = T.z0 + step * (k + 0.5);
+    l.box({ x: T.x + (k % 2 ? 0.08 : -0.06), y: g(T.x, z) - 0.06, z, yaw: k % 2 ? 0.05 : -0.04 }, [T.w, 0.1, step - 0.18], C3E.stoneShade, C3E.stone);
   }
 }
 
@@ -249,29 +253,29 @@ function track(l: FacetBuilder): void {
 function gatePosts(l: FacetBuilder, pivotBroken: boolean): void {
   const G = GATE;
   const ph = pivotBroken ? 0.6 : G.y + 0.12;
-  l.box({ x: G.x, y: g(G.x, G.pivot) + SINK_3E, z: G.pivot }, [0.32, ph - g(G.x, G.pivot) - SINK_3E, 0.32], C3E.woodShade, C3E.wood);
+  l.box({ x: G.pivot, y: g(G.pivot, G.z) + SINK_3E, z: G.z }, [0.32, ph - g(G.pivot, G.z) - SINK_3E, 0.32], C3E.woodShade, C3E.wood);
   const rh = G.y - 0.16;
-  l.box({ x: G.x, y: g(G.x, G.rest) + SINK_3E, z: G.rest }, [0.28, rh - g(G.x, G.rest) - SINK_3E, 0.28], C3E.woodShade, C3E.wood);
-  for (const s of [-1, 1]) l.box({ x: G.x + s * 0.17, y: rh, z: G.rest }, [0.07, 0.3, 0.2], C3E.woodShade);
+  l.box({ x: G.rest, y: g(G.rest, G.z) + SINK_3E, z: G.z }, [0.28, rh - g(G.rest, G.z) - SINK_3E, 0.28], C3E.woodShade, C3E.wood);
+  for (const s of [-1, 1]) l.box({ x: G.rest, y: rh, z: G.z + s * 0.17 }, [0.2, 0.3, 0.07], C3E.woodShade);
 }
 
 /** La lisse levée d'un quart sur son pivot, son contrepoids de pierre au bout court ; basse, jamais un bras. */
 function gateRaised(l: FacetBuilder): void {
   const G = GATE;
-  drawPosed(l, { x: G.x, y: G.y, z: G.pivot, yaw: 0, pitch: -G.raise }, (r) => {
+  drawPosed(l, { x: G.pivot, y: G.y, z: G.z, yaw: Math.PI / 2, pitch: -G.raise }, (r) => {
     // La lisse épaisse de bois clair (relecture des Alpages, (a) 5) ; au bout court, le gros contrepoids de pierre.
     r.box({ x: 0, y: -0.13, z: G.len / 2 - 0.4 }, [0.26, 0.26, G.len + 0.8], C3E.newWood, 0xc2b49e);
     r.box({ x: 0, y: -0.42, z: -0.62 }, [0.62, 0.56, 0.5], C3E.graniteShade, C3E.granite);
   });
   // L'axe de fer du pivot, de part et d'autre du poteau.
-  l.drum({ x: G.x - 0.22, y: G.y, z: G.pivot, yaw: Math.PI / 2, pitch: Math.PI / 2 }, 0.07, 0.44, 6, C3E.iron, C3E.ironTop);
+  l.drum({ x: G.pivot, y: G.y, z: G.z - 0.22, yaw: 0, pitch: Math.PI / 2 }, 0.07, 0.44, 6, C3E.iron, C3E.ironTop);
 }
 
 /** La barrière rompue (la ruine) : la moitié de la lisse dans l'herbe, en travers du chemin de dalles ; le contrepoids au sol. */
 function gateBroken(l: FacetBuilder): void {
   const G = GATE;
-  l.box({ x: G.x + 0.5, y: g(G.x, TRACK.z) - 0.02, z: TRACK.z + 0.6, yaw: 0.5 }, [0.26, 0.26, 1.7], C3E.woodShade, C3E.newWood);
-  l.box({ x: G.x - 0.4, y: g(G.x - 0.4, G.pivot - 0.6) - 0.1, z: G.pivot - 0.6, yaw: 0.4, pitch: 0.2 }, [0.62, 0.56, 0.5], C3E.graniteShade, C3E.granite);
+  l.box({ x: TRACK.x + 0.6, y: g(TRACK.x, G.z) - 0.02, z: G.z + 0.5, yaw: Math.PI / 2 + 0.5 }, [0.26, 0.26, 1.7], C3E.woodShade, C3E.newWood);
+  l.box({ x: G.pivot - 0.6, y: g(G.pivot - 0.6, G.z - 0.4) - 0.1, z: G.z - 0.4, yaw: 0.4, pitch: 0.2 }, [0.62, 0.56, 0.5], C3E.graniteShade, C3E.granite);
 }
 
 /** Une malle de bois cerclée de fer, couchée ; dans un repère à son pied. */

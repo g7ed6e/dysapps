@@ -182,12 +182,12 @@ describe('La scénette du Palais', () => {
     expect(s.greeting).toBe('Le majordome reçoit les visiteurs et veille sur la maison.');
   });
 
-  it('la caméra arrive par la porte, basse, au nord-nord-est (27°) : le palais à gauche de Kéo, le gong à sa gauche, jamais derrière lui', () => {
+  it('la caméra arrive par la porte, basse, au nord-nord-est (22°) : le palais à gauche de Kéo, le gong à sa gauche, jamais derrière lui', () => {
     const door = nodes.get('palais')!;
     const yaw = doorViewOf('palais');
     const look = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
     const cap = ((Math.atan2(look.x, -look.z) * 180) / Math.PI + 360) % 360;
-    expect(cap).toBeCloseTo(27, 6);
+    expect(cap).toBeCloseTo(22, 6);
     const offOf = (p: { x: number; z: number }) => {
       const d = { x: p.x - door.x, z: p.z - door.z };
       return (Math.atan2(look.x * d.z - look.z * d.x, look.x * d.x + look.z * d.z) * 180) / Math.PI;

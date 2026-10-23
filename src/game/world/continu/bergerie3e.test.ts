@@ -1,7 +1,7 @@
 // Le Détour de la Bergerie (les Alpages du 3e, GD-25, lot 3) : sa place réservée au nord des Alpages, hors des chemins,
 // loin des lieux, des rives et de la langue de glace ; sa sente depuis le chemin du Kiosque, libre et marchable ; la vue
 // au cap de 80°, la bergerie à gauche, le pic au tiers droit ; l'enclos et sa seule entrée, trois moutons couchés dedans,
-// trois pierres ; ses 175 triangles, sa sauvegarde, la phrase de Kéo.
+// trois pierres ; ses 205 triangles, sa sauvegarde, la phrase de Kéo.
 import { describe, expect, it } from 'vitest';
 import { DETOUR_IDS as SAVED_IDS, sanitizeDetours } from '../../engine/detours';
 import { BERGERIE, BERGERIE_BUDGET, BERGERIE_LAYOUT, BERGERIE_STONES, SHEEP, bergerieFacets, bergerieStoneAt } from './bergerie3e';
@@ -55,7 +55,7 @@ describe('La Bergerie, le Détour des Alpages', () => {
 
   it('se tient devant sa place réservée, hors des chemins, loin des lieux, des rives et de la langue de glace', () => {
     const at = BERGERIE.at;
-    expect(distance(at, DETOUR_SPOTS_3E.bergerie)).toBeLessThanOrEqual(8);
+    expect(distance(at, DETOUR_SPOTS_3E.bergerie)).toBeLessThanOrEqual(8.5);
     expect(walkBlocked3e(at)).toBe(false);
     expect(pathDistance(at)).toBeGreaterThan(10);
     expect(pathDistance(DETOUR_SPOTS_3E.bergerie)).toBeGreaterThan(10);
@@ -142,9 +142,9 @@ describe('La Bergerie, le Détour des Alpages', () => {
     expect(sides.size).toBe(2);
   });
 
-  it('coûte 175 triangles au plus sans sa sente, moutons compris ; ni lanterne, ni bronze ; la sente se trace une fois trouvée', () => {
+  it('coûte 205 triangles au plus sans sa sente, moutons compris ; ni lanterne, ni bronze ; la sente se trace une fois trouvée', () => {
     const hidden = bergerieFacets(false, ground);
-    expect(BERGERIE_BUDGET.triangles).toBe(175);
+    expect(BERGERIE_BUDGET.triangles).toBe(205);
     expect(hidden.triangles).toBeLessThanOrEqual(BERGERIE_BUDGET.triangles);
     expect(countColor(hidden, C3E.lantern)).toBe(0);
     expect(countColor(hidden, C3E.bronze)).toBe(0);

@@ -22,7 +22,7 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
+import { armLantern3e, C3E, dryTuft3e, fallenPan3e, habitant3e, postLantern3e, SINK_3E, site3e } from './place3eKit';
 import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise, sheet } from './place4eKit';
 
 /**
@@ -95,8 +95,11 @@ const INSTRUMENTS = [
 /** L'établi, devant la grande fenêtre : son milieu, sa longueur, sa largeur, sa hauteur. */
 const BENCH = { x: 2.85, z: 1.05, w: 2.3, d: 0.8, h: 0.85 } as const;
 
-/** Le pan avant du toit tombé, appuyé contre la façade (la ruine) : de `x0` à `x1`, son pied sur le plancher. */
-const FALLEN_PAN = { x0: 1.3, x1: 4.4, foot: 2.35 } as const;
+/**
+ * Le pan avant du toit tombé (la ruine), appuyé contre le pignon droit, loin de l'établi : de `z0` à `z1` le long du
+ * pignon, son pied à `out` du coin.
+ */
+const FALLEN_PAN = { z0: -2.9, z1: 0.1, out: 1.5 } as const;
 
 /** L'allée de pierre claire, du bord de la galerie vers la porte du lieu : sa demi-largeur, son bout. */
 const ALLEY = { half: 0.9, end: 7.6 } as const;
@@ -226,29 +229,24 @@ function backPanAndRafters(l: FacetBuilder): void {
   for (const x of [-3.2, -1.2, 0.8, 2.8]) l.beam({ x, y: y - 0.05, z: BODY.z1 - 0.1 }, { x, y: y + BODY.ridge * 0.92, z: zm }, 0.14, C3E.woodShade);
 }
 
-/** Le pan avant tombé, appuyé contre la façade : son dessous de bois et ses lattes tournés vers la porte. */
+/**
+ * Le pan avant tombé, appuyé contre le pignon droit, loin de l'établi (relecture des Prairies, (a) 5 : de la porte,
+ * chaque partie posée se voit) : son dessous de bois, ses lattes et ses chevrons tournés vers le dehors, son bord d'ardoise.
+ */
 function fallenPan(l: FacetBuilder): void {
   const P = FALLEN_PAN;
-  const top = floor() + BODY.h - 0.9,
-    zTop = BODY.z1 + 0.12,
-    zFoot = P.foot;
-  sheet(
+  const top = floor() + BODY.h - 0.9;
+  fallenPan3e(
     l,
     [
-      [P.x0, top, zTop],
-      [P.x1, top, zTop],
-      [P.x1 + 0.2, floor() + 0.02, zFoot],
-      [P.x0 - 0.1, floor() + 0.02, zFoot],
+      [BODY.x1 + 0.12, top, P.z0],
+      [BODY.x1 + 0.12, top, P.z1],
+      [BODY.x1 + P.out, groundAt(BODY.x1 + P.out, P.z1 - 0.1) + 0.02, P.z1 - 0.1],
+      [BODY.x1 + P.out, groundAt(BODY.x1 + P.out, P.z0 + 0.1) + 0.02, P.z0 + 0.1],
     ],
     0.12,
-    C3E.wood,
-    C3E.slate,
+    [0.3, 0.65],
   );
-  for (const t of [0.3, 0.65]) {
-    const yy = top + (floor() - top) * t + 0.14;
-    const zz = zTop + (zFoot - zTop) * t + 0.05;
-    l.beam({ x: P.x0 + 0.05, y: yy, z: zz }, { x: P.x1 + 0.1, y: yy, z: zz }, 0.08, C3E.woodShade);
-  }
 }
 
 /** Un instrument à cordes debout, de hauteur `h`, son pied en (0, 0, 0) : deux tables arrondies, la taille, le manche, la volute. */

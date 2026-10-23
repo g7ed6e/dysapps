@@ -9,7 +9,7 @@
  * La place : `DETOUR_SPOTS_3E.bergerie`, au nord des Alpages, sous l'arête ouest, loin de la rive. Une bergerie basse de
  * pierres sèches au toit d'ardoise à deux pans, son pignon et sa porte de bois tournés vers Kéo ; contre elle, un enclos
  * de pierre sèche, bas, avec une seule entrée ; dedans, trois moutons couchés, immobiles (rien ne bouge, « Réduire les
- * animations » ou non) ; les trois pierres plates des Détours, de part et d'autre de la sente, jamais dessus. 175
+ * animations » ou non) ; les trois pierres plates des Détours, de part et d'autre de la sente, jamais dessus. 205
  * triangles au plus, moutons compris. Le dessin reçoit son sol (`ground`). Code pur.
  */
 import { SENTE_5E as SENTE } from './creux5e';
@@ -34,10 +34,11 @@ const RIGHT: Vec2 = { x: Math.cos(CAP), z: Math.sin(CAP) };
 const BERGERIE_VIEW = { height: -4, back: 1.3, turn: 0.1 } as const;
 
 /**
- * Le budget de la Bergerie (proposition, § 8) : 175 triangles au plus sans la sente, moutons compris, dans le maillage des
+ * Le budget de la Bergerie (proposition, § 8, porté de 175 à 205 pour le corps rond des moutons, relecture des Prairies,
+ * (a) 11) : 205 triangles au plus sans la sente, moutons compris, dans le maillage des
  * lieux, sans appel de plus ; et sa sente, une fois tracée, au plus `sente` de plus (elle vient de loin, du Kiosque).
  */
-export const BERGERIE_BUDGET = { triangles: 175, sente: 170 } as const;
+export const BERGERIE_BUDGET = { triangles: 205, sente: 170 } as const;
 
 /** Le milieu de l'enclos : la place réservée ; dans le repère de Kéo, devant lui et à sa gauche (`PEN`). */
 const SPOT = DETOUR_SPOTS_3E.bergerie;
@@ -45,10 +46,11 @@ const SPOT = DETOUR_SPOTS_3E.bergerie;
 /**
  * L'enclos : contre le mur droit de la bergerie, de `s0` à `s1` en travers (à gauche de Kéo) et de `f0` à `f1` le long
  * de la vue ; son muret bas, son épaisseur ; une seule entrée, dans le muret tourné vers Kéo, de `gate.s0` à `gate.s1`
- * (0,85 : loin des rives, relecture du Versant, (b) 6). Rien de la Bergerie dans l'axe de Kéo, qui le cacherait
+ * (0,85 : loin des rives, relecture du Versant, (b) 6). L'enclos s'écarte de Kéo vers la gauche, un pas d'herbe entre eux
+ * (relecture des Prairies, (a) 11). Rien de la Bergerie dans l'axe de Kéo, qui le cacherait
  * (relecture du Versant, (b) 1) : la moitié droite du cadre reste au pré, au Fanal et au pic.
  */
-const PEN = { s0: -5.7, s1: -0.9, f0: 3.8, f1: 8.2, h: 0.45, t: 0.38, gate: { s0: -3.6, s1: -2.75 } } as const;
+const PEN = { s0: -8.0, s1: -3.2, f0: 3.8, f1: 8.2, h: 0.45, t: 0.38, gate: { s0: -5.9, s1: -5.05 } } as const;
 
 /** Là où Kéo s'arrête : au sud-ouest de l'enclos, qu'il voit devant lui et à sa gauche, la bergerie au-delà. */
 const AT: Vec2 = (() => {
@@ -69,9 +71,9 @@ const HUT = { f: (PEN.f0 + PEN.f1) / 2, s: PEN.s0 - 1.7, w: 3.4, d: PEN.f1 - PEN
 
 /** Les trois moutons couchés : leur place dans l'enclos, leur sens (la tête au bout de leur x), de profil pour Kéo. */
 export const SHEEP = [
-  { f: 5.0, s: -1.7, yaw: 0.25 },
-  { f: 7.3, s: -3.2, yaw: 2.9 },
-  { f: 5.2, s: -4.7, yaw: -0.3 },
+  { f: 5.0, s: -4.0, yaw: 0.25 },
+  { f: 7.3, s: -5.5, yaw: 2.9 },
+  { f: 5.2, s: -7.0, yaw: -0.3 },
 ] as const;
 
 /** Le point du chemin du Kiosque (de `al-1` au Kiosque, puis à `al-2`) le plus proche de Kéo, d'où part la sente. */
@@ -136,8 +138,8 @@ const C = {
   penTop: 0xb2aa9a,
   slate: C3E.slate,
   door: C3E.woodShade,
-  wool: 0xeee6d2,
-  woolTop: 0xfaf6ec,
+  wool: 0xf2eee4,
+  woolTop: 0xfcfaf4,
   head: 0x6b5a4e,
   flat: 0xc9c0ae,
   flatSide: 0xa9a08f,
@@ -194,24 +196,28 @@ function pen(b: FacetBuilder, ground: Ground): void {
 }
 
 /**
- * Un mouton couché (relecture des Alpages, (a) 6) : le corps de laine, un tronc à cinq pans couché dans l'herbe, rond,
- * le dos plus clair et plus haut que les flancs ; la petite tête brune devant, plus basse, qui dépasse du corps, en
- * tronc à quatre pans qui s'affine vers le museau. Plus petit qu'au lot 3, aucun angle droit.
+ * Un mouton couché (relecture des Alpages, (a) 6, et des Prairies, (a) 11) : le corps de laine presque blanche, un
+ * tronc court et gros à sept pans couché dans l'herbe, le dos rond ; la petite tête brune nettement devant et plus
+ * basse, le museau penché vers l'herbe, en tronc à trois pans qui s'affine. Aucun angle droit, rien d'une caisse.
  */
 function sheep(b: FacetBuilder, ground: Ground): void {
-  const BODY = { r: 0.4, tail: 0.34, len: 1.05 } as const;
-  const HEAD = { r: 0.19, nose: 0.12, len: 0.42, y: 0.36 } as const;
+  /** Le corps : un tronc court et gros à sept pans, couché, plus large au poitrail qu'à la croupe ; le dos rond. */
+  const BODY = { r: 0.46, tail: 0.36, len: 0.85, rump: 0.22, sides: 7 } as const;
+  /** La tête, nettement devant le corps et plus bas que le dos, le museau penché vers l'herbe. */
+  const HEAD = { r: 0.2, nose: 0.1, len: 0.5, y: 0.42, out: -0.04, droop: 0.45 } as const;
   for (const m of SHEEP) {
     const p = local(m.f, m.s);
     const g = ground(p.x, p.z);
     const yaw = YAW + m.yaw;
     const dx = Math.cos(yaw),
       dz = -Math.sin(yaw);
-    // Le tronc part de l'avant et va vers la queue : un quart de tour couche son axe, un autre le tourne vers l'arrière.
-    b.prism({ x: p.x + dx * (BODY.len / 2), y: g + BODY.r * 0.9, z: p.z + dz * (BODY.len / 2), yaw: yaw - Math.PI / 2, pitch: Math.PI / 2 }, BODY.r, BODY.tail, BODY.len, 5, C.wool, C.woolTop);
-    // La tête, plus basse, part du devant du corps et s'avance.
-    const h = BODY.len / 2 - 0.08;
-    b.prism({ x: p.x + dx * h, y: g + HEAD.y, z: p.z + dz * h, yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 }, HEAD.r, HEAD.nose, HEAD.len, 4, C.head, C.head);
+    // Le tronc part de la croupe et va vers le poitrail, fermé devant ; la croupe se ferme en pointe courte, ronde.
+    const y = g + BODY.r * 0.92;
+    b.prism({ x: p.x - dx * (BODY.len / 2), y, z: p.z - dz * (BODY.len / 2), yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 }, BODY.tail, BODY.r, BODY.len, BODY.sides, C.wool, C.woolTop);
+    b.prism({ x: p.x - dx * (BODY.len / 2), y, z: p.z - dz * (BODY.len / 2), yaw: yaw - Math.PI / 2, pitch: Math.PI / 2 }, BODY.tail, 0, BODY.rump, BODY.sides, C.wool);
+    // La tête part juste devant le poitrail, plus bas que le dos, et s'avance en penchant le museau.
+    const h = BODY.len / 2 + HEAD.out;
+    b.prism({ x: p.x + dx * h, y: g + HEAD.y, z: p.z + dz * h, yaw: yaw + Math.PI / 2, pitch: Math.PI / 2 + HEAD.droop }, HEAD.r, HEAD.nose, HEAD.len, 3, C.head, C.head);
   }
 }
 
@@ -240,7 +246,7 @@ function sente(b: FacetBuilder, ground: Ground): void {
 /**
  * Le décor de la Bergerie, tel que la vue l'ajoute au maillage des lieux (aucun appel de plus) : la bergerie, l'enclos,
  * les trois moutons, les pierres, et sa sente une fois trouvée (`found`), dans le monde comme sur la Carte. Sans la
- * sente : le plafond de 175 triangles (proposition, § 8).
+ * sente : le plafond de 205 triangles (proposition, § 8, et relecture des Prairies, (a) 11).
  */
 export function bergerieFacets(found: boolean, ground: Ground): Facets {
   const b = new FacetBuilder();

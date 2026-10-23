@@ -3,7 +3,7 @@
 // dessin des deux états et sur la Carte ; l'arche reliée de l'Épaule, sous son plafond, et aucune fente de lave dans le
 // cadre de la marche sur elle (intention du pont de l'Épaule, « La lave et la marche »). Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { ARCH_BRIDGE, BRIDGE, COL_GALLERY, GLACIER_BRIDGE, colRoofOpen, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeParts, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
+import { ARCH_BRIDGE, BRIDGE, COL_GALLERY, GLACIER_BRIDGE, colRoofOpen, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeLockRange, bridgeMapMark, bridgeParts, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
 import { CUT_CLEARANCE_4E } from './paths4e';
 import { COL_GALLERY_TRIANGLES_3E, EPAULE_BRIDGE_TRIANGLES, GLACIER_BRIDGE_TRIANGLES_3E } from './budget';
 import { linearRgb } from './geometry';
@@ -19,6 +19,7 @@ import { lavaFacets } from './terrain4e';
 import { COLORS_5E } from './plan5e';
 import { COLORS_3E } from './plan3e';
 import { heightAt3e } from './terrain3e';
+import { NETWORK_3E } from './paths3e';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');
@@ -491,5 +492,19 @@ describe('La galerie du col reliée, au 3e (proposition du Cirque, § 2)', () =>
     expect(bridgeFacets('cirque', true, 'bas', true).triangles).toBeLessThan(bridgeFacets('cirque', true).triangles);
     expect(has(bridgeFacets('cirque', true, 'bas', true), COLORS_3E.slate)).toBe(false);
     expect(colRoofOpen('alpages', s.mid)).toBe(false);
+  });
+});
+
+describe('les cadenas du col et des arches du 3e, de près seulement (relecture des Prairies, (a) 4 et 11)', () => {
+  const at = (land: 'cirque' | 'prairies', id: string) => {
+    const n = NETWORK_3E.pathNode(id).at;
+    return Math.hypot(n.x - bridgeSite(land).mid.x, n.z - bridgeSite(land).mid.z);
+  };
+
+  it('le Belvédère voit les deux ; la Lutherie, la Coupole, le Palais et le Grenier ne voient plus celui du col sur le Fanal', () => {
+    expect(at('cirque', 'belvedere')).toBeLessThan(bridgeLockRange('cirque'));
+    expect(at('prairies', 'belvedere')).toBeLessThan(bridgeLockRange('prairies'));
+    for (const id of ['lutherie', 'coupole', 'palais', 'grenier']) expect(at('cirque', id), id).toBeGreaterThan(bridgeLockRange('cirque'));
+    expect(bridgeLockRange('alpages')).toBe(Infinity);
   });
 });

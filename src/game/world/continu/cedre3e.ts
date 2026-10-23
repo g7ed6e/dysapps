@@ -2,14 +2,14 @@
  * Le Détour du Cèdre (les Prairies du 3e, GD-25, lot 4 ; proposition du consultant d'Archipéo, § 8, relecture des lieux
  * du directeur artistique et planche `selection-prairies-v1`), sur le mécanisme des autres Détours (./detours.ts,
  * ./cadran3e.ts, ./bergerie3e.ts) : « un cèdre seul aux branches plates, au milieu de la plus petite Prairie ». Kéo s'y
- * arrête, la vue se tourne au nord (0°), vers la petite arche et le Palais, le soleil dans le dos, à droite ; « Le Cèdre » s'écrit
+ * arrête, la vue se tourne au nord-ouest (320°), vers le pic et la petite arche, le soleil dans le dos ; « Le Cèdre » s'écrit
  * une fois et se dit, et Kéo ajoute une phrase, écrite dessous. Une sente reste tracée pour de bon après la première
  * arrivée, depuis le chemin des Ondes. Ni compteur, ni récompense, ni mission, ni étape.
  *
  * La place : `DETOUR_SPOTS_3E.cedre`, au milieu de la plus petite Prairie, loin des rives et du chemin. Un cèdre aux
  * branches en plateaux étagés (quatre, du plus large en bas au plus petit en haut, chacun un peu décalé, ce n'est pas un
  * sapin), sur un tronc épais gris-brun ; il se tient devant Kéo, à sa droite, jamais dans l'axe (relecture du Versant,
- * (b) 1) : le milieu et la gauche du cadre restent à la petite arche et au Palais (relecture des Alpages, (b) 5). Les trois
+ * (b) 1), entre le pic, à gauche, et la petite arche, à droite, sans couvrir ni l'un ni l'autre (relecture des Prairies). Les trois
  * pierres plates des Détours, de part et d'autre de la sente, jamais dessus. 175 triangles au plus. Le dessin reçoit son
  * sol (`ground`). Code pur.
  */
@@ -20,15 +20,22 @@ import { distance, distanceToPolyline, type Vec2 } from './geometry';
 import type { P3 } from './place4eKit';
 import { DETOUR_SPOTS_3E, PATH_NODES_3E } from './plan3e';
 
-/** Le cap de l'arrivée (proposition, § 8) : le nord, la petite arche un peu à gauche du milieu, le Palais un peu à droite. */
-const CAP_DEG = 0;
+/**
+ * Le cap de l'arrivée : le nord-ouest (320°), le pic entier, pointe comprise, à gauche, la petite arche à droite (relecture
+ * des Prairies : Kéo parle de la montagne ; le Palais sort du cadre, c'est accepté, et le zeppelin aussi, tout entier, au
+ * téléphone comme sur tablette). La proposition, § 8, regardait le nord.
+ */
+const CAP_DEG = 320;
 const CAP = (CAP_DEG * Math.PI) / 180;
 /** Devant Kéo, et à sa droite. */
 const LOOK: Vec2 = { x: Math.sin(CAP), z: -Math.cos(CAP) };
 const RIGHT: Vec2 = { x: Math.cos(CAP), z: Math.sin(CAP) };
 
-/** La vue du Cèdre à l'arrivée : la caméra un peu plus bas que celle qui suit, le haut du cèdre et le Palais dans le cadre. */
-const CEDRE_VIEW = { height: -0.6, back: 1.3, turn: 0 } as const;
+/**
+ * La vue du Cèdre à l'arrivée : la caméra plus bas que celle qui suit (comme à la Bergerie), pour que le pic entier,
+ * pointe comprise, passe sous le nom et dans le cadre ; le haut du cèdre aussi.
+ */
+const CEDRE_VIEW = { height: -4, back: 1.3, turn: 0 } as const;
 
 /**
  * Le budget du Cèdre (proposition, § 8) : 175 triangles au plus sans la sente, dans le maillage des lieux, sans appel de
@@ -53,12 +60,15 @@ export const TIERS = [
 ] as const;
 
 /**
- * Là où Kéo s'arrête : au sud du cèdre et à sa gauche (à l'ouest), le cèdre devant lui à droite, assez loin pour que le
- * plateau du bas reste hors de l'axe de la vue et à droite du Palais ; la sente vient de l'ouest, loin du tronc.
+ * Où Kéo se tient depuis le pied du cèdre : `f` en arrière, `s` à gauche. Avec le cap tourné vers le pic (relecture des
+ * Prairies), le cèdre se range entre le pic, à gauche, et la petite arche, à droite, sans cacher ni l'un ni l'autre.
  */
+const BACK_OFF = { f: 7.4, s: 4.3 } as const;
+
+/** Là où Kéo s'arrête : le cèdre devant lui à droite, hors de l'axe de la vue ; la sente vient de l'ouest, loin du tronc. */
 const AT: Vec2 = {
-  x: SPOT.x - LOOK.x * 3.6 - RIGHT.x * 7.0,
-  z: SPOT.z - LOOK.z * 3.6 - RIGHT.z * 7.0,
+  x: SPOT.x - LOOK.x * BACK_OFF.f - RIGHT.x * BACK_OFF.s,
+  z: SPOT.z - LOOK.z * BACK_OFF.f - RIGHT.z * BACK_OFF.s,
 };
 
 /** Le point du chemin des Ondes (de `sa2-a` à `sa2-b`, puis aux Ondes) le plus proche de Kéo, d'où part la sente. */

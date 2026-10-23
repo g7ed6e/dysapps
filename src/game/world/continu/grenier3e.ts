@@ -89,8 +89,12 @@ const PATH_LANTERN = { x: 2.6, z: 6.2, h: 1.4 } as const;
 
 // ---------- La vue ----------
 
-/** Le cap d'arrivée (proposition, § 4) : 21°, de la porte au sud ; le grenier de face, la meule à droite. */
-const DOOR_VIEW = capOf(21);
+/**
+ * Le cap d'arrivée (proposition, § 4) : 30°, de la porte au sud ; le grenier de face, la meule à droite ; le zeppelin
+ * entier dans le cadre, à gauche de la colonne des boutons (relecture des Prairies, (a) 4 : à 21°, il était coupé au bord
+ * droit).
+ */
+const DOOR_VIEW = capOf(30);
 
 /** La vue d'arrivée basse, à hauteur de Kéo. */
 const DOOR_FRAME = { height: -2.5, back: 1.3 } as const;

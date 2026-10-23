@@ -23,17 +23,16 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise, sheet } from './place4eKit';
+import { armLantern3e, C3E, dryTuft3e, fallenPan3e, habitant3e, postLantern3e, SINK_3E, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
 
 /**
- * Les couleurs propres au Palais, en plus des matières des Passeurs (`C3E`) : le dedans clair des salons, qu'on voit par
- * les portes ouvertes ; le creux d'une fenêtre vide (jamais presque noir) ; la vitre éteinte ; l'étain des plateaux ; le
+ * Les couleurs propres au Palais, en plus des matières des Passeurs (`C3E`) : le creux d'une fenêtre vide ou d'une porte
+ * ouverte (jamais presque noir) ; la vitre éteinte ; l'étain des plateaux ; le
  * papier plié d'un message ; le tapis roulé ; la porcelaine des tasses ; les fleurs pâles des vasques ; la veste du
  * majordome (un bleu-gris sombre, jamais presque noir).
  */
 const C = {
-  salon: 0xb3ab9c,
   hollow: 0x5c5650,
   glass: 0xa9bccc,
   tray: 0xb8bcc2,
@@ -127,11 +126,12 @@ const DOOR = (() => {
 // ---------- La vue ----------
 
 /**
- * Le cap d'arrivée (proposition, § 3) : au nord-nord-est (27°), de la porte au sud-sud-ouest ; le palais de face, à gauche
- * du milieu, son escalier et le gong à gauche de Kéo ; au loin à droite, au-delà de la rive, le zeppelin. Le soleil vient
- * de la droite.
+ * Le cap d'arrivée (proposition, § 3) : au nord-nord-est (22°), de la porte au sud-sud-ouest ; le palais de face, à gauche
+ * du milieu, son escalier et le gong à gauche de Kéo ; au loin à droite, au-delà de la rive, le zeppelin, un ciel franc
+ * entre le bout du toit et son empennage (relecture des Prairies, (a) 4 : à 27°, ils se touchaient). Le soleil vient de
+ * la droite.
  */
-const DOOR_VIEW = capOf(FACING - 180);
+const DOOR_VIEW = capOf(FACING - 180 - 5);
 
 /** La vue d'arrivée basse, à hauteur de Kéo, un peu reculée : le palais entier dans le cadre. */
 const DOOR_FRAME = { height: -2.2, back: 1.5 } as const;
@@ -192,12 +192,21 @@ function facadeDoor(l: FacetBuilder, x: number, kind: 'closed' | 'hollow' | 'gla
   const h = top - TERRACE.h;
   // Une porte ouverte se pose un cran devant la fenêtre vitrée qu'elle remplace.
   const z = BODY.z1 + (kind === 'open' ? 0.09 : 0.03);
-  const color = kind === 'closed' ? C3E.woodShade : kind === 'hollow' ? C.hollow : kind === 'glazed' ? C.glass : C.salon;
+  const color = kind === 'closed' ? C3E.woodShade : kind === 'hollow' || kind === 'open' ? C.hollow : C.glass;
   l.box({ x, y: y0, z }, [DOORS.w, h, 0.08], color);
   // Le linteau de pierre claire, un cran plus clair que le mur.
   l.box({ x, y: y0 + h, z: z + 0.02 }, [DOORS.w + 0.3, 0.18, 0.12], C3E.stoneShade, C3E.stone);
-  if (kind === 'open')
-    for (const side of [-1, 1]) l.box({ x: x + side * (DOORS.w / 2 + 0.05), y: y0, z: z + 0.32 }, [0.06, h, 0.6], C3E.woodShade, C3E.wood);
+  if (kind === 'open') {
+    // Une porte ouverte (relecture des Prairies, (a) 6) : le creux sombre du salon sous son linteau, ses deux battants
+    // rabattus vers le dehors, de biais ; d'une porte à l'autre, les creux alignés font l'enfilade.
+    for (const side of [-1, 1]) {
+      const a = (55 * Math.PI) / 180;
+      const dx = side * Math.cos(a),
+        dz = Math.sin(a);
+      const leaf = DOORS.w / 2;
+      l.box({ x: x + side * (DOORS.w / 2) + (dx * leaf) / 2, y: y0, z: z + 0.06 + (dz * leaf) / 2, yaw: Math.atan2(-dz, dx) }, [leaf, h - 0.05, 0.06], C3E.wood);
+    }
+  }
   if (kind === 'glazed') l.box({ x, y: y0 + h * 0.55, z: z + 0.03 }, [DOORS.w, 0.06, 0.06], C3E.woodShade);
 }
 
@@ -243,13 +252,16 @@ function rafters(l: FacetBuilder): void {
   }
 }
 
-/** Le pan de toit tombé, appuyé contre la façade de l'aile droite : son dessous de bois et ses lattes tournés vers la porte. */
+/**
+ * Le pan de toit tombé, appuyé contre la façade de l'aile droite : son dessous de bois, ses lattes et ses chevrons
+ * tournés vers la porte, son bord d'ardoise (relecture des Prairies, (a) 5).
+ */
 function fallenPan(l: FacetBuilder): void {
   const y = base();
   const P = FALLEN_PAN;
   const zTop = BODY.z1 + 0.12,
     zFoot = BODY.z1 + 1.6;
-  sheet(
+  fallenPan3e(
     l,
     [
       [P.x0, y + P.top, zTop],
@@ -258,14 +270,8 @@ function fallenPan(l: FacetBuilder): void {
       [P.x0 - 0.1, y + TERRACE.h + P.foot - 0.4, zFoot],
     ],
     0.12,
-    C3E.wood,
-    C3E.slate,
+    [0.3, 0.65],
   );
-  for (const t of [0.25, 0.5, 0.75]) {
-    const yy = y + P.top + (TERRACE.h + P.foot - 0.4 - P.top) * t + 0.14;
-    const zz = zTop + (zFoot - zTop) * t + 0.05;
-    l.beam({ x: P.x0 + 0.05, y: yy, z: zz }, { x: P.x1 + 0.1, y: yy, z: zz }, 0.08, C3E.woodShade);
-  }
 }
 
 /** Le gong de fer bruni dans son portique de bois : deux poteaux, une traverse qui s'arrête à eux, deux attaches. */
