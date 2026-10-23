@@ -3,24 +3,7 @@
 // coupure du monde continu) : il en garde les mêmes identifiants, dans le même ordre (le test des Détours le vérifie).
 
 /** Les Détours : les cinq du 6e, un par terre, puis ceux du 5e (GD-22, lot 6 : le Creux ; lot 8 : la Hutte ; lot 11 : la Faille ; lot 16 : le Perchoir), puis ceux du 4e (lot 2 : l'Épave ; lot 3 : le Recoin, puis la Dalle ; les Coteaux : le Replat), puis ceux du 3e (le Versant : le Cadran ; les Alpages : la Bergerie ; les Prairies : le Cèdre), à la fin : les sauvegardes restent lisibles. */
-export const DETOUR_IDS = [
-  "butte-chantier",
-  "braise-herons",
-  "bout-large",
-  "colline-aube",
-  "haut-cretes",
-  "creux",
-  "hutte",
-  "faille",
-  "perchoir",
-  "epave",
-  "recoin",
-  "dalle",
-  "replat",
-  "cadran",
-  "bergerie",
-  "cedre",
-] as const;
+export const DETOUR_IDS = ['butte-chantier', 'braise-herons', 'bout-large', 'colline-aube', 'haut-cretes', 'creux', 'hutte', 'faille', 'perchoir', 'epave', 'recoin', 'dalle', 'replat', 'cadran', 'bergerie', 'cedre'] as const;
 export type DetourId = (typeof DETOUR_IDS)[number];
 
 /** Les Détours trouvés, dans l'ordre de `DETOUR_IDS`, sans doublon ni inconnu (la sauvegarde). */

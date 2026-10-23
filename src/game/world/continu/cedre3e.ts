@@ -13,12 +13,12 @@
  * pierres plates des Détours, de part et d'autre de la sente, jamais dessus. 175 triangles au plus. Le dessin reçoit son
  * sol (`ground`). Code pur.
  */
-import { SENTE_5E as SENTE } from "./creux5e";
-import type { Detour } from "./detours";
-import { FacetBuilder, type Facets } from "./facets";
-import { distance, distanceToPolyline, type Vec2 } from "./geometry";
-import type { P3 } from "./place4eKit";
-import { DETOUR_SPOTS_3E, PATH_NODES_3E } from "./plan3e";
+import { SENTE_5E as SENTE } from './creux5e';
+import type { Detour } from './detours';
+import { FacetBuilder, type Facets } from './facets';
+import { distance, distanceToPolyline, type Vec2 } from './geometry';
+import type { P3 } from './place4eKit';
+import { DETOUR_SPOTS_3E, PATH_NODES_3E } from './plan3e';
 
 /** Le cap de l'arrivée (proposition, § 8) : le nord, la petite arche un peu à gauche du milieu, le Palais un peu à droite. */
 const CAP_DEG = 0;
@@ -64,20 +64,14 @@ const AT: Vec2 = {
 /** Le point du chemin des Ondes (de `sa2-a` à `sa2-b`, puis aux Ondes) le plus proche de Kéo, d'où part la sente. */
 const SENTE_FROM: Vec2 = (() => {
   const node = (id: string) => PATH_NODES_3E.find((n) => n.id === id)!.at;
-  const line = [node("sa2-a"), node("sa2-b"), node("ondes")];
+  const line = [node('sa2-a'), node('sa2-b'), node('ondes')];
   let best = line[0];
   for (let k = 0; k < line.length - 1; k++) {
     const a = line[k],
       c = line[k + 1];
     const dx = c.x - a.x,
       dz = c.z - a.z;
-    const t = Math.min(
-      1,
-      Math.max(
-        0,
-        ((AT.x - a.x) * dx + (AT.z - a.z) * dz) / (dx * dx + dz * dz),
-      ),
-    );
+    const t = Math.min(1, Math.max(0, ((AT.x - a.x) * dx + (AT.z - a.z) * dz) / (dx * dx + dz * dz)));
     const p = { x: a.x + dx * t, z: a.z + dz * t };
     if (distance(p, AT) < distance(best, AT)) best = p;
   }
@@ -107,17 +101,17 @@ const around = (deg: number, r: number): Vec2 => {
  * contenu).
  */
 export const CEDRE: Detour = {
-  id: "cedre",
-  land: "prairies",
-  name: "Le Cèdre",
-  kind: "cedre",
+  id: 'cedre',
+  land: 'prairies',
+  name: 'Le Cèdre',
+  kind: 'cedre',
   at: AT,
   radius: 2.2,
   foot: AT,
   face: Math.atan2(-LOOK.z, -LOOK.x),
   sente: [SENTE_FROM, AT],
   view: CEDRE_VIEW,
-  says: "Un seul arbre, et toute la montagne en face.",
+  says: 'Un seul arbre, et toute la montagne en face.',
 };
 
 /**
@@ -145,8 +139,7 @@ export const CEDRE_STONES = [
 ] as const;
 
 /** Le pied d'une pierre de `CEDRE_STONES`, dans le monde. */
-export const cedreStoneAt = (k: number): Vec2 =>
-  around(CEDRE_STONES[k].deg, CEDRE_STONES[k].r);
+export const cedreStoneAt = (k: number): Vec2 => around(CEDRE_STONES[k].deg, CEDRE_STONES[k].r);
 
 /** Le milieu d'un plateau, dans le monde. */
 const tierAt = (k: number): Vec2 => ({
@@ -157,15 +150,7 @@ const tierAt = (k: number): Vec2 => ({
 /** Le tronc : un fût à cinq pans enfoncé dans l'herbe, plus large au pied, jusque sous le dernier plateau. */
 function trunk(b: FacetBuilder, ground: Ground): void {
   const g = ground(SPOT.x, SPOT.z);
-  b.prism(
-    { x: SPOT.x, y: g - 0.3, z: SPOT.z, yaw: 0.2 },
-    TRUNK.r0,
-    TRUNK.r1,
-    TRUNK.h + 0.3,
-    5,
-    C.trunk,
-    C.trunkTop,
-  );
+  b.prism({ x: SPOT.x, y: g - 0.3, z: SPOT.z, yaw: 0.2 }, TRUNK.r0, TRUNK.r1, TRUNK.h + 0.3, 5, C.trunk, C.trunkTop);
 }
 
 /**
@@ -178,50 +163,19 @@ function tiers(b: FacetBuilder, ground: Ground): void {
   TIERS.forEach((t, k) => {
     const p = tierAt(k);
     if (k === TIERS.length - 1) {
-      b.prism(
-        { x: p.x, y: g + t.y, z: p.z, yaw: t.yaw },
-        t.r,
-        t.r * 0.8,
-        t.t,
-        5,
-        C.needles,
-        C.needlesTop,
-      );
+      b.prism({ x: p.x, y: g + t.y, z: p.z, yaw: t.yaw }, t.r, t.r * 0.8, t.t, 5, C.needles, C.needlesTop);
       return;
     }
     // Le dessous, un peu plus étroit et à l'ombre ; puis le plateau, qui s'amincit vers le haut.
-    b.prism(
-      { x: p.x, y: g + t.y - t.t * 0.4, z: p.z, yaw: t.yaw },
-      t.r * 0.82,
-      t.r,
-      t.t * 0.4,
-      6,
-      C.needlesUnder,
-    );
-    b.prism(
-      { x: p.x, y: g + t.y, z: p.z, yaw: t.yaw },
-      t.r,
-      t.r * 0.9,
-      t.t,
-      6,
-      C.needles,
-      C.needlesTop,
-    );
+    b.prism({ x: p.x, y: g + t.y - t.t * 0.4, z: p.z, yaw: t.yaw }, t.r * 0.82, t.r, t.t * 0.4, 6, C.needlesUnder);
+    b.prism({ x: p.x, y: g + t.y, z: p.z, yaw: t.yaw }, t.r, t.r * 0.9, t.t, 6, C.needles, C.needlesTop);
   });
 }
 
 function stones(b: FacetBuilder, ground: Ground): void {
   CEDRE_STONES.forEach((s, k) => {
     const p = cedreStoneAt(k);
-    b.prism(
-      { x: p.x, y: ground(p.x, p.z) - 0.05, z: p.z, yaw: CEDRE.face + k },
-      s.size,
-      s.size * 0.85,
-      0.22,
-      4,
-      C.flatSide,
-      C.flat,
-    );
+    b.prism({ x: p.x, y: ground(p.x, p.z) - 0.05, z: p.z, yaw: CEDRE.face + k }, s.size, s.size * 0.85, 0.22, 4, C.flatSide, C.flat);
   });
 }
 
@@ -231,22 +185,12 @@ function sente(b: FacetBuilder, ground: Ground): void {
   const len = distance(a, c);
   const dx = (c.x - a.x) / len,
     dz = (c.z - a.z) / len;
-  const p = (t: number, o: number): P3 => [
-    a.x + dx * t + dz * o,
-    ground(a.x + dx * t, a.z + dz * t) + SENTE.lift,
-    a.z + dz * t - dx * o,
-  ];
+  const p = (t: number, o: number): P3 => [a.x + dx * t + dz * o, ground(a.x + dx * t, a.z + dz * t) + SENTE.lift, a.z + dz * t - dx * o];
   // Elle s'arrête un pas avant Kéo, aux pierres.
   const end = len - 1.2;
   for (let s = 0; s < end; s += SENTE.dash + SENTE.gap) {
     const e = Math.min(end, s + SENTE.dash);
-    b.quad(
-      p(s, SENTE.half),
-      p(s, -SENTE.half),
-      p(e, -SENTE.half),
-      p(e, SENTE.half),
-      SENTE.color,
-    );
+    b.quad(p(s, SENTE.half), p(s, -SENTE.half), p(e, -SENTE.half), p(e, SENTE.half), SENTE.color);
   }
 }
 

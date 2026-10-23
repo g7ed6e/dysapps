@@ -18,28 +18,12 @@
 // porte. Quatre parties (2 + 1 + 1) : la station (ses murs, sa porte, son toit) ; les postes sous l'auvent ; le haut (le
 // pavillon remonté, les haubans retendus, la lanterne de l'auvent) ; les abords (le chemin, le banc, le muret bas, la
 // lanterne du chemin). Une trace par mission, avec sa partie. Code pur.
-import type { Stage } from "./construction";
-import { drawPosed, type FacetBuilder } from "./facets";
-import type { Vec2, Vec3 } from "./geometry";
-import type { AddPiece, PlaceArt, Sphere } from "./placeArt";
-import {
-  C3E,
-  SINK_3E,
-  armLantern3e,
-  dryTuft3e,
-  habitant3e,
-  postLantern3e,
-  site3e,
-} from "./place3eKit";
-import {
-  capOf,
-  groundPlane4e,
-  inWorld,
-  once,
-  sceneRight,
-  sceneRise,
-  sheet,
-} from "./place4eKit";
+import type { Stage } from './construction';
+import { drawPosed, type FacetBuilder } from './facets';
+import type { Vec2, Vec3 } from './geometry';
+import type { AddPiece, PlaceArt, Sphere } from './placeArt';
+import { C3E, SINK_3E, armLantern3e, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise, sheet } from './place4eKit';
 
 /**
  * Les couleurs propres aux Ondes, en plus des matières des Passeurs (`C3E`) : le fer bruni du pavillon et son dedans, un brun d'ombre
@@ -57,7 +41,7 @@ const C = {
 
 // ---------- Le repère du lieu ----------
 
-const SITE = site3e("ondes");
+const SITE = site3e('ondes');
 
 /** Le plan du sol sous la station, son mât et son chemin : la plus petite Prairie est une table plate. */
 const planeY = groundPlane4e(SITE.ground, [-9, 9], [-9, 9]);
@@ -81,8 +65,7 @@ const groundAt = (x: number, z: number): number => {
 };
 
 /** Dessine dans le repère de la station. */
-const posed = (b: FacetBuilder, draw: (l: FacetBuilder) => void): void =>
-  drawPosed(b, { x: 0, y: 0, z: 0, yaw: YAW }, draw);
+const posed = (b: FacetBuilder, draw: (l: FacetBuilder) => void): void => drawPosed(b, { x: 0, y: 0, z: 0, yaw: YAW }, draw);
 
 /**
  * La station : de `x0` à `x1` le long de la façade, de `z0` (le dos) à `z1` (la façade) ; la hauteur de ses murs ; son
@@ -189,14 +172,7 @@ const DOOR_FRAME = { height: -1.6, back: 1.2 } as const;
 // ---------- Les volumes ----------
 
 /** Le pied de la station : le plus bas du sol sous ses coins et le bord de son auvent. */
-const base = once(
-  () =>
-    Math.min(
-      ...[STATION.x0, STATION.x1].flatMap((x) =>
-        [STATION.z0, AWNING.z1].map((z) => groundAt(x, z)),
-      ),
-    ) - 0.05,
-);
+const base = once(() => Math.min(...[STATION.x0, STATION.x1].flatMap((x) => [STATION.z0, AWNING.z1].map((z) => groundAt(x, z)))) - 0.05);
 
 /** Le plancher : le dessus du socle, sous la station et son auvent. */
 const floor = (): number => base() + STATION.plinth;
@@ -229,41 +205,12 @@ function plinth(l: FacetBuilder): void {
 function stationWalls(l: FacetBuilder): void {
   const S = STATION;
   const y = floor() - 0.05;
-  l.box(
-    { x: (S.x0 + S.x1) / 2, y, z: (S.z0 + S.z1) / 2 },
-    [S.x1 - S.x0, S.h + 0.05, S.z1 - S.z0],
-    C3E.stoneShade,
-    C3E.stone,
-  );
+  l.box({ x: (S.x0 + S.x1) / 2, y, z: (S.z0 + S.z1) / 2 }, [S.x1 - S.x0, S.h + 0.05, S.z1 - S.z0], C3E.stoneShade, C3E.stone);
   // Les deux pignons, sous le faîte.
-  l.gableRoof(
-    { x: (S.x0 + S.x1) / 2, y: floor() + S.h, z: (S.z0 + S.z1) / 2 },
-    S.x1 - S.x0,
-    S.z1 - S.z0,
-    S.ridge - 0.05,
-    C3E.stone,
-    C3E.stoneShade,
-  );
-  l.box(
-    { x: S.door.x, y: floor(), z: S.z1 + 0.02 },
-    [S.door.w, S.door.h, 0.06],
-    C.hollow,
-  );
-  l.box(
-    { x: S.door.x, y: floor() + S.door.h, z: S.z1 + 0.04 },
-    [S.door.w + 0.25, 0.16, 0.1],
-    C3E.graniteShade,
-    C3E.granite,
-  );
-  armLantern3e(
-    l,
-    S.door.x - S.door.w / 2 - 0.35,
-    floor() + 2.05,
-    S.z1 + 0.02,
-    0,
-    1,
-    true,
-  );
+  l.gableRoof({ x: (S.x0 + S.x1) / 2, y: floor() + S.h, z: (S.z0 + S.z1) / 2 }, S.x1 - S.x0, S.z1 - S.z0, S.ridge - 0.05, C3E.stone, C3E.stoneShade);
+  l.box({ x: S.door.x, y: floor(), z: S.z1 + 0.02 }, [S.door.w, S.door.h, 0.06], C.hollow);
+  l.box({ x: S.door.x, y: floor() + S.door.h, z: S.z1 + 0.04 }, [S.door.w + 0.25, 0.16, 0.1], C3E.graniteShade, C3E.granite);
+  armLantern3e(l, S.door.x - S.door.w / 2 - 0.35, floor() + 2.05, S.z1 + 0.02, 0, 1, true);
 }
 
 /** Le toit d'ardoise entier de la station, et la neige au faîte. */
@@ -273,14 +220,7 @@ function stationRoof(l: FacetBuilder): void {
   const sx = S.x1 - S.x0 + 2 * S.eave,
     sz = S.z1 - S.z0 + 2 * S.eave;
   l.gableRoof(at, sx, sz, S.ridge, C3E.slate, C3E.stone);
-  l.gableRoof(
-    { ...at, y: at.y + S.ridge * (1 - S.snow) + 0.02 },
-    sx + 0.02,
-    sz * S.snow,
-    S.ridge * S.snow,
-    C3E.snow,
-    C3E.snow,
-  );
+  l.gableRoof({ ...at, y: at.y + S.ridge * (1 - S.snow) + 0.02 }, sx + 0.02, sz * S.snow, S.ridge * S.snow, C3E.snow, C3E.snow);
 }
 
 /** Le toit ouvert de la ruine : le pan du dos seul, la neige au faîte, les chevrons à nu du côté de la porte. */
@@ -302,37 +242,16 @@ function stationRoofOpen(l: FacetBuilder): void {
     C3E.slate,
     C3E.wood,
   );
-  l.box(
-    { x: (x0 + x1) / 2, y: y + S.ridge - 0.06, z: zm - 0.3 },
-    [x1 - x0, 0.07, 0.6],
-    C3E.snow,
-  );
-  for (const x of [1.4, 2.8, 4.2])
-    l.beam(
-      { x, y: y - 0.05, z: S.z1 - 0.1 },
-      { x, y: y + S.ridge * 0.92, z: zm },
-      0.13,
-      C3E.woodShade,
-    );
+  l.box({ x: (x0 + x1) / 2, y: y + S.ridge - 0.06, z: zm - 0.3 }, [x1 - x0, 0.07, 0.6], C3E.snow);
+  for (const x of [1.4, 2.8, 4.2]) l.beam({ x, y: y - 0.05, z: S.z1 - 0.1 }, { x, y: y + S.ridge * 0.92, z: zm }, 0.13, C3E.woodShade);
 }
 
 /** L'auvent debout : ses deux poteaux, sa poutre, son toit de bois en appentis contre la façade. */
 function awningUp(l: FacetBuilder): void {
   const A = AWNING;
   const y = floor();
-  for (const x of A.posts)
-    l.box(
-      { x, y: y - 0.02, z: A.z1 - 0.15 },
-      [A.post, A.edgeY - 0.08, A.post],
-      C3E.woodShade,
-      C3E.wood,
-    );
-  l.box(
-    { x: (A.x0 + A.x1) / 2, y: y + A.edgeY - 0.1, z: A.z1 - 0.15 },
-    [A.posts[1] - A.posts[0] + A.post, 0.18, 0.18],
-    C3E.woodShade,
-    C3E.wood,
-  );
+  for (const x of A.posts) l.box({ x, y: y - 0.02, z: A.z1 - 0.15 }, [A.post, A.edgeY - 0.08, A.post], C3E.woodShade, C3E.wood);
+  l.box({ x: (A.x0 + A.x1) / 2, y: y + A.edgeY - 0.1, z: A.z1 - 0.15 }, [A.posts[1] - A.posts[0] + A.post, 0.18, 0.18], C3E.woodShade, C3E.wood);
   sheet(
     l,
     [
@@ -366,85 +285,38 @@ function awningDown(l: FacetBuilder): void {
   for (const t of [0.35, 0.7]) {
     const yy = top + (floor() - top) * t + 0.12;
     const zz = STATION.z1 + 0.1 + (P.foot - STATION.z1) * t + 0.05;
-    l.beam(
-      { x: P.x0 + 0.05, y: yy, z: zz },
-      { x: P.x1 + 0.1, y: yy, z: zz },
-      0.08,
-      C3E.woodShade,
-    );
+    l.beam({ x: P.x0 + 0.05, y: yy, z: zz }, { x: P.x1 + 0.1, y: yy, z: zz }, 0.08, C3E.woodShade);
   }
   // Un poteau de l'auvent, couché dans l'herbe.
-  l.box(
-    { x: -0.4, y: groundAt(-0.4, 2.6) - 0.05, z: 2.6, yaw: 1.2 },
-    [AWNING.post, AWNING.post, AWNING.edgeY],
-    C3E.woodShade,
-    C3E.wood,
-  );
+  l.box({ x: -0.4, y: groundAt(-0.4, 2.6) - 0.05, z: 2.6, yaw: 1.2 }, [AWNING.post, AWNING.post, AWNING.edgeY], C3E.woodShade, C3E.wood);
 }
 
 /** Un poste de bois, ses deux cadrans ronds sans lettre ni chiffre, tournés vers le devant. */
 function radioSet(l: FacetBuilder, x: number, y: number, z: number): void {
   l.box({ x, y, z }, [0.72, 0.5, 0.42], C3E.woodShade, C3E.newWood);
-  for (const dx of [-0.16, 0.16])
-    l.drum(
-      { x: x + dx, y: y + 0.27, z: z + 0.2, pitch: Math.PI / 2 },
-      0.1,
-      0.04,
-      8,
-      C3E.iron,
-      C.dial,
-    );
+  for (const dx of [-0.16, 0.16]) l.drum({ x: x + dx, y: y + 0.27, z: z + 0.2, pitch: Math.PI / 2 }, 0.1, 0.04, 8, C3E.iron, C.dial);
 }
 
 /** La longue table et ses trois postes, sous l'auvent. */
 function tableAndSets(l: FacetBuilder): void {
   const T = TABLE;
   const y = floor();
-  l.box(
-    { x: T.x, y: y + T.h - 0.08, z: T.z },
-    [T.w, 0.08, T.d],
-    C3E.woodShade,
-    C3E.newWood,
-  );
-  for (const sx of [-1, 1])
-    l.box(
-      { x: T.x + sx * (T.w / 2 - 0.1), y: y - 0.02, z: T.z },
-      [0.1, T.h - 0.06, T.d - 0.1],
-      C3E.woodShade,
-    );
+  l.box({ x: T.x, y: y + T.h - 0.08, z: T.z }, [T.w, 0.08, T.d], C3E.woodShade, C3E.newWood);
+  for (const sx of [-1, 1]) l.box({ x: T.x + sx * (T.w / 2 - 0.1), y: y - 0.02, z: T.z }, [0.1, T.h - 0.06, T.d - 0.1], C3E.woodShade);
   for (const x of T.sets) radioSet(l, x, y + T.h, T.z - 0.05);
 }
 
 /** Les trois postes posés au sol en rang (la ruine), devant la station. */
 function setsDown(l: FacetBuilder): void {
-  for (const [k, x] of TABLE.sets.entries())
-    radioSet(
-      l,
-      x - 0.6,
-      groundAt(x - 0.6, 2.4 + 0.1 * k) - 0.02,
-      2.4 + 0.1 * k,
-    );
+  for (const [k, x] of TABLE.sets.entries()) radioSet(l, x - 0.6, groundAt(x - 0.6, 2.4 + 0.1 * k) - 0.02, 2.4 + 0.1 * k);
 }
 
 /** Le grand mât de bois, debout sur son dé de granit, sans vergue ni bras ; une pomme de fer au sommet. */
 function mast(l: FacetBuilder): void {
   const M = MAST;
   const y = groundAt(M.x, M.z);
-  l.box(
-    { x: M.x, y: y + SINK_3E, z: M.z },
-    [0.9, 0.5 - SINK_3E, 0.9],
-    C3E.graniteShade,
-    C3E.granite,
-  );
-  l.prism(
-    { x: M.x, y: y + 0.4, z: M.z },
-    M.r,
-    M.r * 0.55,
-    M.h,
-    6,
-    C3E.woodShade,
-    C3E.wood,
-  );
+  l.box({ x: M.x, y: y + SINK_3E, z: M.z }, [0.9, 0.5 - SINK_3E, 0.9], C3E.graniteShade, C3E.granite);
+  l.prism({ x: M.x, y: y + 0.4, z: M.z }, M.r, M.r * 0.55, M.h, 6, C3E.woodShade, C3E.wood);
   l.prism({ x: M.x, y: y + 0.4 + M.h, z: M.z }, 0.16, 0.05, 0.3, 6, C3E.iron);
 }
 
@@ -455,12 +327,7 @@ function guys(l: FacetBuilder, taut: boolean): void {
   const top = { x: M.x, y: y0 + M.h * M.tie, z: M.z };
   for (const [ax, az] of M.anchors) {
     const ay = groundAt(ax, az);
-    l.box(
-      { x: ax, y: ay - 0.2, z: az },
-      [0.3, 0.32, 0.3],
-      C3E.iron,
-      C3E.ironTop,
-    );
+    l.box({ x: ax, y: ay - 0.2, z: az }, [0.3, 0.32, 0.3], C3E.iron, C3E.ironTop);
     const foot = { x: ax, y: ay + 0.1, z: az };
     if (taut) l.beam(top, foot, 0.05, C3E.iron);
     else {
@@ -478,15 +345,7 @@ function guys(l: FacetBuilder, taut: boolean): void {
 
 /** Le cornet du pavillon d'écoute, dans un repère où il pointe vers +z depuis son col en (0, 0, 0). */
 function horn(k: FacetBuilder): void {
-  k.prism(
-    { x: 0, y: 0, z: 0 },
-    HORN.throat,
-    HORN.mouth,
-    HORN.length,
-    8,
-    C.horn,
-    C.hornInside,
-  );
+  k.prism({ x: 0, y: 0, z: 0 }, HORN.throat, HORN.mouth, HORN.length, 8, C.horn, C.hornInside);
   k.prism({ x: 0, y: -0.25, z: 0 }, 0.09, HORN.throat, 0.25, 6, C.horn);
 }
 
@@ -494,15 +353,7 @@ function horn(k: FacetBuilder): void {
 function hornUp(l: FacetBuilder): void {
   const H = HORN;
   const y = groundAt(H.x, H.z);
-  l.prism(
-    { x: H.x, y: y - 0.1, z: H.z },
-    0.32,
-    0.26,
-    0.2,
-    6,
-    C3E.graniteShade,
-    C3E.granite,
-  );
+  l.prism({ x: H.x, y: y - 0.1, z: H.z }, 0.32, 0.26, 0.2, 6, C3E.graniteShade, C3E.granite);
   l.prism({ x: H.x, y: y + 0.08, z: H.z }, 0.09, 0.07, H.h, 6, C3E.iron);
   drawPosed(
     l,
@@ -521,15 +372,7 @@ function hornUp(l: FacetBuilder): void {
 function hornDown(l: FacetBuilder): void {
   const H = HORN;
   const y = groundAt(H.x, H.z);
-  l.prism(
-    { x: H.x, y: y - 0.1, z: H.z },
-    0.32,
-    0.26,
-    0.2,
-    6,
-    C3E.graniteShade,
-    C3E.granite,
-  );
+  l.prism({ x: H.x, y: y - 0.1, z: H.z }, 0.32, 0.26, 0.2, 6, C3E.graniteShade, C3E.granite);
   l.prism({ x: H.x, y: y + 0.08, z: H.z }, 0.09, 0.07, H.h * 0.55, 6, C3E.iron);
   const gx = H.x - 0.9,
     gz = H.z + 0.4;
@@ -553,12 +396,7 @@ function alley(l: FacetBuilder): void {
   const step = (ALLEY.end - from) / n;
   for (let k = 0; k < n; k++) {
     const z = from + (k + 0.5) * step;
-    l.box(
-      { x: ALLEY.x, y: groundAt(ALLEY.x, z) - 0.06, z },
-      [2 * ALLEY.half, 0.1, step - 0.08],
-      C3E.joint,
-      k % 2 ? C3E.stone : C3E.stoneShade,
-    );
+    l.box({ x: ALLEY.x, y: groundAt(ALLEY.x, z) - 0.06, z }, [2 * ALLEY.half, 0.1, step - 0.08], C3E.joint, k % 2 ? C3E.stone : C3E.stoneShade);
   }
 }
 
@@ -566,13 +404,7 @@ function alley(l: FacetBuilder): void {
 function bench(l: FacetBuilder): void {
   const { x, z } = BENCH;
   const y = groundAt(x, z);
-  for (const s of [-1, 1])
-    l.box(
-      { x: x + s * 0.55, y: y - 0.1, z },
-      [0.26, 0.55, 0.38],
-      C3E.graniteShade,
-      C3E.granite,
-    );
+  for (const s of [-1, 1]) l.box({ x: x + s * 0.55, y: y - 0.1, z }, [0.26, 0.55, 0.38], C3E.graniteShade, C3E.granite);
   l.box({ x, y: y + 0.42, z }, [1.5, 0.1, 0.44], C3E.woodShade, C3E.wood);
 }
 
@@ -580,18 +412,8 @@ function bench(l: FacetBuilder): void {
 function lowWall(l: FacetBuilder): void {
   const W = LOW_WALL;
   const y = Math.min(groundAt(W.x0, W.z0), groundAt(W.x1, W.z1));
-  l.box(
-    { x: W.x0, y: y + SINK_3E, z: (W.z0 + W.z1) / 2 },
-    [0.45, W.h - SINK_3E, W.z1 - W.z0],
-    C3E.stoneShade,
-    C3E.stone,
-  );
-  l.box(
-    { x: W.x0, y: y + W.h, z: (W.z0 + W.z1) / 2 },
-    [0.58, 0.12, W.z1 - W.z0 + 0.1],
-    C3E.slate,
-    C3E.slateTop,
-  );
+  l.box({ x: W.x0, y: y + SINK_3E, z: (W.z0 + W.z1) / 2 }, [0.45, W.h - SINK_3E, W.z1 - W.z0], C3E.stoneShade, C3E.stone);
+  l.box({ x: W.x0, y: y + W.h, z: (W.z0 + W.z1) / 2 }, [0.58, 0.12, W.z1 - W.z0 + 0.1], C3E.slate, C3E.slateTop);
 }
 
 function model(add: AddPiece): void {
@@ -602,7 +424,7 @@ function model(add: AddPiece): void {
 
   // Toujours là : le socle, les murs de la station, sa porte et la lanterne de l'annonceur, la seule allumée de la ruine ;
   // le grand mât debout.
-  add("ruine", 0, (b) =>
+  add('ruine', 0, (b) =>
     posed(b, (l) => {
       plinth(l);
       stationWalls(l);
@@ -610,10 +432,10 @@ function model(add: AddPiece): void {
     }),
   );
   // La station (corps 1) referme le toit ouvert.
-  add("ruine", 0, (b) => posed(b, stationRoofOpen), corps1);
+  add('ruine', 0, (b) => posed(b, stationRoofOpen), corps1);
   // Les postes (corps 2) relèvent l'auvent tombé et les postes posés au sol.
   add(
-    "ruine",
+    'ruine',
     0,
     (b) =>
       posed(b, (l) => {
@@ -624,7 +446,7 @@ function model(add: AddPiece): void {
   );
   // Le haut remonte le pavillon couché et retend les haubans.
   add(
-    "ruine",
+    'ruine',
     0,
     (b) =>
       posed(b, (l) => {
@@ -634,15 +456,7 @@ function model(add: AddPiece): void {
     haut,
   );
   // Les abords effacent l'herbe sèche.
-  add(
-    "ruine",
-    0,
-    (b) =>
-      posed(b, (l) =>
-        DRY.forEach((d) => dryTuft3e(l, d.x, groundAt(d.x, d.z), d.z, d.s)),
-      ),
-    abords,
-  );
+  add('ruine', 0, (b) => posed(b, (l) => DRY.forEach((d) => dryTuft3e(l, d.x, groundAt(d.x, d.z), d.z, d.s))), abords);
 
   // ---- La station : son toit d'ardoise sous la neige.
   add(0, 0, (b) => posed(b, stationRoof));
@@ -658,15 +472,7 @@ function model(add: AddPiece): void {
     posed(b, (l) => {
       hornUp(l);
       guys(l, true);
-      armLantern3e(
-        l,
-        AWNING.posts[1],
-        floor() + 1.7,
-        AWNING.z1 - 0.15,
-        0,
-        1,
-        true,
-      );
+      armLantern3e(l, AWNING.posts[1], floor() + 1.7, AWNING.z1 - 0.15, 0, 1, true);
     }),
   );
   // ---- Les abords : le chemin de pierre claire, le banc, le muret bas, la lanterne du chemin.
@@ -700,11 +506,7 @@ const TRACE_SPOTS = {
 } as const;
 
 /** Dessine une trace dans le repère de la station, posée au centre du lieu. */
-const traceIn = (
-  b: FacetBuilder,
-  c: Vec3,
-  draw: (l: FacetBuilder) => void,
-): void => inWorld(b, c, draw, YAW);
+const traceIn = (b: FacetBuilder, c: Vec3, draw: (l: FacetBuilder) => void): void => inWorld(b, c, draw, YAW);
 
 /** Une chaise de bois et une petite table, contre la façade, à droite de la porte (Comprendre). */
 function chairAndTable(b: FacetBuilder, c: Vec3): void {
@@ -712,23 +514,8 @@ function chairAndTable(b: FacetBuilder, c: Vec3): void {
     const { x, z } = TRACE_SPOTS_P.chair;
     const y = floor();
     // La petite table ronde.
-    l.prism(
-      { x: x + 0.55, y: y - 0.02, z },
-      0.06,
-      0.06,
-      0.68,
-      6,
-      C3E.woodShade,
-    );
-    l.prism(
-      { x: x + 0.55, y: y + 0.66, z },
-      0.3,
-      0.3,
-      0.05,
-      8,
-      C3E.woodShade,
-      C3E.newWood,
-    );
+    l.prism({ x: x + 0.55, y: y - 0.02, z }, 0.06, 0.06, 0.68, 6, C3E.woodShade);
+    l.prism({ x: x + 0.55, y: y + 0.66, z }, 0.3, 0.3, 0.05, 8, C3E.woodShade, C3E.newWood);
     // La chaise : son siège, ses quatre pieds, son dossier plein.
     for (const [dx, dz] of [
       [-0.16, -0.16],
@@ -736,23 +523,9 @@ function chairAndTable(b: FacetBuilder, c: Vec3): void {
       [-0.16, 0.16],
       [0.16, 0.16],
     ] as const)
-      l.box(
-        { x: x - 0.2 + dx, y: y - 0.02, z: z + dz },
-        [0.05, 0.46, 0.05],
-        C3E.woodShade,
-      );
-    l.box(
-      { x: x - 0.2, y: y + 0.44, z },
-      [0.42, 0.05, 0.42],
-      C3E.woodShade,
-      C3E.newWood,
-    );
-    l.box(
-      { x: x - 0.2, y: y + 0.48, z: z - 0.19 },
-      [0.42, 0.45, 0.05],
-      C3E.woodShade,
-      C3E.newWood,
-    );
+      l.box({ x: x - 0.2 + dx, y: y - 0.02, z: z + dz }, [0.05, 0.46, 0.05], C3E.woodShade);
+    l.box({ x: x - 0.2, y: y + 0.44, z }, [0.42, 0.05, 0.42], C3E.woodShade, C3E.newWood);
+    l.box({ x: x - 0.2, y: y + 0.48, z: z - 0.19 }, [0.42, 0.45, 0.05], C3E.woodShade, C3E.newWood);
   });
 }
 
@@ -762,23 +535,8 @@ function highStools(b: FacetBuilder, c: Vec3): void {
     const { x, z } = TRACE_SPOTS_P.stools;
     const y = floor();
     for (const dx of [-0.5, 0.5]) {
-      l.prism(
-        { x: x + dx, y: y - 0.02, z },
-        0.14,
-        0.08,
-        0.72,
-        6,
-        C3E.woodShade,
-      );
-      l.prism(
-        { x: x + dx, y: y + 0.7, z },
-        0.2,
-        0.2,
-        0.07,
-        6,
-        C3E.woodShade,
-        C3E.newWood,
-      );
+      l.prism({ x: x + dx, y: y - 0.02, z }, 0.14, 0.08, 0.72, 6, C3E.woodShade);
+      l.prism({ x: x + dx, y: y + 0.7, z }, 0.2, 0.2, 0.07, 6, C3E.woodShade, C3E.newWood);
     }
   });
 }
@@ -789,14 +547,8 @@ function ladder(b: FacetBuilder, c: Vec3): void {
     const { x, z } = TRACE_SPOTS_P.ladder;
     const y = groundAt(x, z);
     drawPosed(l, { x, y: y - 0.05, z, yaw: 0, pitch: -0.2 }, (k) => {
-      for (const s of [-1, 1])
-        k.box({ x: s * 0.22, y: 0, z: 0 }, [0.07, 3.2, 0.07], C3E.wood);
-      for (let r = 0; r < 6; r++)
-        k.box(
-          { x: 0, y: 0.35 + r * 0.5, z: 0 },
-          [0.44, 0.05, 0.05],
-          C3E.newWood,
-        );
+      for (const s of [-1, 1]) k.box({ x: s * 0.22, y: 0, z: 0 }, [0.07, 3.2, 0.07], C3E.wood);
+      for (let r = 0; r < 6; r++) k.box({ x: 0, y: 0.35 + r * 0.5, z: 0 }, [0.44, 0.05, 0.05], C3E.newWood);
     });
   });
 }
@@ -822,14 +574,14 @@ const TRACES = {
     row: 0,
     draw: chairAndTable,
   },
-  "linking-words": {
+  'linking-words': {
     at: TRACE_SPOTS.stools,
     lift: 1.3,
     stage: 0,
     row: 0.5,
     draw: highStools,
   },
-  "false-friends": {
+  'false-friends': {
     at: TRACE_SPOTS.ladder,
     lift: 1.8,
     stage: 1,
@@ -843,7 +595,7 @@ const TRACES = {
     row: 0,
     draw: mealOnBench,
   },
-} as const satisfies Record<string, PlaceArt["traces"][string]>;
+} as const satisfies Record<string, PlaceArt['traces'][string]>;
 
 // ---------- La scénette ----------
 
@@ -863,35 +615,19 @@ const SCENE_SPOT = (() => {
 const SCENE_HALF = 2.0;
 
 /** La hauteur du sol de la scène au-dessus de son point : l'herbe de la Prairie. */
-const sceneRiseOf = once(() =>
-  sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)),
-);
+const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La table des boutons : sa hauteur à l'échelle 1 ; un bouton choisi se soulève d'un cran. */
 const KNOBS = { height: 0.62, lift: 0.28, knob: 0.16 } as const;
 
 /** Un bouton de bois rond, sa face claire sans trait ; tous pareils. */
 function knob(b: FacetBuilder, at: Vec3, s: number): void {
-  b.drum(
-    { x: at.x, y: at.y, z: at.z },
-    0.13 * s,
-    0.1 * s,
-    8,
-    C3E.woodShade,
-    C3E.newWood,
-  );
-  b.drum(
-    { x: at.x, y: at.y + 0.1 * s, z: at.z },
-    0.06 * s,
-    0.06 * s,
-    6,
-    C3E.wood,
-    C3E.wood,
-  );
+  b.drum({ x: at.x, y: at.y, z: at.z }, 0.13 * s, 0.1 * s, 8, C3E.woodShade, C3E.newWood);
+  b.drum({ x: at.x, y: at.y + 0.1 * s, z: at.z }, 0.06 * s, 0.06 * s, 6, C3E.wood, C3E.wood);
 }
 
 export const ONDES: PlaceArt = {
-  role: "L’annonceur",
+  role: 'L’annonceur',
   model,
   traceStage: 0,
   sceneSpot: {
@@ -927,20 +663,11 @@ export const ONDES: PlaceArt = {
     // Une petite table de bois, sous le rang des boutons.
     base(b, mid, y, z, span, s, ground) {
       const top = y + KNOBS.height * s;
-      b.box(
-        { x: mid, y: top - 0.08 * s, z },
-        [span + 0.7, 0.08 * s, 0.46 * s],
-        C3E.woodShade,
-        C3E.newWood,
-      );
+      b.box({ x: mid, y: top - 0.08 * s, z }, [span + 0.7, 0.08 * s, 0.46 * s], C3E.woodShade, C3E.newWood);
       for (const side of [-1, 1]) {
         const x = mid + side * (span / 2 + 0.15);
         const f = Math.min(ground, y) - 0.3;
-        b.box(
-          { x, y: f, z },
-          [0.1, top - 0.08 * s - f, 0.4 * s],
-          C3E.woodShade,
-        );
+        b.box({ x, y: f, z }, [0.1, top - 0.08 * s - f, 0.4 * s], C3E.woodShade);
       }
     },
     // Un bouton, tous pareils ; choisi, il se soulève d'un cran (sa place le dit).

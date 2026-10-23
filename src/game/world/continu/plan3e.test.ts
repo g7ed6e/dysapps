@@ -216,6 +216,39 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
     expect(zeppelinFacets().triangles).toBeLessThan(600);
   });
 
+  it('le zeppelin se voit de profil : la queue au nord-nord-ouest (330° environ), loin des rives ; le ventre au ras des nuages, ses côtes, sa gondole et ses deux hélices (proposition des Prairies, § 7)', () => {
+    const { rock, tail } = ZEPPELIN_3E;
+    const cap = ((Math.atan2(tail.x - rock.x, -(tail.z - rock.z)) * 180) / Math.PI + 360) % 360;
+    expect(cap).toBeGreaterThan(320);
+    expect(cap).toBeLessThan(340);
+    expect(landDistance3e(tail)).toBeLessThan(-10);
+    // De profil depuis le Parvis : la ligne du regard est presque perpendiculaire à l'enveloppe.
+    const look = Math.atan2(rock.x - PARVIS.origin.x, -(rock.z - PARVIS.origin.z));
+    const along = Math.atan2(tail.x - rock.x, -(tail.z - rock.z));
+    expect(Math.abs(Math.cos(along - look))).toBeLessThan(0.5);
+    const f = zeppelinFacets();
+    let min = Infinity,
+      max = -Infinity;
+    for (let i = 1; i < f.positions.length; i += 3) {
+      const x = f.positions[i - 1],
+        z = f.positions[i + 1];
+      if (Math.hypot(x - rock.x, z - rock.z) > 6) {
+        min = Math.min(min, f.positions[i]);
+        max = Math.max(max, f.positions[i]);
+      }
+    }
+    // Loin du rocher : rien sous les nuages, la gondole juste au-dessus ; le haut de l'empennage plus bas que le dos du lot 1 (15,8).
+    expect(min).toBeGreaterThan(0.5);
+    expect(min).toBeLessThan(2.5);
+    expect(max).toBeLessThan(14);
+    const has = (c: number) => {
+      const [r, g, b] = linearRgb(c);
+      for (let i = 0; i < f.colors.length; i += 3) if (Math.abs(f.colors[i] - r) < 1e-4 && Math.abs(f.colors[i + 1] - g) < 1e-4 && Math.abs(f.colors[i + 2] - b) < 1e-4) return true;
+      return false;
+    };
+    for (const c of [COLORS_3E.graphite, COLORS_3E.prune, COLORS_3E.bronze]) expect(has(c), c.toString(16)).toBe(true);
+  });
+
   it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#E4EAF1, retouche 1)', () => {
     expect(COLORS_3E.cloud).toBe(0xe4eaf1);
     expect('cloudBright' in COLORS_3E).toBe(false);

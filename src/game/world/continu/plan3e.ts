@@ -67,10 +67,13 @@ export const COLORS_3E = {
   /** Les pins des pentes, et leur ombre. */
   pine: 0x5f7a5a,
   pineShade: 0x52694e,
-  /** Le graphite et la prune des Ferrailleurs (le zeppelin). */
-  graphite: 0x4a4d55,
-  graphiteSun: 0x5a5e68,
-  prune: 0x6e4a63,
+  /**
+   * Le graphite et la prune des Ferrailleurs (le zeppelin) ; un cran plus clairs qu'au lot 1 (#4A4D55, #5A5E68, #6E4A63) :
+   * de profil, le flanc à l'ombre se lisait presque noir (lot des Prairies).
+   */
+  graphite: 0x666a74,
+  graphiteSun: 0x777c87,
+  prune: 0x7a5470,
   /** La lanterne fixe, or blanc. */
   lantern: 0xffe6a6,
 } as const;
@@ -587,9 +590,11 @@ export const RESERVED_3E = {
 /**
  * Le zeppelin des Ferrailleurs (fiche, § 6 et § 9, décision du 22 octobre 2026) : amarré par le nez à un mât de ferraille
  * sur un rocher à part, au nord-est de la plus grande des Prairies, loin de toute rive ; son enveloppe part du mât vers
- * le nord-est. Immobile tout le niveau. `rock` : le rocher et son rayon ; `tail` : le bout de l'enveloppe.
+ * le nord-nord-ouest (cap 330° environ ; proposition des Prairies, § 7, correction 20 du directeur artistique : au lot 1,
+ * vers le nord-est, dans la ligne du regard du Versant et des arches, on le voyait par le bout). Immobile tout le
+ * niveau. `rock` : le rocher et son rayon ; `tail` : le bout de l'enveloppe.
  */
-export const ZEPPELIN_3E = { rock: fromPlan3e([1990, 330]), rockRadius: 5, tail: fromPlan3e([2100, 255]) } as const;
+export const ZEPPELIN_3E = { rock: fromPlan3e([1990, 330]), rockRadius: 5, tail: fromPlan3e([1935, 235]) } as const;
 
 /**
  * Le terrain : l'étendue de la carte de hauteurs (le plan de 100 à 2 140 pixels d'ouest en est, de 0 à 1 180 du nord au

@@ -132,11 +132,39 @@ export const FOLLOW_FAR_3E = 600;
 // ---------- Le zeppelin des Ferrailleurs ----------
 
 /**
- * Le zeppelin (fiche, § 6 ; décision du 22 octobre 2026), en masses : un rocher de granit à part dans les nuages, son mât
- * de ferraille, et l'enveloppe amarrée par le nez au haut du mât, posée à l'horizontale vers le nord-est ; ses quatre
- * empennages, sa nacelle dessous. Le graphite et la prune des Ferrailleurs ; immobile tout le niveau.
+ * Le zeppelin (fiche, § 6 ; décision du 22 octobre 2026 ; proposition des Prairies, § 7, et correction 20 du directeur
+ * artistique) : un rocher de granit à part dans les nuages, son mât de ferraille, et l'enveloppe amarrée par le nez au
+ * haut du mât, posée à l'horizontale, la queue au nord-nord-ouest (`ZEPPELIN_3E.tail`, cap 330° environ) : vue du
+ * Parvis, du Belvédère et des arches, elle se lit de profil, un long cigare à côtes, et non plus par le bout. Son ventre
+ * au ras des nuages, son dos plus bas qu'au lot 1. L'enveloppe rigide graphite, ses côtes et ses rustines de prune, ses
+ * quatre empennages ; dessous, la gondole et ses pièces de bronze (le nez, la bande des hublots, la rambarde de la
+ * plate-forme), et ses deux hélices arrêtées. Immobile tout le niveau, sans mot.
  */
-const ZEPPELIN = { rockTop: 2.6, mast: 9, radius: 4.2, nose: 3.5, tail: 6, fin: 3.2, sides: 8 } as const;
+const ZEPPELIN = {
+  rockTop: 2.6,
+  mast: 4.2,
+  radius: 3.6,
+  nose: 3.2,
+  tail: 7,
+  fin: 2.8,
+  sides: 8,
+  /** Les côtes : leur place le long de l'enveloppe (en part de sa longueur), leur saillie, leur largeur. */
+  ribs: [0.3, 0.48, 0.66] as const,
+  rib: { out: 0.12, w: 0.4 },
+  /** Les rustines : leur angle autour de l'axe (en degrés, au milieu d'une face), leur place, leur taille. */
+  patches: [
+    { a: 22.5, at: 0.4, l: 1.6, w: 1.3 },
+    { a: 157.5, at: 0.56, l: 1.3, w: 1.1 },
+    { a: 202.5, at: 0.36, l: 1.2, w: 1.0 },
+  ] as const,
+  /** La gondole sous l'enveloppe : de `from` à `to` (en part de la longueur), son rayon, son écart sous le ventre. */
+  gondola: { from: 0.34, to: 0.6, r: 0.95, gap: 0.75 },
+  /** Les deux hélices arrêtées, au bout de la gondole : leur écart de côté, la longueur d'une pale. */
+  propeller: { side: 2.1, blade: 1.2 },
+} as const;
+
+/** La couleur des rustines : une prune un cran plus claire que les côtes, jamais vive. */
+const PATCH_3E = 0x8a6681;
 
 /** Le zeppelin sur son rocher : un décor du monde, jamais sur la Carte (fiche, § 5 bis ; `Departure.offMap`). */
 export function zeppelinFacets(): Facets {
@@ -150,7 +178,7 @@ export function zeppelinFacets(): Facets {
   b.prism({ x: rock.x, y: Z.rockTop, z: rock.z }, 0.35, 0.22, Z.mast, 5, COLORS_3E.graphite);
   for (let k = 0; k < 3; k++) {
     const a = (2 * Math.PI * k) / 3 + 0.4;
-    b.beam({ x: rock.x + Math.cos(a) * 3, y: Z.rockTop, z: rock.z + Math.sin(a) * 3 }, { x: rock.x, y: top - 2, z: rock.z }, 0.14, COLORS_3E.graphite);
+    b.beam({ x: rock.x + Math.cos(a) * 3, y: Z.rockTop, z: rock.z + Math.sin(a) * 3 }, { x: rock.x, y: top - 1, z: rock.z }, 0.14, COLORS_3E.graphite);
   }
   b.prism({ x: rock.x, y: top, z: rock.z }, 0.5, 0.5, 0.6, 6, COLORS_3E.bronze);
   // L'enveloppe, du nez (au mât) à la queue : trois pièces le long de son axe, couché à l'horizontale.
@@ -158,18 +186,46 @@ export function zeppelinFacets(): Facets {
   const yaw = Math.atan2(tail.x - rock.x, tail.z - rock.z);
   const y = top + 0.3;
   drawPosed(b, { x: rock.x, y, z: rock.z, yaw, pitch: Math.PI / 2 }, (l) => {
-    // Après la bascule, la hauteur d'une pièce suit l'axe de l'enveloppe, du nez vers la queue.
+    // Après la bascule, la hauteur d'une pièce suit l'axe de l'enveloppe, du nez vers la queue ; `z` descend.
     l.prism({ x: 0, y: 0.4, z: 0 }, 1, Z.radius, Z.nose, Z.sides, COLORS_3E.graphiteSun);
     l.prism({ x: 0, y: 0.4 + Z.nose, z: 0 }, Z.radius, Z.radius, len - Z.nose - Z.tail, Z.sides, COLORS_3E.graphite);
     l.prism({ x: 0, y: len - Z.tail + 0.4, z: 0 }, Z.radius, 0.9, Z.tail, Z.sides, COLORS_3E.graphiteSun, COLORS_3E.prune);
+    // Les côtes : un anneau de prune qui dépasse à peine, en travers de l'enveloppe.
+    for (const t of Z.ribs) l.prism({ x: 0, y: len * t, z: 0 }, Z.radius + Z.rib.out, Z.radius + Z.rib.out, Z.rib.w, Z.sides, COLORS_3E.prune);
+    // Les rustines : une plaque mince posée sur une face, tournée avec elle autour de l'axe.
+    const face = Z.radius * Math.cos(Math.PI / Z.sides);
+    for (const p of Z.patches) {
+      const a = (p.a * Math.PI) / 180;
+      l.box({ x: Math.cos(a) * face, y: len * p.at, z: Math.sin(a) * face, yaw: -a }, [0.16, p.l, p.w], PATCH_3E);
+    }
+    // La gondole, couchée sous le ventre ; son nez de bronze, vers le mât.
+    const G = Z.gondola;
+    const gz = Z.radius + G.gap + G.r;
+    l.prism({ x: 0, y: len * G.from, z: gz }, G.r, G.r, len * (G.to - G.from), 6, COLORS_3E.prune, COLORS_3E.graphite);
+    l.prism({ x: 0, y: len * G.from - 0.7, z: gz }, 0.15, G.r, 0.7, 6, COLORS_3E.bronze);
   });
   drawPosed(b, { x: rock.x, y, z: rock.z, yaw }, (l) => {
-    // Les quatre empennages près de la queue, la nacelle sous le milieu, une bande de prune autour du ventre.
+    // Les quatre empennages près de la queue.
     const fz = len - Z.tail + 1.4;
     l.box({ x: 0, y: Z.radius - 0.3, z: fz }, [0.3, Z.fin, Z.tail - 1], COLORS_3E.prune);
     l.box({ x: 0, y: -Z.radius - Z.fin + 0.3, z: fz }, [0.3, Z.fin, Z.tail - 1], COLORS_3E.prune);
     for (const s of [-1, 1]) l.box({ x: s * (Z.radius + Z.fin / 2 - 0.3), y: -0.15, z: fz }, [Z.fin, 0.3, Z.tail - 1], COLORS_3E.prune);
-    l.box({ x: 0, y: -Z.radius - 1.3, z: len * 0.45 }, [2, 1.4, 6], COLORS_3E.prune, COLORS_3E.graphite);
+    // La gondole : ses deux suspentes, la bande de bronze des hublots de chaque côté, la rambarde de la plate-forme.
+    const G = Z.gondola;
+    const gy = -(Z.radius + G.gap + G.r);
+    const z0 = len * G.from,
+      z1 = len * G.to;
+    for (const z of [z0 + 1.2, z1 - 1.2]) l.beam({ x: 0, y: gy + G.r * 0.8, z }, { x: 0, y: -Z.radius + 0.2, z }, 0.16, COLORS_3E.graphite);
+    for (const s of [-1, 1]) l.box({ x: s * G.r * 0.88, y: gy + 0.05, z: (z0 + z1) / 2 + 0.6 }, [0.1, 0.32, z1 - z0 - 2.4], COLORS_3E.bronze);
+    l.box({ x: 0, y: gy + G.r * 0.85, z: z0 + 0.7 }, [G.r * 1.6, 0.12, 1.2], COLORS_3E.bronze);
+    // Les deux hélices arrêtées, au bout de la gondole, une pale en haut, une en bas ; leur moyeu de bronze.
+    const P = Z.propeller;
+    for (const s of [-1, 1]) {
+      const hub = { x: s * P.side, y: gy, z: z1 - 0.3 };
+      l.beam({ x: s * G.r * 0.7, y: gy, z: hub.z }, hub, 0.12, COLORS_3E.graphite);
+      l.drum({ x: hub.x, y: hub.y, z: hub.z + 0.15, pitch: Math.PI / 2 }, 0.22, 0.3, 6, COLORS_3E.bronze);
+      l.box({ x: hub.x, y: hub.y - P.blade, z: hub.z + 0.32 }, [0.26, 2 * P.blade, 0.08], COLORS_3E.graphiteSun);
+    }
   });
   return b.build();
 }
