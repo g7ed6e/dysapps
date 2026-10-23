@@ -6,13 +6,14 @@
 // 1,9 au-dessus de l'eau, ses garde-corps, une lanterne de chaque côté de chaque culée ; Kéo marche sur la pierre et
 // sur le tablier (`bridgeFloor`). Tout entre dans le maillage des lieux, sans appel de plus ; sur la Carte, le pont se
 // dessine aussi en trait double, distinct d'un chemin. Code pur.
-import { FacetBuilder, boundsOf, mergeFacets, placeFacets, type Facets } from './facets';
+import { FacetBuilder, boundsOf, drawPosed, mergeFacets, placeFacets, type Facets } from './facets';
 import { distance, type Vec2 } from './geometry';
 import { bridgeEdge, firstClosed, isLinkedLand, linkedLands, nodeLands, planOfLand, startLandOf, type LinkedLand } from './lands';
 import { planFor, type LevelPlan, type OpenWorldLevel } from './levelPlan';
 import { bridgeCut, pathNode, type NetworkPoint } from './paths';
 import { CUT_CLEARANCE_3E, NETWORK_3E, isLand3e, passageCut3e } from './paths3e';
 import { quadToward } from './epauleKit';
+import { archSpandrel } from './place4eKit';
 import { CUT_CLEARANCE_4E, NETWORK_4E, RAILS_LOOK_4E, isLand4e, passageCut4e } from './paths4e';
 import { NETWORK_5E, isLand5e, passageCut } from './paths5e';
 import { COLORS_3E, LINKS_3E } from './plan3e';
@@ -265,6 +266,14 @@ export function bridgeFloor(x: number, z: number, closed: readonly LinkedLand[],
       if (y !== null) top = top === null ? y : Math.max(top, y);
       continue;
     }
+    if (isColGallery(land) && !closed.includes(land)) {
+      // La galerie du col reliée : son dallage, à plat, d'un bout à l'autre, entre son mur et ses arcades.
+      const g = colGalleryRange(s);
+      if (d < g[0] - COL_GALLERY.apron || d > g[1] + COL_GALLERY.apron || v > COL_GALLERY.walk) continue;
+      const y = colFloorAt(s, d);
+      top = top === null ? y : Math.max(top, y);
+      continue;
+    }
     if (d < s.abut[0] || d > s.abut[1]) continue;
     // L'arche de l'Épaule ou du glacier reliée : tout le tablier entre ses parapets, culées comprises.
     const arch = isStoneArch(land) && !closed.includes(land);
@@ -469,6 +478,7 @@ export interface BridgeParts {
 export function bridgeSurface(s: BridgeSite, d: number): number {
   if (isRavinArch(s.land)) return ravinDeckAt(s, d);
   if (isGlacierArch(s.land)) return glacierDeckAt(s, d);
+  if (isColGallery(s.land)) return colFloorAt(s, d);
   return d <= s.water[0] + BRIDGE.over ? abutTop(s, 0, d) : d >= s.water[1] - BRIDGE.over ? abutTop(s, 1, d) : BRIDGE.deck;
 }
 
@@ -490,7 +500,7 @@ function abutmentFacets(s: BridgeSite, arches: boolean): Facets {
 export const bridgeLayRest = (land: LinkedLand): Facets =>
   isCabin(land)
     ? cabinStations(bridgeSite(land))
-    : isCloudArches(land)
+    : isCloudArches(land) || isColGallery(land)
       ? NO_FACETS
       : isRavinArch(land)
         ? ravinRest(bridgeSite(land))
@@ -572,6 +582,7 @@ function lanterns(b: FacetBuilder, s: BridgeSite, iron: number, lit: boolean, pl
 export function bridgeParts(land: LinkedLand): BridgeParts {
   const s = bridgeSite(land);
   if (isCabin(land)) return cabinParts(s);
+  if (isColGallery(land)) return colGalleryParts(s, false);
   if (isCloudArches(land)) {
     const parts = archesParts(s, s.abut[0], s.abut[1]);
     return { piles: parts.bays, deck: parts.deck, rails: parts.parapets };
@@ -646,6 +657,11 @@ export function bridgeFacets(land: LinkedLand, built: boolean, car: CabinCar = '
     if (!built) return mergeFacets([abutmentFacets(s, false), swingDrum(s), swingRuin(s), swingRuinRails(s)]);
     const parts = bridgeParts(land);
     return mergeFacets([abutmentFacets(s, false), swingDrum(s), parts.deck, parts.rails]);
+  }
+  if (isColGallery(land) && built) {
+    // La galerie reliée : sans son toit quand Kéo est dessous (`colRoofOpen`), la caméra le voit toujours.
+    const parts = colGalleryParts(s, open);
+    return mergeFacets([...parts.piles, parts.deck, parts.rails]);
   }
   if (isRavinArch(land)) {
     if (!built) return ravinFallen(s);
@@ -950,6 +966,144 @@ function blockedCol(s: BridgeSite): Facets {
     b.prism({ x: p.x, y: worldOf(s.land).height(p) - 0.4, z: p.z, yaw: k * 0.9 }, r, r * 0.6, h + 0.4, 7, S.stone, S.stoneTop);
   });
   return b.build();
+}
+
+/**
+ * La galerie du col reliée (proposition du Cirque, § 2 ; fiche, § 5 ; sélection du Cirque, « La galerie du col ») : un
+ * passage couvert, court, large et plat, creusé dans l'arête est. Ses réglages : combien elle dépasse de l'arête à
+ * chaque bout (`over`) ; la demi-largeur de son dedans (`half`) et l'épaisseur de ses murs ; la hauteur de ses murs
+ * au-dessus du dallage ; ses arcades côté pic (à l'ouest) : leur nombre, l'épaisseur des piles, la naissance des arcs ;
+ * son toit d'ardoise (la hauteur du faîte, le débord, la part enneigée au faîte) ; la demi-largeur où Kéo marche, et le
+ * dallage qui dépasse à chaque bout (`apron`) ; les murets d'éboulis rangés de part et d'autre de l'entrée sud (leur
+ * recul devant la galerie, leurs blocs).
+ */
+export const COL_GALLERY = {
+  over: 1.6,
+  half: 2.6,
+  wall: 0.55,
+  height: 3.4,
+  bays: 4,
+  pier: 0.7,
+  spring: 1.75,
+  ridge: 1.3,
+  eave: 0.4,
+  snow: 0.3,
+  walk: 2.2,
+  apron: 0.8,
+  muret: { back: 0.9, from: 3.7, step: 1.05, count: 4 },
+} as const;
+
+/** La galerie, de son bout sud à son bout nord, sur la ligne du passage (`d` depuis `near`). */
+const colGalleryRange = (s: BridgeSite): readonly [number, number] => [s.water[0] - COL_GALLERY.over, s.water[1] + COL_GALLERY.over];
+
+/** Le dessus du dallage de la galerie à `d` : à plat, du sol de ce côté à celui d'en face. */
+function colFloorAt(s: BridgeSite, d: number): number {
+  const [g0, g1] = colGalleryRange(s);
+  const t = Math.min(1, Math.max(0, (d - g0) / (g1 - g0)));
+  return s.base[0] + 0.08 + (s.base[1] - s.base[0]) * t;
+}
+
+/** La zone où Kéo passe sous le toit de la galerie (et un peu avant chaque bout) : la caméra qui le suit passerait dessous. */
+const COL_ROOF_ZONE = { ends: 3, side: 4.5 } as const;
+
+/**
+ * Le toit de la galerie du col reliée s'ôte-t-il (`bridgeFacets`, `open`) ? Quand Kéo est dessous ou tout près d'un bout :
+ * la caméra qui le suit, plus haute que le faîte, verrait le toit entre elle et lui (comme la caisse de la cabine,
+ * `cabinCarOpen`). Lu à chaque image : rien n'est créé.
+ */
+export function colRoofOpen(land: LinkedLand, here: Vec2): boolean {
+  if (!isColGallery(land)) return false;
+  const s = bridgeSite(land);
+  const dx = here.x - s.near.x,
+    dz = here.z - s.near.z;
+  const d = dx * s.dir.x + dz * s.dir.z;
+  const v = -dx * s.dir.z + dz * s.dir.x;
+  return d >= s.water[0] - COL_GALLERY.over - COL_ROOF_ZONE.ends && d <= s.water[1] + COL_GALLERY.over + COL_ROOF_ZONE.ends && Math.abs(v) <= COL_ROOF_ZONE.side;
+}
+
+/** Le passage d'un plan qui est une galerie du col (au 3e), ou rien. */
+export const colGalleryOf = (plan: LevelPlan): LinkedLand | null => linkedLands(plan).find(isColGallery) ?? null;
+
+/** Les couleurs de la galerie : le granit des Passeurs, l'ardoise du toit et la neige au faîte, la pierre claire du dallage. */
+const COL_LOOK = {
+  wall: COLORS_3E.granite,
+  wallSun: COLORS_3E.graniteSun,
+  soffit: COLORS_3E.graniteShade,
+  slate: COLORS_3E.slate,
+  slateTop: COLORS_3E.slateTop,
+  snow: COLORS_3E.snow,
+  dalle: COLORS_3E.parvis,
+  dalleShade: 0xcbc5b7,
+} as const;
+
+/**
+ * La galerie reliée, dessinée dans le repère du passage (`x` le long de la ligne, depuis `near` ; `z` en travers, vers
+ * l'est, le côté des nuages ; `y` la hauteur) : à l'ouest, côté pic, les arcades (les piles et leurs arcs en plein
+ * cintre, le bandeau au-dessus) ; à l'est, côté nuages, le mur plein ; le toit d'ardoise à deux pans, ses pignons de
+ * granit, la neige au faîte (`roof` faux : sans lui, Kéo dessous) ; le dallage de pierre claire ; les éboulis rangés en
+ * deux murets bas de part et d'autre de l'entrée sud, contre l'arête. Rien ne s'allume, rien ne bouge.
+ */
+function colGalleryParts(s: BridgeSite, open: boolean): BridgeParts {
+  const G = COL_GALLERY;
+  const L = COL_LOOK;
+  const [g0, g1] = colGalleryRange(s);
+  const len = g1 - g0;
+  const y0 = Math.min(s.base[0], s.base[1]) + 0.08;
+  const top = y0 + G.height;
+  const zw = G.half + G.wall / 2;
+  const pose = { x: s.near.x, y: 0, z: s.near.z, yaw: Math.atan2(-s.dir.z, s.dir.x) };
+  const drawn = (draw: (l: FacetBuilder) => void): Facets => {
+    const b = new FacetBuilder();
+    drawPosed(b, pose, draw);
+    return b.build();
+  };
+  // Les arcades, côté pic : les piles, l'arc de chaque travée, le bandeau plein jusqu'au haut des murs.
+  const arcades = drawn((l) => {
+    const bay = len / G.bays;
+    const r = (bay - G.pier) / 2;
+    const crown = y0 + G.spring + r;
+    for (let k = 0; k <= G.bays; k++) l.box({ x: g0 + k * bay, y: y0 - 0.9, z: -zw }, [G.pier, G.height + 0.9, G.wall], L.wall, L.wallSun);
+    for (let k = 0; k < G.bays; k++) {
+      const cx = g0 + (k + 0.5) * bay;
+      for (const side of [-1, 1] as const) archSpandrel(l, -G.half - G.wall, G.wall, cx, r, y0 + G.spring, crown, side, L.wall, L.soffit);
+    }
+    l.box({ x: (g0 + g1) / 2, y: crown, z: -zw }, [len + G.pier, top - crown, G.wall], L.wall, L.wallSun);
+  });
+  // Le mur plein, côté nuages.
+  const wall = drawn((l) => l.box({ x: (g0 + g1) / 2, y: y0 - 0.9, z: zw }, [len + G.pier, G.height + 0.9, G.wall], L.wall, L.wallSun));
+  // Le toit d'ardoise, ses pignons de granit, la neige au faîte.
+  const roof = drawn((l) => {
+    if (open) return;
+    const at = { x: (g0 + g1) / 2, y: top, z: 0 };
+    const sx = len + G.pier + 2 * G.eave,
+      sz = 2 * (G.half + G.wall) + 2 * G.eave;
+    l.gableRoof(at, sx, sz, G.ridge, L.slate, L.wall);
+    l.gableRoof({ ...at, y: top + G.ridge * (1 - G.snow) + 0.02 }, sx + 0.02, sz * G.snow, G.ridge * G.snow, L.snow, L.snow);
+  });
+  // Le dallage de pierre claire, en dalles d'un pas, deux tons qui alternent, d'un bout à l'autre, et un peu au-delà.
+  const deck = drawn((l) => {
+    const from = g0 - G.apron,
+      to = g1 + G.apron;
+    const n = Math.max(1, Math.round((to - from) / 1.4));
+    const step = (to - from) / n;
+    for (let k = 0; k < n; k++) {
+      const x = from + (k + 0.5) * step;
+      l.box({ x, y: colFloorAt(s, x) - 0.07, z: 0 }, [step - 0.08, 0.1, 2 * G.half - 0.1], L.dalleShade, k % 2 ? L.dalle : L.dalleShade);
+    }
+  });
+  // Les éboulis rangés : de part et d'autre de l'entrée sud, une rangée de blocs ronds, du mur vers l'arête.
+  const rails = drawn((l) => {
+    const M = G.muret;
+    const x = g0 - M.back;
+    for (const side of [-1, 1])
+      for (let k = 0; k < M.count; k++) {
+        const z = side * (M.from + k * M.step);
+        const w = { x: s.near.x + s.dir.x * x - s.dir.z * z, z: s.near.z + s.dir.z * x + s.dir.x * z };
+        const r = 0.5 + 0.08 * ((k + (side > 0 ? 1 : 0)) % 3);
+        l.prism({ x: x + 0.1 * (k % 2), y: worldOf(s.land).height(w) - 0.35, z, yaw: k * 0.9 + side }, r, r * 0.62, 0.95 + 0.1 * (k % 2), 7, COLORS_3E.graniteShade, COLORS_3E.granite);
+      }
+  });
+  return { piles: [arcades, wall, roof], deck, rails };
 }
 
 /**

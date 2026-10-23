@@ -182,6 +182,12 @@ export const EPAULE_BRIDGE_TRIANGLES = 1_300;
 export const GLACIER_BRIDGE_TRIANGLES_3E = 1_200;
 
 /**
+ * Le plafond de la galerie du col reliée, au 3e (proposition du Cirque, § 2 : « environ 800 ») : ses arcades, son mur
+ * plein, son toit d'ardoise et sa neige, son dallage, les deux murets d'éboulis rangés.
+ */
+export const COL_GALLERY_TRIANGLES_3E = 800;
+
+/**
  * Le plafond des arches basses reliées et des deux petites arches des Prairies, au 3e (proposition des Prairies, § 2 :
  * « environ 2 400 avec les deux petites arches ») : leurs chaussées, leurs voûtes et leurs claveaux, leurs parapets à
  * chaperon d'ardoise, le chemin de pierre claire.

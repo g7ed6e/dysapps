@@ -84,6 +84,9 @@ const wave = (p: Vec2): number => 0.5 + 0.25 * Math.sin(p.x * 0.07 + 0.4) * Math
 /** Le flanc du cône, de 0 au pied à `PEAK_3E.flank.height` au haut, en pente douce. */
 const flank = (d: number): number => PEAK_3E.flank.height * (1 - smoothstep(PEAK_3E.flank.inner, PEAK_3E.flank.outer, d));
 
+/** La place du col le long de l'arête est, depuis le pic. */
+const COL_ALONG = alongPolyline(COL_3E, ARETE_EST_3E).s;
+
 /** La crête d'une arête au-dessus du sol en `p` : haute au pied du pic, basse au bord des nuages ; nulle au col de l'arête est. */
 function ridgeHeight(p: Vec2): number {
   let h = 0;
@@ -91,7 +94,12 @@ function ridgeHeight(p: Vec2): number {
     const { d, s } = alongPolyline(p, line);
     if (d >= ARETES_3E.halfWidth) continue;
     let crest = ARETES_3E.low + (ARETES_3E.high - ARETES_3E.low) * Math.exp(-s / ARETES_3E.fall);
-    if (line === ARETE_EST_3E) crest *= smoothstep(ARETES_3E.col[0], ARETES_3E.col[1], distance(p, COL_3E));
+    if (line === ARETE_EST_3E) {
+      // Côté pic, l'entaille du col reste large (les arcades de la galerie y voient le pic) ; côté nuages, la crête
+      // remonte contre le mur plein de la galerie.
+      const [r0, r1] = s > COL_ALONG ? ARETES_3E.colEast : ARETES_3E.col;
+      crest *= smoothstep(r0, r1, distance(p, COL_3E));
+    }
     h = Math.max(h, crest * (1 - (d / ARETES_3E.halfWidth) ** 2));
   }
   return h;

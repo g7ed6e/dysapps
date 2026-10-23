@@ -123,7 +123,8 @@ export const COAST_3E: readonly Vec2[] = [...MOUNTAIN_3E, ...PRAIRIES_3E.grande,
  * Le pic, qu'on ne visite pas (fiche, § 5) : une pyramide de neige à `sides` faces, au centre de la montagne. `at` : son
  * sommet au sol ; `radius` : le rayon de sa base (jusqu'à ses arêtes) ; `height` : son sommet ; `base` : sa base,
  * enfoncée dans le haut du cône ; `yaw` : le cap de sa première arête. Le haut du cône, en granit, va jusqu'à `granite`
- * unités de lui ; on ne marche pas à moins de `blocked`. Le flanc monte doucement de `flank.outer` à `flank.inner`.
+ * unités de lui, à peine au-delà du pied du pic : l'herbe monte haut sur le cône, le granit nu reste au pied du pic et
+ * aux arêtes (lot 1, retouche 1, « Reporté » ; le Cirque, 46 auparavant) ; on ne marche pas à moins de `blocked`. Le flanc monte doucement de `flank.outer` à `flank.inner`.
  */
 export const PEAK_3E = {
   at: fromPlan3e([900, 380]),
@@ -132,7 +133,7 @@ export const PEAK_3E = {
   base: 3.5,
   sides: 4,
   yaw: 0.3,
-  granite: 46,
+  granite: 35,
   blocked: 42,
   flank: { height: 7, inner: 30, outer: 62 },
 } as const;
@@ -148,9 +149,11 @@ export const LANGUE_3E = poly([[900, 380], [870, 430], [780, 510], [670, 600], [
 /**
  * Les arêtes (artiste technique 3D) : leur demi-largeur au sol ; leur crête au bord des nuages (`low`) et au pied du pic
  * (`high`), et en combien d'unités elle tombe de l'un à l'autre (`fall`). Au col de l'arête est, la galerie : la crête y
- * descend au sol (`col` : nulle à moins de `col[0]` unités de la galerie, pleine au-delà de `col[1]`).
+ * descend au sol (`col` : nulle à moins de `col[0]` unités de la galerie, pleine au-delà de `col[1]`), côté pic ; côté
+ * nuages, elle remonte contre le mur plein de la galerie (`colEast`), qui se lit creusée dans l'arête (proposition du
+ * Cirque, § 2 ; sélection du Cirque, « l'arête la traverse »), ses arcades ouvertes côté pic.
  */
-export const ARETES_3E = { halfWidth: 5, low: 3.2, high: 16, fall: 22, col: [7, 15] as const } as const;
+export const ARETES_3E = { halfWidth: 5, low: 3.2, high: 16, fall: 22, col: [7, 15] as const, colEast: [3.4, 6.5] as const } as const;
 
 /** La langue de glace : sa demi-largeur ; elle est à plat, au niveau des prairies, un rien plus bas (`sink`). */
 export const LANGUE_LOOK_3E = { halfWidth: 4.6, sink: 0.15 } as const;
