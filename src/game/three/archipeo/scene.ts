@@ -17,7 +17,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, LOW_SCREEN, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { dalleFacets } from '../../world/continu/dalle4e';
@@ -1004,7 +1004,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // le recul du dernier, gardé pendant que la caméra revient.
   const arrivals = PLACES.flatMap((p) => {
     const a = arrivalViewOf(p.id);
-    return a ? [{ id: p.id, door: net.pathNode(p.door).at, look: { x: p.center.x + a.look.x, z: p.center.z + a.look.z }, top: a.top, view: { height: 0, back: a.back } }] : [];
+    return a ? [{ id: p.id, door: net.pathNode(p.door).at, look: { x: p.center.x + a.look.x, z: p.center.z + a.look.z }, top: a.top, view: { height: 0, back: a.back }, lowView: { height: 0, back: a.lowBack ?? a.back } }] : [];
   });
   let arrivalNow: (typeof arrivals)[number] | null = null;
   // Au quai du lieu de départ, tourné vers son cap, quand le niveau a une vue d'arrivée (`Departure.quayView`, au 3e) : la
@@ -1723,7 +1723,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       lanternTop.y = feet.get(a.id)!.y + (a.top ?? builtTop.get(a.id) ?? modelOfPlace(a.id).top);
       lanternTop.z = a.look.z;
       arrivalNow = a;
-      arrivalShape = a.view;
+      // Sur un écran bas, le recul qui tient le haut du lieu et Kéo ensemble (`lowBack`).
+      arrivalShape = viewH < LOW_SCREEN ? a.lowView : a.view;
       return true;
     }
     // Au quai du lieu de départ (5e, 4e, 3e), tourné vers son cap : le sommet de la Montée au 5e, au fond (directeur artistique, lot 4).

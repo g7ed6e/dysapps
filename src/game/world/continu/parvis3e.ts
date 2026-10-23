@@ -459,8 +459,25 @@ export type NefParure = (typeof NEF_PARURES)[number];
 const PARURES_LOOK = {
   /** La tête de baleine : son attache au haut de l'étrave (le dessous de la mâchoire), et sa pente (le museau relevé de 10°). */
   head: { z: -2.35, y: 0.32, tilt: Math.tan((10 * Math.PI) / 180) },
-  /** Le pavois : le bord du bastingage, le bas et le haut des plaques, de quelle part de la proue à quelle part de la poupe, combien de plaques. */
-  pavois: { x: 1.47, y0: 0.5, y1: 1.02, z0: -1.05, z1: 1.45, plates: 5, gap: 0.05, thick: 0.05 },
+  /**
+   * Le pavois (relectures du directeur artistique et du consultant d'Archipéo avant la PR : une rangée, pas deux
+   * ailerons) : le bord de la coque à hauteur du bastingage, de l'arrière des hélices (`z` −0,35 : leurs pales tournent
+   * entre −0,98 et −0,49) jusqu'au début de la poupe, en `[x, z]` ; le bas et le haut des plaques, qui dépassent le
+   * plat-bord (0,87) ; combien de plaques par flanc, leur écart, leur épaisseur.
+   */
+  pavois: {
+    edge: [
+      [1.45, -0.35],
+      [1.45, 1.05],
+      [1.2, 1.55],
+      [0.98, 1.95],
+    ] as const,
+    y0: 0.52,
+    y1: 1.14,
+    plates: 5,
+    gap: 0.06,
+    thick: 0.06,
+  },
   /** Les feux : leur écart à l'axe, leur hauteur, leur place le long de la coque. */
   feux: { x: 1.3, y: 1.0, z: -1.2 },
 } as const;
@@ -572,13 +589,20 @@ export function nefParuresLocal(posed: readonly NefParure[]): Facets {
   const L = PARURES_LOOK;
   if (posed.includes('proue')) whaleHead(b);
   if (posed.includes('pavois')) {
+    // Cinq plaques par flanc, rigides et unies, collées au bord de la coque, chacune tournée comme lui : une rangée.
     const P = L.pavois;
-    const w = (P.z1 - P.z0 - (P.plates - 1) * P.gap) / P.plates;
-    for (const s of [-1, 1])
-      for (let i = 0; i < P.plates; i++) {
-        const z = P.z0 + i * (w + P.gap) + w / 2;
-        b.box({ x: s * (P.x + P.thick / 2), y: P.y0, z }, [P.thick, P.y1 - P.y0, w], PARURE_COLORS.cobalt, PARURE_COLORS.cobaltEdge);
-      }
+    const legs = P.edge.slice(1).map(([x, z], k) => ({ from: P.edge[k], dx: x - P.edge[k][0], dz: z - P.edge[k][1], length: Math.hypot(x - P.edge[k][0], z - P.edge[k][1]) }));
+    const total = legs.reduce((sum, l) => sum + l.length, 0);
+    const w = (total - (P.plates - 1) * P.gap) / P.plates;
+    for (let i = 0; i < P.plates; i++) {
+      let at = i * (w + P.gap) + w / 2;
+      const leg = legs.find((l) => (at -= l.length) <= 0) ?? legs[legs.length - 1];
+      const u = 1 + Math.min(0, at) / leg.length;
+      const x = leg.from[0] + leg.dx * u + P.thick / 2 + 0.01;
+      const z = leg.from[1] + leg.dz * u;
+      const yaw = Math.atan2(leg.dx, leg.dz);
+      for (const s of [-1, 1]) b.box({ x: s * x, y: P.y0, z, yaw: s * yaw }, [P.thick, P.y1 - P.y0, w], PARURE_COLORS.cobalt, PARURE_COLORS.cobaltEdge);
+    }
   }
   if (posed.includes('feux')) {
     const F = L.feux;

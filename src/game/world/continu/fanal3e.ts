@@ -128,8 +128,11 @@ const DRY = [
 /** Le cap d'arrivée : le nord, de la porte au sud ; la tour entière, la mer de nuages au-delà. */
 const DOOR_VIEW = capOf(0);
 
-/** La vue d'arrivée : le regard levé jusqu'au haut bâti, au-dessus de l'axe de la tour, la caméra un peu reculée. */
-const ARRIVAL = { look: { x: 0, z: FANAL_TOWER_3E.z }, back: 1.6 } as const;
+/**
+ * La vue d'arrivée : le regard levé jusqu'au haut bâti, au-dessus de l'axe de la tour, la caméra un peu reculée ; au
+ * téléphone couché, plus reculée, pour que la lanterne tienne entière avec Kéo au-dessus de « Y aller ».
+ */
+const ARRIVAL = { look: { x: 0, z: FANAL_TOWER_3E.z }, back: 1.6, lowBack: 2.3 } as const;
 
 // ---------- Les volumes ----------
 
@@ -597,7 +600,7 @@ const RETURN = {
   seconds: 3.6,
   gondola: 0.4,
   rack: 0.8,
-  pieces: [1.2, 1.6, 2.0, 2.4, 2.8] as const,
+  pieces: [1.2, 1.5, 1.8, 2.1, 2.4, 2.7] as const,
   grappin: 3.0,
   port: 3.4,
   rackAt: { x: 9.6, z: 6.6 },

@@ -10,7 +10,7 @@ import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
 import { PLACE_RUIN_TRIANGLES_MAX_3E, PLACE_TRIANGLES_MAX_3E } from './budget';
-import { followPose, lookUp, screenOf } from './camera';
+import { LOW_SCREEN, followPose, keepFeetAbove, lookUp, occlusionLift, screenOf } from './camera';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
 import { FANAL, FANAL_LAYOUT, FANAL_TOWER_3E } from './fanal3e';
@@ -262,6 +262,22 @@ describe('« Y aller » au Fanal', () => {
         const foot = s(feet);
         expect(foot.y - s({ ...feet, y: feet.y + 2.4 }).y).toBeGreaterThanOrEqual(H > 500 ? 70 : 40);
       });
+
+  it('restauré, au téléphone couché (844 × 390), comme la scène le cadre (le relief, la rangée de « Y aller ») : la lanterne entière, Kéo entier au-dessus du bouton (relecture du directeur artistique avant la PR)', () => {
+    const [W, H, room] = [844, 390, 80];
+    expect(H).toBeLessThan(LOW_SCREEN);
+    expect(view.lowBack).toBeGreaterThan(view.back);
+    const pose = followPose(feet, occlusionLift(feet, ground, 0), undefined, doorViewOf('fanal'), 1, undefined, { height: 0, back: view.lowBack! });
+    const top = world(view.look.x, topOf(shown(5)), view.look.z);
+    lookUp(pose, top, feet, 1, H, ground);
+    keepFeetAbove(pose, feet, room, H);
+    const s = (p: { x: number; y: number; z: number }) => screenOf(pose, p, W, H);
+    expect(s(top).y, 'pointe du toit').toBeGreaterThan(8);
+    for (const sx of [-1, 1]) expect(s(world(sx * FANAL_LAYOUT.gallery.r, FANAL_LAYOUT.base() + FANAL_TOWER_3E.y1, FANAL_TOWER_3E.z)).y, `galerie ${sx}`).toBeGreaterThan(8);
+    const foot = s(feet);
+    expect(foot.y).toBeLessThanOrEqual(H - room + 1);
+    expect(foot.y - s({ ...feet, y: feet.y + 2.4 }).y).toBeGreaterThanOrEqual(36);
+  });
 });
 
 describe('La fin des Ferrailleurs, au Fanal restauré', () => {

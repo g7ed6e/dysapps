@@ -1,88 +1,50 @@
 // La fin des Ferrailleurs (le Cirque du 3e, GD-25 ; décision du mainteneur du 22 octobre 2026, point 2 ; proposition du
 // Cirque, « La fin des Ferrailleurs ») : les pièces de bronze qu'ils avaient démontées du pont du Rafiot, au 6e, au 5e et
-// au 4e, pour les monter sur la gondole de leur zeppelin. Chacune se reconnaît à sa forme, sans étiquette : une cloche,
-// une marmite, un miroir, une vasque, un crochet. Au Fanal restauré, ils les rendent : elles quittent la gondole et
+// au 4e, pour les monter sur la gondole de leur zeppelin. Ce sont les six du pont du Rafiot du 4e, aux mêmes formes
+// (./crique4e.ts, `rafiotPiece`), chacune reconnaissable sans étiquette : l'anneau d'amarrage, la cloche, le poids étalon,
+// le régulateur à boules, le gong, la vasque. Au Fanal restauré, ils les rendent : elles quittent la gondole et
 // apparaissent rangées sur un râtelier de bois au pied du Fanal, côté Rampe ; Grappin se tient à côté, en pion, graphite
 // et prune ; au nord, à l'horizon, leur port répond d'une seule lumière fixe. Ce fichier dessine les pièces, le râtelier,
 // Grappin et le port ; le Fanal les montre à sa restauration (./fanal3e.ts, `restoration`), la gondole les porte avant
 // (./parvis3e.ts, `zeppelinPiecesFacets`). Le bronze n'est qu'aux pièces rendues (relecture des Prairies, (b) 4). Code pur.
-import type { FacetBuilder } from './facets';
+import { RAFIOT_PIECE_HEIGHT, rafiotPiece, type BronzeColors, type RafiotPiece } from './crique4e';
+import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { C3E } from './place3eKit';
 import { COLORS_3E } from './plan3e';
 import { rock } from './surroundingsKit';
 
-/** Le bronze des pièces, au soleil et à l'ombre, et le dedans d'une marmite ou d'une vasque, un brun chaud (jamais presque noir). */
-const BRONZE = { side: C3E.bronze, sun: 0xb98c4c, inside: 0x7a5a36 } as const;
-
-/** Les cinq pièces, dans l'ordre où elles se rangent sur le râtelier, de gauche à droite vues de face. */
-export const PIECES_3E = ['marmite', 'cloche', 'vasque', 'crochet', 'miroir'] as const;
-export type Piece3e = (typeof PIECES_3E)[number];
-
-/** Une pièce pendue (la cloche, le crochet) se suspend à la barre du haut ; les autres se posent sur la planche. */
-export const HANGS_3E: Readonly<Record<Piece3e, boolean>> = { marmite: false, cloche: true, vasque: false, crochet: true, miroir: false };
-
-/** La hauteur de chaque pièce, à l'échelle 1 (le haut d'une pièce pendue, depuis son bas). */
-export const PIECE_HEIGHT_3E: Readonly<Record<Piece3e, number>> = { marmite: 0.46, cloche: 0.6, vasque: 0.34, crochet: 0.78, miroir: 0.82 };
+/** Le bronze des pièces : ses flancs, au ton du bronze du 3e, et ses dessus au soleil. */
+const BRONZE: BronzeColors = { bronze: C3E.bronze, bronzeTop: 0xb98c4c };
 
 /**
- * Une pièce, son bas en (`x`, `y`, `z`), à l'échelle `s`, sa face vers +z : la cloche évasée et sa couronne ; la marmite
- * ventrue, ses deux anses et ses trois pieds ; le miroir rond debout sur son pied ; la vasque large et basse sur son pied ;
- * le crochet en J, son anneau en haut.
+ * Les six pièces du Rafiot (`RAFIOT_PIECES`), dans l'ordre où elles se rangent sur le râtelier, de gauche à droite vues
+ * de face : la cloche pend au-dessus du poids étalon.
  */
+export const PIECES_3E = ['anneau', 'regulateur', 'cloche', 'poids', 'gong', 'vasque'] as const satisfies readonly RafiotPiece[];
+export type Piece3e = (typeof PIECES_3E)[number];
+
+/** Une pièce pendue (la cloche) se suspend à la barre du haut ; les autres se posent sur la planche. */
+export const HANGS_3E: Readonly<Record<Piece3e, boolean>> = { anneau: false, regulateur: false, cloche: true, poids: false, gong: false, vasque: false };
+
+/** La hauteur de chaque pièce, à l'échelle 1 (le haut d'une pièce pendue, depuis son bas). */
+export const PIECE_HEIGHT_3E: Readonly<Record<Piece3e, number>> = RAFIOT_PIECE_HEIGHT;
+
+/** Une pièce du Rafiot, son bas en (`x`, `y`, `z`), à l'échelle `s`, sa face vers +z (l'anneau, le gong, les boules du régulateur). */
 export function piece3e(b: FacetBuilder, id: Piece3e, x: number, y: number, z: number, s = 1): void {
-  const P = (dx: number, dy: number, dz = 0) => ({ x: x + dx * s, y: y + dy * s, z: z + dz * s });
-  switch (id) {
-    case 'cloche':
-      b.prism(P(0, 0), 0.38 * s, 0.33 * s, 0.08 * s, 8, BRONZE.sun);
-      b.prism(P(0, 0.08), 0.33 * s, 0.17 * s, 0.4 * s, 8, BRONZE.side, BRONZE.sun);
-      b.prism(P(0, 0.48), 0.17 * s, 0.09 * s, 0.07 * s, 8, BRONZE.sun);
-      b.drum({ ...P(0, 0.6, -0.03), pitch: Math.PI / 2 }, 0.06 * s, 0.06 * s, 6, BRONZE.side);
-      return;
-    case 'marmite':
-      for (let k = 0; k < 3; k++) {
-        const a = (2 * Math.PI * k) / 3 + 0.5;
-        b.prism(P(Math.cos(a) * 0.2, 0, Math.sin(a) * 0.2), 0.04 * s, 0.04 * s, 0.1 * s, 4, BRONZE.side);
-      }
-      b.prism(P(0, 0.08), 0.24 * s, 0.34 * s, 0.22 * s, 8, BRONZE.side, BRONZE.side);
-      b.prism(P(0, 0.3), 0.34 * s, 0.3 * s, 0.12 * s, 8, BRONZE.side, BRONZE.inside);
-      b.prism(P(0, 0.42), 0.33 * s, 0.33 * s, 0.04 * s, 8, BRONZE.sun, BRONZE.inside);
-      for (const side of [-1, 1]) b.box(P(side * 0.39, 0.3), [0.08 * s, 0.14 * s, 0.1 * s], BRONZE.sun);
-      return;
-    case 'vasque':
-      b.prism(P(0, 0), 0.16 * s, 0.09 * s, 0.1 * s, 8, BRONZE.side);
-      b.prism(P(0, 0.1), 0.12 * s, 0.5 * s, 0.22 * s, 8, BRONZE.side, BRONZE.inside);
-      b.prism(P(0, 0.31), 0.5 * s, 0.5 * s, 0.03 * s, 8, BRONZE.sun, BRONZE.inside);
-      return;
-    case 'crochet': {
-      const t = 0.07 * s;
-      const pts: [number, number][] = [
-        [0, 0.72],
-        [0, 0.24],
-        [0.06, 0.08],
-        [0.2, 0.02],
-        [0.32, 0.1],
-        [0.34, 0.26],
-      ];
-      for (let k = 1; k < pts.length; k++) b.beam(P(pts[k - 1][0] - 0.12, pts[k - 1][1]), P(pts[k][0] - 0.12, pts[k][1]), t, k % 2 ? BRONZE.side : BRONZE.sun);
-      b.drum({ ...P(-0.12, 0.72, -0.03), pitch: Math.PI / 2 }, 0.08 * s, 0.06 * s, 6, BRONZE.sun);
-      return;
-    }
-    case 'miroir':
-      b.box(P(0, 0), [0.36 * s, 0.06 * s, 0.22 * s], BRONZE.side, BRONZE.sun);
-      b.box(P(0, 0.06), [0.08 * s, 0.12 * s, 0.08 * s], BRONZE.side);
-      b.drum({ ...P(0, 0.48, -0.03), pitch: Math.PI / 2 }, 0.34 * s, 0.06 * s, 10, BRONZE.side, BRONZE.sun);
-      return;
-  }
+  drawPosed(b, { x, y, z, yaw: Math.PI / 2 }, (l) => rafiotPiece(l, id, 0, 0, 0, BRONZE, s));
 }
 
-/** Le râtelier de bois : sa longueur, la hauteur de sa planche et de sa barre, la profondeur de la planche ; la place des pièces le long. */
-const RACK_3E = { length: 3.9, shelf: 0.75, bar: 1.75, depth: 0.5, at: [-1.45, -0.7, 0.1, 0.85, 1.5] as const } as const;
+/**
+ * Le râtelier de bois : sa longueur, la hauteur de sa planche et de sa barre, la profondeur de la planche, l'échelle des
+ * pièces ; la place des pièces le long (la cloche au-dessus du poids).
+ */
+const RACK_3E = { length: 3.9, shelf: 0.75, bar: 2.05, depth: 0.5, scale: 0.85, at: [-1.47, -0.73, -0.06, -0.06, 0.66, 1.46] as const } as const;
 
 /**
  * Le râtelier de bois dans son repère (son pied en y = 0, sa longueur le long de x, sa face vers +z) et ses `shown`
- * premières pièces (`PIECES_3E`) : la planche porte la marmite, la vasque et le miroir, la barre du haut la cloche et le
- * crochet, chacun à sa cordelette de cuir.
+ * premières pièces (`PIECES_3E`) : la planche porte l'anneau, le régulateur, le poids, le gong et la vasque ; la barre
+ * du haut la cloche, à sa cordelette de cuir.
  */
 export function rack3e(l: FacetBuilder, shown: number): void {
   const R = RACK_3E;
@@ -94,11 +56,10 @@ export function rack3e(l: FacetBuilder, shown: number): void {
   l.box({ x: 0, y: R.bar, z: 0 }, [R.length + 0.3, 0.12, 0.12], C3E.woodShade, C3E.wood);
   PIECES_3E.slice(0, shown).forEach((id, k) => {
     const x = R.at[k];
-    if (!HANGS_3E[id]) return piece3e(l, id, x, R.shelf, 0.02);
-    const bottom = R.shelf + 0.28;
-    const top = bottom + PIECE_HEIGHT_3E[id];
-    l.beam({ x: id === 'crochet' ? x - 0.12 : x, y: R.bar, z: 0 }, { x: id === 'crochet' ? x - 0.12 : x, y: top - 0.02, z: 0 }, 0.04, C3E.leather);
-    piece3e(l, id, x, bottom, 0);
+    if (!HANGS_3E[id]) return piece3e(l, id, x, R.shelf, 0.02, R.scale);
+    const bottom = R.bar - 0.12 - PIECE_HEIGHT_3E[id] * R.scale;
+    l.beam({ x, y: R.bar, z: 0 }, { x, y: bottom + PIECE_HEIGHT_3E[id] * R.scale - 0.02, z: 0 }, 0.04, C3E.leather);
+    piece3e(l, id, x, bottom, 0, R.scale);
   });
 }
 

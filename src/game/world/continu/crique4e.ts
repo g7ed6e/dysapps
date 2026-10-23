@@ -238,38 +238,84 @@ function ball(b: FacetBuilder, c: Vec3, r: number, color: number): void {
 }
 
 /**
- * Les six pièces de bronze du Rafiot (intention, § 5), boulonnées sur le pont arrière, en décor, sans texte : l'anneau
- * d'amarrage debout, la cloche de départ, le poids étalon (un cylindre trapu à anse), le régulateur à boules (deux boules
- * sur leur axe), le gong (un disque debout dans son cadre) et la vasque. Elles se lisent de loin par leur forme, aucune
- * en croix ; leurs faces debout regardent les flancs (on voit le Rafiot de flanc). Elles ne changent pas avec les lieux.
+ * Les six pièces de bronze du Rafiot (intention, § 5), dans l'ordre de leur place sur le pont : l'anneau d'amarrage
+ * debout, la cloche de départ, le poids étalon (un cylindre trapu à anse), le régulateur à boules (deux boules sur leur
+ * axe), le gong (un disque debout dans son cadre) et la vasque. Les mêmes, rendues au Fanal du 3e (./ferrailleurs3e.ts).
+ */
+export const RAFIOT_PIECES = ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const;
+export type RafiotPiece = (typeof RAFIOT_PIECES)[number];
+
+/** La hauteur de chaque pièce, à l'échelle 1, de son pied à son haut. */
+export const RAFIOT_PIECE_HEIGHT: Readonly<Record<RafiotPiece, number>> = { anneau: 0.72, cloche: 0.52, poids: 0.53, regulateur: 0.85, gong: 0.93, vasque: 0.44 };
+
+/** Le bronze d'une pièce : ses flancs et ses dessus. */
+export interface BronzeColors {
+  bronze: number;
+  bronzeTop: number;
+}
+
+/**
+ * Une pièce de bronze du Rafiot, son pied en (`x`, `y`, `z`), à l'échelle `s` ; ses faces debout (l'anneau, le gong, les
+ * boules du régulateur) regardent ±x. Elles se lisent de loin par leur forme, aucune en croix.
+ */
+export function rafiotPiece(b: FacetBuilder, id: RafiotPiece, x: number, y: number, z: number, C: BronzeColors, s = 1): void {
+  const P = (dx: number, dy: number, dz: number) => ({ x: x + dx * s, y: y + dy * s, z: z + dz * s });
+  const flank = { yaw: Math.PI / 2, pitch: Math.PI / 2 };
+  switch (id) {
+    case 'anneau':
+      // Debout sur son socle.
+      b.box(P(0, 0, 0), [0.16 * s, 0.08 * s, 0.34 * s], C.bronze, C.bronzeTop);
+      b.annulus({ ...P(-0.05, 0.38, 0), ...flank }, 0.2 * s, 0.34 * s, 0.1 * s, 6, C.bronze, C.bronzeTop);
+      return;
+    case 'cloche':
+      // Large en bas, étroite en haut, et son bouton.
+      b.prism(P(0, 0, 0), 0.3 * s, 0.13 * s, 0.42 * s, 6, C.bronze, C.bronzeTop);
+      b.prism(P(0, 0.42, 0), 0.07 * s, 0.05 * s, 0.1 * s, 4, C.bronze, C.bronzeTop);
+      return;
+    case 'poids':
+      // Un cylindre trapu, son anse en chevron.
+      b.prism(P(0, 0, 0), 0.26 * s, 0.24 * s, 0.3 * s, 6, C.bronze, C.bronzeTop);
+      b.beam(P(0, 0.3, -0.13), P(0, 0.5, 0), 0.06 * s, C.bronze);
+      b.beam(P(0, 0.5, 0), P(0, 0.3, 0.13), 0.06 * s, C.bronze);
+      return;
+    case 'regulateur':
+      // L'axe debout, deux bras, deux boules de part et d'autre.
+      b.beam(P(0, 0, 0), P(0, 0.85, 0), 0.07 * s, C.bronze);
+      for (const k of [-1, 1]) {
+        b.beam(P(0, 0.8, 0), P(0, 0.5, k * 0.24), 0.05 * s, C.bronze);
+        ball(b, P(0, 0.46, k * 0.28), 0.12 * s, C.bronzeTop);
+      }
+      return;
+    case 'gong':
+      // Le disque debout, son cadre de deux montants et d'une traverse.
+      b.drum({ ...P(0.04, 0.5, 0), ...flank }, 0.3 * s, 0.06 * s, 6, C.bronze, C.bronzeTop);
+      for (const k of [-1, 1]) b.beam(P(0, 0, k * 0.4), P(0, 0.9, k * 0.4), 0.06 * s, C.bronze);
+      b.beam(P(0, 0.9, -0.45), P(0, 0.9, 0.45), 0.06 * s, C.bronze);
+      return;
+    case 'vasque':
+      // Son pied, sa coupe évasée, le dessus clair.
+      b.prism(P(0, 0, 0), 0.1 * s, 0.08 * s, 0.2 * s, 4, C.bronze);
+      b.prism(P(0, 0.2, 0), 0.14 * s, 0.36 * s, 0.24 * s, 6, C.bronze, C.bronzeTop);
+      return;
+  }
+}
+
+/** La place de chaque pièce sur le pont arrière : deux rangées de trois. */
+const RAFIOT_PIECE_AT: Readonly<Record<RafiotPiece, readonly [number, number]>> = {
+  anneau: [-0.9, 2.55],
+  cloche: [0, 2.55],
+  poids: [0.9, 2.55],
+  regulateur: [-0.9, 3.45],
+  gong: [0, 3.45],
+  vasque: [0.9, 3.45],
+};
+
+/**
+ * Les six pièces de bronze du Rafiot, boulonnées sur le pont arrière, en décor, sans texte ; leurs faces debout
+ * regardent les flancs (on voit le Rafiot de flanc). Elles ne changent pas avec les lieux.
  */
 function bronzes(b: FacetBuilder): void {
-  const C = RAFIOT_COLORS;
-  const y = RAFIOT_DECK;
-  const flank = { yaw: Math.PI / 2, pitch: Math.PI / 2 };
-  // L'anneau d'amarrage, debout sur son socle.
-  b.box({ x: -0.9, y, z: 2.55 }, [0.16, 0.08, 0.34], C.bronze, C.bronzeTop);
-  b.annulus({ x: -0.95, y: y + 0.38, z: 2.55, ...flank }, 0.2, 0.34, 0.1, 6, C.bronze, C.bronzeTop);
-  // La cloche : large en bas, étroite en haut, et son bouton.
-  b.prism({ x: 0, y, z: 2.55 }, 0.3, 0.13, 0.42, 6, C.bronze, C.bronzeTop);
-  b.prism({ x: 0, y: y + 0.42, z: 2.55 }, 0.07, 0.05, 0.1, 4, C.bronze, C.bronzeTop);
-  // Le poids étalon : un cylindre trapu, son anse en chevron.
-  b.prism({ x: 0.9, y, z: 2.55 }, 0.26, 0.24, 0.3, 6, C.bronze, C.bronzeTop);
-  b.beam({ x: 0.9, y: y + 0.3, z: 2.42 }, { x: 0.9, y: y + 0.5, z: 2.55 }, 0.06, C.bronze);
-  b.beam({ x: 0.9, y: y + 0.5, z: 2.55 }, { x: 0.9, y: y + 0.3, z: 2.68 }, 0.06, C.bronze);
-  // Le régulateur à boules : l'axe debout, deux bras, deux boules de part et d'autre.
-  b.beam({ x: -0.9, y, z: 3.45 }, { x: -0.9, y: y + 0.85, z: 3.45 }, 0.07, C.bronze);
-  for (const s of [-1, 1]) {
-    b.beam({ x: -0.9, y: y + 0.8, z: 3.45 }, { x: -0.9, y: y + 0.5, z: 3.45 + s * 0.24 }, 0.05, C.bronze);
-    ball(b, { x: -0.9, y: y + 0.46, z: 3.45 + s * 0.28 }, 0.12, C.bronzeTop);
-  }
-  // Le gong : le disque debout, son cadre de deux montants et d'une traverse.
-  b.drum({ x: 0.04, y: y + 0.5, z: 3.45, ...flank }, 0.3, 0.06, 6, C.bronze, C.bronzeTop);
-  for (const s of [-1, 1]) b.beam({ x: 0, y, z: 3.45 + s * 0.4 }, { x: 0, y: y + 0.9, z: 3.45 + s * 0.4 }, 0.06, C.bronze);
-  b.beam({ x: 0, y: y + 0.9, z: 3.0 }, { x: 0, y: y + 0.9, z: 3.9 }, 0.06, C.bronze);
-  // La vasque : son pied, sa coupe évasée, le dessus clair.
-  b.prism({ x: 0.9, y, z: 3.45 }, 0.1, 0.08, 0.2, 4, C.bronze);
-  b.prism({ x: 0.9, y: y + 0.2, z: 3.45 }, 0.14, 0.36, 0.24, 6, C.bronze, C.bronzeTop);
+  for (const id of RAFIOT_PIECES) rafiotPiece(b, id, RAFIOT_PIECE_AT[id][0], RAFIOT_DECK, RAFIOT_PIECE_AT[id][1], RAFIOT_COLORS);
 }
 
 /**

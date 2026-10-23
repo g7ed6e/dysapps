@@ -123,9 +123,11 @@ export interface PlaceArt {
    * d'un Détour, 1,6 au plus, sans monter) et lève le regard (`lookUp`, ./camera.ts) jusqu'au haut du lieu tel qu'il est
    * bâti, au-dessus de `look` (depuis le centre du lieu : le bord du haut le plus près d'elle). Absent : la caméra qui suit.
    * `top` : une hauteur fixe à cadrer, depuis le pied du lieu, au lieu de son haut bâti : un repère au-delà de lui (à
-   * l'Oracle, lot 13b, le haut de la tour du Donjon, au-dessus de sa paroi basse).
+   * l'Oracle, lot 13b, le haut de la tour du Donjon, au-dessus de sa paroi basse). `lowBack` : le recul sur un écran bas
+   * (moins de `LOW_SCREEN` pixels de haut, ./camera.ts : le téléphone couché), où le regard levé ne tient pas le haut du lieu et Kéo
+   * ensemble avec `back` (le Fanal du 3e restauré, relecture du directeur artistique avant la PR : la lanterne coupée).
    */
-  arrivalView?: { look: Vec2; back: number; top?: number };
+  arrivalView?: { look: Vec2; back: number; top?: number; lowBack?: number };
   /**
    * La vue d'arrivée d'un « Y aller » (comme la vue d'un Détour, `DetourView` : `height` ajouté à la hauteur de la caméra
    * qui suit, `back` le facteur de son recul ; Kéo reste à sa place à l'écran, le regard moins plongeant quand elle

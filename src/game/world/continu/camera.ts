@@ -269,6 +269,9 @@ export function liftStep(current: number, target: number, dt: number, reduceMoti
   return current + (target - current) * (1 - Math.exp(-rate * Math.max(0, dt)));
 }
 
+/** Un écran plus bas que tant de pixels (le téléphone couché) : le regard d'arrivée d'un lieu haut y recule plus (`PlaceArt.arrivalView.lowBack`). */
+export const LOW_SCREEN = 500;
+
 /**
  * Le regard levé (lot 2, choix du directeur artistique) : Kéo arrêté à moins de `within` unités du Phare, la caméra
  * lève le regard pour faire entrer la lanterne avec un peu d'air au-dessus (`air`, en part de la hauteur de l'écran),
