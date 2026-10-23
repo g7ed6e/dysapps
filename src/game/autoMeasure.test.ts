@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { NIVEAUX_MESURES, ileDuNiveau, partieDeLaPose, partieDeMesure, resumeParNiveau, resumerLesImages, tableauDesMesures, tourDuMondeOuvert } from './autoMeasure';
+import { NIVEAUX_MESURES, ileDuNiveau, partieDeLaPose, partieDeMesure, resumeParNiveau, resumerLesImages, tableauDesMesures } from './autoMeasure';
 import { getBiome } from './biomes';
-import { OPEN_WORLD_LEVELS, hasScenette, placeById, planFor } from './world/continu/levelPlan';
 import { adresseDeLaMesure, adresseSansMesure, mesuresAutoDepuis, mesuresDepuis } from './rendering';
 
 describe('la mesure automatique', () => {
@@ -53,18 +52,6 @@ describe('la mesure automatique', () => {
   it('fait le tour des quatre niveaux, chacun depuis une île à lui', () => {
     expect(NIVEAUX_MESURES).toEqual(['6e', '5e', '4e', '3e']);
     for (const niveau of NIVEAUX_MESURES) expect(getBiome(ileDuNiveau(niveau) ?? '')?.classe).toBe(niveau);
-  });
-
-  it('garde au 6e le tour de la première mesure, et donne à chaque monde ouvert une marche et une scénette', () => {
-    expect(tourDuMondeOuvert('6e')).toEqual({ depart: 'phare', arrivee: 'beacons', scene: 'quais' });
-    for (const niveau of OPEN_WORLD_LEVELS) {
-      const tour = tourDuMondeOuvert(niveau);
-      const lieux = planFor(niveau).places.map((p) => p.id);
-      expect(lieux).toContain(tour.depart);
-      expect(lieux).toContain(tour.arrivee);
-      expect(tour.arrivee).not.toBe(tour.depart);
-      expect(tour.scene && hasScenette(tour.scene) && placeById(tour.scene).scenes.length > 0).toBe(true);
-    }
   });
 
   it('résume chaque niveau par son pire : le tableau commence par une ligne par niveau', () => {

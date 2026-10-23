@@ -1,13 +1,12 @@
 // La mesure automatique (`?mesures=auto`, ./AutoMeasure.tsx) : ce qui se calcule sans la page. Les images d'une fenêtre
 // de mesure résumées (images par seconde, la plus longue), la partie de la pose (une seule mission de l'île jouée, comme
-// la famille `pose` de scripts/rendu/mesures.mjs), le tour de chaque niveau et le tableau à copier, un résumé par niveau
+// la famille `pose` de scripts/rendu/mesures.mjs), les niveaux du tour et le tableau à copier, un résumé par niveau
 // en tête.
 import { BIOMES, type BiomeId } from './biomes';
 import { EMPTY_STATE, type GameState, type World } from './engine/state';
 import { sanitizeState } from './engine/sanitize';
 import type { toutConstruitAvecLesCommandes } from './world/budget';
 import { ARCHIPELAGO_IDS, type ArchipelagoId } from './world/archipelagos';
-import { hasScenette, planFor, type OpenWorldLevel, type PlaceId } from './world/continu/levelPlan';
 
 /** La progression d'une partie de mesure, telle que world/budget.ts la prépare (les étoiles en nombre). */
 type Progression = ReturnType<typeof toutConstruitAvecLesCommandes>['progress'];
@@ -53,31 +52,6 @@ export const NIVEAUX_MESURES: readonly ArchipelagoId[] = ARCHIPELAGO_IDS;
 /** L'île d'arrivée d'un niveau : sa première île (au 6e, la Forêt des sons, le Phare du monde ouvert). */
 export function ileDuNiveau(niveau: ArchipelagoId): BiomeId | undefined {
   return BIOMES.find((b) => b.classe === niveau)?.id;
-}
-
-/** Le tour du monde ouvert d'un niveau : la marche d'un lieu à un autre, et le lieu de la scénette. */
-export interface TourDuMondeOuvert {
-  depart: PlaceId;
-  arrivee: PlaceId;
-  scene?: PlaceId;
-}
-
-/** Au 6e, le tour de la première mesure (17 octobre 2026), gardé pour comparer : du Phare aux Balises, les Quais. */
-const TOUR_6E: TourDuMondeOuvert = { depart: 'phare', arrivee: 'beacons', scene: 'quais' };
-
-/**
- * Le tour du monde ouvert d'un niveau : au 6e, celui de la première mesure ; ailleurs, la marche du premier lieu du plan
- * au plus loin de lui (l'île traversée, les lieux qui entrent et sortent du champ), et la scénette du premier lieu qui en
- * a une.
- */
-export function tourDuMondeOuvert(niveau: OpenWorldLevel): TourDuMondeOuvert {
-  if (niveau === '6e') return TOUR_6E;
-  const { places } = planFor(niveau);
-  const depart = places[0];
-  const loin = (p: (typeof places)[number]) => Math.hypot(p.center.x - depart.center.x, p.center.z - depart.center.z);
-  const arrivee = places.reduce((a, p) => (loin(p) > loin(a) ? p : a), depart);
-  const scene = places.find((p) => p.scenes.length > 0 && hasScenette(p.id));
-  return { depart: depart.id, arrivee: arrivee.id, scene: scene?.id };
 }
 
 /** Le résumé d'un niveau : ses images par seconde les plus basses, sa plus longue image, ce qu'il dessine au plus. */

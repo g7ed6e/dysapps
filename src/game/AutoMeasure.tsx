@@ -12,9 +12,8 @@ import { useBlocland } from './BloclandContext';
 import type { BiomeId } from './biomes';
 import type { World } from './engine/state';
 import { toutConstruitAvecLesCommandes } from './world/budget';
-import { placeById, type OpenWorldLevel, type PlaceId } from './world/continu/levelPlan';
 import { adresseSansMesure, mondeOuvertDArchipeo } from './rendering';
-import { type LigneDeMesure, NIVEAUX_MESURES, ileDuNiveau, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures, tourDuMondeOuvert } from './autoMeasure';
+import { type LigneDeMesure, NIVEAUX_MESURES, ileDuNiveau, partieDeLaPose, partieDeMesure, resumerLesImages, tableauDesMesures } from './autoMeasure';
 import { MODIFIER_LE_PLAN } from './ArrangeBar';
 import { Icon } from '../components/Icon';
 
@@ -26,9 +25,6 @@ type Progression = ReturnType<typeof toutConstruitAvecLesCommandes>['progress'];
 
 /** Une étape mesurée : son nom, et la durée de sa fenêtre en millisecondes. */
 type Mesure = (nom: string, fenetre?: number) => Promise<void>;
-
-/** Le nom d'un lieu, sans son article (« Phare », « Balises ») : pour le tableau. */
-const nomDuLieu = (id: PlaceId) => placeById(id).name.replace(/^(Le |La |Les |L’|L')/, '');
 
 const attendre = (ms: number) => new Promise<void>((r) => window.setTimeout(r, ms));
 
@@ -186,14 +182,16 @@ export default function AutoMeasure() {
     })();
 
     /** Le tour du monde ouvert d'un niveau : l'arrivée, la marche, la Carte, une scénette (et sa question). */
-    async function tourDuMondeOuvertDe(niveau: OpenWorldLevel, ligne: Mesure) {
-      const tour = tourDuMondeOuvert(niveau);
+    async function tourDuMondeOuvertDe(niveau: string, ligne: Mesure) {
+      // Le tour du niveau, que tient sa vue (three/archipeo/measureTour.ts) : rien ici ne lit world/continu/.
+      const tour = window.__dysappsMondeOuvert?.tour;
+      if (!tour) return notes.push(`${niveau} : pas de tour du monde ouvert.`);
       await ligne('à l’arrivée');
       // La marche d'un lieu au plus loin : l'île traversée, les lieux qui entrent et sortent du champ.
-      window.__dysappsMondeOuvert?.goTo(tour.depart, true);
+      window.__dysappsMondeOuvert?.goTo(tour.depart.id, true);
       await attendre(2500);
-      window.__dysappsMondeOuvert?.goTo(tour.arrivee);
-      await ligne(`marche, ${nomDuLieu(tour.depart)} → ${nomDuLieu(tour.arrivee)}`, 6000);
+      window.__dysappsMondeOuvert?.goTo(tour.arrivee.id);
+      await ligne(`marche, ${tour.depart.nom} → ${tour.arrivee.nom}`, 6000);
       window.__dysappsMondeOuvert?.skip();
       await attendre(2500);
       // Le panneau du lieu, ouvert à l'arrivée, fermé (Échap) : la Carte s'ouvre sur le monde seul.
@@ -207,13 +205,13 @@ export default function AutoMeasure() {
       }
       // Une scénette : la liste du lieu ouverte à l'arrivée, sa première mission jouée au lieu.
       if (!tour.scene) return notes.push(`${niveau} : aucun lieu à scénette.`);
-      window.__dysappsMondeOuvert?.goTo(tour.scene, true);
+      window.__dysappsMondeOuvert?.goTo(tour.scene.id, true);
       await attendre(2500);
       const mission = [...document.querySelectorAll<HTMLButtonElement>('#panneau-lieu button.app-card')].find((b) => b.querySelector('.mission-sign'));
-      if (!mission) return notes.push(`${niveau} : aucune mission jouée au lieu (${nomDuLieu(tour.scene)}).`);
+      if (!mission) return notes.push(`${niveau} : aucune mission jouée au lieu (${tour.scene.nom}).`);
       mission.click();
       await attendre(3000);
-      await ligne(`scénette, ${nomDuLieu(tour.scene)}`);
+      await ligne(`scénette, ${tour.scene.nom}`);
       // Une mission avec un récit d'abord (« Commencer ») : la question posée se mesure aussi.
       if (await toucherPuisAttendre('.world-question-start', 3000)) await ligne('scénette, la question posée');
     }
