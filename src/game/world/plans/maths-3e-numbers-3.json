@@ -1,0 +1,9 @@
+{
+  "id": "maths-3e-numbers-3",
+  "biome": "maths-3e-numbers",
+  "name": "Les abords de la réserve",
+  "reward": {
+    "xp": 60
+  },
+  "done": "Tout est rangé autour de la réserve. Ici, chacun avait sa part des provisions."
+}

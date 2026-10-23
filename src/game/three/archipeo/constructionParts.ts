@@ -170,13 +170,13 @@ export function stagePoseWords(island: IleId, place: Pick<OpenPlace, 'at'>, own?
 
 /**
  * Les mots de la pose au bilan d'une mission jouée dans un lieu du monde ouvert : au 5e et dans les lieux construits du
- * 4e (la Forge, lot 2 : relectures dys, UX UI et contenu), l'étape du lieu, jamais le nom d'un plan ni sa réplique, puis
+ * 4e (la Forge, lot 2 : relectures dys, UX UI et contenu) et du 3e (le Belvédère, GD-25), l'étape du lieu, jamais le nom d'un plan ni sa réplique, puis
  * la phrase propre de la partie quand le lieu en a (`Scenette.words`) ; au 6e, ceux de la grille (`undefined`).
  */
 export function placePoseWords(place: OpenPlace): PoseWords | undefined {
   const level = levelOfPlace(place.id);
   const island = place.island as IleId;
   if (level === '5e') return stagePoseWords(island, place);
-  if (level === '4e' && hasScenette(place.id)) return stagePoseWords(island, place, scenetteOf(place.id).words?.pose);
+  if ((level === '4e' || level === '3e') && hasScenette(place.id)) return stagePoseWords(island, place, scenetteOf(place.id).words?.pose);
   return undefined;
 }

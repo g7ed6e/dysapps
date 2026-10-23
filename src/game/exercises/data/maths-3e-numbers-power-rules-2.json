@@ -1,0 +1,222 @@
+{
+  "id": "maths-3e-numbers-power-rules-2",
+  "biome": "maths-3e-numbers",
+  "type": "power-rules",
+  "level": 2,
+  "instruction": "Écris avec une seule puissance. La règle est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-power-rules-2-0",
+      "prompt": "10⁵ × 10³ = …",
+      "spoken": "10 puissance 5 fois 10 puissance 3 égale (mot manquant).",
+      "choices": [
+        "10²",
+        "10⁸",
+        "10¹⁵"
+      ],
+      "answer": "10⁸",
+      "hint": "Compte les facteurs 10 : 5, puis 3 de plus.",
+      "explanation": "5 facteurs 10, puis 3 autres : 5 + 3 = 8 facteurs, donc 10⁸. 10¹⁵ multiplie les exposants. 10² les soustrait.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-2-1",
+      "prompt": "2⁴ × 2³ = …",
+      "spoken": "2 puissance 4 fois 2 puissance 3 égale (mot manquant).",
+      "choices": [
+        "2⁷",
+        "2¹²",
+        "4⁷"
+      ],
+      "answer": "2⁷",
+      "hint": "Le nombre 2 reste le même : seuls les facteurs s’ajoutent.",
+      "explanation": "4 facteurs 2, puis 3 autres : 2⁷. 4⁷ multiplie aussi les 2 entre eux : le nombre ne change pas. 2¹² multiplie les exposants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-2-2",
+      "prompt": "10⁶ ÷ 10² = …",
+      "spoken": "10 puissance 6 divisé par 10 puissance 2 égale (mot manquant).",
+      "choices": [
+        "10³",
+        "10⁴",
+        "10⁸"
+      ],
+      "answer": "10⁴",
+      "hint": "Les 2 facteurs du bas en enlèvent 2 en haut.",
+      "explanation": "6 facteurs 10 en haut, 2 en bas : il en reste 6 − 2 = 4, donc 10⁴. 10³ divise les exposants. 10⁸ les ajoute.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-2-3",
+      "prompt": "10³ × 10⁻⁵ = …",
+      "spoken": "10 puissance 3 fois 10 puissance moins 5 égale (mot manquant).",
+      "choices": [
+        "10⁻¹⁵",
+        "10⁻²",
+        "10⁸"
+      ],
+      "answer": "10⁻²",
+      "hint": "Ajoute les exposants : 3 + (−5).",
+      "explanation": "3 + (−5) = −2, donc 10⁻². 10⁸ oublie le signe moins de −5. 10⁻¹⁵ multiplie les exposants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-2-4",
+      "prompt": "5⁶ ÷ 5⁶ = …",
+      "spoken": "5 puissance 6 divisé par 5 puissance 6 égale (mot manquant).",
+      "choices": [
+        "0",
+        "1",
+        "5"
+      ],
+      "answer": "1",
+      "hint": "Un nombre divisé par lui-même donne toujours le même résultat.",
+      "explanation": "Un nombre divisé par lui-même donne 1. Avec la règle : 6 − 6 = 0, et 5⁰ = 1. 0 confond l’exposant 0 avec le nombre 0.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-2-5",
+      "prompt": "10⁻² × 10⁻³ = …",
+      "spoken": "10 puissance moins 2 fois 10 puissance moins 3 égale (mot manquant).",
+      "choices": [
+        "10⁻⁶",
+        "10⁻⁵",
+        "10¹"
+      ],
+      "answer": "10⁻⁵",
+      "hint": "Ajoute les exposants : (−2) + (−3).",
+      "explanation": "(−2) + (−3) = −5, donc 10⁻⁵ = 0,01 × 0,001 = 0,00001. 10⁻⁶ multiplie les exposants. 10¹ soustrait −3 au lieu de l’ajouter.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-2-6",
+      "prompt": "3² × 3³ = …",
+      "spoken": "3 puissance 2 fois 3 puissance 3 égale (mot manquant).",
+      "choices": [
+        "3⁵",
+        "3⁶",
+        "9⁵"
+      ],
+      "answer": "3⁵",
+      "hint": "Compte les facteurs 3 : 2, puis 3 de plus.",
+      "explanation": "3 × 3, puis 3 × 3 × 3 : 5 facteurs 3, donc 3⁵. 3⁶ multiplie les exposants. 9⁵ multiplie aussi les 3 entre eux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-2-7",
+      "prompt": "10⁴ ÷ 10⁻¹ = …",
+      "spoken": "10 puissance 4 divisé par 10 puissance moins 1 égale (mot manquant).",
+      "choices": [
+        "10⁻⁴",
+        "10³",
+        "10⁵"
+      ],
+      "answer": "10⁵",
+      "hint": "Soustrais les exposants : 4 − (−1).",
+      "explanation": "4 − (−1) = 4 + 1 = 5, donc 10⁵ : diviser par 0,1, c’est multiplier par 10. 10³ oublie le signe moins de −1. 10⁻⁴ multiplie les exposants.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Puissances d’un même nombre",
+          "lines": [
+            "a³ = a × a × a : trois facteurs a.",
+            "Multiplier : on compte tous les facteurs, donc on ajoute les exposants.",
+            "Diviser : on retire en haut autant de facteurs qu’il y en a en bas, donc on soustrait les exposants.",
+            "Le nombre a ne change pas, et les exposants ne se multiplient jamais."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -1,0 +1,214 @@
+{
+  "id": "maths-3e-numbers-prime-factors-2",
+  "biome": "maths-3e-numbers",
+  "type": "prime-factors",
+  "level": 2,
+  "instruction": "Décompose, ou simplifie jusqu’au bout. La règle est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-prime-factors-2-0",
+      "prompt": "La décomposition de 12 en facteurs premiers est …",
+      "spoken": "La décomposition de 12 en facteurs premiers est (mot manquant).",
+      "choices": [
+        "2 × 6",
+        "2² × 3",
+        "3 × 4"
+      ],
+      "answer": "2² × 3",
+      "hint": "6 et 4 sont-ils premiers ?",
+      "explanation": "12 = 2 × 2 × 3 = 2² × 3 : tous les facteurs sont premiers. Dans 2 × 6 et 3 × 4, 6 et 4 ne sont pas premiers : on peut encore les décomposer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-prime-factors-2-1",
+      "prompt": "2³ × 5 = …",
+      "spoken": "2 puissance 3 fois 5 égale (mot manquant).",
+      "choices": [
+        "30",
+        "40",
+        "1 000"
+      ],
+      "answer": "40",
+      "hint": "2³ = 2 × 2 × 2.",
+      "explanation": "2³ = 8, et 8 × 5 = 40. 30, c’est 2 × 3 × 5 : l’exposant n’est pas un facteur. 1 000, c’est 10³.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-prime-factors-2-2",
+      "prompt": "La décomposition de 45 en facteurs premiers est …",
+      "spoken": "La décomposition de 45 en facteurs premiers est (mot manquant).",
+      "choices": [
+        "3² × 5",
+        "5 × 9",
+        "3 × 15"
+      ],
+      "answer": "3² × 5",
+      "hint": "9 et 15 sont-ils premiers ?",
+      "explanation": "45 = 3 × 3 × 5 = 3² × 5. 9 = 3² et 15 = 3 × 5 ne sont pas premiers : on continue à décomposer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-prime-factors-2-3",
+      "prompt": "48/36, rendue irréductible, devient …",
+      "spoken": "48 sur 36, rendue irréductible, devient (mot manquant).",
+      "choices": [
+        "24/18",
+        "4/3",
+        "12/9"
+      ],
+      "answer": "4/3",
+      "hint": "Après chaque division, cherche encore un diviseur commun.",
+      "explanation": "48 = 2⁴ × 3 et 36 = 2² × 3² : on divise en haut et en bas par 12, et 48/36 = 4/3. 24/18 et 12/9 sont égales, mais pas irréductibles : 6 divise encore 24 et 18, 3 divise encore 12 et 9.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-prime-factors-2-4",
+      "prompt": "Quelle fraction est irréductible ?",
+      "spoken": "Quelle fraction est irréductible ?",
+      "choices": [
+        "14/45",
+        "15/35",
+        "22/33"
+      ],
+      "answer": "14/45",
+      "hint": "Décompose le haut et le bas de chaque fraction.",
+      "explanation": "14 = 2 × 7 et 45 = 3² × 5 : aucun facteur commun, 14/45 est irréductible. 15 et 35 ont 5 en commun. 22 et 33 ont 11 en commun.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-prime-factors-2-5",
+      "prompt": "60/84, rendue irréductible, devient …",
+      "spoken": "60 sur 84, rendue irréductible, devient (mot manquant).",
+      "choices": [
+        "30/42",
+        "10/14",
+        "5/7"
+      ],
+      "answer": "5/7",
+      "hint": "60 = 2² × 3 × 5 et 84 = 2² × 3 × 7.",
+      "explanation": "Les facteurs communs sont 2² × 3 = 12 : 60/84 = 5/7. 30/42 et 10/14 sont égales, mais pas irréductibles : 2 divise encore leurs deux nombres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-prime-factors-2-6",
+      "prompt": "Pour rendre 18/24 irréductible en une fois, on divise le haut et le bas par …",
+      "spoken": "Pour rendre 18 sur 24 irréductible en une fois, on divise le haut et le bas par (mot manquant).",
+      "choices": [
+        "2",
+        "3",
+        "6"
+      ],
+      "answer": "6",
+      "hint": "18 = 2 × 3² et 24 = 2³ × 3 : quels facteurs ont-ils en commun ?",
+      "explanation": "18 et 24 ont en commun 2 × 3 = 6 : 18/24 = 3/4. Diviser par 2 donne 9/12, par 3 donne 6/8 : ces fractions ne sont pas encore irréductibles.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-prime-factors-2-7",
+      "prompt": "La décomposition de 100 en facteurs premiers est …",
+      "spoken": "La décomposition de 100 en facteurs premiers est (mot manquant).",
+      "choices": [
+        "2² × 5²",
+        "10²",
+        "2 × 5 × 10"
+      ],
+      "answer": "2² × 5²",
+      "hint": "10 est-il premier ?",
+      "explanation": "100 = 2 × 2 × 5 × 5 = 2² × 5². 10 n’est pas premier : 10² et 2 × 5 × 10 peuvent encore se décomposer.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Facteurs premiers et fractions",
+          "lines": [
+            "Décomposer : écrire le nombre comme un produit de nombres premiers. 60 = 2 × 2 × 3 × 5 = 2² × 3 × 5.",
+            "Divise par 2 tant que tu peux, puis par 3, puis par 5, puis par 7.",
+            "Une fraction est irréductible quand le haut et le bas n’ont plus d’autre diviseur commun que 1."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

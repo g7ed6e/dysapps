@@ -266,14 +266,14 @@ it('questProgress garde la progression d’une mission quand la partie suivante 
 });
 
 it('français du collège : phrase à trou (ou question), 2 à 3 choix, règle affichée et explication', () => {
-  const defs = EXERCISES.filter((e) => ['french-5e-homophones', 'french-5e-conjugation', 'french-4e-agreement', 'french-4e-vocabulary', 'french-4e-sentence', 'french-3e-close-reading'].includes(e.biome));
+  const defs = EXERCISES.filter((e) => ['french-5e-homophones', 'french-5e-conjugation', 'french-4e-agreement', 'french-4e-vocabulary', 'french-4e-sentence', 'french-3e-close-reading', 'french-3e-language'].includes(e.biome));
   expect(
     defs
       .filter((e) => e.type === 'pairs')
       .map((e) => e.id)
       .sort(),
   ).toEqual(['ces', 'cest', 'la', 'leur', 'peu'].map((s) => `french-5e-homophones-pairs-${s}`).sort());
-  expect(defs.length).toBe(73);
+  expect(defs.length).toBe(87);
   for (const def of defs)
     for (const it of def.items) {
       expect(it.choices).toContain(it.answer);

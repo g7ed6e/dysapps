@@ -111,6 +111,11 @@ export interface RibbonNet {
   width?(edge: number, along: number): number | null;
   /** La plus grande de ces demi-largeurs (les liaisons proches d'un point, `edgesNear`). */
   widest?: number;
+  /**
+   * Le dessus du sentier et son liseré, quand ce ne sont pas le sable et la terre du 6e (au 3e, la pierre claire froide
+   * bordée d'ardoise : lot du Versant, directeur artistique, point 22) ; mêmes facettes, aucun triangle de plus.
+   */
+  look?: { path: number; edge: number };
 }
 
 /** Le réseau du 6e, pour son dessin. */
@@ -172,12 +177,14 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
     }
     // Le sable du sentier, puis son liseré de chaque côté, un peu plus bas, et les flancs du liseré.
     const e = PATH_EDGE.drop;
-    b.quad(left(p, yp, i), right(p, yp, i), right(q, yq, i), left(q, yq, i), COLORS_6E.path);
+    const top = net.look?.path ?? COLORS_6E.path,
+      rim = net.look?.edge ?? COLORS_6E.pathEdge;
+    b.quad(left(p, yp, i), right(p, yp, i), right(q, yq, i), left(q, yq, i), top);
     const lpe = left(p, yp - e, w), rpe = right(p, yp - e, w), lqe = left(q, yq - e, w), rqe = right(q, yq - e, w);
-    b.quad(lpe, left(p, yp - e, i), left(q, yq - e, i), lqe, COLORS_6E.pathEdge);
-    b.quad(right(p, yp - e, i), rpe, rqe, right(q, yq - e, i), COLORS_6E.pathEdge);
-    b.quad(down(rpe), down(rqe), rqe, rpe, COLORS_6E.pathEdge);
-    b.quad(down(lqe), down(lpe), lpe, lqe, COLORS_6E.pathEdge);
+    b.quad(lpe, left(p, yp - e, i), left(q, yq - e, i), lqe, rim);
+    b.quad(right(p, yp - e, i), rpe, rqe, right(q, yq - e, i), rim);
+    b.quad(down(rpe), down(rqe), rqe, rpe, rim);
+    b.quad(down(lqe), down(lpe), lpe, lqe, rim);
   };
   for (let k = 0; k < n; k++) {
     const d0 = (len * k) / n;
@@ -239,11 +246,11 @@ function nodeOctagon(b: FacetBuilder, ground: (x: number, z: number) => number, 
   // Un sentier : l'octogone en brun du liseré, sous les rubans (il ferme le liseré au dehors d'un coude), et dessus un
   // disque de sable, du rayon du sable des rubans (le sable se rejoint au coude, sans trait brun en travers).
   const base = y - 0.005 - 2 * PATH_EDGE.drop;
-  b.prism({ x: node.at.x, y: base - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, COLORS_6E.pathEdge);
+  b.prism({ x: node.at.x, y: base - RIBBON_SIDE, z: node.at.z }, w, w, RIBBON_SIDE, 8, net.look?.edge ?? COLORS_6E.pathEdge);
   const r = (HALF_WIDTH.path - PATH_EDGE.width) / Math.cos(Math.PI / NODE_SAND_SIDES);
   const yy = y - 0.005;
   const at = (k: number) => [node.at.x + r * Math.cos((2 * Math.PI * k) / NODE_SAND_SIDES), yy, node.at.z + r * Math.sin((2 * Math.PI * k) / NODE_SAND_SIDES)] as const;
-  for (let k = 0; k < NODE_SAND_SIDES; k++) b.triangle([node.at.x, yy, node.at.z], at(k + 1), at(k), COLORS_6E.path);
+  for (let k = 0; k < NODE_SAND_SIDES; k++) b.triangle([node.at.x, yy, node.at.z], at(k + 1), at(k), net.look?.path ?? COLORS_6E.path);
 }
 
 /** Les côtés du disque de sable d'un nœud : assez pour qu'il couvre le sable des rubans qui y arrivent. */

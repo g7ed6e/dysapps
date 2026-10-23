@@ -1,0 +1,222 @@
+{
+  "id": "maths-3e-numbers-power-rules-3",
+  "biome": "maths-3e-numbers",
+  "type": "power-rules",
+  "level": 3,
+  "instruction": "Trouve la notation scientifique. La règle est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-power-rules-3-0",
+      "prompt": "La notation scientifique de 4 500 est …",
+      "spoken": "La notation scientifique de 4500 est (mot manquant).",
+      "choices": [
+        "4,5 × 10²",
+        "45 × 10²",
+        "4,5 × 10³"
+      ],
+      "answer": "4,5 × 10³",
+      "hint": "Place la virgule après le premier chiffre, puis compte les rangs.",
+      "explanation": "4 500 = 4,5 × 1 000 = 4,5 × 10³. 45 × 10² vaut bien 4 500, mais 45 a deux chiffres avant la virgule. 4,5 × 10² = 450.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-3-1",
+      "prompt": "La notation scientifique de 0,003 est …",
+      "spoken": "La notation scientifique de 0,003 est (mot manquant).",
+      "choices": [
+        "3 × 10⁻⁴",
+        "3 × 10⁻³",
+        "3 × 10³"
+      ],
+      "answer": "3 × 10⁻³",
+      "hint": "0,003 est plus petit que 1 : l’exposant est négatif.",
+      "explanation": "0,003 = 3 × 0,001 = 3 × 10⁻³. 3 × 10³ = 3 000 : le signe moins manque. 3 × 10⁻⁴ = 0,0003 : un rang de trop.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-3-2",
+      "prompt": "Lequel est écrit en notation scientifique ?",
+      "spoken": "Lequel est écrit en notation scientifique ?",
+      "choices": [
+        "0,8 × 10⁵",
+        "8 × 10⁴",
+        "80 × 10³"
+      ],
+      "answer": "8 × 10⁴",
+      "hint": "Regarde le nombre devant « fois 10 » : un seul chiffre avant la virgule, et pas 0.",
+      "explanation": "Les trois valent 80 000, mais seul 8 × 10⁴ a un seul chiffre, différent de 0, avant la virgule. 0,8 commence par 0. 80 a deux chiffres.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-3-3",
+      "prompt": "La notation scientifique de 0,00072 est …",
+      "spoken": "La notation scientifique de 0,00072 est (mot manquant).",
+      "choices": [
+        "7,2 × 10⁻⁵",
+        "72 × 10⁻⁵",
+        "7,2 × 10⁻⁴"
+      ],
+      "answer": "7,2 × 10⁻⁴",
+      "hint": "Déplace la virgule juste après le 7, et compte les rangs.",
+      "explanation": "La virgule avance de 4 rangs pour arriver après le 7 : 0,00072 = 7,2 × 10⁻⁴. 72 × 10⁻⁵ vaut le même nombre, mais 72 a deux chiffres. 7,2 × 10⁻⁵ a un rang de trop.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-3-4",
+      "prompt": "32 × 10⁻⁵ en notation scientifique, c’est …",
+      "spoken": "32 fois 10 puissance moins 5, en notation scientifique, c’est (mot manquant).",
+      "choices": [
+        "3,2 × 10⁻⁶",
+        "3,2 × 10⁻⁵",
+        "3,2 × 10⁻⁴"
+      ],
+      "answer": "3,2 × 10⁻⁴",
+      "hint": "32 = 3,2 × 10.",
+      "explanation": "32 = 3,2 × 10¹, donc 32 × 10⁻⁵ = 3,2 × 10¹ × 10⁻⁵ = 3,2 × 10⁻⁴. 3,2 × 10⁻⁵ oublie le facteur 10. 3,2 × 10⁻⁶ le compte dans le mauvais sens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-3-5",
+      "prompt": "2,5 × 10³ = …",
+      "spoken": "2,5 fois 10 puissance 3 égale (mot manquant).",
+      "choices": [
+        "250",
+        "2 500",
+        "25 000"
+      ],
+      "answer": "2 500",
+      "hint": "Multiplier par 10³, c’est multiplier par 1 000.",
+      "explanation": "2,5 × 1 000 = 2 500 : la virgule avance de 3 rangs. 25 000 ajoute trois zéros à 25. 250 n’avance que de 2 rangs.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-3-6",
+      "prompt": "La notation scientifique de 380 000 est …",
+      "spoken": "La notation scientifique de 380000 est (mot manquant).",
+      "choices": [
+        "3,8 × 10⁴",
+        "38 × 10⁴",
+        "3,8 × 10⁵"
+      ],
+      "answer": "3,8 × 10⁵",
+      "hint": "De 380 000 à 3,8, combien de rangs la virgule recule-t-elle ?",
+      "explanation": "380 000 = 3,8 × 100 000 = 3,8 × 10⁵. 38 × 10⁴ vaut le même nombre, mais 38 a deux chiffres. 3,8 × 10⁴ = 38 000.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-power-rules-3-7",
+      "prompt": "6 × 10⁻² = …",
+      "spoken": "6 fois 10 puissance moins 2 égale (mot manquant).",
+      "choices": [
+        "0,06",
+        "0,6",
+        "600"
+      ],
+      "answer": "0,06",
+      "hint": "10⁻² = 0,01.",
+      "explanation": "6 × 0,01 = 0,06. 0,6 = 6 × 10⁻¹. 600 = 6 × 10² : le signe moins manque.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La notation scientifique",
+          "lines": [
+            "Un nombre s’écrit a × 10ⁿ, avec un seul chiffre avant la virgule de a, et ce chiffre n’est pas 0.",
+            "Un grand nombre : n est positif. Un nombre plus petit que 1 : n est négatif.",
+            "Chaque rang dont la virgule bouge change n de 1.",
+            "Vérifie : a × 10ⁿ doit redonner le nombre de départ."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

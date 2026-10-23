@@ -1,0 +1,9 @@
+{
+  "id": "french-3e-language-1",
+  "biome": "french-3e-language",
+  "name": "L’atelier de l’accordeur",
+  "reward": {
+    "xp": 40
+  },
+  "done": "L’atelier a ses murs et ses fenêtres. Les instruments sont rangés."
+}

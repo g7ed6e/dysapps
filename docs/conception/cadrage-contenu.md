@@ -269,6 +269,15 @@ Le programme de maths de 2026 (`cycle4-maths-2026.pdf`) place en 4e « le théor
 
 Le titre d’une mission est un repère stable, le même dans les deux univers (`docs/univers/univers.md`, § « repères stables ») : il dit la notion avec des mots courants, jamais le décor d’un seul univers. Le Glacier des relatifs devient la Montée dans le monde ouvert d’Archipéo ; ses missions « Banquise » et « Icebergs des fractions » deviennent « Plus et moins » (`adding`) et « Fractions » (`fractions`), choix du mainteneur (piste « Neutre »). « Montées et descentes » a été écarté : la droite de l’aide est horizontale, on y avance sans monter. « Thermomètre », « Priorités » et « Mesures et angles » restent. Les identifiants, les étoiles et les sauvegardes ne changent pas ; le décor passe par le récit et les répliques de chaque univers.
 
+### Les missions neuves du 3e (décision du 22 octobre 2026)
+
+Le mainteneur a décidé seize lieux au 3e (21 octobre 2026), dont deux neufs, le Grenier (calcul) et la Lutherie (langue française), et leurs dix missions dans la pull request des seize lieux (22 octobre 2026). Ce sont N1 à N10 de la carte des missions du 3e, écrites sur les textes de 2020 et de 2026 ensemble.
+
+- **Deux lieux du monde ouvert seulement** ([GD-24](../gameplay/propositions/GD-24.md)) : `maths-3e-numbers.md` et `french-3e-language.md`, au format de l’Étalon et de la Jonction, sans Gardien, sans créature, sans commande ; leur bloc gagné est celui du Belvédère et celui de la Coupole (à confirmer par le directeur artistique).
+- **Les compétences** : celles de l’annexe de 2020, seule en vigueur en 3e jusqu’à la rentrée 2028. Le référentiel de 2026 du 3e (`c4.fr.3e.*`, `c4.ma.3e.*`) reste une pull request à part, à décider (carte, § 4). Trois contenus sont de 2026 seul et le disent sous leur mission : l’inéquation, les identités (a + b)² et (a − b)² (démontrées en 2020 par la double distributivité), la phrase emphatique. Aucune exclusion ne bouge.
+- **Écrire juste** prend le repli du référent dys : les radicaux verbaux seuls, en deux niveaux. Les homophones lexicaux de F26 (p. 15) n’ont pas encore de place : une série du portail des homophones, ou une mission de la bascule de 2028, au choix du mainteneur.
+- **Les niveaux que le 4e laissera partir en 2027** (notation scientifique, quotients de puissances, facteurs premiers, double distributivité, produit nul) ont au Grenier des identifiants neufs ; la table des niveaux déplacés se fera avec la bascule du 4e.
+
 ## La suite à couvrir
 
 Le rattachement des missions aux [programmes officiels](programmes.md) a mis en face du contenu ce qui manque. Une pull request par lot ; chacune retire de `src/curriculum/exclusions.ts` les exclusions « à couvrir » qu’elle couvre. Certains manques n’ont pas d’exclusion : la compétence est déjà citée par une mission, mais une partie n’est pas travaillée.

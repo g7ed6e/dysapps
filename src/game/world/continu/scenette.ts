@@ -325,6 +325,174 @@ const SCENETTES: Record<PlaceId, Scenette> = {
     placement: 'rangee',
     words: { pose: ['Les colonnes sont relevées.', 'La halle est couverte.', 'Le bassin est plein.'], end: 'Ici, on a relevé les colonnes d’un vieux temple.' },
   },
+  // Le Belvédère (le Versant du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
+  // (§ 3) ; une phrase par partie (le corps en trois, le haut, les abords), proposées au directeur du contenu, sans nom de
+  // plan de l'île (« terrasse », « kiosque », « toit » : jamais) ; « Les flèches sont posées. » à la place de « La
+  // terrasse est finie. » (relecture des lieux, point 13).
+  belvedere: {
+    role: placeArt('belvedere')!.role,
+    greeting: 'La topographe mesure le terrain et le dessine.',
+    placement: 'rangee',
+    words: { pose: ['Le dallage est remis.', 'Le pilier de l’ombre est debout.', 'Les solides sont sur leurs socles.', 'La visée est prête.', 'Les flèches sont posées.'], end: 'D’ici, on mesurait la montagne sans la gravir.' },
+  },
+  // Le Grenier (le Versant du 3e, lieu du monde ouvert seulement) : le métier est connu, sans phrase de métier (proposition,
+  // § 4) ; une phrase par partie, sans nom de plan (« réserve », « meunier », « toit », « abords ») ni « grenier » en nom
+  // commun (relecture des lieux, point 13) : « Le plancher est calé. » et « Les ardoises sont remises. » à la place de
+  // « Le grenier tient debout. » et « Le toit est refait. ».
+  grenier: {
+    role: placeArt('grenier')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: { pose: ['La porte est refermée.', 'Les sacs sont rangés.', 'Les mesures sont en ordre.', 'Les ardoises sont remises.', 'La meule est prête.'], end: 'Ici, chacun avait sa part des provisions.' },
+  },
+  // L'Abri (le Versant du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo (§ 5) ;
+  // une phrase par partie (le corps en deux, le haut, les abords), sans nom de plan de l'île (« dôme », « Stat », « toit »,
+  // « terrasse ») ni « abri » en nom commun (relecture des lieux, point 13).
+  abri: {
+    role: placeArt('abri')!.role,
+    greeting: 'La météorologue observe le temps qu’il fait.',
+    placement: 'rangee',
+    words: { pose: ['Les persiennes sont remises.', 'Les pluviomètres sont en rang.', 'Le mât est relevé.', 'Le muret est refait.'], end: 'Ici, matin et soir, on notait la pluie et le vent.' },
+  },
+  // Le Jardin (le Versant du 3e, GD-25) : la phrase de métier et les phrases de pose de la proposition du consultant
+  // d'Archipéo (§ 6) ; sa réplique sans « jardin », nom d'un plan de l'île (« Le jardin de l'infirmerie ») : « les plantes
+  // qu'on cultivait ici » à la place de « les plantes du jardin ».
+  jardin: {
+    role: placeArt('jardin')!.role,
+    greeting: 'Le greffeur fixe la branche d’un arbre sur un autre arbre.',
+    placement: 'rangee',
+    words: { pose: ['Les carrés sont refaits.', 'Les arbres sont attachés au mur.', 'La fontaine est pleine.'], end: 'Ici, on cultivait les plantes qui servaient à soigner.' },
+  },
+  // Le Kiosque (les Alpages du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
+  // (§ 3) ; une phrase par partie, sans nom de plan de l'île (« bibliothèque », « toit », « cour ») ni « kiosque » en nom
+  // commun (relecture des lieux, point 13) : « Les six poteaux sont debout. » à la place de « Le kiosque tient debout. ».
+  kiosque: {
+    role: placeArt('kiosque')!.role,
+    greeting: 'La journaliste raconte ce qui se passe dans le monde.',
+    placement: 'rangee',
+    words: { pose: ['Les six poteaux sont debout.', 'Le dôme d’ardoise est remis.', 'Les nouvelles sont arrivées.'], end: 'Ici, les nouvelles du monde montaient jusqu’au sommet.' },
+  },
+  // La Maquette (les Alpages du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
+  // (§ 4) ; une phrase par partie, sans nom de plan de l'île (« mairie », « toit », « place ») ni « maquette » en nom
+  // commun : « La halle est couverte. » à la place de « La halle a son toit. ».
+  maquette: {
+    role: placeArt('maquette')!.role,
+    greeting: 'L’urbaniste dessine les villes et leurs routes.',
+    placement: 'rangee',
+    words: { pose: ['La halle est couverte.', 'Le relief est remis.', 'Les routes sont tendues.'], end: 'Ici, on voyait tout le pays d’un seul regard.' },
+  },
+  // La Tribune (les Alpages du 3e, GD-25) : la phrase de métier et la réplique de la proposition du consultant d'Archipéo
+  // (§ 5) ; une phrase par partie, sans nom de plan de l'île (« tribune », « parvis », « toit ») ni « tribune » en nom
+  // commun : « Le tableau des votes est debout. » à la place de « La tribune est prête. ».
+  tribune: {
+    role: placeArt('tribune')!.role,
+    greeting: 'La conseillère parle au nom de tout le village.',
+    placement: 'rangee',
+    words: { pose: ['Les gradins sont remontés.', 'La cloche est pendue.', 'Le tableau des votes est debout.'], end: 'Ici, chacun pouvait parler, et tout le village écoutait.' },
+  },
+  // La Douane (les Alpages du 3e, GD-25, lieu d'option) : la phrase de métier et la réplique de la proposition du consultant
+  // d'Archipéo (§ 6) ; une phrase par partie (le corps en trois, le haut, les abords), sans dire la langue, sans nom de
+  // plan de l'île (« poste », « salle commune », « pigeonnier », « refuge ») ni « douane » en nom commun.
+  douane: {
+    role: placeArt('douane')!.role,
+    greeting: 'Le porteur porte les bagages des voyageurs.',
+    placement: 'rangee',
+    words: {
+      pose: ['La maison est rouverte.', 'Le comptoir est refait.', 'La barrière se lève.', 'Le toit est refait.', 'Les bagages sont rangés.'],
+      end: 'Ici passaient tous les voyageurs venus d’ailleurs.',
+    },
+  },
+  // L'Ermitage (les Alpages du 3e, GD-25, lieu d'option) : la phrase de métier et la réplique de la proposition du
+  // consultant d'Archipéo (§ 7) ; une phrase par partie, sans dire l'option, sans nom de plan de l'île (« bibliothèque »,
+  // « gradins », « bosquet », « allée », « lauriers ») ni « ermitage » en nom commun.
+  ermitage: {
+    role: placeArt('ermitage')!.role,
+    greeting: 'La traductrice fait passer les mots d’une langue à une autre.',
+    placement: 'rangee',
+    words: { pose: ['La colonnade est debout.', 'Le banc est réparé.', 'La fontaine est pleine.'], end: 'Ici, on venait réfléchir, à l’ombre des pins.' },
+  },
+  // Le Palais (les Prairies du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 3), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île (« tour »,
+  // « toit », « rempart », « château ») ni « palais » en nom commun.
+  palais: {
+    role: placeArt('palais')!.role,
+    greeting: 'Le majordome reçoit les visiteurs et veille sur la maison.',
+    placement: 'rangee',
+    words: { pose: ['L’escalier est refait.', 'La grande salle est couverte d’ardoise.', 'Le gong est relevé.', 'L’allée est prête.'], end: 'Ici, on recevait les messagers de tous les archipels.' },
+  },
+  // La Coupole (les Prairies du 3e, GD-25) : le libraire, sans phrase de métier (proposition du consultant d'Archipéo,
+  // § 4 : le métier est connu) ; les phrases de pose et la réplique de la proposition, à valider par le directeur du
+  // contenu ; « Le dôme bleu est refermé. » à la place de « La coupole est refermée. » (« coupole », nom d'un plan de l'île).
+  coupole: {
+    role: placeArt('coupole')!.role,
+    greeting: null,
+    placement: 'rangee',
+    words: {
+      pose: ['Les murs sont remontés.', 'La table est remise.', 'Les livres sont rangés.', 'Le dôme bleu est refermé.', 'Le seuil est dallé.'],
+      end: 'Ici, on lisait tous les livres des Passeurs.',
+    },
+  },
+  // La Lutherie (les Prairies du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 5), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« atelier », « toit », « galerie ») : « Les fenêtres sont vitrées. », « Les ardoises sont posées. » et « Les bancs
+  // sont remis. » à la place de « L'atelier a ses murs. », « L'atelier a son toit. » et « La galerie est prête. ».
+  lutherie: {
+    role: placeArt('lutherie')!.role,
+    greeting: 'L’accordeur règle chaque instrument pour qu’il sonne juste.',
+    placement: 'rangee',
+    words: {
+      pose: ['Les fenêtres sont vitrées.', 'L’établi est réparé.', 'Les instruments sont rangés.', 'Les ardoises sont posées.', 'Les bancs sont remis.'],
+      end: 'Ici, chaque instrument trouvait sa juste voix.',
+    },
+  },
+  // Les Ondes (les Prairies du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 6), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« régie », « écho », « toit », « terrasse », « studio »).
+  ondes: {
+    role: placeArt('ondes')!.role,
+    greeting: 'L’annonceur lit les nouvelles à la radio.',
+    placement: 'rangee',
+    words: {
+      pose: ['La station est refaite.', 'Les postes sont en rang.', 'Le pavillon d’écoute est remonté.', 'Le chemin est prêt.'],
+      end: 'Ici, on entendait les voix des autres archipels.',
+    },
+  },
+  // Le Fanal (le Cirque du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 7), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« lanterne », « toit », « jetée »), sans « phare ».
+  fanal: {
+    role: placeArt('fanal')!.role,
+    greeting: 'L’opticienne taille les verres qui portent la lumière du Fanal.',
+    placement: 'rangee',
+    words: {
+      pose: ['Le socle est refermé.', 'La tour est réparée.', 'Le muret de pierre est relevé.', 'Le Fanal est allumé.', 'Le seuil est dallé.'],
+      end: 'Ici, la lumière répondait aux trois autres archipels.',
+    },
+  },
+  // La Rampe (le Cirque du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 8), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« gymnase », « toit », « piste »).
+  rampe: {
+    role: placeArt('rampe')!.role,
+    greeting: 'La charretière mène les pierres jusqu’au Fanal.',
+    placement: 'rangee',
+    words: {
+      pose: ['La pente de pierre est refaite.', 'Le treuil est prêt.', 'Le traîneau est chargé.'],
+      end: 'Ici, on a hissé toutes les pierres du Fanal.',
+    },
+  },
+  // Le Standard (le Cirque du 3e, GD-25) : la phrase de métier et la réplique d'après la proposition du consultant
+  // d'Archipéo (§ 5), à valider par le directeur du contenu ; une phrase par partie, sans nom de plan de l'île
+  // (« poste », « toit », « piquets », « ruche », « Navette ») ni « standard » en mot commun.
+  standard: {
+    role: placeArt('standard')!.role,
+    greeting: 'La télégraphiste envoie les messages par les fils.',
+    placement: 'rangee',
+    words: {
+      pose: ['La salle est couverte.', 'Le tableau est redressé.', 'Les lampes sont allumées.', 'Les fils vont jusqu’au Fanal.'],
+      end: 'D’ici, les messages partaient vers les autres archipels.',
+    },
+  },
 };
 
 /** La scénette d'un lieu : depuis le lot 4 de la piste 1, chaque lieu a la sienne (la question vue de loin est retirée). */
@@ -774,6 +942,22 @@ const SITES: Record<PlaceId, ScenetteSite> = {
   jonction: northSite('jonction'),
   veillee: northSite('veillee'),
   basilique: northSite('basilique'),
+  belvedere: northSite('belvedere'),
+  grenier: northSite('grenier'),
+  abri: northSite('abri'),
+  jardin: northSite('jardin'),
+  kiosque: northSite('kiosque'),
+  maquette: northSite('maquette'),
+  tribune: northSite('tribune'),
+  douane: northSite('douane'),
+  ermitage: northSite('ermitage'),
+  standard: northSite('standard'),
+  rampe: northSite('rampe'),
+  fanal: northSite('fanal'),
+  ondes: northSite('ondes'),
+  lutherie: northSite('lutherie'),
+  coupole: northSite('coupole'),
+  palais: northSite('palais'),
   // La Mangrove (lot L8a) : Kéo et la botaniste sur le platelage de rive, devant le départ de la passerelle, vus du sud ;
   // derrière eux l'eau, les racines et la pirogue (l'objet témoin, au milieu), le carbet en haut du cadre.
   mangrove: {
@@ -2340,6 +2524,38 @@ const FLOOR_OF: Record<PlaceId, keyof typeof FLOOR_SHADOWS> = {
   veillee: 'earth',
   // La Basilique : le pavement de la nef.
   basilique: 'paving',
+  // Le Belvédère : le dallage de la terrasse.
+  belvedere: 'paving',
+  // Le Grenier : la terre de la cour.
+  grenier: 'earth',
+  // L'Abri : l'herbe rase du jardin d'instruments.
+  abri: 'earth',
+  // Le Jardin : l'herbe entre les carrés.
+  jardin: 'earth',
+  // Le Kiosque : l'herbe du pâturage.
+  kiosque: 'earth',
+  // La Maquette : l'herbe près de la rive ouest.
+  maquette: 'earth',
+  // La Tribune : l'herbe de l'arène.
+  tribune: 'earth',
+  // La Douane : l'herbe devant le guichet.
+  douane: 'earth',
+  // L'Ermitage : les aiguilles de la clairière.
+  ermitage: 'earth',
+  // Le Palais : l'herbe de la Prairie.
+  palais: 'earth',
+  // La Coupole : l'herbe de la Prairie.
+  coupole: 'earth',
+  // La Lutherie : l'herbe de la Prairie.
+  lutherie: 'earth',
+  // Les Ondes : l'herbe de la Prairie.
+  ondes: 'earth',
+  // Le Fanal : l'herbe grise du Cirque.
+  fanal: 'earth',
+  // La Rampe : l'herbe grise du Cirque.
+  rampe: 'earth',
+  // Le Standard : l'herbe grise du Cirque.
+  standard: 'earth',
 };
 const floorShadow = (place: PlaceId, posed: boolean): number => FLOOR_SHADOWS[place === 'phare' && !posed ? 'earth' : FLOOR_OF[place]];
 

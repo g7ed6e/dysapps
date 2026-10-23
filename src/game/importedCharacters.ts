@@ -89,9 +89,9 @@ export function loadKeo(archipel: ArchipelagoId): Promise<void> {
 
 /**
  * L'adresse du modèle de chaque habitant des scénettes du monde ouvert (« 6e-habitant-<lieu> », « 5e-habitant-<lieu> »,
- * « 4e-habitant-<lieu> »), texturé, déjà compacté par sa chaîne : le build le publie tel quel (scripts/rendu/compacterGlb.mjs).
+ * « 4e-habitant-<lieu> », « 3e-habitant-<lieu> »), texturé, déjà compacté par sa chaîne : le build le publie tel quel (scripts/rendu/compacterGlb.mjs).
  */
-const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/[4-6]e-habitant-*/habitant.glb', {
+const HABITANTS = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/[3-6]e-habitant-*/habitant.glb', {
   query: '?url',
   import: 'default',
   eager: true,

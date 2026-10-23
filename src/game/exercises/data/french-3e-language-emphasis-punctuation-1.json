@@ -1,0 +1,214 @@
+{
+  "id": "french-3e-language-emphasis-punctuation-1",
+  "biome": "french-3e-language",
+  "type": "emphasis-punctuation",
+  "level": 1,
+  "instruction": "Quel signe va à la place du trou ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-0",
+      "prompt": "J’ai acheté des pommes … des poires et des fraises.",
+      "spoken": "J’ai acheté des pommes  (signe manquant)  des poires et des fraises.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "une virgule",
+      "hint": "Des pommes, des poires, des fraises : qu’est-ce que c’est ?",
+      "explanation": "C’est une liste : la virgule sépare ses mots, et « et » relie les deux derniers.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-1",
+      "prompt": "Le matin, Léa court dans le parc … le soir, elle lit au jardin.",
+      "spoken": "Le matin, Léa court dans le parc  (signe manquant)  le soir, elle lit au jardin.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "un point-virgule",
+      "hint": "Deux propositions, qui ont chacune déjà une virgule.",
+      "explanation": "Deux propositions liées par le sens, qui ont déjà des virgules : le point-virgule les sépare sans les couper. Le mot qui suit, « le », n’a pas de majuscule : pas de point.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-2",
+      "prompt": "Il est tard … Les rues sont vides.",
+      "spoken": "Il est tard  (signe manquant)  Les rues sont vides.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "un point",
+      "hint": "Regarde le mot après le trou : a-t-il une majuscule ?",
+      "explanation": "« Les » commence par une majuscule : une nouvelle phrase commence, il faut un point.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-3",
+      "prompt": "Dans la cour … les élèves jouent au ballon.",
+      "spoken": "Dans la cour  (signe manquant)  les élèves jouent au ballon.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "une virgule",
+      "hint": "« Dans la cour » est un groupe placé en tête de phrase.",
+      "explanation": "« Dans la cour » est un complément déplacé en tête : une virgule le sépare du reste de la phrase.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-4",
+      "prompt": "Les uns chantaient … les autres, assis par terre, écoutaient.",
+      "spoken": "Les uns chantaient  (signe manquant)  les autres, assis par terre, écoutaient.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "un point-virgule",
+      "hint": "La deuxième proposition a déjà des virgules.",
+      "explanation": "Deux propositions qui se répondent, la seconde avec ses virgules : le point-virgule les sépare clairement. « Les », sans majuscule, exclut le point.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-5",
+      "prompt": "Paul … mon voisin, joue du piano.",
+      "spoken": "Paul  (signe manquant)  mon voisin, joue du piano.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "une virgule",
+      "hint": "« Mon voisin » dit qui est Paul : c’est une apposition.",
+      "explanation": "« Mon voisin » est apposé à « Paul » : il se met entre deux virgules.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-6",
+      "prompt": "Nous partirons à l’aube … Prends ton sac.",
+      "spoken": "Nous partirons à l’aube  (signe manquant)  Prends ton sac.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "un point",
+      "hint": "Regarde le mot après le trou : a-t-il une majuscule ?",
+      "explanation": "« Prends » commence par une majuscule : c’est une nouvelle phrase, il faut un point.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-1-7",
+      "prompt": "En été, la plage est pleine … en hiver, elle est déserte.",
+      "spoken": "En été, la plage est pleine  (signe manquant)  en hiver, elle est déserte.",
+      "choices": [
+        "une virgule",
+        "un point-virgule",
+        "un point"
+      ],
+      "answer": "un point-virgule",
+      "hint": "Deux propositions, qui ont chacune déjà une virgule.",
+      "explanation": "Deux propositions qui s’opposent, chacune avec sa virgule : le point-virgule les sépare. « En », sans majuscule, exclut le point.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Virgule, point-virgule, point",
+          "lines": [
+            "La virgule sépare des mots d’une liste, ou un groupe déplacé en tête de phrase.",
+            "Le point-virgule sépare deux propositions liées par le sens, surtout quand elles ont déjà des virgules.",
+            "Le point termine la phrase : après lui, une majuscule."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

@@ -115,6 +115,15 @@ const ORDER: (string | ExerciseDef[])[] = [
   'french-4e-sentence-relative-clauses-1', 'french-4e-sentence-relative-clauses-2', 'french-4e-sentence-relative-clauses-3', 'french-4e-sentence-subordinate-clauses-1',
   'french-4e-sentence-subordinate-clauses-2', 'french-4e-sentence-subordinate-clauses-3', 'french-4e-sentence-passive-reported-1', 'french-4e-sentence-passive-reported-2',
   'french-4e-sentence-compound-tenses-1', 'french-4e-sentence-compound-tenses-2', 'french-4e-sentence-moods-1', 'french-4e-sentence-moods-2',
+  // Le Grenier et la Lutherie (3e), lieux du monde ouvert seulement (GD-24, 22 octobre 2026).
+  'maths-3e-numbers-power-rules-1', 'maths-3e-numbers-power-rules-2', 'maths-3e-numbers-power-rules-3', 'maths-3e-numbers-square-equations-1',
+  'maths-3e-numbers-square-equations-2', 'maths-3e-numbers-prime-factors-1', 'maths-3e-numbers-prime-factors-2', 'maths-3e-numbers-identities-1',
+  'maths-3e-numbers-identities-2', 'maths-3e-numbers-identities-3', 'maths-3e-numbers-zero-product-1', 'maths-3e-numbers-zero-product-2',
+  'maths-3e-numbers-zero-product-3',
+  'french-3e-language-verb-moods-1', 'french-3e-language-verb-moods-2', 'french-3e-language-verb-moods-3', 'french-3e-language-complex-agreements-1',
+  'french-3e-language-complex-agreements-2', 'french-3e-language-complex-agreements-3', 'french-3e-language-connotation-1', 'french-3e-language-connotation-2',
+  'french-3e-language-connotation-3', 'french-3e-language-emphasis-punctuation-1', 'french-3e-language-emphasis-punctuation-2',
+  'french-3e-language-emphasis-punctuation-3', 'french-3e-language-verb-stems-1', 'french-3e-language-verb-stems-2',
   // Histoire et géographie (Fouille des siècles, Pointe des paysages, 6e).
   'history-6e-antiquity-early-humans-1', 'history-6e-antiquity-early-humans-2', 'history-6e-antiquity-ancient-peoples-1', 'history-6e-antiquity-ancient-peoples-2', 'history-6e-antiquity-roman-empire-1', 'history-6e-antiquity-roman-empire-2', 'history-6e-antiquity-viewpoints-1', 'history-6e-antiquity-viewpoints-2',
   'geography-6e-living-metropolises-1', 'geography-6e-living-metropolises-2', 'geography-6e-living-low-density-1', 'geography-6e-living-low-density-2', 'geography-6e-living-inhabited-world-1', 'geography-6e-living-inhabited-world-2',

@@ -1,0 +1,210 @@
+{
+  "id": "french-3e-language-verb-stems-2",
+  "biome": "french-3e-language",
+  "type": "verb-stems",
+  "level": 2,
+  "instruction": "Choisis la bonne écriture du verbe au subjonctif. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-verb-stems-2-0",
+      "prompt": "Il faut que nous … ce film.",
+      "spoken": "Il faut que nous  (mot manquant)  ce film.",
+      "choices": [
+        "voyons",
+        "voyions"
+      ],
+      "answer": "voyions",
+      "hint": "« Il faut que » + nous : relis la première ligne.",
+      "explanation": "Au subjonctif, avec « nous », la terminaison est -ions : que nous voyions, avec y puis i. « Voyons » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-2-1",
+      "prompt": "Il faut que vous me … !",
+      "spoken": "Il faut que vous me  (mot manquant)  !",
+      "choices": [
+        "croyez",
+        "croyiez"
+      ],
+      "answer": "croyiez",
+      "hint": "« Il faut que » + vous : relis la première ligne.",
+      "explanation": "Au subjonctif, avec « vous », la terminaison est -iez : que vous croyiez. « Croyez » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-2-2",
+      "prompt": "Il faut que je … mes devoirs.",
+      "spoken": "Il faut que je  (mot manquant)  mes devoirs.",
+      "choices": [
+        "fais",
+        "fasse",
+        "face"
+      ],
+      "answer": "fasse",
+      "hint": "Au subjonctif, « faire » change de radical.",
+      "explanation": "Au subjonctif, « faire » devient « fass- » : que je fasse. « Fais » est l’indicatif. « Face » est un nom : faire face.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-2-3",
+      "prompt": "Il faut que nous … tôt demain.",
+      "spoken": "Il faut que nous  (mot manquant)  tôt demain.",
+      "choices": [
+        "partons",
+        "partions"
+      ],
+      "answer": "partions",
+      "hint": "« Il faut que » + nous : relis la première ligne.",
+      "explanation": "Au subjonctif, avec « nous » : que nous partions. « Partons » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-2-4",
+      "prompt": "Je veux que tu … la vérité.",
+      "spoken": "Je veux que tu  (mot manquant)  la vérité.",
+      "choices": [
+        "sais",
+        "saches",
+        "sache"
+      ],
+      "answer": "saches",
+      "hint": "Au subjonctif, « savoir » change de radical. Le sujet est « tu ».",
+      "explanation": "Au subjonctif, « savoir » devient « sach- » : que tu saches, avec un s pour « tu ». « Sais » est l’indicatif. « Sache » va avec « je » ou « il ».",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-2-5",
+      "prompt": "Il faut que j’… à la boulangerie.",
+      "spoken": "Il faut que j’ (mot manquant)  à la boulangerie.",
+      "choices": [
+        "aille",
+        "ailles",
+        "vais"
+      ],
+      "answer": "aille",
+      "hint": "Au subjonctif, « aller » change de radical. Le sujet est « je ».",
+      "explanation": "Au subjonctif, « aller » devient « aill- » : que j’aille. « Ailles » va avec « tu ». « Vais » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-2-6",
+      "prompt": "Il faut que nous … finir avant midi.",
+      "spoken": "Il faut que nous  (mot manquant)  finir avant midi.",
+      "choices": [
+        "pouvons",
+        "puissions"
+      ],
+      "answer": "puissions",
+      "hint": "Au subjonctif, « pouvoir » change de radical.",
+      "explanation": "Au subjonctif, « pouvoir » devient « puiss- » : que nous puissions. « Pouvons » est l’indicatif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-verb-stems-2-7",
+      "prompt": "Il faut que vous … attention.",
+      "spoken": "Il faut que vous  (mot manquant)  attention.",
+      "choices": [
+        "fassiez",
+        "faisiez",
+        "faites"
+      ],
+      "answer": "fassiez",
+      "hint": "Au subjonctif, « faire » change de radical, et « vous » prend -iez.",
+      "explanation": "Que vous fassiez : le radical « fass- » et la terminaison -iez. « Faisiez » est l’imparfait. « Faites » est l’indicatif présent.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Le radical au subjonctif",
+          "lines": [
+            "Avec nous et vous, le subjonctif finit par -ions et -iez : que nous voyions, que vous croyiez.",
+            "On entend à peine le i après le y : il faut l’écrire.",
+            "Certains verbes changent de radical : que je fasse, que je puisse, que je sache, que j’aille."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien écrit !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

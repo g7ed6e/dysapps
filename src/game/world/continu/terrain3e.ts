@@ -35,6 +35,7 @@ import {
   alongPolyline,
   parvisFloor,
 } from './plan3e';
+import { quadOut, triOut } from './place4eKit';
 import { SHADOW_DIR_3E } from './sky';
 import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type GroundPaint, type HeightField, type P3, type TileDetail } from './terrain';
 
@@ -42,11 +43,17 @@ import { drawTileWith, farHeightsOf, heightOnFar, heightOnMesh, tileRect, type G
 const CLOUD_FLOOR = -1.5;
 /**
  * Les rives : de la mer de nuages au sol, sur tant d'unités (la montagne, une pente douce comme une plage ; les Prairies,
- * leur bord à un ou deux pas au-dessus des nuages) ; sous les nuages, sur tant d'autres.
+ * voir `PRAIRIE_BANK`) ; sous les nuages, sur tant d'autres.
  */
-const BANK = { mountain: 5, prairie: 2.2, under: 3 } as const;
+const BANK = { mountain: 5, under: 3 } as const;
 /** Le sol où l'on marche : la montagne à `mountain` (son ondulation en plus), les Prairies à `prairie`, plates. */
-const LEVEL = { mountain: 1.25, swell: 0.35, prairie: 1.35, prairieSwell: 0.1 } as const;
+const LEVEL = { mountain: 1.25, swell: 0.35, prairie: 0.55, prairieSwell: 0.1 } as const;
+/**
+ * La rive d'une Prairie (lot 1, retouche 1, « Reporté » : la rive des Prairies était en gradins ; sélection des Prairies,
+ * « Partout » : une table, son liseré d'ardoise arrondi, jamais de falaise) : la table garde son niveau jusque sous le
+ * liseré (`edge`, en unités de la rive), puis plonge d'un coup sous les nuages (`under`) ; le liseré seul se voit au bord.
+ */
+const PRAIRIE_BANK = { edge: [0.5, 1.5], under: -0.9, deep: { y: -3, over: 1 } } as const;
 /** La levée douce le long de la rive nord du Cirque : sa hauteur, de `rise[0]` à `rise[1]` unités de la rive, jusqu'à `fade`. */
 const CIRQUE_RIM = { height: 2.2, rise: [3, 10], fade: [13, 28] } as const;
 
@@ -77,6 +84,9 @@ const wave = (p: Vec2): number => 0.5 + 0.25 * Math.sin(p.x * 0.07 + 0.4) * Math
 /** Le flanc du cône, de 0 au pied à `PEAK_3E.flank.height` au haut, en pente douce. */
 const flank = (d: number): number => PEAK_3E.flank.height * (1 - smoothstep(PEAK_3E.flank.inner, PEAK_3E.flank.outer, d));
 
+/** La place du col le long de l'arête est, depuis le pic. */
+const COL_ALONG = alongPolyline(COL_3E, ARETE_EST_3E).s;
+
 /** La crête d'une arête au-dessus du sol en `p` : haute au pied du pic, basse au bord des nuages ; nulle au col de l'arête est. */
 function ridgeHeight(p: Vec2): number {
   let h = 0;
@@ -84,7 +94,12 @@ function ridgeHeight(p: Vec2): number {
     const { d, s } = alongPolyline(p, line);
     if (d >= ARETES_3E.halfWidth) continue;
     let crest = ARETES_3E.low + (ARETES_3E.high - ARETES_3E.low) * Math.exp(-s / ARETES_3E.fall);
-    if (line === ARETE_EST_3E) crest *= smoothstep(ARETES_3E.col[0], ARETES_3E.col[1], distance(p, COL_3E));
+    if (line === ARETE_EST_3E) {
+      // Côté pic, l'entaille du col reste large (les arcades de la galerie y voient le pic) ; côté nuages, la crête
+      // remonte contre le mur plein de la galerie.
+      const [r0, r1] = s > COL_ALONG ? ARETES_3E.colEast : ARETES_3E.col;
+      crest *= smoothstep(r0, r1, distance(p, COL_3E));
+    }
     h = Math.max(h, crest * (1 - (d / ARETES_3E.halfWidth) ** 2));
   }
   return h;
@@ -107,8 +122,15 @@ export function heightAt3e(p: Vec2): number {
   const m = mountainDistance(p);
   const pr = prairieDistance(p);
   const coast = Math.max(m, pr);
+  if (pr >= m) {
+    // Au-delà de la rive, le fond plonge bien plus bas que les nuages : vue de loin, la grille plus lâche ne tire plus de
+    // dents de scie sous le liseré (relecture des Prairies, (a) 2).
+    const D = PRAIRIE_BANK.deep;
+    const under = pr >= 0 ? PRAIRIE_BANK.under : PRAIRIE_BANK.under + (D.y - PRAIRIE_BANK.under) * smoothstep(0, D.over, -pr);
+    if (pr <= PRAIRIE_BANK.edge[0]) return under;
+    return under + (LEVEL.prairie + LEVEL.prairieSwell * wave(p) - under) * smoothstep(PRAIRIE_BANK.edge[0], PRAIRIE_BANK.edge[1], pr);
+  }
   if (coast < 0) return CLOUD_FLOOR * smoothstep(0, BANK.under, -coast);
-  if (pr >= m) return (LEVEL.prairie + LEVEL.prairieSwell * wave(p)) * smoothstep(0, BANK.prairie, pr);
   const d = distance(p, PEAK_3E.at);
   // Le col : le sol y redescend au niveau du replat (le flanc du cône s'y efface), pour que la galerie passe à plat.
   const ground = LEVEL.mountain + LEVEL.swell * wave(p) + flank(d);
@@ -161,6 +183,42 @@ const SLOPE_UP = 0.97;
 /** Sous cette hauteur, la pente qui entre dans les nuages : du granit, sous le liseré d'ardoise. */
 const SHORE_ROCK = 0.35;
 
+/**
+ * Au-delà du liseré d'une Prairie, ce que la grille du sol laisse dépasser des nuages en dents de scie (lot 1, retouche 1,
+ * « Reporté » : la rive en gradins) prend la teinte des nuages : ils montent contre le liseré, rien ne se voit dessous.
+ */
+function underPrairieRim(x: number, z: number): boolean {
+  const p = { x, z };
+  const pr = prairieDistance(p);
+  return pr < PRAIRIE_BANK.edge[0] + 0.15 && pr >= mountainDistance(p);
+}
+
+/**
+ * Une facette de la rive d'une Prairie qui touche la table en deçà du liseré (un de ses sommets passé le milieu du
+ * liseré) se voit de la table : elle reste de l'herbe, quelle que soit la teinte de son milieu, caché sous le liseré.
+ * Peinte de la teinte des nuages ou du granit, elle dessinait des dents de scie entre l'herbe et le liseré, surtout de
+ * loin, où la grille est plus lâche (relecture des Prairies, (a) 2).
+ */
+function touchesPrairieTable(a: P3, b: P3, c: P3): boolean {
+  // Le milieu du liseré, et non son bord intérieur : entre deux points de son tracé, le liseré passe en corde, en deçà.
+  const inner = RIM_3E.inset.prairie;
+  const mid = { x: (a[0] + b[0] + c[0]) / 3, z: (a[2] + b[2] + c[2]) / 3 };
+  const pr = prairieDistance(mid);
+  // Loin de toute rive de Prairie, ou à la montagne : rien à faire (le calcul par sommet n'est fait qu'au bord).
+  if (pr > inner + 2 * TERRAIN_3E.step * TERRAIN_3E.coarse || pr < -TERRAIN_3E.step * TERRAIN_3E.coarse || pr < mountainDistance(mid)) return false;
+  if (pr >= inner) return false;
+  return [a, b, c].some((v) => prairieDistance({ x: v[0], z: v[2] }) >= inner);
+}
+
+/** Sur une Prairie, en deçà du milieu du liseré. */
+const onPrairieTable = (p: Vec2): boolean => {
+  const pr = prairieDistance(p);
+  return pr >= RIM_3E.inset.prairie && pr >= mountainDistance(p);
+};
+
+/** Une facette de la table plus à plat que ceci se peint de l'herbe sans compenser sa lumière. */
+const TABLE_UP = 0.995;
+
 /** Le sens d'où vient le soleil, à plat : un flanc qui le regarde est au soleil. */
 const SUN_FLAT = { x: -SHADOW_DIR_3E.x, z: -SHADOW_DIR_3E.z } as const;
 
@@ -177,6 +235,10 @@ const patch = (x: number, z: number): number =>
  */
 function flat3e(x: number, z: number, h: number): number {
   const p = { x, z };
+  if (underPrairieRim(x, z)) return COLORS_3E.cloud;
+  // Sur une Prairie, en deçà du milieu du liseré : une herbe d'un seul aplat, même là où la table plonge déjà sous lui
+  // (relecture des Prairies, (a) 2 ; et (a) 9 : une tache plus claire s'y lisait de près comme une plaque aux bords nets).
+  if (onPrairieTable(p)) return COLORS_3E.grass;
   if (h < SHORE_ROCK) return COLORS_3E.granite;
   const k = patch(x, z);
   if (distance(p, PEAK_3E.at) < PEAK_3E.granite || areteClearance(p) < 0.4) return k < 0.6 ? COLORS_3E.granite : COLORS_3E.graniteSun;
@@ -207,10 +269,19 @@ function facet3e(a: P3, b: P3, c: P3): number {
   const len = Math.hypot(nx, ny, nz) || 1;
   const up = Math.abs(ny) / len;
   const sign = ny < 0 ? -1 : 1;
-  const sunny = (sign * (nx * SUN_FLAT.x + nz * SUN_FLAT.z)) / len > 0.12;
+  const toSun = (sign * (nx * SUN_FLAT.x + nz * SUN_FLAT.z)) / len;
+  const sunny = toSun > 0.12;
   const x = (a[0] + b[0] + c[0]) / 3;
   const z = (a[2] + b[2] + c[2]) / 3;
   const h = (a[1] + b[1] + c[1]) / 3;
+  // La table d'une Prairie, et la pente sous son liseré qu'on voit d'elle : une seule herbe. Une facette penchée vers le
+  // soleil prend le ton d'ombre, une facette penchée à l'opposé le ton de soleil : éclairées, elles rendent l'herbe à
+  // plat, sans aplat plus clair au bord (relecture des Prairies, (a) 2 et 9).
+  if (touchesPrairieTable(a, b, c) || onPrairieTable({ x, z })) {
+    if (up >= TABLE_UP) return COLORS_3E.grass;
+    return toSun > 0.05 ? COLORS_3E.grassShade : toSun < -0.05 ? COLORS_3E.grassSun : COLORS_3E.grass;
+  }
+  if (underPrairieRim(x, z)) return COLORS_3E.cloud;
   if (up < ROCK_UP) return sunny ? COLORS_3E.graniteSun : COLORS_3E.graniteShade;
   const base = flat3e(x, z, h);
   if (up >= SLOPE_UP) return base;
@@ -220,11 +291,12 @@ function facet3e(a: P3, b: P3, c: P3): number {
 /** Le 3e n'a pas d'écume : la mer de nuages est immobile et mate. */
 const noFoam = (): number => 0;
 
-const PAINT_3E: GroundPaint = { facet: facet3e, flat: flat3e, foam: noFoam };
+/** La peinture du sol du 3e ; la jupe des tuiles un peu sous leur bord, qui ne trace plus de trait dans l'herbe. */
+const PAINT_3E: GroundPaint = { facet: facet3e, flat: flat3e, foam: noFoam, skirtDrop: 0.06 };
 
 // ---------- Ce qui pousse, et les rochers ----------
 
-/** Les couleurs de ce qui pousse : des pins sombres sur les pentes basses et les Prairies, des blocs de granit au Cirque. */
+/** Les couleurs de ce qui pousse : des pins sombres sur les pentes basses (jamais sur les Prairies), des blocs de granit au Cirque. */
 export const FLORA_3E_COLORS = { pine: COLORS_3E.pine, pineTop: COLORS_3E.pineShade, boulder: COLORS_3E.graniteShade, boulderTop: COLORS_3E.granite } as const;
 
 /**
@@ -284,6 +356,8 @@ function plantsIn(tx: number, tz: number): readonly Plant[] {
       if (landDistance3e(p) < FLORA_KEEP.coast || distance(p, PEAK_3E.at) < FLORA_KEEP.peak) continue;
       if (areteClearance(p) < FLORA_KEEP.cut || langueClearance(p) < FLORA_KEEP.cut) continue;
       if (nearPath(p, FLORA_KEEP.path) || nearPlace(p) || nearParvis(p)) continue;
+      // Pas un pin sur les Prairies : le Cèdre y est le seul arbre (relecture des Prairies, (a) 3).
+      if (prairieDistance(p) >= mountainDistance(p)) continue;
       if (SPOTS.some((s) => Math.hypot(p.x - s.x, p.z - s.z) < FLORA_KEEP.spot)) continue;
       out.push({ x: p.x, z: p.z, y: heightAt3e(p), size: 0.8 + 0.5 * hash2(i + 7, j + 13), yaw: 6.283 * hash2(i + 31, j + 17), pine: !cirque });
     }
@@ -410,6 +484,14 @@ export function peakFacets(): Facets {
  */
 const RIM_3E = { inset: { mountain: 2.2, prairie: 1.1 }, width: 0.9, height: 0.28, foot: 0.6, step: 4.5 } as const;
 
+/**
+ * Le liseré d'une Prairie (relecture du Cirque, correction 9 : vu de loin, il se lisait comme un haut mur bleu marine,
+ * l'île comme une plaque posée sur la nappe) : plus bas que celui de la montagne (`height`), son flanc du dehors gardé
+ * d'ardoise sur une bande mince (`band`), puis la nappe qui monte contre lui, de la teinte des nuages, de `out` au-delà
+ * de son pied jusqu'à `y` sous leur plan.
+ */
+const PRAIRIE_RIM_3E = { height: 0.16, band: 0.14, cloud: { out: 1.6, y: -0.05 } } as const;
+
 /** Une rive repassée à un pas régulier, fermée. */
 function resampleLoop(loop: readonly Vec2[], step: number): Vec2[] {
   const out: Vec2[] = [];
@@ -426,7 +508,8 @@ function resampleLoop(loop: readonly Vec2[], step: number): Vec2[] {
  * Le liseré d'une rive : chaque point repassé, poussé vers la terre de `inset` (la normale qui entre dans le polygone),
  * posé sur le sol ; un dessus et deux flancs par tronçon.
  */
-function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number): void {
+function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number, dip = false): void {
+  const height = dip ? PRAIRIE_RIM_3E.height : RIM_3E.height;
   const pts = resampleLoop(loop, RIM_3E.step);
   const n = pts.length;
   const inward = (i: number): Vec2 => {
@@ -453,11 +536,21 @@ function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number): void {
   for (let i = 0; i < n; i++) {
     const p = ring[i],
       q = ring[(i + 1) % n];
-    const tp = p.y + RIM_3E.height,
-      tq = q.y + RIM_3E.height;
+    const tp = p.y + height,
+      tq = q.y + height;
     const m = inward(i);
     up([p.out.x, tp, p.out.z], [q.out.x, tq, q.out.z], [q.in.x, tq, q.in.z], [p.in.x, tp, p.in.z], COLORS_3E.slateTop, [0, 1, 0]);
-    up([p.out.x, p.y - RIM_3E.foot, p.out.z], [q.out.x, q.y - RIM_3E.foot, q.out.z], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0, -m.z]);
+    if (dip) {
+      // Le flanc du dehors d'une Prairie : une bande mince d'ardoise, puis la nappe qui monte contre elle, de la teinte des
+      // nuages, sans rien laisser voir dessous.
+      const P = PRAIRIE_RIM_3E;
+      const o = P.cloud.out;
+      const mq = inward((i + 1) % n);
+      const bp = tp - P.band,
+        bq = tq - P.band;
+      up([p.out.x, bp, p.out.z], [q.out.x, bq, q.out.z], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0, -m.z]);
+      up([p.out.x - m.x * o, P.cloud.y, p.out.z - m.z * o], [q.out.x - mq.x * o, P.cloud.y, q.out.z - mq.z * o], [q.out.x, bq, q.out.z], [p.out.x, bp, p.out.z], COLORS_3E.cloud, [-m.x, 0.6, -m.z]);
+    } else up([p.out.x, p.y - RIM_3E.foot, p.out.z], [q.out.x, q.y - RIM_3E.foot, q.out.z], [q.out.x, tq, q.out.z], [p.out.x, tp, p.out.z], COLORS_3E.slate, [-m.x, 0, -m.z]);
     up([p.in.x, p.y - RIM_3E.foot, p.in.z], [q.in.x, q.y - RIM_3E.foot, q.in.z], [q.in.x, tq, q.in.z], [p.in.x, tp, p.in.z], COLORS_3E.slate, [m.x, 0, m.z]);
   }
 }
@@ -466,7 +559,7 @@ function rimOf(b: FacetBuilder, loop: readonly Vec2[], inset: number): void {
 export function shoreRimFacets(): Facets {
   const b = new FacetBuilder();
   rimOf(b, MOUNTAIN_3E, RIM_3E.inset.mountain);
-  for (const loop of [PRAIRIES_3E.grande, PRAIRIES_3E.deuxieme, PRAIRIES_3E.petite]) rimOf(b, loop, RIM_3E.inset.prairie);
+  for (const loop of [PRAIRIES_3E.grande, PRAIRIES_3E.deuxieme, PRAIRIES_3E.petite]) rimOf(b, loop, RIM_3E.inset.prairie, true);
   return b.build();
 }
 
@@ -476,11 +569,21 @@ export function shoreRimFacets(): Facets {
  * Les petites arches (fiche, § 5) et les arches basses : une chaussée de granit large comme une route, au ras des nuages,
  * parapet plein et haut des deux côtés ; dessous, une rangée d'arches basses dont les ouvertures sont à demi enfoncées
  * dans le blanc (aucune pile ne se voit plonger). `deck` : le dessus de la chaussée (celui d'un pont) ; `half` : sa
- * demi-largeur ; `ramp` : la longueur de ses rampes sur chaque rive ; `parapet` : la hauteur et l'épaisseur du parapet ;
- * `arch` : l'écart des arches, leur rayon (le haut de leur ouverture au-dessus des nuages) ; `foot` : le bas de ses murs,
- * sous les nuages.
+ * demi-largeur ; `ramp` : la longueur de ses rampes sur chaque rive ; `parapet` : la hauteur, l'épaisseur du parapet, et
+ * l'épaisseur de son chaperon d'ardoise (lot des Prairies : à hauteur de poitrine de Kéo, sélection des Prairies,
+ * « parapets plus hauts que ceux de l'image ») ; `arch` : l'écart des arches, leur rayon (le haut de leur ouverture
+ * au-dessus des nuages), la largeur de l'anneau de leurs claveaux, un cran plus clair ; `path` : le chemin de pierre
+ * claire au milieu du dessus, sa demi-largeur et son liseré d'ardoise ; `foot` : le bas de ses murs, sous les nuages.
  */
-const CAUSEWAY_3E = { deck: 1.9, half: 2.1, ramp: 4, parapet: { height: 0.95, thick: 0.4 }, arch: { gap: 4.6, radius: 1.3 }, foot: -1 } as const;
+const CAUSEWAY_3E = {
+  deck: 1.9,
+  half: 2.6,
+  ramp: 4,
+  parapet: { height: 1.1, thick: 0.45, cap: 0.12 },
+  arch: { gap: 4.4, radius: 1.25, ring: 0.3 },
+  path: { half: 1.25, edge: 0.14 },
+  foot: -1,
+} as const;
 
 /** Une chaussée : son bout `a`, son sens, la part au-dessus des nuages (`water`, depuis `a`), la hauteur de ses rives. */
 export interface Causeway {
@@ -522,8 +625,8 @@ function causewayTop(s: Causeway, d: number): number {
 }
 
 /**
- * Le dessus des petites arches sous un point du monde (`x`, `z`), ou rien hors d'elles : Kéo s'y tient (toujours
- * ouvertes). Lue à chaque image : rien n'y est créé.
+ * Le dessus des petites arches sous un point du monde (`x`, `z`), entre leurs parapets, ou rien hors d'elles : Kéo s'y
+ * tient (toujours ouvertes). Lue à chaque image : rien n'y est créé.
  */
 export function smallArchFloor(x: number, z: number): number | null {
   for (const s of SMALL_CAUSEWAYS) {
@@ -531,7 +634,7 @@ export function smallArchFloor(x: number, z: number): number | null {
       dz = z - s.a.z;
     const d = dx * s.dir.x + dz * s.dir.z;
     if (d < s.water[0] - 1 - CAUSEWAY_3E.ramp || d > s.water[1] + 1 + CAUSEWAY_3E.ramp) continue;
-    if (Math.abs(-dx * s.dir.z + dz * s.dir.x) > CAUSEWAY_3E.half) continue;
+    if (Math.abs(-dx * s.dir.z + dz * s.dir.x) > CAUSEWAY_3E.half - CAUSEWAY_3E.parapet.thick) continue;
     return causewayTop(s, d);
   }
   return null;
@@ -545,18 +648,49 @@ export interface CausewayParts {
 }
 
 /**
+ * Les coupes du dessus d'une chaussée de `d0` à `d1` : un pas fin (`STATION_STEP`) sur les rampes, un seul pan là où le
+ * dessus est droit (le plein au-dessus des nuages), pour que le dessus et les parapets ne coûtent que ce qui se voit.
+ */
+const STATION_STEP = 1.5;
+function stations(d0: number, d1: number, surface: (d: number) => number): number[] {
+  const n = Math.max(2, Math.ceil((d1 - d0) / STATION_STEP));
+  const fine = Array.from({ length: n + 1 }, (_, k) => d0 + ((d1 - d0) * k) / n);
+  const out = [d0];
+  let from = 0;
+  for (let k = 1; k < n; k++) {
+    // Le point `k` se saute si tout ce qu'il y a de `from` à `k + 1` est sur la droite qui les joint.
+    const a = fine[from],
+      c = fine[k + 1];
+    const straight = fine.slice(from + 1, k + 1).every((u) => Math.abs(surface(u) - (surface(a) + ((surface(c) - surface(a)) * (u - a)) / (c - a))) < 0.005);
+    if (!straight) {
+      out.push(fine[k]);
+      from = k;
+    }
+  }
+  out.push(d1);
+  return out;
+}
+
+/**
  * Une chaussée dessinée de `d0` à `d1` le long de `s` : par travée, ses deux murs pleins jusque sous les nuages, une
- * ouverture d'arche à demi enfoncée peinte sur chacun (un demi-disque d'ardoise, son haut à `arch.radius` au-dessus des
- * nuages) ; son dessus de granit, qui suit les rampes ; les deux parapets pleins. `granite` : la pierre ; `surface` : le
- * dessus à `d` unités de `a` (celui des petites arches, ou celui d'un pont, que lit la marche : ./bridges.ts).
+ * ouverture d'arche à demi enfoncée sur chacun (une voûte d'ardoise, son haut à `arch.radius` au-dessus des nuages, et
+ * l'anneau de ses claveaux) ; son dessus de granit, qui suit les rampes, et le chemin de pierre claire au milieu ; les
+ * deux parapets pleins et leur chaperon. Chaque face regarde le dehors (lot des Prairies : les murs et les voûtes de la
+ * chaussée du lot 1 regardaient la chaussée, si bien que, vue de côté, on lisait le dedans du mur d'en face et aucune
+ * arche). `granite` : la pierre ; `surface` : le dessus à `d` unités de `a` (celui des petites arches, ou celui d'un
+ * pont, que lit la marche : ./bridges.ts).
  */
 export function causewayParts(s: Causeway, d0: number, d1: number, granite: { side: number; top: number }, surface: (d: number) => number = (d) => causewayTop(s, d)): CausewayParts {
-  const { half, parapet, arch, foot } = CAUSEWAY_3E;
+  const { half, parapet, arch, path, foot } = CAUSEWAY_3E;
   const at = (d: number, v: number) => ({ x: s.a.x + s.dir.x * d - s.dir.z * v, z: s.a.z + s.dir.z * d + s.dir.x * v });
   const p3 = (d: number, v: number, y: number): P3 => {
     const q = at(d, v);
     return [q.x, y, q.z];
   };
+  // Le dehors de chaque côté (`side`, +1 ou −1, le signe de `v`), le long de la chaussée, et le haut.
+  const across = (side: number): P3 => [-s.dir.z * side, 0, s.dir.x * side];
+  const along = (sign: number): P3 => [s.dir.x * sign, 0, s.dir.z * sign];
+  const UP: P3 = [0, 1, 0];
   const bays: Facets[] = [];
   const n = Math.max(1, Math.round((d1 - d0) / arch.gap));
   const len = (d1 - d0) / n;
@@ -567,46 +701,74 @@ export function causewayParts(s: Causeway, d0: number, d1: number, granite: { si
     const t0 = surface(u0) - 0.02,
       t1 = surface(u1) - 0.02;
     // Les deux murs, tournés vers le dehors ; les deux bouts de la chaussée fermés.
-    b.quad(p3(u1, half, foot), p3(u0, half, foot), p3(u0, half, t0), p3(u1, half, t1), granite.side);
-    b.quad(p3(u0, -half, foot), p3(u1, -half, foot), p3(u1, -half, t1), p3(u0, -half, t0), granite.side);
-    if (k === 0) b.quad(p3(u0, half, foot), p3(u0, -half, foot), p3(u0, -half, t0), p3(u0, half, t0), granite.side);
-    if (k === n - 1) b.quad(p3(u1, -half, foot), p3(u1, half, foot), p3(u1, half, t1), p3(u1, -half, t1), granite.side);
-    // L'ouverture d'arche, à demi enfoncée dans les nuages, peinte sur chaque mur (seulement là où le mur est haut).
+    for (const side of [1, -1]) quadOut(b, p3(u0, side * half, foot), p3(u1, side * half, foot), p3(u1, side * half, t1), p3(u0, side * half, t0), across(side), granite.side);
+    if (k === 0) quadOut(b, p3(u0, half, foot), p3(u0, -half, foot), p3(u0, -half, t0), p3(u0, half, t0), along(-1), granite.side);
+    if (k === n - 1) quadOut(b, p3(u1, -half, foot), p3(u1, half, foot), p3(u1, half, t1), p3(u1, -half, t1), along(1), granite.side);
+    // L'ouverture d'arche, à demi enfoncée dans les nuages, sur chaque mur (seulement là où le mur est haut) : la voûte
+    // d'ardoise, et autour d'elle l'anneau de ses claveaux, un cran plus clair que le mur : elle se lit de loin comme une
+    // arche, jamais comme une tache.
     const mid = (u0 + u1) / 2;
-    if (surface(mid) > arch.radius + 0.35)
+    if (surface(mid) > arch.radius + arch.ring + 0.2)
       for (const side of [1, -1]) {
-        const v = side * (half + 0.03);
         const steps = 5;
+        const v = side * (half + 0.03);
+        const w = side * (half + 0.05);
+        const ring = (r: number, i: number, off: number) => p3(mid + Math.cos((Math.PI * i) / steps) * r * 1.2, off, Math.sin((Math.PI * i) / steps) * r);
         for (let i = 0; i < steps; i++) {
-          const a0 = (Math.PI * i) / steps,
-            a1 = (Math.PI * (i + 1)) / steps;
-          const c = p3(mid, v, 0);
-          const e0 = p3(mid + Math.cos(a0) * arch.radius * 1.2, v, Math.sin(a0) * arch.radius);
-          const e1 = p3(mid + Math.cos(a1) * arch.radius * 1.2, v, Math.sin(a1) * arch.radius);
-          if (side > 0) b.triangle(c, e1, e0, COLORS_3E.slate);
-          else b.triangle(c, e0, e1, COLORS_3E.slate);
+          triOut(b, p3(mid, v, 0), ring(arch.radius, i, v), ring(arch.radius, i + 1, v), across(side), COLORS_3E.slate);
+          quadOut(b, ring(arch.radius, i, w), ring(arch.radius, i + 1, w), ring(arch.radius + arch.ring, i + 1, w), ring(arch.radius + arch.ring, i, w), across(side), granite.top);
         }
       }
     bays.push(b.build());
   }
-  // Le dessus, par pans qui suivent les rampes.
+  // Le dessus, par pans qui suivent les rampes : le granit au pied des parapets, et au milieu le chemin de pierre claire
+  // bordé de son liseré d'ardoise, comme les chemins de la terre (relecture des lieux, correction 22).
   const deck = new FacetBuilder();
-  const m = Math.max(2, Math.ceil((d1 - d0) / 3));
-  for (let k = 0; k < m; k++) {
-    const u0 = d0 + ((d1 - d0) * k) / m,
-      u1 = d0 + ((d1 - d0) * (k + 1)) / m;
-    deck.quad(p3(u0, half, surface(u0)), p3(u1, half, surface(u1)), p3(u1, -half, surface(u1)), p3(u0, -half, surface(u0)), granite.top);
-  }
-  // Les deux parapets pleins, d'un bout à l'autre, qui suivent le dessus.
-  const rails = new FacetBuilder();
-  for (const v of [half - parapet.thick / 2, -(half - parapet.thick / 2)])
-    for (let k = 0; k < m; k++) {
-      const u0 = d0 + ((d1 - d0) * k) / m,
-        u1 = d0 + ((d1 - d0) * (k + 1)) / m;
-      const a = at(u0, v),
-        c = at(u1, v);
-      rails.beam({ x: a.x, y: surface(u0) + parapet.height / 2, z: a.z }, { x: c.x, y: surface(u1) + parapet.height / 2, z: c.z }, parapet.height, granite.side);
+  const cuts = stations(d0, d1, surface);
+  const strips: readonly (readonly [number, number, number])[] = [
+    [-half, -path.half - path.edge, granite.top],
+    [-path.half - path.edge, -path.half, COLORS_3E.slate],
+    [-path.half, path.half, COLORS_3E.parvis],
+    [path.half, path.half + path.edge, COLORS_3E.slate],
+    [path.half + path.edge, half, granite.top],
+  ];
+  for (let k = 1; k < cuts.length; k++) {
+    const u0 = cuts[k - 1],
+      u1 = cuts[k];
+    const [y0, y1] = [surface(u0), surface(u1)];
+    for (const [v0, v1, color] of strips) {
+      const lift = color === granite.top ? 0 : 0.015;
+      quadOut(deck, p3(u0, v1, y0 + lift), p3(u1, v1, y1 + lift), p3(u1, v0, y1 + lift), p3(u0, v0, y0 + lift), UP, color);
     }
+  }
+  // Les deux parapets pleins, d'un bout à l'autre, qui suivent le dessus, coiffés de leur chaperon d'ardoise un peu plus
+  // large : la face du dehors (le mur continue sous elle), celle du dedans, tournée vers le chemin ; le dessus et les
+  // deux flancs du chaperon ; les deux bouts, fermés.
+  const rails = new FacetBuilder();
+  const top = (u: number) => surface(u) + parapet.height;
+  const capTop = (u: number) => top(u) + parapet.cap;
+  for (const side of [1, -1]) {
+    const vo = side * half,
+      vi = side * (half - parapet.thick);
+    const co = side * (half + 0.06),
+      ci = side * (half - parapet.thick - 0.06);
+    const out = across(side),
+      inward = across(-side);
+    for (let k = 1; k < cuts.length; k++) {
+      const u0 = cuts[k - 1],
+        u1 = cuts[k];
+      quadOut(rails, p3(u0, vo, surface(u0)), p3(u1, vo, surface(u1)), p3(u1, vo, top(u1)), p3(u0, vo, top(u0)), out, granite.side);
+      quadOut(rails, p3(u0, vi, surface(u0)), p3(u1, vi, surface(u1)), p3(u1, vi, top(u1)), p3(u0, vi, top(u0)), inward, granite.side);
+      quadOut(rails, p3(u0, ci, capTop(u0)), p3(u1, ci, capTop(u1)), p3(u1, co, capTop(u1)), p3(u0, co, capTop(u0)), UP, COLORS_3E.slateTop);
+      quadOut(rails, p3(u0, co, top(u0)), p3(u1, co, top(u1)), p3(u1, co, capTop(u1)), p3(u0, co, capTop(u0)), out, COLORS_3E.slate);
+      quadOut(rails, p3(u0, ci, top(u0)), p3(u1, ci, top(u1)), p3(u1, ci, capTop(u1)), p3(u0, ci, capTop(u0)), inward, COLORS_3E.slate);
+    }
+    for (const [u, sign] of [
+      [d0, -1],
+      [d1, 1],
+    ] as const)
+      quadOut(rails, p3(u, vi, surface(u)), p3(u, vo, surface(u)), p3(u, vo, capTop(u)), p3(u, vi, capTop(u)), along(sign), granite.side);
+  }
   return { bays, deck: deck.build(), parapets: rails.build() };
 }
 

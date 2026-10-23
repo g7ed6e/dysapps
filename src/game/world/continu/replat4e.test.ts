@@ -46,8 +46,8 @@ describe('Le Replat, le Détour des Coteaux', () => {
     expect(REPLAT.name).toBe('Le Replat');
     expect(REPLAT.land).toBe('coteaux');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    expect(DETOUR_IDS.at(-1)).toBe('replat');
-    expect(DETOUR_IDS.at(-2)).toBe('dalle');
+    // Le dernier du 4e, juste après la Dalle (le Cadran du 3e vient après lui).
+    expect(DETOUR_IDS.indexOf('replat')).toBe(DETOUR_IDS.indexOf('dalle') + 1);
     expect(sanitizeDetours(['replat', 'dalle', 'recoin', 'epave'])).toEqual(['epave', 'recoin', 'dalle', 'replat']);
     expect(REPLAT.says).toBe('Un replat, c’est un endroit plat dans une pente.');
     expect(REPLAT.saysAloudOnly).toBe(true);

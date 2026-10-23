@@ -1,0 +1,219 @@
+{
+  "id": "french-3e-language-emphasis-punctuation-3",
+  "biome": "french-3e-language",
+  "type": "emphasis-punctuation",
+  "level": 3,
+  "instruction": "Quel registre convient, et quel effet produit-il ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-0",
+      "prompt": "Dans un roman, un garçon dit à son ami : « T’inquiète, j’arrive ! » Pourquoi l’écrivain choisit-il le registre familier ?",
+      "spoken": "Dans un roman, un garçon dit à son ami : T’inquiète, j’arrive ! Pourquoi l’écrivain choisit-il le registre familier ?",
+      "choices": [
+        "pour rendre le personnage vivant",
+        "parce que l’écrivain se trompe",
+        "pour rendre la scène solennelle"
+      ],
+      "answer": "pour rendre le personnage vivant",
+      "hint": "Relis la troisième ligne de la règle.",
+      "explanation": "L’écrivain fait parler le garçon comme on parle entre amis : le personnage paraît vivant et proche. Ce n’est pas une erreur : c’est un choix.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-1",
+      "prompt": "Pendant ton exposé, quelle phrase choisis-tu ?",
+      "spoken": "Pendant ton exposé, quelle phrase choisis-tu ?",
+      "choices": [
+        "Ce document montre que la ville a beaucoup grandi.",
+        "Ce doc, il montre que la ville a grave grandi."
+      ],
+      "answer": "Ce document montre que la ville a beaucoup grandi.",
+      "hint": "Relis la deuxième ligne de la règle.",
+      "explanation": "À l’oral en classe, on choisit le registre courant : « ce document », « beaucoup ». « Doc » et « grave » sont familiers : ils vont bien entre amis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-2",
+      "prompt": "Dans une comédie, un enfant dit à table : « Monsieur mon père, auriez-vous l’obligeance de me passer le sel ? » Quel effet produit ce registre soutenu ?",
+      "spoken": "Dans une comédie, un enfant dit à table : Monsieur mon père, auriez-vous l’obligeance de me passer le sel ? Quel effet produit ce registre soutenu ?",
+      "choices": [
+        "faire sourire",
+        "faire peur",
+        "rendre triste"
+      ],
+      "answer": "faire sourire",
+      "hint": "Un repas de famille et une phrase très solennelle : vont-ils ensemble ?",
+      "explanation": "Des mots très solennels pour une chose simple, à table, en famille : ils ne vont pas avec la situation. Le décalage fait sourire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-3",
+      "prompt": "Pour répondre à l’oral d’un examen, quel registre choisis-tu ?",
+      "spoken": "Pour répondre à l’oral d’un examen, quel registre choisis-tu ?",
+      "choices": [
+        "courant ou soutenu",
+        "familier"
+      ],
+      "answer": "courant ou soutenu",
+      "hint": "Relis la deuxième ligne de la règle.",
+      "explanation": "À un examen, on parle à un jury : on choisit le registre courant, ou soutenu. Le familier garde sa place entre amis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-4",
+      "prompt": "Un personnage crie : « Je m’en fiche, de ton gâteau ! » Que montre ici le registre familier ?",
+      "spoken": "Un personnage crie : Je m’en fiche, de ton gâteau ! Que montre ici le registre familier ?",
+      "choices": [
+        "sa colère",
+        "sa politesse",
+        "son calme"
+      ],
+      "answer": "sa colère",
+      "hint": "Il crie : quel sentiment ?",
+      "explanation": "Le personnage crie, avec un mot familier, « je m’en fiche » : l’écrivain montre sa colère, sur le vif.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-5",
+      "prompt": "Dans un poème, l’auteur écrit « l’onde » au lieu de « l’eau ». Quel est le registre de « l’onde » ?",
+      "spoken": "Dans un poème, l’auteur écrit « l’onde » au lieu de « l’eau ». Quel est le registre de « l’onde » ?",
+      "choices": [
+        "soutenu",
+        "courant",
+        "familier"
+      ],
+      "answer": "soutenu",
+      "hint": "Lequel des deux mots dirais-tu tous les jours ?",
+      "explanation": "« L’eau » est courant ; « l’onde » est un mot rare et poétique : il est soutenu. Le poète le choisit pour sa beauté.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-6",
+      "prompt": "Pour commencer ton exposé, quelle phrase choisis-tu ?",
+      "spoken": "Pour commencer ton exposé, quelle phrase choisis-tu ?",
+      "choices": [
+        "Je vais vous présenter les volcans.",
+        "Bon, les volcans, c’est un truc de ouf."
+      ],
+      "answer": "Je vais vous présenter les volcans.",
+      "hint": "Relis la deuxième ligne de la règle.",
+      "explanation": "Devant la classe, on choisit le registre courant : « Je vais vous présenter les volcans. » « Un truc de ouf » est familier : il va bien entre amis.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-3-7",
+      "prompt": "Dans une pièce de théâtre, le roi se lève et dit : « Qu’on me laisse seul. » Quel effet produit ce registre soutenu ?",
+      "spoken": "Dans une pièce de théâtre, le roi se lève et dit : Qu’on me laisse seul. Quel effet produit ce registre soutenu ?",
+      "choices": [
+        "rendre la scène solennelle",
+        "faire rire",
+        "rendre le roi familier"
+      ],
+      "answer": "rendre la scène solennelle",
+      "hint": "Un roi, debout, qui donne un ordre : la scène est-elle sérieuse ?",
+      "explanation": "Le roi parle en registre soutenu, qui va avec son rang : la scène devient solennelle.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Choisir son registre",
+          "lines": [
+            "Familier, courant, soutenu : chaque registre a sa place.",
+            "À l’oral en classe ou à un examen : le registre courant, ou soutenu.",
+            "Un écrivain choisit le registre selon l’effet : le familier rend un personnage vivant et proche.",
+            "Le soutenu rend une scène solennelle, ou drôle quand il ne va pas avec la situation."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

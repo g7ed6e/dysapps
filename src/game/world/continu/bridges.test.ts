@@ -3,9 +3,9 @@
 // dessin des deux états et sur la Carte ; l'arche reliée de l'Épaule, sous son plafond, et aucune fente de lave dans le
 // cadre de la marche sur elle (intention du pont de l'Épaule, « La lave et la marche »). Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { ARCH_BRIDGE, BRIDGE, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeMapMark, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
+import { ARCH_BRIDGE, BRIDGE, COL_GALLERY, GLACIER_BRIDGE, colRoofOpen, BRIDGE_TOUCH, KEO_STOP, SWING, allBridges, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeLockRange, bridgeMapMark, bridgeParts, bridgeSite, clampToOpen, isCabin, isSwing, swingPivot, swingRuin } from './bridges';
 import { CUT_CLEARANCE_4E } from './paths4e';
-import { EPAULE_BRIDGE_TRIANGLES } from './budget';
+import { COL_GALLERY_TRIANGLES_3E, EPAULE_BRIDGE_TRIANGLES, GLACIER_BRIDGE_TRIANGLES_3E } from './budget';
 import { linearRgb } from './geometry';
 import { bridgeEdge, landById, linkedLands, nodeLands } from './lands';
 import { atNode, pathNode, pathRibbons, snapToNetwork, type NetworkPoint } from './paths';
@@ -17,6 +17,9 @@ import { COLORS_4E, CUVETTE_4E, LINKS_4E } from './plan4e';
 import { followPose, screenOf } from './camera';
 import { lavaFacets } from './terrain4e';
 import { COLORS_5E } from './plan5e';
+import { COLORS_3E } from './plan3e';
+import { heightAt3e } from './terrain3e';
+import { NETWORK_3E } from './paths3e';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
 const PLAN = planFor('6e');
@@ -388,5 +391,120 @@ describe('les lanternes des ponts (règle commune des ponts du 4e)', () => {
       expect(glassTriangles(bridgeFacets(land, true), SABLE)).toBe(4 * 10);
       expect(glassTriangles(bridgeFacets(land, true), LIT)).toBe(0);
     }
+  });
+});
+
+describe('Le pont du glacier relié, au 3e (proposition des Alpages, § 2)', () => {
+  const has = (f: { colors: ArrayLike<number> }, hex: number) => {
+    const c = linearRgb(hex);
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) return true;
+    return false;
+  };
+  const plan = planFor('3e');
+  const s = bridgeSite('alpages');
+
+  it('une arche de granit, son chemin de pierre claire, ses parapets coiffés d’ardoise ; ni lanterne, ni bois, sous son plafond nommé', () => {
+    const built = bridgeFacets('alpages', true);
+    expect(built.triangles).toBeGreaterThan(bridgeFacets('alpages', false).triangles);
+    expect(built.triangles).toBeLessThanOrEqual(GLACIER_BRIDGE_TRIANGLES_3E);
+    for (const hex of [COLORS_3E.granite, COLORS_3E.graniteSun, COLORS_3E.slate, COLORS_3E.slateTop, COLORS_3E.parvis]) expect(has(built, hex), hex.toString(16)).toBe(true);
+    for (const hex of [COLORS_5E.lantern, 0xa9784a, 0xc6955f, COLORS_3E.bronze]) expect(has(built, hex), hex.toString(16)).toBe(false);
+  });
+
+  it('vue dans l’axe depuis le Versant, au cap de 313° ; le tablier monte en dos d’âne au-dessus de la glace, Kéo y marche entre les parapets', () => {
+    const compass = ((Math.atan2(s.dir.x, -s.dir.z) * 180) / Math.PI + 360) % 360;
+    expect(Math.abs(compass - 313)).toBeLessThan(2);
+    const top = bridgeFloor(s.mid.x, s.mid.z, [], plan)!;
+    expect(top - heightAt3e(s.mid)).toBeGreaterThan(GLACIER_BRIDGE.rise);
+    // Fermé, le tablier manque : on ne marche pas au-dessus de la glace.
+    expect(bridgeFloor(s.mid.x, s.mid.z, ['alpages'], plan)).toBeNull();
+    // Le dessus monte et redescend sans marche, d'une culée à l'autre.
+    let last = bridgeFloor(s.near.x + s.dir.x * s.abut[0], s.near.z + s.dir.z * s.abut[0], [], plan)!;
+    for (let d = s.abut[0] + 0.25; d <= s.abut[1]; d += 0.25) {
+      const y = bridgeFloor(s.near.x + s.dir.x * d, s.near.z + s.dir.z * d, [], plan)!;
+      expect(Math.abs(y - last), String(d)).toBeLessThan(0.2);
+      last = y;
+    }
+    const side = { x: s.mid.x - s.dir.z * (ARCH_BRIDGE.walk - 0.1), z: s.mid.z + s.dir.x * (ARCH_BRIDGE.walk - 0.1) };
+    expect(bridgeFloor(side.x, side.z, [], plan)).not.toBeNull();
+  });
+});
+
+describe('La galerie du col reliée, au 3e (proposition du Cirque, § 2)', () => {
+  const plan = planFor('3e');
+  const s = bridgeSite('cirque');
+  const local = (x: number, z: number) => {
+    const dx = x - s.near.x,
+      dz = z - s.near.z;
+    return { d: dx * s.dir.x + dz * s.dir.z, v: -dx * s.dir.z + dz * s.dir.x };
+  };
+  const has = (f: { colors: ArrayLike<number> }, hex: number) => {
+    const c = linearRgb(hex);
+    for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) return true;
+    return false;
+  };
+
+  it('du granit, un toit d’ardoise enneigé, un dallage de pierre claire ; ni lanterne, ni bois, ni bronze, sous son plafond nommé', () => {
+    const built = bridgeFacets('cirque', true);
+    expect(built.triangles).toBeLessThanOrEqual(COL_GALLERY_TRIANGLES_3E);
+    for (const hex of [COLORS_3E.granite, COLORS_3E.slate, COLORS_3E.snow, COLORS_3E.parvis]) expect(has(built, hex), hex.toString(16)).toBe(true);
+    for (const hex of [COLORS_5E.lantern, 0xa9784a, COLORS_3E.bronze, COLORS_3E.wood]) expect(has(built, hex), hex.toString(16)).toBe(false);
+  });
+
+  it('vue dans l’axe depuis le Versant, au cap de 350° ; les arcades côté pic, à l’ouest, le mur plein côté nuages, à l’est', () => {
+    const compass = ((Math.atan2(s.dir.x, -s.dir.z) * 180) / Math.PI + 360) % 360;
+    expect(Math.abs(compass - 350)).toBeLessThan(2);
+    // À mi-hauteur des murs, en travers de la galerie : à l'est, de la pierre sur toute la longueur ; à l'ouest, des vides
+    // entre les piles (les arcs).
+    const f = bridgeParts('cirque');
+    const [arcades, wall] = f.piles;
+    const covered = (m: typeof arcades, side: number) => {
+      const y = s.base[0] + 0.08 + COL_GALLERY.spring - 0.2;
+      const hits = new Set<number>();
+      for (let i = 0; i < m.positions.length; i += 9) {
+        const ys = [m.positions[i + 1], m.positions[i + 4], m.positions[i + 7]];
+        if (Math.min(...ys) > y || Math.max(...ys) < y) continue;
+        const ds = [0, 3, 6].map((o) => local(m.positions[i + o], m.positions[i + o + 2]));
+        if (!ds.every((p) => Math.sign(p.v) === side)) continue;
+        for (let d = Math.ceil(Math.min(...ds.map((p) => p.d)) * 4); d <= Math.max(...ds.map((p) => p.d)) * 4; d++) hits.add(d);
+      }
+      return hits.size / 4;
+    };
+    const len = s.water[1] - s.water[0] + 2 * COL_GALLERY.over;
+    expect(covered(wall, 1)).toBeGreaterThan(len);
+    expect(covered(arcades, -1)).toBeLessThan(len * 0.5);
+  });
+
+  it('Kéo y marche à plat, au niveau du chemin ; fermée, les éboulis l’arrêtent avant elle', () => {
+    let last = bridgeFloor(s.near.x + s.dir.x * (s.water[0] - 1), s.near.z + s.dir.z * (s.water[0] - 1), [], plan)!;
+    expect(last - s.base[0]).toBeLessThan(0.2);
+    for (let d = s.water[0] - 1; d <= s.water[1] + 1; d += 0.5) {
+      const y = bridgeFloor(s.near.x + s.dir.x * d, s.near.z + s.dir.z * d, [], plan)!;
+      expect(Math.abs(y - last), String(d)).toBeLessThan(0.05);
+      last = y;
+    }
+    expect(bridgeFloor(s.mid.x, s.mid.z, ['cirque'], plan)).toBeNull();
+  });
+
+  it('son toit s’ôte quand Kéo passe dessous, et seulement là', () => {
+    expect(colRoofOpen('cirque', s.mid)).toBe(true);
+    expect(colRoofOpen('cirque', s.near)).toBe(false);
+    expect(bridgeFacets('cirque', true, 'bas', true).triangles).toBeLessThan(bridgeFacets('cirque', true).triangles);
+    expect(has(bridgeFacets('cirque', true, 'bas', true), COLORS_3E.slate)).toBe(false);
+    expect(colRoofOpen('alpages', s.mid)).toBe(false);
+  });
+});
+
+describe('les cadenas du col et des arches du 3e, de près seulement (relecture des Prairies, (a) 4 et 11)', () => {
+  const at = (land: 'cirque' | 'prairies', id: string) => {
+    const n = NETWORK_3E.pathNode(id).at;
+    return Math.hypot(n.x - bridgeSite(land).mid.x, n.z - bridgeSite(land).mid.z);
+  };
+
+  it('le Belvédère voit les deux ; la Lutherie, la Coupole, le Palais et le Grenier ne voient plus celui du col sur le Fanal', () => {
+    expect(at('cirque', 'belvedere')).toBeLessThan(bridgeLockRange('cirque'));
+    expect(at('prairies', 'belvedere')).toBeLessThan(bridgeLockRange('prairies'));
+    for (const id of ['lutherie', 'coupole', 'palais', 'grenier']) expect(at('cirque', id), id).toBeGreaterThan(bridgeLockRange('cirque'));
+    expect(bridgeLockRange('alpages')).toBe(Infinity);
   });
 });

@@ -4289,5 +4289,120 @@ export const ILES = [
         ]
       }
     ]
+  },
+  {
+    "id": "maths-3e-numbers",
+    "name": "Grenier",
+    "module": "Nombres et calcul littéral",
+    "subject": "maths",
+    "classe": "3e",
+    "description": "Puissances et notation scientifique, racines carrées et x² = a, nombres premiers et fractions irréductibles, développer et factoriser, équations produits et inéquations : la règle sous les yeux.",
+    "block": "maths-3e-geometry",
+    "icon": "wheat",
+    "openWorldOnly": true,
+    "exercises": [
+      {
+        "id": "power-rules",
+        "title": "Puissances",
+        "description": "Les exposants négatifs, multiplier et diviser des puissances d’un même nombre, puis la notation scientifique.",
+        "programme": [
+          "c4.ma.a.puissances",
+          "c4.ma.a.ecritures-ordres-de-grandeur"
+        ]
+      },
+      {
+        "id": "square-equations",
+        "title": "Racines carrées",
+        "description": "Calculer et encadrer une racine carrée, puis résoudre x² = a : deux solutions, une seule, ou aucune.",
+        "programme": [
+          "c4.ma.a.carres-racine",
+          "c4.ma.a.equations"
+        ]
+      },
+      {
+        "id": "prime-factors",
+        "title": "Diviseurs et premiers",
+        "description": "Les critères de divisibilité et les nombres premiers, puis décomposer un nombre et rendre une fraction irréductible.",
+        "programme": [
+          "c4.ma.a.divisibilite-premiers"
+        ]
+      },
+      {
+        "id": "identities",
+        "title": "Développer",
+        "description": "La double distributivité, les trois identités remarquables, puis factoriser avec elles.",
+        "programme": [
+          "c4.ma.a.reduire-developper"
+        ]
+      },
+      {
+        "id": "zero-product",
+        "title": "Équations",
+        "description": "Les équations produits, puis les inéquations (le sens qui change quand on divise par un nombre négatif), puis mettre un problème en équation.",
+        "programme": [
+          "c4.ma.a.equations"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "french-3e-language",
+    "name": "Lutherie",
+    "module": "La langue en 3e",
+    "subject": "french",
+    "classe": "3e",
+    "description": "Subjonctif et conditionnel, accords difficiles, connotation et mots de l’analyse, ponctuation, mise en relief et registres, radicaux des verbes : la règle sous les yeux.",
+    "block": "french-3e-close-reading",
+    "icon": "feather",
+    "openWorldOnly": true,
+    "exercises": [
+      {
+        "id": "verb-moods",
+        "title": "Subjonctif et conditionnel",
+        "description": "Indicatif ou subjonctif selon le mot qui introduit le verbe, le passé du subjonctif, puis le conditionnel passé après « si ».",
+        "programme": [
+          "c4.fr.langue.temps-a-memoriser",
+          "c4.fr.langue.valeurs-des-temps"
+        ]
+      },
+      {
+        "id": "complex-agreements",
+        "title": "Accords difficiles",
+        "description": "L’accord de l’adjectif dans un groupe nominal étendu, le participe passé après « que », puis le verbe avec un sujet difficile.",
+        "programme": [
+          "c4.fr.langue.accord-gn-complexe",
+          "c4.fr.langue.participe-passe",
+          "c4.fr.langue.accord-verbe-complexe"
+        ]
+      },
+      {
+        "id": "connotation",
+        "title": "Connotation",
+        "description": "L’image qu’un mot ajoute à son sens, les mots pour analyser un poème ou un texte qui argumente, puis l’impression que donnent des mots qui vont ensemble.",
+        "programme": [
+          "c4.fr.langue.sens-des-mots",
+          "c4.fr.langue.reseaux-de-mots"
+        ]
+      },
+      {
+        "id": "emphasis-punctuation",
+        "title": "Ponctuation et relief",
+        "description": "Virgule, point-virgule ou point, la phrase qui met un mot en relief, puis le registre qui convient et l’effet qu’il produit.",
+        "programme": [
+          "c4.fr.langue.ponctuation",
+          "c4.fr.langue.sens-des-mots",
+          "c4.fr.langue.oral-ecrit"
+        ]
+      },
+      {
+        "id": "verb-stems",
+        "title": "Écrire juste",
+        "description": "Le radical des verbes au futur et au conditionnel (courrai, courrais, verrai), puis au subjonctif (que nous voyions, qu’il fasse).",
+        "programme": [
+          "c4.fr.langue.morphologie-verbale",
+          "c4.fr.langue.temps-a-memoriser"
+        ]
+      }
+    ]
   }
 ] satisfies IleDef[];

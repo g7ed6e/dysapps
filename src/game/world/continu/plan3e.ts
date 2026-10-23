@@ -67,19 +67,28 @@ export const COLORS_3E = {
   /** Les pins des pentes, et leur ombre. */
   pine: 0x5f7a5a,
   pineShade: 0x52694e,
-  /** Le graphite et la prune des Ferrailleurs (le zeppelin). */
-  graphite: 0x4a4d55,
-  graphiteSun: 0x5a5e68,
-  prune: 0x6e4a63,
+  /**
+   * Le graphite et la prune des Ferrailleurs (le zeppelin) ; un cran plus clairs qu'au lot 1 (#4A4D55, #5A5E68, #6E4A63) :
+   * de profil, le flanc à l'ombre se lisait presque noir (lot des Prairies).
+   */
+  graphite: 0x666a74,
+  graphiteSun: 0x777c87,
+  prune: 0x7a5470,
   /** La lanterne fixe, or blanc. */
   lantern: 0xffe6a6,
 } as const;
 
 /** Le bord de la montagne, l'unique île où l'on marche à pied (plan, `MOUNTAIN`), dans le sens des aiguilles d'une montre. */
 export const MOUNTAIN_3E = poly([
-  [130, 430], [180, 260], [300, 130], [470, 60], [720, 30], [1000, 30], [1220, 80], [1360, 160], [1450, 260], [1430, 420],
-  [1380, 560], [1350, 650], [1385, 700], [1400, 760], [1385, 820], [1320, 855], [1240, 905], [1170, 1020], [1030, 1100],
-  [860, 1130], [720, 1110], [660, 1135], [520, 1115], [440, 1045], [440, 955], [400, 885], [300, 810], [190, 710], [120, 570],
+  [130, 430], [180, 260], [300, 130], [470, 60], [720, 30], [1000, 30], [1220, 80], [1360, 160], [1450, 260],
+  // La rive du départ des arches basses (lot des Prairies ; directeur artistique, lot 1, point 11) : une seule courbe
+  // douce, sans l'anse au nord de la chaussée dont les liserés s'empilaient en gradins vus des arches.
+  [1442, 420], [1422, 560], [1404, 660], [1404, 712], [1406, 766], [1385, 820], [1320, 855], [1240, 905], [1170, 1020], [1030, 1100],
+  // L'anse de nuages à l'est du Parvis (lot du Versant, directeur artistique, point 8, et consultant, point 2 : « rapprocher
+  // le bord est du Parvis de sa rive sud-est ») : le Parvis devient un promontoire, et la mer de nuages entre dans le
+  // quart droit de l'arrivée.
+  [975, 1090], [900, 1050], [800, 1000], [715, 990], [688, 1010], [668, 1062], [650, 1135], [520, 1115], [440, 1045], [440, 955],
+  [400, 885], [300, 810], [190, 710], [120, 570],
 ]);
 
 /** Les écarts du bord d'une table de roche, autour de son ellipse (plan, `blob`) : aucune pointe étroite. */
@@ -114,7 +123,8 @@ export const COAST_3E: readonly Vec2[] = [...MOUNTAIN_3E, ...PRAIRIES_3E.grande,
  * Le pic, qu'on ne visite pas (fiche, § 5) : une pyramide de neige à `sides` faces, au centre de la montagne. `at` : son
  * sommet au sol ; `radius` : le rayon de sa base (jusqu'à ses arêtes) ; `height` : son sommet ; `base` : sa base,
  * enfoncée dans le haut du cône ; `yaw` : le cap de sa première arête. Le haut du cône, en granit, va jusqu'à `granite`
- * unités de lui ; on ne marche pas à moins de `blocked`. Le flanc monte doucement de `flank.outer` à `flank.inner`.
+ * unités de lui, à peine au-delà du pied du pic : l'herbe monte haut sur le cône, le granit nu reste au pied du pic et
+ * aux arêtes (lot 1, retouche 1, « Reporté » ; le Cirque, 46 auparavant) ; on ne marche pas à moins de `blocked`. Le flanc monte doucement de `flank.outer` à `flank.inner`.
  */
 export const PEAK_3E = {
   at: fromPlan3e([900, 380]),
@@ -123,7 +133,7 @@ export const PEAK_3E = {
   base: 3.5,
   sides: 4,
   yaw: 0.3,
-  granite: 46,
+  granite: 35,
   blocked: 42,
   flank: { height: 7, inner: 30, outer: 62 },
 } as const;
@@ -139,9 +149,11 @@ export const LANGUE_3E = poly([[900, 380], [870, 430], [780, 510], [670, 600], [
 /**
  * Les arêtes (artiste technique 3D) : leur demi-largeur au sol ; leur crête au bord des nuages (`low`) et au pied du pic
  * (`high`), et en combien d'unités elle tombe de l'un à l'autre (`fall`). Au col de l'arête est, la galerie : la crête y
- * descend au sol (`col` : nulle à moins de `col[0]` unités de la galerie, pleine au-delà de `col[1]`).
+ * descend au sol (`col` : nulle à moins de `col[0]` unités de la galerie, pleine au-delà de `col[1]`), côté pic ; côté
+ * nuages, elle remonte contre le mur plein de la galerie (`colEast`), qui se lit creusée dans l'arête (proposition du
+ * Cirque, § 2 ; sélection du Cirque, « l'arête la traverse »), ses arcades ouvertes côté pic.
  */
-export const ARETES_3E = { halfWidth: 5, low: 3.2, high: 16, fall: 22, col: [7, 15] as const } as const;
+export const ARETES_3E = { halfWidth: 5, low: 3.2, high: 16, fall: 22, col: [7, 15] as const, colEast: [3.4, 6.5] as const } as const;
 
 /** La langue de glace : sa demi-largeur ; elle est à plat, au niveau des prairies, un rien plus bas (`sink`). */
 export const LANGUE_LOOK_3E = { halfWidth: 4.6, sink: 0.15 } as const;
@@ -201,27 +213,27 @@ interface PlaceSpec extends Omit<OpenPlace<PlaceId3e>, 'center' | 'door' | 'scen
 
 /**
  * Les seize lieux (fiche, § 4, noms validés le 22 octobre 2026), à leur place sur le plan. Le Grenier et la Lutherie
- * sont nouveaux : leurs missions s'écrivent avec leur lot (`maths-3e-numbers`, `french-3e-language`, identifiants de
- * travail), et leur panneau reste vide d'ici là. Aucun lieu n'a encore de scénette : leurs missions passent par l'écran
- * habituel.
+ * sont nouveaux, lieux du monde ouvert seulement (GD-24) : leurs missions sont écrites (`docs/contenu/maths-3e-numbers.md`,
+ * `french-3e-language.md`). Seuls les lieux construits (`BUILT_PLACES_3E`) ont leur scénette ; les missions des autres
+ * passent par l'écran habituel.
  */
 const PLACE_SPECS: readonly PlaceSpec[] = [
-  { id: 'belvedere', name: 'Le Belvédère', at: 'au Belvédère', agree: 'ms', island: 'maths-3e-geometry', plan: [1290, 760], door: { x: 6, z: 8 } },
-  { id: 'grenier', name: 'Le Grenier', at: 'au Grenier', agree: 'ms', island: 'maths-3e-numbers', plan: [1150, 830], door: { x: -3, z: 8 } },
-  { id: 'abri', name: 'L’Abri', at: 'à l’Abri', agree: 'ms', island: 'maths-3e-statistics', plan: [900, 620], door: { x: 3, z: 9 } },
-  { id: 'jardin', name: 'Le Jardin', at: 'au Jardin', agree: 'ms', island: 'life-earth-sciences-3e-human-body', plan: [1010, 960], door: { x: -7, z: -5 } },
+  { id: 'belvedere', name: 'Le Belvédère', at: 'au Belvédère', agree: 'ms', island: 'maths-3e-geometry', plan: [1290, 760], door: { x: 8.8, z: 5.9 } },
+  { id: 'grenier', name: 'Le Grenier', at: 'au Grenier', agree: 'ms', island: 'maths-3e-numbers', plan: [1150, 830], door: { x: -6.3, z: 6.8 } },
+  { id: 'abri', name: 'L’Abri', at: 'à l’Abri', agree: 'ms', island: 'maths-3e-statistics', plan: [900, 620], door: { x: -0.3, z: 10.1 } },
+  { id: 'jardin', name: 'Le Jardin', at: 'au Jardin', agree: 'ms', island: 'life-earth-sciences-3e-human-body', plan: [1010, 960], door: { x: -3, z: 9.3 } },
   { id: 'fanal', name: 'Le Fanal', at: 'au Fanal', agree: 'ms', island: 'maths-3e-functions', plan: [985, 175], door: { x: 0, z: 9 } },
-  { id: 'rampe', name: 'La Rampe', at: 'à la Rampe', agree: 'fs', island: 'physics-chemistry-3e-motion-energy', plan: [1065, 225], door: { x: 7, z: 6 } },
+  { id: 'rampe', name: 'La Rampe', at: 'à la Rampe', agree: 'fs', island: 'physics-chemistry-3e-motion-energy', plan: [1065, 225], door: { x: 1, z: 0 } },
   { id: 'standard', name: 'Le Standard', at: 'au Standard', agree: 'ms', island: 'technology-3e-digital', plan: [790, 190], door: { x: 8, z: 4 } },
-  { id: 'kiosque', name: 'Le Kiosque', at: 'au Kiosque', agree: 'ms', island: 'history-3e-twentieth-century', plan: [430, 480], door: { x: 0, z: 9 } },
-  { id: 'maquette', name: 'La Maquette', at: 'à la Maquette', agree: 'fs', island: 'geography-3e-france', plan: [350, 650], door: { x: 7, z: -4 } },
-  { id: 'tribune', name: 'La Tribune', at: 'à la Tribune', agree: 'fs', island: 'civics-3e-democratic-life', plan: [580, 400], door: { x: -6, z: 7 } },
-  { id: 'douane', name: 'La Douane', at: 'à la Douane', agree: 'fs', island: 'lv2-3e-travel', plan: [200, 400], door: { x: 7, z: 5 } },
-  { id: 'ermitage', name: 'L’Ermitage', at: 'à l’Ermitage', agree: 'ms', island: 'lca-3e-ideas', plan: [215, 580], door: { x: 8, z: 0 } },
-  { id: 'coupole', name: 'La Coupole', at: 'à la Coupole', agree: 'fs', island: 'french-3e-close-reading', plan: [1870, 945], door: { x: 0, z: -8 } },
-  { id: 'lutherie', name: 'La Lutherie', at: 'à la Lutherie', agree: 'fs', island: 'french-3e-language', plan: [2000, 1000], door: { x: -8, z: -4 } },
-  { id: 'ondes', name: 'Les Ondes', at: 'aux Ondes', agree: 'fp', island: 'english-3e-comprehension', plan: [1535, 1045], door: { x: 8, z: -4 } },
-  { id: 'palais', name: 'Le Palais', at: 'au Palais', agree: 'ms', island: 'english-3e-grammar', plan: [1680, 605], door: { x: -4, z: 8 } },
+  { id: 'kiosque', name: 'Le Kiosque', at: 'au Kiosque', agree: 'ms', island: 'history-3e-twentieth-century', plan: [430, 480], door: { x: 7, z: 10 } },
+  { id: 'maquette', name: 'La Maquette', at: 'à la Maquette', agree: 'fs', island: 'geography-3e-france', plan: [350, 650], door: { x: 6.5, z: -10 } },
+  { id: 'tribune', name: 'La Tribune', at: 'à la Tribune', agree: 'fs', island: 'civics-3e-democratic-life', plan: [580, 400], door: { x: -10, z: 8.4 } },
+  { id: 'douane', name: 'La Douane', at: 'à la Douane', agree: 'fs', island: 'lv2-3e-travel', plan: [200, 400], door: { x: 5.3, z: 9.6 } },
+  { id: 'ermitage', name: 'L’Ermitage', at: 'à l’Ermitage', agree: 'ms', island: 'lca-3e-ideas', plan: [215, 580], door: { x: 8.8, z: -4.7 } },
+  { id: 'coupole', name: 'La Coupole', at: 'à la Coupole', agree: 'fs', island: 'french-3e-close-reading', plan: [1870, 945], door: { x: 6.5, z: 9 } },
+  { id: 'lutherie', name: 'La Lutherie', at: 'à la Lutherie', agree: 'fs', island: 'french-3e-language', plan: [2000, 1000], door: { x: 8.5, z: -1.5 } },
+  { id: 'ondes', name: 'Les Ondes', at: 'aux Ondes', agree: 'fp', island: 'english-3e-comprehension', plan: [1535, 1045], door: { x: 7.5, z: -5.2 } },
+  { id: 'palais', name: 'Le Palais', at: 'au Palais', agree: 'ms', island: 'english-3e-grammar', plan: [1680, 605], door: { x: 1.7, z: 11 } },
 ];
 
 /** Le rayon de toucher d'un lieu du 3e : large, rien de précis à viser. */
@@ -251,13 +263,46 @@ const MAP_SIDES_3E: Readonly<Record<PlaceId3e, 'below' | 'left' | 'right'>> = {
   palais: 'below',
 };
 
+/**
+ * Les lieux du 3e déjà construits, et les missions de chacun qui se jouent en scénette, dans l'ordre de leur île : la
+ * seule liste, comme `BUILT_PLACES_4E` (./plan4e.ts), que lisent la scénette (./levelPlan.ts, `hasScenette`) et les
+ * missions des lieux (`PLACES_3E`). Le Versant (GD-25, lot 2) : le Belvédère, le Grenier, l'Abri, le Jardin ; les Alpages (lot 3) : le Kiosque, la Maquette, la Tribune, la Douane, l'Ermitage ; les Prairies (lot 4) : le Palais, la Coupole, la Lutherie, les Ondes ; le Cirque : le Fanal, la Rampe, le Standard. Chaque habitant du 3e a son modèle
+ * 3D (./habitants.ts, `hasHabitantModel`), montré dans sa scénette à la place de son pion. Un lieu construit s'ajoute ici, et seulement ici.
+ */
+export const BUILT_PLACES_3E = {
+  belvedere: ['pythagoras', 'thales', 'trigonometry', 'scaling', 'transformations'],
+  grenier: ['power-rules', 'square-equations', 'prime-factors', 'identities', 'zero-product'],
+  abri: ['mean', 'probability', 'data', 'ratio-sharing'],
+  jardin: ['effort-brain', 'digestion-microbes', 'puberty-reproduction'],
+  kiosque: ['total-wars', 'world-since-1945', 'republic'],
+  maquette: ['territories', 'planning', 'france-eu'],
+  tribune: ['constitution', 'information', 'civic-engagement'],
+  ermitage: ['la-empire', 'la-provinces', 'la-heritage', 'gr-myth-history', 'gr-greek-world', 'gr-heritage'],
+  douane: ['es-past', 'es-stories', 'es-countries', 'es-connectives', 'es-media', 'de-past', 'de-stories', 'de-on-the-road', 'de-connectives', 'de-media'],
+  palais: ['for-since', 'if', 'passive', 'messages'],
+  coupole: ['inference', 'figures-of-speech', 'text-connectives', 'voices', 'literary-eras'],
+  lutherie: ['verb-moods', 'complex-agreements', 'connotation', 'emphasis-punctuation', 'verb-stems'],
+  ondes: ['understanding', 'linking-words', 'false-friends', 'media'],
+  fanal: ['images', 'linear', 'graphs', 'proportions', 'coordinates'],
+  rampe: ['motion-forces', 'energy-power', 'acids-bases'],
+  standard: ['computer-networks', 'connected-objects', 'algorithms', 'data-tables'],
+} as const satisfies Partial<Record<PlaceId3e, readonly string[]>>;
+
+/** Un lieu du 3e déjà construit. */
+export type BuiltPlace3e = keyof typeof BUILT_PLACES_3E;
+
+/** Ce lieu du 3e est-il construit ? */
+export const isBuiltPlace3e = (id: string): id is BuiltPlace3e => Object.hasOwn(BUILT_PLACES_3E, id);
+
+const SCENES_3E: Partial<Record<PlaceId3e, readonly string[]>> = BUILT_PLACES_3E;
+
 export const PLACES_3E: readonly OpenPlace<PlaceId3e>[] = PLACE_SPECS.map((s) => ({
   id: s.id,
   name: s.name,
   at: s.at,
   agree: s.agree,
   island: s.island,
-  scenes: [],
+  scenes: SCENES_3E[s.id] ?? [],
   center: fromPlan3e(s.plan),
   yaw: 0,
   door: s.id,
@@ -309,19 +354,43 @@ function frameOf(origin: Vec2, yaw: number): Frame3e {
 export const PARVIS = frameOf(fromPlan3e([487, 961]), 0);
 
 /** Où Kéo se tient à l'arrivée, dans le repère du Parvis : à l'est de l'aire de la Nef. */
-export const PARVIS_QUAY_SPOT: readonly [number, number] = [27, 20];
+export const PARVIS_QUAY_SPOT: readonly [number, number] = [12, 27];
 
-/** Le pavage du Parvis, dans son repère : la grande place (tout le promontoire), et le bout où l'on arrive, à côté de l'aire. */
+/**
+ * La place ronde du Parvis (lot du Versant ; directeur artistique, lot 1, point 8, et relecture des lieux, point 21) : une
+ * table de pierre claire presque ronde, à `sides` pans, dans son repère (son milieu, ses demi-axes). Un muret plein la
+ * borde du côté des rives (`wall` : les pans, comptés depuis l'est dans le sens des aiguilles d'une montre vu d'en haut,
+ * du sud-est au nord-ouest, jusqu'aux bâtiments), à hauteur de poitrine de Kéo, son chaperon d'ardoise ; il ne s'ouvre
+ * nulle part. Côté montagne (au nord-est et à l'est) et face à l'anse (au sud-est, où l'herbe et une grève séparent la place
+ * des nuages : la caméra d'arrivée y voit la bande de nuages sans regarder par-dessus le muret, point 21), la place rejoint
+ * l'herbe par une bordure d'ardoise basse, sans marche.
+ */
+export const PARVIS_ROUND = { center: { x: 18, z: 18.5 }, rx: 26, rz: 13.5, sides: 12, wall: { from: 2, to: 8 } } as const;
+
+/** Les coins de la place ronde, dans son repère, depuis l'est, dans le sens des aiguilles d'une montre vu d'en haut. */
+export const PARVIS_CORNERS: readonly Vec2[] = Array.from({ length: PARVIS_ROUND.sides }, (_, k) => {
+  const a = (2 * Math.PI * k) / PARVIS_ROUND.sides;
+  return { x: PARVIS_ROUND.center.x + PARVIS_ROUND.rx * Math.cos(a), z: PARVIS_ROUND.center.z + PARVIS_ROUND.rz * Math.sin(a) };
+});
+
+/**
+ * Le pavage du Parvis, dans son repère : le bout où l'on arrive, à côté de l'aire, et la boîte de la place ronde
+ * (`PARVIS_ROUND`, que lisent la flore et le toucher du lieu de départ).
+ */
 export const PARVIS_PAVING = {
-  quay: { x0: 24, x1: 30, z0: 18, z1: 22 },
-  square: { x0: -8, x1: 44, z0: 6.5, z1: 30 },
+  quay: { x0: PARVIS_QUAY_SPOT[0] - 3, x1: PARVIS_QUAY_SPOT[0] + 3, z0: PARVIS_QUAY_SPOT[1] - 2, z1: PARVIS_QUAY_SPOT[1] + 2 },
+  square: { x0: PARVIS_ROUND.center.x - PARVIS_ROUND.rx, x1: PARVIS_ROUND.center.x + PARVIS_ROUND.rx, z0: PARVIS_ROUND.center.z - PARVIS_ROUND.rz, z1: PARVIS_ROUND.center.z + PARVIS_ROUND.rz },
 } as const;
 
 /** Les bâtiments du Parvis dans son repère : la marche libre les contourne. */
 export const PARVIS_BUILDINGS = { x0: 3.6, x1: 38.4, z0: 1.1, z1: 6.4 } as const;
 
-/** L'aire de la Nef, dans le repère du Parvis : son centre, son rayon, la hauteur de sa pierre (posée sur la place). */
-export const PARVIS_PAD = { center: { x: 15, z: 21 }, radius: 4.5, deck: PARVIS_LEVEL + 0.08 } as const;
+/**
+ * L'aire de la Nef, dans le repère du Parvis : son centre, son rayon, la hauteur de sa pierre (posée sur la place) ; à
+ * près de huit unités du muret (proposition du Versant, § 2) et des façades ; à l'ouest du milieu de la place, pour que la
+ * caméra d'arrivée, au téléphone en paysage, ne coupe pas l'aéronef (relecture des lieux, point 21).
+ */
+export const PARVIS_PAD = { center: { x: 10, z: 18.8 }, radius: 4.5, deck: PARVIS_LEVEL + 0.08 } as const;
 
 const PARVIS_COS = Math.cos(PARVIS.yaw);
 const PARVIS_SIN = Math.sin(PARVIS.yaw);
@@ -335,9 +404,21 @@ export function parvisFloor(x: number, z: number): number | null {
     dz = z - PARVIS.origin.z;
   const lx = dx * PARVIS_COS - dz * PARVIS_SIN;
   const lz = dx * PARVIS_SIN + dz * PARVIS_COS;
-  const { quay: q, square: s } = PARVIS_PAVING;
-  const inside = (lx >= q.x0 && lx <= q.x1 && lz >= q.z0 && lz <= q.z1) || (lx >= s.x0 && lx <= s.x1 && lz >= s.z0 && lz <= s.z1);
+  const { quay: q } = PARVIS_PAVING;
+  const inside = (lx >= q.x0 && lx <= q.x1 && lz >= q.z0 && lz <= q.z1) || insideParvisRound(lx, lz);
   return inside ? PARVIS_LEVEL : null;
+}
+
+/** Un point du repère du Parvis est-il sur la place ronde (le polygone convexe de ses coins) ? Sans rien allouer. */
+function insideParvisRound(lx: number, lz: number): boolean {
+  const n = PARVIS_CORNERS.length;
+  for (let k = 0; k < n; k++) {
+    const a = PARVIS_CORNERS[k],
+      c = PARVIS_CORNERS[(k + 1) % n];
+    // Les coins tournent dans le sens des aiguilles d'une montre vu d'en haut (x à l'est, z au sud) : le dedans est à droite.
+    if ((c.x - a.x) * (lz - a.z) - (c.z - a.z) * (lx - a.x) < 0) return false;
+  }
+  return true;
 }
 
 /** Le lieu de départ du 3e : à côté de l'aire du Parvis (le nœud a le nom du quai de l'Escale, que la page connaît). */
@@ -372,12 +453,17 @@ export const PATH_NODES_3E: readonly PathNode[] = [
   { id: DEPARTURE_3E.node, at: DEPARTURE_3E.at },
   ...PARVIS_NODES.map(({ id, at }) => ({ id, at: PARVIS.toWorld(at[0], at[1]) })),
   // Le Versant.
-  node('ve-1', [760, 945]),
+  // Un peu au nord de l'anse de nuages (lot du Versant).
+  node('ve-1', [760, 925]),
   node('ve-2', [900, 905]),
   node('ve-3', [1075, 870]),
   node('ve-4', [1225, 860]),
   node('ve-5', [985, 760]),
   node('ve-6', [1060, 560]),
+  // Le coude du Jardin, au sud-ouest de ses carrés : le chemin arrive à sa porte par le sud (relecture des lieux, correction 1),
+  // en deux angles ouverts, à plus de deux unités du muret (relecture du Versant par le directeur artistique, (a) 8).
+  node('ve-7', [965.7, 983.4]),
+  node('ve-8', [984.8, 993.5]),
   node('gla-v', [565, 790]),
   node('col-v', [1105, 425]),
   node('arc-v', [1372, 766]),
@@ -397,6 +483,9 @@ export const PATH_NODES_3E: readonly PathNode[] = [
   node('sa1-a', [1790, 728]),
   node('sa1-b', [1872, 885]),
   node('pr-2', [1935, 905]),
+  // Le coude de la Lutherie, au nord-est de l'atelier : le chemin arrive à sa porte, à l'est (relecture des lieux,
+  // correction 3), en un angle ouvert, loin du coin de la galerie (relecture du Versant, (b) 10).
+  node('pr-3', [2022, 971]),
   node('sa2-a', [1645, 748]),
   node('sa2-b', [1596, 972]),
 ];
@@ -419,7 +508,9 @@ export const PATH_EDGES_3E: readonly (readonly [string, string])[] = [
   [portNode('chantier'), 'par-1'],
   ['par-1', 've-1'],
   ['ve-1', 've-2'],
-  ['ve-2', 'jardin'],
+  ['ve-2', 've-7'],
+  ['ve-7', 've-8'],
+  ['ve-8', 'jardin'],
   ['ve-2', 've-3'],
   ['ve-3', 'grenier'],
   ['grenier', 've-4'],
@@ -454,9 +545,12 @@ export const PATH_EDGES_3E: readonly (readonly [string, string])[] = [
   ['arc-p', 'pr-1'],
   ['pr-1', 'sa1-a'],
   ['sa1-a', 'sa1-b'],
-  ['sa1-b', 'coupole'],
+  // La Coupole par l'est, depuis `pr-2` : sa porte au sud-est de la salle (relecture des lieux, correction 2, et du Versant,
+  // (b) 1), le chemin ne passe jamais devant la vue d'arrivée.
+  ['pr-2', 'coupole'],
   ['sa1-b', 'pr-2'],
-  ['pr-2', 'lutherie'],
+  ['pr-2', 'pr-3'],
+  ['pr-3', 'lutherie'],
   ['pr-1', 'sa2-a'],
   ['sa2-a', 'sa2-b'],
   ['sa2-b', 'ondes'],
@@ -486,9 +580,11 @@ export const LANDS_3E: readonly Land[] = [
  * (Cirque), le Cèdre (Prairies). Ils se construisent avec leur lot.
  */
 export const DETOUR_SPOTS_3E = {
-  cadran: fromPlan3e([800, 860]),
+  cadran: fromPlan3e([1060, 760]),
   bergerie: fromPlan3e([330, 270]),
-  lac: fromPlan3e([720, 105]),
+  // Le Lac : 13 unités au sud de sa place du plan ([720, 105], sur la pente de la levée nord, où l'eau ne tiendrait
+  // pas à plat), sur le replat du creux (le lot du Cirque).
+  lac: fromPlan3e([698, 148]),
   cedre: fromPlan3e([1640, 1000]),
 } as const;
 
@@ -502,9 +598,11 @@ export const RESERVED_3E = {
 /**
  * Le zeppelin des Ferrailleurs (fiche, § 6 et § 9, décision du 22 octobre 2026) : amarré par le nez à un mât de ferraille
  * sur un rocher à part, au nord-est de la plus grande des Prairies, loin de toute rive ; son enveloppe part du mât vers
- * le nord-est. Immobile tout le niveau. `rock` : le rocher et son rayon ; `tail` : le bout de l'enveloppe.
+ * le nord-nord-ouest (cap 330° environ ; proposition des Prairies, § 7, correction 20 du directeur artistique : au lot 1,
+ * vers le nord-est, dans la ligne du regard du Versant et des arches, on le voyait par le bout). Immobile tout le
+ * niveau. `rock` : le rocher et son rayon ; `tail` : le bout de l'enveloppe.
  */
-export const ZEPPELIN_3E = { rock: fromPlan3e([1990, 330]), rockRadius: 5, tail: fromPlan3e([2100, 255]) } as const;
+export const ZEPPELIN_3E = { rock: fromPlan3e([1990, 330]), rockRadius: 5, tail: fromPlan3e([1935, 235]) } as const;
 
 /**
  * Le terrain : l'étendue de la carte de hauteurs (le plan de 100 à 2 140 pixels d'ouest en est, de 0 à 1 180 du nord au

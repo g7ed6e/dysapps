@@ -185,19 +185,21 @@ export const SHADOW_DIR_4E = (() => {
 
 /**
  * Le ciel du 3e (lot 1 du monde ouvert du 3e, GD-25 : un matin froid et clair au-dessus des nuages) : le bleu pâle de
- * l'horizon, de la teinte des nuages (#E4EAF1), monte vers le bleu franc du zénith (#3A86CC), jamais nuit.
+ * l'horizon (#C8DBEE) monte vers le bleu franc du zénith (#3A86CC), jamais nuit. Les Ondes (lot 4, relecture des
+ * Alpages, (b) 4) : l'horizon du ciel est un cran plus bleu que les nuages (#E4EAF1, le brouillard du lointain) ; la mer
+ * de nuages, blanchie au loin par le brouillard, s'arrête sur le ciel d'un bord net, au lieu de s'y fondre.
  */
 const SKY_STOPS_3E: readonly { at: number; color: number }[] = [
-  { at: 0, color: 0xe4eaf1 },
-  { at: 3, color: 0xc6dbef },
+  { at: 0, color: 0xc8dbee },
+  { at: 3, color: 0xbad3ec },
   { at: 8, color: 0xa6c9ea },
   { at: 22, color: 0x86b4e0 },
   { at: 48, color: 0x5e9cd6 },
   { at: 90, color: 0x3a86cc },
 ];
 
-/** La couleur de l'horizon du 3e : le brouillard du lointain et le bas du dôme, la teinte des nuages (#E4EAF1). */
-export const HORIZON_COLOR_3E = SKY_STOPS_3E[0].color;
+/** La couleur du brouillard du lointain du 3e : la teinte des nuages (#E4EAF1), un cran plus claire que le bas du ciel. */
+export const HORIZON_COLOR_3E = 0xe4eaf1;
 
 /**
  * La lumière du 3e (valeurs de l'artiste technique 3D, à valider sur captures par le directeur artistique) : un soleil

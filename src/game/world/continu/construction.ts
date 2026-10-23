@@ -170,6 +170,23 @@ const TRACE_STAGE: Readonly<Partial<Record<PlaceId, Stage>>> = {
   jonction: placeArt('jonction')!.traceStage,
   veillee: placeArt('veillee')!.traceStage,
   basilique: placeArt('basilique')!.traceStage,
+  // Le Belvédère (le Versant du 3e) : chaque trace sa partie (3+1+1).
+  belvedere: placeArt('belvedere')!.traceStage,
+  grenier: placeArt('grenier')!.traceStage,
+  abri: placeArt('abri')!.traceStage,
+  jardin: placeArt('jardin')!.traceStage,
+  kiosque: placeArt('kiosque')!.traceStage,
+  maquette: placeArt('maquette')!.traceStage,
+  tribune: placeArt('tribune')!.traceStage,
+  douane: placeArt('douane')!.traceStage,
+  ermitage: placeArt('ermitage')!.traceStage,
+  palais: placeArt('palais')!.traceStage,
+  coupole: placeArt('coupole')!.traceStage,
+  lutherie: placeArt('lutherie')!.traceStage,
+  ondes: placeArt('ondes')!.traceStage,
+  fanal: placeArt('fanal')!.traceStage,
+  rampe: placeArt('rampe')!.traceStage,
+  standard: placeArt('standard')!.traceStage,
 };
 
 /**

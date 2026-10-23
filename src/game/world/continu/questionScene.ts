@@ -258,6 +258,38 @@ const SCENE_SPOT: Record<PlaceId, { dx: number; dz: number; half: [number, numbe
   jonction: placeArt('jonction')!.sceneSpot,
   veillee: placeArt('veillee')!.sceneSpot,
   basilique: placeArt('basilique')!.sceneSpot,
+  // Le Belvédère (le Versant du 3e) : au pied du gnomon, côté est de la terrasse.
+  belvedere: placeArt('belvedere')!.sceneSpot,
+  // Le Grenier : devant la porte, sous l'avant-toit.
+  grenier: placeArt('grenier')!.sceneSpot,
+  // L'Abri : devant l'abri à persiennes, la table de relevés à droite.
+  abri: placeArt('abri')!.sceneSpot,
+  // Le Jardin : entre les deux carrés du sud, la fontaine devant.
+  jardin: placeArt('jardin')!.sceneSpot,
+  // Le Kiosque : au sud-ouest du socle, le comptoir devant, entre les poteaux.
+  kiosque: placeArt('kiosque')!.sceneSpot,
+  // La Maquette : au bord du relief, côté sud-est, dehors, entre deux poteaux.
+  maquette: placeArt('maquette')!.sceneSpot,
+  // La Tribune : dans l'arène, au pied du premier gradin, l'estrade devant.
+  tribune: placeArt('tribune')!.sceneSpot,
+  // La Douane : au sud-est du guichet, dehors, le comptoir devant.
+  douane: placeArt('douane')!.sceneSpot,
+  // L'Ermitage : à l'est de la colonnade, sur les aiguilles.
+  ermitage: placeArt('ermitage')!.sceneSpot,
+  // Le Palais : sur l'herbe devant l'aile gauche, à gauche de l'escalier, la console des tasses devant.
+  palais: placeArt('palais')!.sceneSpot,
+  // La Coupole : au seuil, à l'est des bancs, la salle à droite.
+  coupole: placeArt('coupole')!.sceneSpot,
+  // La Lutherie : sur l'herbe au nord de l'atelier, devant son pignon, la Coupole au loin.
+  lutherie: placeArt('lutherie')!.sceneSpot,
+  // Les Ondes : sur l'herbe au pied du grand mât, devant le pavillon d'écoute, la mer de nuages au loin.
+  ondes: placeArt('ondes')!.sceneSpot,
+  // Le Fanal : sur l'herbe grise du creux, devant la porte des salles du socle, la mer de nuages au nord-ouest.
+  fanal: placeArt('fanal')!.sceneSpot,
+  // La Rampe : sur l'herbe au sud de la rampe, à l'ouest de la porte, la rampe de trois quarts et le Fanal au fond.
+  rampe: placeArt('rampe')!.sceneSpot,
+  // Le Standard : sur l'herbe devant la salle, à gauche du chemin, la salle et le Lac au-delà.
+  standard: placeArt('standard')!.sceneSpot,
 };
 
 /** Les points relevés sous la plate-forme d'une scène : ses coins et son milieu, ou tous les pas d'une unité (`fine`). */
@@ -555,6 +587,38 @@ const ANSWER_OBJECT: Record<PlaceId, 'cloche' | 'panier' | 'levier' | 'caisse' |
   veillee: 'lieu',
   // La Basilique : les blocs taillés, sur l'établi.
   basilique: 'lieu',
+  // Le Belvédère : les galets plats de granit, sur un madrier.
+  belvedere: 'lieu',
+  // Le Grenier : les écuelles de bois, sur une planche.
+  grenier: 'lieu',
+  // L'Abri : les gobelets de fer, sur une planche.
+  abri: 'lieu',
+  // Le Jardin : les pots de terre, sur une margelle.
+  jardin: 'lieu',
+  // Le Kiosque : les rouleaux de papier, sur une planche.
+  kiosque: 'lieu',
+  // La Maquette : les pions de bois en forme de maison, sur un rebord de table.
+  maquette: 'lieu',
+  // La Tribune : les galets ronds, sur un rebord de granit.
+  tribune: 'lieu',
+  // La Douane : les clés de fer, pendues à un râtelier.
+  douane: 'lieu',
+  // L'Ermitage : les pommes de pin, sur un rebord de pierre.
+  ermitage: 'lieu',
+  // Le Palais : les tasses de porcelaine, sur le plateau d'une console.
+  palais: 'lieu',
+  // La Coupole : les livres fermés et leurs signets de cuir, sur une table basse.
+  coupole: 'lieu',
+  // La Lutherie : les chevilles de bois, en rang sur un petit établi.
+  lutherie: 'lieu',
+  // Les Ondes : les boutons ronds des postes, en rang sur une petite table.
+  ondes: 'lieu',
+  // Le Fanal : les verres taillés, en rang sur une banquette de velours.
+  fanal: 'lieu',
+  // La Rampe : les poulies de fer bruni, en rang sur un établi.
+  rampe: 'lieu',
+  // Le Standard : les fiches de bois à tête ronde, en rang sur un petit bureau.
+  standard: 'lieu',
 };
 
 /** La hauteur et la demi-largeur de chaque objet, à l'échelle 1. */

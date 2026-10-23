@@ -1,0 +1,9 @@
+{
+  "id": "maths-3e-numbers-2",
+  "biome": "maths-3e-numbers",
+  "name": "Le toit de la réserve",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit d’ardoise sur la réserve. La neige peut tomber."
+}

@@ -139,6 +139,10 @@ const BUILDING_OF: Record<IleId, BuildingStyle> = {
   // La Jonction, lieu du monde ouvert seulement (GD-24) : de même, une maison jamais dessinée, dont les cases donnent
   // ses parties au monde ouvert, en 3 + 1 + 1.
   'french-4e-sentence': { kind: 'maison' },
+  // Le Grenier et la Lutherie, lieux du monde ouvert seulement du 3e (GD-24) : de même, deux maisons jamais dessinées,
+  // dont les cases donnent leurs parties au monde ouvert, en 3 + 1 + 1.
+  'maths-3e-numbers': { kind: 'maison' },
+  'french-3e-language': { kind: 'maison' },
 };
 
 // ---------- Outils ----------

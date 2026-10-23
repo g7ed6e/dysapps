@@ -1,0 +1,222 @@
+{
+  "id": "maths-3e-numbers-zero-product-3",
+  "biome": "maths-3e-numbers",
+  "type": "zero-product",
+  "level": 3,
+  "instruction": "Mets le problème en équation, ou résous-le. La méthode est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-zero-product-3-0",
+      "prompt": "Le triple d’un nombre, plus 5, vaut 20. Quelle équation traduit la phrase ?",
+      "spoken": "Le triple d’un nombre, plus 5, vaut 20. Quelle équation traduit la phrase ?",
+      "choices": [
+        "3x + 5 = 20",
+        "3(x + 5) = 20",
+        "x + 3 + 5 = 20"
+      ],
+      "answer": "3x + 5 = 20",
+      "hint": "Le triple de x, c’est 3x. Puis on ajoute 5.",
+      "explanation": "Le triple du nombre, 3x, plus 5 : 3x + 5 = 20. 3(x + 5) ajoute 5 avant de tripler. x + 3 + 5 ajoute 3 au lieu de tripler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-3-1",
+      "prompt": "Le double d’un nombre, moins 4, vaut 10. Le nombre est …",
+      "spoken": "Le double d’un nombre, moins 4, vaut 10. Le nombre est (mot manquant).",
+      "choices": [
+        "3",
+        "7",
+        "14"
+      ],
+      "answer": "7",
+      "hint": "2x − 4 = 10 : ajoute 4 des deux côtés, puis divise par 2.",
+      "explanation": "2x − 4 = 10 donne 2x = 14, puis x = 7. Vérifie : 2 × 7 − 4 = 10. 3 enlève 4 au lieu de l’ajouter. 14 oublie de diviser par 2.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-3-2",
+      "prompt": "Léa a x ans. Son père a 3 fois son âge. À eux deux, ils ont 48 ans. Quelle équation ?",
+      "spoken": "Léa a x ans. Son père a 3 fois son âge. À eux deux, ils ont 48 ans. Quelle équation ?",
+      "choices": [
+        "x + 3x = 48",
+        "3x = 48",
+        "x + 3 = 48"
+      ],
+      "answer": "x + 3x = 48",
+      "hint": "À eux deux : l’âge de Léa plus l’âge de son père.",
+      "explanation": "Léa a x ans, son père 3x : x + 3x = 48. 3x = 48 oublie l’âge de Léa. x + 3 ajoute 3 ans au lieu de tripler.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-3-3",
+      "prompt": "Léa a x ans, son père 3 fois plus. À eux deux, ils ont 48 ans. Léa a …",
+      "spoken": "Léa a x ans, son père 3 fois plus. À eux deux, ils ont 48 ans. Léa a (mot manquant).",
+      "choices": [
+        "12 ans",
+        "16 ans",
+        "36 ans"
+      ],
+      "answer": "12 ans",
+      "hint": "x + 3x = 4x.",
+      "explanation": "4x = 48, donc x = 12 : Léa a 12 ans, son père 36. Vérifie : 12 + 36 = 48. 16 divise 48 par 3 au lieu de 4. 36 ans, c’est l’âge du père.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-3-4",
+      "prompt": "Un rectangle a pour longueur x + 3 et pour largeur x. Son périmètre vaut 26. Quelle équation ?",
+      "spoken": "Un rectangle a pour longueur x plus 3 et pour largeur x. Son périmètre vaut 26. Quelle équation ?",
+      "choices": [
+        "2x + 3 = 26",
+        "2(x + 3) + 2x = 26",
+        "x(x + 3) = 26"
+      ],
+      "answer": "2(x + 3) + 2x = 26",
+      "hint": "Le périmètre : deux longueurs et deux largeurs.",
+      "explanation": "Deux longueurs, 2(x + 3), et deux largeurs, 2x : 2(x + 3) + 2x = 26. x(x + 3), c’est l’aire. 2x + 3 ne compte qu’une longueur et une largeur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-3-5",
+      "prompt": "Un rectangle a pour longueur x + 3 et pour largeur x. Son périmètre vaut 26. Alors x vaut …",
+      "spoken": "Un rectangle a pour longueur x plus 3 et pour largeur x. Son périmètre vaut 26. Alors x vaut (mot manquant).",
+      "choices": [
+        "5",
+        "5,75",
+        "11,5"
+      ],
+      "answer": "5",
+      "hint": "2(x + 3) + 2x = 4x + 6.",
+      "explanation": "4x + 6 = 26 donne 4x = 20, puis x = 5. Vérifie : 2 × 8 + 2 × 5 = 26. 5,75 oublie de doubler le 3. 11,5 vient de 2x + 3 = 26.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-3-6",
+      "prompt": "Le carré d’un nombre négatif vaut 36. Ce nombre est …",
+      "spoken": "Le carré d’un nombre négatif vaut 36. Ce nombre est (mot manquant).",
+      "choices": [
+        "−18",
+        "−6",
+        "6"
+      ],
+      "answer": "−6",
+      "hint": "x² = 36 a deux solutions : laquelle est négative ?",
+      "explanation": "x² = 36 donne x = 6 ou x = −6 ; le nombre est négatif : −6. 6 est positif. −18 est la moitié de 36, avec un signe moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-zero-product-3-7",
+      "prompt": "Deux places de cinéma et un menu à 7 € coûtent 25 €. Une place coûte …",
+      "spoken": "Deux places de cinéma et un menu à 7 euros coûtent 25 euros. Une place coûte (mot manquant).",
+      "choices": [
+        "9 €",
+        "12,50 €",
+        "18 €"
+      ],
+      "answer": "9 €",
+      "hint": "2x + 7 = 25.",
+      "explanation": "2x + 7 = 25 donne 2x = 18, puis x = 9 €. Vérifie : 2 × 9 + 7 = 25. 18 € oublie de diviser par 2. 12,50 €, c’est 25 ÷ 2, sans enlever le menu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Mettre un problème en équation",
+          "lines": [
+            "Choisis l’inconnue : x est le nombre cherché.",
+            "Traduis chaque phrase en calcul avec x.",
+            "Écris l’égalité, puis résous-la.",
+            "Vérifie la solution dans l’énoncé."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien résolu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

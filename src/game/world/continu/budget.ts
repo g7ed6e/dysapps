@@ -25,8 +25,9 @@ import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
 import type { ItemScene } from './questions';
-import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
+import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_3E, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
+import { farArchipelagos3e } from './finalView3e';
 import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, habitantPawn, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { hasWorldHabitant } from './worldHabitants';
 import { landTileCounts } from './flora';
@@ -44,11 +45,15 @@ import { dalleFacets } from './dalle4e';
 import { epaveFacets } from './epave4e';
 import { recoinFacets } from './recoin4e';
 import { replatFacets } from './replat4e';
+import { cadranFacets } from './cadran3e';
+import { bergerieFacets } from './bergerie3e';
+import { cedreFacets } from './cedre3e';
+import { lacFacets } from './lac3e';
 import { CRIQUE_SITE, NEF_4E_MODEL_TRIANGLES, criqueDecorFacets, nef4eSiteTriangles } from './crique4e';
 import { NETWORK_4E, pathRibbons4e } from './paths4e';
 import { TERRAIN_4E } from './plan4e';
 import { buildHeightField4e, groundOn4e, mapOverlay4e, tileCounts4e } from './terrain4e';
-import { PARVIS_SITE, parvisDecorFacets, zeppelinFacets } from './parvis3e';
+import { NEF_PARURES, PARVIS_SITE, nefParuresFacets, parvisDecorFacets, zeppelinFacets } from './parvis3e';
 import { NETWORK_3E, pathRibbons3e } from './paths3e';
 import { TERRAIN_3E } from './plan3e';
 import { buildHeightField3e, ground3e, mapOverlay3e, tileCounts3e } from './terrain3e';
@@ -158,10 +163,38 @@ export const PLACE_RUIN_TRIANGLES_MAX_5E = 1_200;
 export const PLACE_TRIANGLES_MAX_4E = 1_600;
 export const PLACE_RUIN_TRIANGLES_MAX_4E = 1_200;
 /**
+ * Le plafond d'un lieu du 3e, ruine, étapes et traces montrées ensemble, en triangles, et celui de sa ruine : ceux du 4e
+ * (proposition du Versant, § 0, décision du mainteneur) ; le grand lieu du 3e, le Belvédère, a le sien (fiche du 3e, § 8 :
+ * 1 600 et le surcoût du grand lieu, environ 800).
+ */
+export const PLACE_TRIANGLES_MAX_3E = 1_600;
+export const PLACE_RUIN_TRIANGLES_MAX_3E = 1_200;
+export const GRAND_PLACE_TRIANGLES_MAX_3E = 2_400;
+
+/**
  * Le plafond du pont de l'Épaule relié, en triangles (intention, « Le budget ») : l'arche, le tablier, les rails et leurs
  * traverses, les deux parapets et leurs chaperons, les quatre lanternes, culées comprises (./bridges.test.ts le vérifie).
  */
 export const EPAULE_BRIDGE_TRIANGLES = 1_300;
+
+/**
+ * Le plafond du pont du glacier relié, au 3e (proposition des Alpages, § 2 : « environ 1 200, comme un pont du 4e ») :
+ * l'arche de granit en dos d'âne, ses culées, son chemin de pierre claire, ses deux parapets et leurs chaperons d'ardoise.
+ */
+export const GLACIER_BRIDGE_TRIANGLES_3E = 1_200;
+
+/**
+ * Le plafond de la galerie du col reliée, au 3e (proposition du Cirque, § 2 : « environ 800 ») : ses arcades, son mur
+ * plein, son toit d'ardoise et sa neige, son dallage, les deux murets d'éboulis rangés.
+ */
+export const COL_GALLERY_TRIANGLES_3E = 800;
+
+/**
+ * Le plafond des arches basses reliées et des deux petites arches des Prairies, au 3e (proposition des Prairies, § 2 :
+ * « environ 2 400 avec les deux petites arches ») : leurs chaussées, leurs voûtes et leurs claveaux, leurs parapets à
+ * chaperon d'ardoise, le chemin de pierre claire.
+ */
+export const ARCHES_TRIANGLES_3E = 2_400;
 
 /**
  * Le plafond du pont du ravin en arche, tombé ou relié (les Coteaux du 4e ; intention du directeur artistique du 22
@@ -625,7 +658,7 @@ const PLAN_4E = planFor('4e');
 const LINKED_LANDS_4E = linkedLands(PLAN_4E);
 
 /** Le poste du départ du 4e : la Nef dans son maillage à part. */
-export type OpenWorldCost4e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'départ' };
+export type OpenWorldCost4e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldCost['poste'] | 'départ' | 'vue finale' };
 
 /** Le sol du 4e, compté comme celui du 6e et du 5e : autour des points de son réseau, dans huit directions. */
 function groundCost4e(): { triangles: number; calls: number; near: number; far: number } {
@@ -821,21 +854,37 @@ function groundCost3e(): { triangles: number; calls: number; near: number; far: 
 }
 
 /**
- * Le Parvis au plus chargé (comme l'Escale, `PORT_WORST`) et son décor (le pic ; dans le monde, pas sur la Carte, le
- * zeppelin des Ferrailleurs sur son rocher), dans le maillage des lieux : aucun appel de plus.
+ * Le Parvis au plus chargé (comme l'Escale, `PORT_WORST` ; sa place ronde et son muret, lot du Versant) et son décor (le
+ * pic ; dans le monde, pas sur la Carte, le zeppelin des Ferrailleurs sur son rocher), les trois parures de l'aéronef
+ * posées (le pire, avant que leur fiche ne les montre : GD-25), dans le maillage des lieux : aucun appel de plus.
  */
 function parvisCost(onMap: boolean): number {
-  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles + (onMap ? 0 : zeppelinFacets().triangles);
+  return portFacets(PORT_WORST, { assembling: false }, PARVIS_SITE).triangles + parvisDecorFacets().triangles + nefParuresFacets(NEF_PARURES).triangles + (onMap ? 0 : zeppelinFacets().triangles);
 }
 
 /**
- * Les lieux du 3e : les seize ruines, leurs trois passages au plus chargé de leurs deux états, le Parvis (sur la Carte,
+ * Les lieux du 3e : les seize ruines (un lieu construit, sa ruine et ses étapes, et les traces de ses missions : le
+ * Belvédère, au lot du Versant), leurs trois passages au plus chargé de leurs deux états, le Parvis (sur la Carte,
  * `onMap`, sans le zeppelin) ; deux maillages.
  */
 function placesCost3e(onMap = false): { triangles: number; calls: number } {
-  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles, 0);
+  const ruins = PLAN_3E.places.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + (p.scenes.length ? placeTrace(p.id, p.scenes).triangles : 0) + (onMap ? 0 : restorationCost3e(p.id)), 0);
   const passages = LINKED_LANDS_3E.reduce((s, l) => s + Math.max(bridgeFacets(l, false).triangles, bridgeFacets(l, true).triangles), 0);
   return { triangles: ruins + passages + parvisCost(onMap), calls: 2 };
+}
+
+/**
+ * Ce qu'un lieu du 3e montre hors de son modèle, à son état le plus chargé : sa restauration (`PlaceArt.restoration` :
+ * au Fanal, la fin des Ferrailleurs, les pièces de la gondole puis le râtelier, Grappin et la lumière de leur port) et ce
+ * qu'il pose au-delà de son emprise (`PlaceArt.reach` : au Standard, la ligne des poteaux et leurs fils jusqu'au Fanal) ;
+ * dans le monde seulement, jamais sur la Carte.
+ */
+function restorationCost3e(id: (typeof PLAN_3E.places)[number]['id']): number {
+  const art = placeArt(id);
+  const origin = { x: 0, y: 0, z: 0 };
+  const shown = art?.restoration ? Math.max(art.restoration.draw(origin, 0).triangles, art.restoration.draw(origin, Infinity).triangles) : 0;
+  const far = art?.reach ? Math.max(art.reach(origin, () => false)?.triangles ?? 0, art.reach(origin, () => true)?.triangles ?? 0) : 0;
+  return shown + far;
 }
 
 /** La brume des terres fermées du 3e (au départ, les trois) : aucun voile retenu (retouche 1 du lot 1), aucun appel alors. */
@@ -847,19 +896,55 @@ function veilCost3e(): { triangles: number; calls: number } {
 /** L'aéronef du 3e, le modèle du 4e entier (`3-aeronef/final-1464.glb`), sur son aire (dessinée avec les chemins) : dans le maillage des lieux. */
 const nefCost3e = (): { triangles: number; calls: number } => ({ triangles: NEF_4E_MODEL_TRIANGLES, calls: 0 });
 
-/** La pose au 3e : un passage qui se relève (aucun lieu n'a encore d'étapes). Un appel. */
+/** La pose au 3e : un passage qui se relève, ou une partie d'un lieu construit qui descend (le Versant). Un appel. */
 function poseCost3e(): { triangles: number; calls: number } {
-  return { triangles: Math.max(...LINKED_LANDS_3E.map((l) => bridgeLay(l).facets.triangles)), calls: 1 };
+  const field = buildHeightField3e();
+  const ground = ground3e(field);
+  const lays = Math.max(...LINKED_LANDS_3E.map((l) => bridgeLay(l).facets.triangles));
+  const parts = Math.max(0, ...PLAN_3E.places.filter((p) => p.scenes.length).map((p) => constructionFacets(p.id, [WHOLE], ground).triangles));
+  return { triangles: Math.max(lays, parts), calls: 1 };
+}
+
+/**
+ * Une question du 3e, au pire (le Versant) : le lieu au repos et six objets choisis, dans un maillage, et la réaction
+ * dans un autre ; deux appels.
+ */
+function questionCost3e(): { triangles: number; calls: number } {
+  let triangles = 0;
+  for (const p of PLAN_3E.places.filter((q) => q.scenes.length)) {
+    const s = sceneSpot(p.id);
+    const points = Array.from({ length: 6 }, (_, i) => ({ x: s.x - 5 + 2 * i, y: s.y, z: s.z + 6 }));
+    const item = itemScene(p.id, { kind: 'rest' }, true, points, 1);
+    const objects = answerObjects(scenePlace(p.id), points, 1, { picked: [0, 1, 2, 3, 4, 5] });
+    triangles = Math.max(triangles, item.still.triangles + objects.triangles + (item.reaction?.facets.triangles ?? 0));
+  }
+  return { triangles, calls: 2 };
+}
+
+/**
+ * La scénette du 3e, la plus chargée : son décor de près, abords compris, dans un maillage ; l'habitant en modèle 3D
+ * (`3e-habitant-<lieu>`, 23 octobre 2026), au plus `HABITANT_TRIANGLES_3E`, dans un maillage à part : un appel de plus.
+ */
+function scenetteCost3e(): { triangles: number; calls: number } {
+  const places = PLAN_3E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
+  const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_3E : scenetteDecor(place, open).triangles);
+  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
 /**
  * Ce que coûte le monde ouvert du 3e (lot 1 : les Îles du Ciel en grandes masses) : le ciel, le sol et ses pins, la mer
  * de nuages (le plan de l'eau), les chemins (le liseré d'ardoise des rives, les deux petites arches et l'aire de la Nef
  * compris), les lieux et leurs passages, le Parvis et son décor, la brume des terres fermées (au départ, les trois),
- * Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, un passage qui se relève) ou le départ (`depart`, la Nef et
- * l'obstacle dans deux maillages à part). Ni Détour, ni faune, ni scénette au lot 1.
+ * Kéo, l'aéronef ; puis, selon `view` : le monde (`monde`, un passage qui se relève ou une partie qui descend), la
+ * scénette ouverte (`scenette`, la question et le décor de près d'un lieu construit, l'habitant en modèle 3D) ou le départ
+ * (`depart`, la Nef et l'obstacle dans deux maillages à part). Pas de faune.
  */
-export function openWorldCost3e(view: 'monde' | 'depart' = 'monde'): OpenWorldCost4e[] {
+/**
+ * Le monde ouvert du 3e : `scenette` (une question ouverte), `monde` (la pose à sa place), `depart` (l'aéronef qui part),
+ * `finale` (la vue finale, GD-25 : les archipels au loin dans le maillage de la pose, à sa place ; ./finalView3e.ts).
+ */
+export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' | 'finale' = 'monde'): OpenWorldCost4e[] {
   const field = buildHeightField3e();
   const ground = groundCost3e();
   const paths = pathRibbons3e(ground3e(field));
@@ -870,16 +955,32 @@ export function openWorldCost3e(view: 'monde' | 'depart' = 'monde'): OpenWorldCo
     { poste: 'chemins', triangles: paths.triangles, calls: 1 },
     { poste: 'lieux', ...placesCost3e() },
     { poste: 'brume', ...veilCost3e() },
+    { poste: 'détours', triangles: detourCost3e(field), calls: 0 },
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost3e() },
-    ...(view === 'depart' ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }] : [{ poste: 'pose' as const, ...poseCost3e() }]),
+    ...(view === 'depart'
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }]
+      : view === 'finale'
+      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }]
+      : view === 'scenette'
+      ? [
+          { poste: 'question' as const, ...questionCost3e() },
+          { poste: 'scénette' as const, ...scenetteCost3e() },
+        ]
+      : [{ poste: 'pose' as const, ...poseCost3e() }]),
   ];
 }
+
+/** Les Détours du 3e, leur sente tracée : le Cadran (le Versant), la Bergerie (les Alpages), le Cèdre (les Prairies), le Lac (le Cirque). */
+const detourCost3e = (field: ReturnType<typeof buildHeightField3e>): number => {
+  const ground = ground3e(field);
+  return cadranFacets(true, ground).triangles + bergerieFacets(true, ground).triangles + cedreFacets(true, ground).triangles + lacFacets(true, ground).triangles;
+};
 
 /**
  * La Carte du 3e, en un seul plan : le ciel, toutes les terres de loin, la mer de nuages, les chemins, les lieux (deux
  * appels, le pire), le trait double des passages, les hachures du pic et des arêtes et la bande de la langue de glace
- * (dans le maillage des lieux), la brume des terres fermées, Kéo.
+ * (dans le maillage des lieux), le Cadran, la Bergerie, le Cèdre, le Lac et leur sente, la brume des terres fermées, Kéo.
  */
 export function mapCost3e(): { triangles: number; calls: number } {
   const field = buildHeightField3e();
@@ -889,7 +990,7 @@ export function mapCost3e(): { triangles: number; calls: number } {
   const marks = LINKED_LANDS_3E.reduce((s, l) => s + bridgeMapMark(l).triangles, 0) + mapOverlay3e().triangles;
   const veil = veilCost3e();
   return {
-    triangles: SKY.triangles + far + 2 + paths + places.triangles + marks + veil.triangles + KEO.triangles + nefCost3e().triangles,
+    triangles: SKY.triangles + far + 2 + paths + places.triangles + detourCost3e(field) + marks + veil.triangles + KEO.triangles + nefCost3e().triangles,
     calls: SKY.calls + 1 + 1 + 1 + places.calls + veil.calls + KEO.calls,
   };
 }

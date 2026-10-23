@@ -828,6 +828,12 @@ export interface GroundPaint {
   facet(a: P3, b: P3, c: P3): number;
   flat(x: number, z: number, h: number): number;
   foam(a: P3, b: P3, c: P3, detail: TileDetail, out: FacetBuilder | null): number;
+  /**
+   * De combien le haut de la jupe descend sous le bord de la tuile (0 par défaut) : au ras du sol, la jupe vue par la
+   * tranche, plus sombre que l'herbe, traçait un trait fin et droit au bord des tuiles (au 3e, relecture des Alpages,
+   * (a) 11).
+   */
+  readonly skirtDrop?: number;
 }
 
 const PAINT_6E: GroundPaint = { facet: facetColor, flat: flatColor, foam };
@@ -864,10 +870,13 @@ export function drawTileWith(f: HeightField, tx: number, tz: number, detail: Til
   for (const e of edges)
     for (let s = 0; s < n; s += k) {
       const ia = e.from[0] + (e.di / k) * s, ja = e.from[1] + (e.dj / k) * s;
-      const a = p(ia, ja), c = p(ia + e.di, ja + e.dj);
-      if (Math.max(a[1], c[1]) < HIDDEN_BELOW) continue;
+      const a0 = p(ia, ja), c0 = p(ia + e.di, ja + e.dj);
+      if (Math.max(a0[1], c0[1]) < HIDDEN_BELOW) continue;
       count += 2;
       if (!b) continue;
+      const drop = paint.skirtDrop ?? 0;
+      const a: P3 = [a0[0], a0[1] - drop, a0[2]];
+      const c: P3 = [c0[0], c0[1] - drop, c0[2]];
       const ad: P3 = [a[0], a[1] - SKIRT_DEPTH, a[2]];
       const cd: P3 = [c[0], c[1] - SKIRT_DEPTH, c[2]];
       // Le pan (a, c, c bas, a bas) regarde vers (dz, 0, −dx) : on le retourne s'il regarde vers le dedans.

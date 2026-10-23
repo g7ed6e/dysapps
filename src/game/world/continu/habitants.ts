@@ -5,6 +5,7 @@
 // près consulte (./scenette.ts : sans modèle, le pion dessiné en code ; avec, le décor sans son corps). Ce qui charge le
 // fichier et le dessine est dans la vue (../../importedCharacters.ts, `loadHabitant` ; ../../three/archipeo/habitantModels.ts).
 import { levelOfPlace, type PlaceId } from './levelPlan';
+import { isBuiltPlace3e } from './plan3e';
 import { isBuiltPlace4e } from './plan4e';
 import { isBuiltPlace5e } from './plan5e';
 import type { PlaceId as PlaceId6e } from './plan6e';
@@ -47,9 +48,10 @@ export const habitantModelName = (place: PlaceId): string => `${levelOfPlace(pla
  * le souffleur de verre de l'Étuve (lot 10), le riziculteur des Terrasses (lot 11), l'aubergiste de l'Auberge (lot 12),
  * la maçonne du Donjon (lot 13a), le conteur de l'Oracle (lot 13b), le signaleur du Sémaphore (lot 14), la peintre du
  * Gaillard (lot 15), la câbliste des Nacelles (lot 16) ; au 4e de même (./plan4e.ts, `BUILT_PLACES_4E`) : la chaudronnière de la Forge
- * (lot 2). Deux scénettes ne s'ouvrent jamais ensemble : aucun triangle de plus.
+ * (lot 2) ; au 3e de même (./plan3e.ts, `BUILT_PLACES_3E` : les seize, 23 octobre 2026). Deux scénettes ne s'ouvrent
+ * jamais ensemble : aucun triangle de plus.
  */
-export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || isBuiltPlace5e(place) || isBuiltPlace4e(place);
+export const hasHabitantModel = (place: PlaceId): boolean => levelOfPlace(place) === '6e' || isBuiltPlace5e(place) || isBuiltPlace4e(place) || isBuiltPlace3e(place);
 
 /** Le fichier du modèle, dans son dossier : une seule version, l'habitant ne se voit que de près, dans sa scénette. */
 export const HABITANT_FILE = 'habitant.glb';
@@ -66,6 +68,9 @@ export const HABITANT_TRIANGLES_5E = 8_000;
 
 /** Les triangles d'un modèle d'habitant du 4e, au plus : 8 000, comme au 5e (personnages/modeles.md ; un test les relit). */
 export const HABITANT_TRIANGLES_4E = 8_000;
+
+/** Les triangles d'un modèle d'habitant du 3e, au plus : 8 000, comme au 4e (personnages/modeles.md ; un test les relit). */
+export const HABITANT_TRIANGLES_3E = 8_000;
 
 /**
  * Les quarts de tour qui tournent un fichier face à la caméra de la scénette (vers +z, le sud), comme le pion : les

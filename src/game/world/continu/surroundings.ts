@@ -21,6 +21,10 @@ import { gabaritSurroundings } from './gabaritSurroundings';
 import { manufactureSurroundings } from './manufactureSurroundings';
 import { logeSurroundings } from './logeSurroundings';
 import { herbierSurroundings } from './herbierSurroundings';
+import { belvedereSurroundings } from './belvedereSurroundings';
+import { grenierSurroundings } from './grenierSurroundings';
+import { abriSurroundings } from './abriSurroundings';
+import { jardinSurroundings } from './jardinSurroundings';
 import { jonctionSurroundings } from './jonctionSurroundings';
 import { veilleeSurroundings } from './veilleeSurroundings';
 import { basiliqueSurroundings } from './basiliqueSurroundings';
@@ -111,6 +115,10 @@ export const SURROUNDINGS: Partial<Record<PlaceId, Surroundings>> = {
   jonction: jonctionSurroundings,
   veillee: veilleeSurroundings,
   basilique: basiliqueSurroundings,
+  belvedere: belvedereSurroundings,
+  grenier: grenierSurroundings,
+  abri: abriSurroundings,
+  jardin: jardinSurroundings,
   quais: quaisSurroundings,
   ecluses: eclusesSurroundings,
   saltworks: saltworksSurroundings,

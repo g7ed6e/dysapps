@@ -1,0 +1,9 @@
+{
+  "id": "french-3e-language-2",
+  "biome": "french-3e-language",
+  "name": "Le toit de l’atelier",
+  "reward": {
+    "xp": 50
+  },
+  "done": "Un toit d’ardoise sur l’atelier. Le bois reste au sec."
+}

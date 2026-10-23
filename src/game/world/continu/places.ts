@@ -15,9 +15,9 @@ import type { PlaceId } from './levelPlan';
 import { placeById as placeOfAnyLevel } from './levelPlan';
 import { heightFor } from './placeGround';
 import { PATH_NODES_4E } from './plan4e';
+import { PATH_NODES_3E } from './plan3e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
-import { RUINS_3E } from './ruins3e';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
 
@@ -1894,7 +1894,7 @@ function northPlace(id: PlaceId): (add: Add) => void {
   return (add) => {
     const art = placeArt(id)!;
     const c = placeOfAnyLevel(id).center;
-    const at = [...PATH_NODES, ...PATH_NODES_5E, ...PATH_NODES_4E].find((n) => n.id === id)!.at;
+    const at = [...PATH_NODES, ...PATH_NODES_5E, ...PATH_NODES_4E, ...PATH_NODES_3E].find((n) => n.id === id)!.at;
     art.model(add, siteGround(id), { x: at.x - c.x, z: at.z - c.z });
   };
 }
@@ -2480,12 +2480,6 @@ const RUINS_FALLEN_VOUSSOIRS = [
   [4.8, -4.9, -0.7],
 ] as const;
 
-/** Une ruine du 3e (./ruins3e.ts), en une seule pièce : ses lieux n'ont pas encore d'étapes (GD-22, lot 2). */
-const ruinOnly =
-  (draw: (b: FacetBuilder) => void) =>
-  (add: Add): void =>
-    add('ruine', 0, draw);
-
 const DRAWN: Record<PlaceId, (add: Add) => void> = {
   phare,
   quais,
@@ -2540,23 +2534,24 @@ const DRAWN: Record<PlaceId, (add: Add) => void> = {
   terminus: northPlace('terminus'),
   orgues: northPlace('orgues'),
   dynamo: northPlace('dynamo'),
-  // Le 3e : seize ruines simples (lot 1 du monde ouvert du 3e, ./ruins3e.ts).
-  belvedere: ruinOnly(RUINS_3E.belvedere),
-  grenier: ruinOnly(RUINS_3E.grenier),
-  abri: ruinOnly(RUINS_3E.abri),
-  jardin: ruinOnly(RUINS_3E.jardin),
-  fanal: ruinOnly(RUINS_3E.fanal),
-  rampe: ruinOnly(RUINS_3E.rampe),
-  standard: ruinOnly(RUINS_3E.standard),
-  kiosque: ruinOnly(RUINS_3E.kiosque),
-  maquette: ruinOnly(RUINS_3E.maquette),
-  tribune: ruinOnly(RUINS_3E.tribune),
-  douane: ruinOnly(RUINS_3E.douane),
-  ermitage: ruinOnly(RUINS_3E.ermitage),
-  coupole: ruinOnly(RUINS_3E.coupole),
-  lutherie: ruinOnly(RUINS_3E.lutherie),
-  ondes: ruinOnly(RUINS_3E.ondes),
-  palais: ruinOnly(RUINS_3E.palais),
+  // Le 3e : les lieux du Versant (lot 2 du monde ouvert du 3e), des Alpages (lot 3), des Prairies (lot 4) et du Cirque
+  // (lot 5), chacun dessiné dans son fichier ; les ruines simples du lot 1 sont toutes remplacées.
+  belvedere: northPlace('belvedere'),
+  grenier: northPlace('grenier'),
+  abri: northPlace('abri'),
+  jardin: northPlace('jardin'),
+  fanal: northPlace('fanal'),
+  rampe: northPlace('rampe'),
+  standard: northPlace('standard'),
+  kiosque: northPlace('kiosque'),
+  maquette: northPlace('maquette'),
+  tribune: northPlace('tribune'),
+  douane: northPlace('douane'),
+  ermitage: northPlace('ermitage'),
+  coupole: northPlace('coupole'),
+  lutherie: northPlace('lutherie'),
+  ondes: northPlace('ondes'),
+  palais: northPlace('palais'),
 };
 
 const pieces = new Map<PlaceId, PlacePiece[]>();

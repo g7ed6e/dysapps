@@ -66,13 +66,19 @@ function cutOf(edge: number): readonly [number, number] | null {
   return cuts.get(edge)!;
 }
 
-/** Le réseau du 3e, pour son dessin : ni la pierre du Parvis ni la chaussée des petites arches n'ont de sentier. */
+/**
+ * Le réseau du 3e, pour son dessin : ni la pierre du Parvis ni la chaussée des petites arches n'ont de sentier. Les
+ * chemins sont de pierre claire froide, bordés d'un liseré d'ardoise bas (lot du Versant ; directeur artistique, lot 1,
+ * point 9, et relecture des lieux, point 22 : la pierre claire ne se détache de l'herbe qu'à 1,8 contre 1, le liseré est
+ * obligatoire) : à juger contre le sable du lot 1 sur captures.
+ */
 export const RIBBONS_3E: RibbonNet = {
   edges: PATH_EDGES_3E,
   node: (id) => NETWORK_3E.pathNode(id),
   cut: cutOf,
   skip: (p) => parvisFloor(p.x, p.z) !== null || smallArchFloor(p.x, p.z) !== null,
   planks: () => false,
+  look: { path: COLORS_3E.parvis, edge: COLORS_3E.slate },
 };
 
 /** Le métal qui cercle l'aire de la Nef : un gris bleuté, plus sombre que la pierre claire (jamais presque noir). */
@@ -80,13 +86,16 @@ const PAD_RING = 0x6b7690;
 
 /**
  * L'aire de la Nef (fiche, § 5) : au milieu de la place du Parvis, un disque de pierre claire, à peine plus haut que la
- * place, cerclé de métal. Un décor : on y marche comme sur la place.
+ * place, cerclé de métal : le cercle se lit aussi sur le dessus, un anneau de fer incrusté au bord de la pierre, entier
+ * de partout (relecture du Versant par le directeur artistique, (a) 9 : on n'en voyait que la moitié). Un décor : on y
+ * marche comme sur la place.
  */
 function parvisPadFacets(): Facets {
   const b = new FacetBuilder();
   const { center, radius, deck } = PARVIS_PAD;
   b.prism({ x: center.x, y: deck - 0.2, z: center.z }, radius, radius, 0.2, 16, COLORS_3E.graniteSun, COLORS_3E.parvis);
   b.band({ x: center.x, y: deck - 0.22, z: center.z }, radius + 0.06, 0.28, 16, PAD_RING);
+  b.annulus({ x: center.x, y: deck + 0.012, z: center.z }, radius - 0.45, radius + 0.06, 0, 16, PAD_RING, PAD_RING, false);
   return placeFacets(b.build(), { x: PARVIS.origin.x, y: 0, z: PARVIS.origin.z, yaw: PARVIS.yaw });
 }
 

@@ -3,21 +3,24 @@
 // le liseré d'ardoise, les deux petites arches toujours ouvertes, le Parvis et l'aéronef, le zeppelin, ses couleurs
 // (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
+import { HABITANT_TRIANGLES_3E } from './habitants';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e } from './budget';
-import { BRIDGE, bridgeFacets, bridgeFloor, bridgeSite } from './bridges';
+import { ARCHES_TRIANGLES_3E, OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e } from './budget';
+import { BRIDGE, bridgeFacets, bridgeFloor, bridgeParts, bridgeSite } from './bridges';
+import { boundsOf } from './facets';
 import { distance, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
 import { planFor } from './levelPlan';
 import { modelOfPlace } from './places';
+import { FANAL_TOWER_3E } from './fanal3e';
 import { CUT_CLEARANCE_3E, NETWORK_3E, pathRibbons3e } from './paths3e';
-import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets } from './parvis3e';
+import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets, zeppelinPiecesFacets } from './parvis3e';
 import { veilFacets } from './veil';
 import { COLORS_3E, DEPARTURE_3E, LINKS_3E, PARVIS, PARVIS_PAD, PATH_EDGES_3E, PEAK_3E, SMALL_ARCHES_3E, TERRAIN_3E, ZEPPELIN_3E, parvisFloor } from './plan3e';
 import { SKY_OF } from './sky';
 import { SEA_TEXTURE_3E, WATER_TONES_3E, seaPixels3e } from './sea';
-import { FLORA_3E_COLORS, buildHeightField3e, groundOn3e, heightAt3e, landDistance3e, mapOverlay3e, shoreRimFacets, smallArchFloor, walkBlocked3e } from './terrain3e';
+import { FLORA_3E_COLORS, buildHeightField3e, groundOn3e, heightAt3e, landDistance3e, mapOverlay3e, shoreRimFacets, smallArchFacets, smallArchFloor, walkBlocked3e } from './terrain3e';
 import { buildWalkGrid } from './freeWalk';
 
 const PLAN = planFor('3e');
@@ -32,9 +35,22 @@ const NOT_BLACK = 0.03;
 
 /**
  * Le plafond du lot 1 du 3e (mesuré le 22 octobre 2026 : 58 136 triangles et 14 appels dans le monde, 57 206 et 15 au
- * départ, 54 443 et 12 sur la Carte ; après la retouche 1, 46 021 et 13, 45 091 et 14, 42 215 et 11), avec sa marge.
+ * départ, 54 443 et 12 sur la Carte ; après la retouche 1, 46 021 et 13, 45 091 et 14, 42 215 et 11), avec sa marge ; le
+ * Versant (lot 2) y tient encore, scénette ouverte comprise.
  */
 const LOT1_CEILING = { triangles: 62_000, calls: 16 } as const;
+
+/**
+ * Ce que le Cirque (le dernier lot du 3e) ajoute au plafond du lot 1 : le Fanal, la Rampe, le Standard, le Détour du Lac
+ * et les pièces rendues des Ferrailleurs, chacun sous son plafond de lieu ; sans appel de plus.
+ */
+const CIRQUE_ADDED_3E = 4_000;
+
+/**
+ * Ce que les habitants du 3e en modèles 3D (23 octobre 2026) ajoutent à la scénette ouverte : un modèle, au plus
+ * `HABITANT_TRIANGLES_3E`, à la place du pion, dans un maillage à part (l'appel de plus tient sous le plafond du lot 1).
+ */
+const HABITANTS_ADDED_3E = HABITANT_TRIANGLES_3E;
 
 describe('Le plan du 3e', () => {
   it('seize lieux, chacun dans une terre et une seule ; quatre terres, le Cirque suggéré en dernier', () => {
@@ -70,9 +86,10 @@ describe('Le plan du 3e', () => {
     expect(DEPARTURE_3E.at.z).toBeGreaterThan(0);
     expect(parvisFloor(DEPARTURE_3E.at.x, DEPARTURE_3E.at.z)).not.toBeNull();
     // Sans pilotis : la pierre de la place est sur la terre, à moins d'une unité au-dessus du sol.
-    for (const [lx, lz] of [[0, 10], [20, 20], [40, 28]] as const) {
+    for (const [lx, lz] of [[0, 15], [20, 20], [38, 24], [18, 30]] as const) {
       const p = PARVIS.toWorld(lx, lz);
       expect(landDistance3e(p), `${lx}, ${lz}`).toBeGreaterThan(0);
+      expect(parvisFloor(p.x, p.z), `${lx}, ${lz}`).not.toBeNull();
       expect(parvisFloor(p.x, p.z)! - heightAt3e(p), `${lx}, ${lz}`).toBeLessThan(1);
     }
     // Le cap de la caméra (−sin, −cos) va vers le nord-est.
@@ -148,6 +165,26 @@ describe('Les coupures : la langue de glace, l’arête du col, les nuages', () 
     }
   });
 
+  it('les arches basses reliées : leurs murs et leurs voûtes regardent le dehors, une arche par travée ; le parapet plein à hauteur de poitrine, son chaperon d’ardoise ; 2 400 triangles au plus avec les deux petites', () => {
+    const s = bridgeSite('prairies');
+    const across = { x: -s.dir.z, z: s.dir.x };
+    const parts = bridgeParts('prairies');
+    const slate = linearRgb(COLORS_3E.slate);
+    let vaults = 0;
+    for (const f of parts.piles)
+      for (let i = 0; i < f.positions.length; i += 9) {
+        if (Math.abs(f.normals[i + 1]) > 0.5) continue;
+        const v = ((f.positions[i] + f.positions[i + 3] + f.positions[i + 6]) / 3 - s.near.x) * across.x + ((f.positions[i + 2] + f.positions[i + 5] + f.positions[i + 8]) / 3 - s.near.z) * across.z;
+        if (Math.abs(v) < 2) continue;
+        // Vue de côté, on lit le mur et ses voûtes, jamais le dedans du mur d'en face (lot 1).
+        expect(Math.sign(f.normals[i] * across.x + f.normals[i + 2] * across.z), v.toFixed(2)).toBe(Math.sign(v));
+        if (Math.abs(f.colors[i] - slate[0]) < 1e-4 && Math.abs(f.colors[i + 1] - slate[1]) < 1e-4) vaults++;
+      }
+    expect(vaults).toBeGreaterThanOrEqual(2 * 5 * 6);
+    expect(boundsOf(parts.rails).max[1] - BRIDGE.deck).toBeGreaterThanOrEqual(1.1);
+    expect(bridgeFacets('prairies', true).triangles + smallArchFacets().triangles).toBeLessThanOrEqual(ARCHES_TRIANGLES_3E);
+  });
+
   it('les lieux sont sur la terre, hors du pic, des arêtes et de la langue de glace', () => {
     for (const p of PLAN.places) {
       expect(landDistance3e(p.center), p.id).toBeGreaterThan(3);
@@ -177,7 +214,13 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
       }
     const rim = shoreRimFacets();
     expect(rim.triangles).toBeGreaterThan(400);
-    expect([...new Set(Array.from({ length: rim.colors.length / 3 }, (_, k) => rim.colors.slice(k * 3, k * 3 + 3).join()))].length).toBe(2);
+    // L'ardoise et son dessus ; et, au dehors des Prairies, la nappe qui monte contre leur liseré (relecture du Cirque,
+    // correction 9), de la teinte des nuages.
+    expect([...new Set(Array.from({ length: rim.colors.length / 3 }, (_, k) => rim.colors.slice(k * 3, k * 3 + 3).join()))].length).toBe(3);
+    const [r, g, b] = linearRgb(COLORS_3E.cloud);
+    let cloud = 0;
+    for (let i = 0; i < rim.colors.length; i += 3) if (Math.abs(rim.colors[i] - r) < 1e-4 && Math.abs(rim.colors[i + 1] - g) < 1e-4 && Math.abs(rim.colors[i + 2] - b) < 1e-4) cloud++;
+    expect(cloud).toBeGreaterThan(0);
   });
 
   it('le zeppelin est amarré sur un rocher à part, dans les nuages, au nord-est de la grande Prairie ; immobile, dans le monde et jamais sur la Carte (retouche 1)', () => {
@@ -190,6 +233,47 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
     expect(departure.decor()!.triangles).toBe(parvisDecorFacets().triangles);
     expect(departure.offMap!().triangles).toBe(zeppelinFacets().triangles);
     expect(zeppelinFacets().triangles).toBeLessThan(600);
+  });
+
+  it('le zeppelin se voit de profil : la queue au nord-nord-ouest (330° environ), loin des rives ; le ventre au ras des nuages, ses côtes, sa gondole et ses deux hélices (proposition des Prairies, § 7)', () => {
+    const { rock, tail } = ZEPPELIN_3E;
+    const cap = ((Math.atan2(tail.x - rock.x, -(tail.z - rock.z)) * 180) / Math.PI + 360) % 360;
+    expect(cap).toBeGreaterThan(320);
+    expect(cap).toBeLessThan(340);
+    expect(landDistance3e(tail)).toBeLessThan(-10);
+    // De profil depuis le Parvis : la ligne du regard est presque perpendiculaire à l'enveloppe.
+    const look = Math.atan2(rock.x - PARVIS.origin.x, -(rock.z - PARVIS.origin.z));
+    const along = Math.atan2(tail.x - rock.x, -(tail.z - rock.z));
+    expect(Math.abs(Math.cos(along - look))).toBeLessThan(0.5);
+    const f = zeppelinFacets();
+    let min = Infinity,
+      max = -Infinity;
+    for (let i = 1; i < f.positions.length; i += 3) {
+      const x = f.positions[i - 1],
+        z = f.positions[i + 1];
+      // Hors du rocher, large et à facettes, et de son liseré d'ardoise (relecture des Prairies, (a) 1).
+      if (Math.hypot(x - rock.x, z - rock.z) > ZEPPELIN_3E.rockRadius * 1.25 + 1.2) {
+        min = Math.min(min, f.positions[i]);
+        max = Math.max(max, f.positions[i]);
+      }
+    }
+    // Loin du rocher : rien sous les nuages, la gondole juste au-dessus ; le haut de l'empennage plus bas que le dos du lot 1 (15,8).
+    expect(min).toBeGreaterThan(0.5);
+    expect(min).toBeLessThan(2.5);
+    expect(max).toBeLessThan(14);
+    const has = (c: number) => {
+      const [r, g, b] = linearRgb(c);
+      for (let i = 0; i < f.colors.length; i += 3) if (Math.abs(f.colors[i] - r) < 1e-4 && Math.abs(f.colors[i + 1] - g) < 1e-4 && Math.abs(f.colors[i + 2] - b) < 1e-4) return true;
+      return false;
+    };
+    for (const c of [COLORS_3E.graphite, COLORS_3E.prune]) expect(has(c), c.toString(16)).toBe(true);
+    // Le bronze n'est qu'aux pièces prises au Rafiot, dessinées à part (le Fanal les rend à sa restauration).
+    expect(has(COLORS_3E.bronze)).toBe(false);
+    const pieces = zeppelinPiecesFacets();
+    const [r, g, bl] = linearRgb(COLORS_3E.bronze);
+    let bronze = 0;
+    for (let i = 0; i < pieces.colors.length; i += 3) if (Math.abs(pieces.colors[i] - r) < 1e-4 && Math.abs(pieces.colors[i + 1] - g) < 1e-4 && Math.abs(pieces.colors[i + 2] - bl) < 1e-4) bronze++;
+    expect(bronze).toBeGreaterThan(0);
   });
 
   it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#E4EAF1, retouche 1)', () => {
@@ -242,13 +326,34 @@ describe('Les couleurs froides du 3e', () => {
 });
 
 describe('Le budget du 3e', () => {
-  it('le monde, le départ et la Carte tiennent dans l’enveloppe du 3e, et sous le plafond du lot 1', () => {
+  it('le monde, le départ et la Carte tiennent dans l’enveloppe du 3e, et sous le plafond du lot 1, le Cirque et les habitants compris', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['3e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
-    for (const cost of [total(openWorldCost3e('monde')), total(openWorldCost3e('depart')), mapCost3e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles);
+    for (const cost of [total(openWorldCost3e('monde')), total(openWorldCost3e('scenette')), total(openWorldCost3e('depart')), mapCost3e()]) {
+      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles + CIRQUE_ADDED_3E + HABITANTS_ADDED_3E);
       expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
     }
+  });
+});
+
+describe('Le Fanal, second repère du niveau (relecture des lieux, correction 10 ; relecture du Versant, (a) 2)', () => {
+  it('une tour de pierre claire à deux larges bandes d’ardoise, jamais de cobalt ni de rouge, plus haute que son socle', () => {
+    const f = modelOfPlace('fanal').facets;
+    const has = (hex: number) => {
+      const c = linearRgb(hex);
+      for (let i = 0; i < f.colors.length; i += 3) if ([0, 1, 2].every((k) => Math.abs(f.colors[i + k] - c[k]) < 1e-6)) return true;
+      return false;
+    };
+    expect(has(COLORS_3E.parvis)).toBe(true);
+    expect(has(COLORS_3E.slate)).toBe(true);
+    expect(has(COLORS_3E.cobalt)).toBe(false);
+    const T = FANAL_TOWER_3E;
+    expect(T.bands).toHaveLength(2);
+    for (const [lo, hi] of T.bands) {
+      expect(hi - lo).toBeGreaterThanOrEqual(2);
+      expect(lo > T.y0 && hi < T.y1).toBe(true);
+    }
+    expect(T.bands[1][0] - T.bands[0][1]).toBeGreaterThanOrEqual(2);
   });
 });

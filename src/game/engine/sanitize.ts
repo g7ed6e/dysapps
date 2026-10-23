@@ -8,6 +8,7 @@ import { type BiomeDef, type BiomeId, BIOMES, type BlockId, BLOCKS, getBiome } f
 import { getPlan, planCells } from '../world/plans';
 import { getStage, stageFor } from '../world/vehicle';
 import { getMonument } from '../world/monuments';
+import { getParures } from '../world/nefParures';
 import { casesDeLaPetiteConstruction, estPosee } from '../world/fixtures';
 import { formerVehicleStage } from '../world/formerVehicle';
 import { planV1 } from '../world/plansV1';
@@ -117,8 +118,8 @@ export function sanitizeState(input: unknown): GameState {
       }
     }
   }
-  // Les plans des îles et les étapes de la Nef se rangent au même endroit.
-  const anyPlan = (id: string) => getPlan(id) ?? getStage(id) ?? getMonument(id);
+  // Les plans des îles, les étapes de la Nef et les parures de l'aéronef du 3e (GD-25) se rangent au même endroit.
+  const anyPlan = (id: string) => getPlan(id) ?? getStage(id) ?? getMonument(id) ?? getParures(id);
   const parts: Record<string, string[]> = {};
   // Les sauvegardes d'avant le nouveau dessin des bâtiments (plansV1.ts) : on les reconnaît à une case posée hors du
   // nouveau dessin (aucun ancien plan n'y est tout entier). Un plan terminé avec l'ancien dessin reste terminé, et son

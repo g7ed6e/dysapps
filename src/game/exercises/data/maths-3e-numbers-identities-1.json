@@ -1,0 +1,222 @@
+{
+  "id": "maths-3e-numbers-identities-1",
+  "biome": "maths-3e-numbers",
+  "type": "identities",
+  "level": 1,
+  "instruction": "Développe et réduis. La règle est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-identities-1-0",
+      "prompt": "(x + 2)(x + 3) = …",
+      "spoken": "Le produit de x plus 2 par x plus 3 égale (mot manquant).",
+      "choices": [
+        "x² + 6",
+        "x² + 5x + 6",
+        "x² + 6x + 5"
+      ],
+      "answer": "x² + 5x + 6",
+      "hint": "Écris les quatre produits : x × x, x × 3, 2 × x, 2 × 3.",
+      "explanation": "x² + 3x + 2x + 6 = x² + 5x + 6. x² + 6 oublie les produits du milieu. x² + 6x + 5 échange le 5 et le 6.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-1-1",
+      "prompt": "(x + 4)(x − 1) = …",
+      "spoken": "Le produit de x plus 4 par x moins 1 égale (mot manquant).",
+      "choices": [
+        "x² + 3x − 4",
+        "x² + 5x − 4",
+        "x² − 3x − 4"
+      ],
+      "answer": "x² + 3x − 4",
+      "hint": "x × (−1) = −x, et 4 × x = 4x.",
+      "explanation": "x² − x + 4x − 4 = x² + 3x − 4. x² + 5x − 4 ajoute x au lieu de l’enlever. x² − 3x − 4 se trompe de signe : 4x − x = +3x.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-1-2",
+      "prompt": "(2x + 1)(x + 5) = …",
+      "spoken": "Le produit de 2 x plus 1 par x plus 5 égale (mot manquant).",
+      "choices": [
+        "2x² + 10x + 5",
+        "2x² + 11x + 5",
+        "2x² + 5"
+      ],
+      "answer": "2x² + 11x + 5",
+      "hint": "N’oublie pas le produit 1 × x.",
+      "explanation": "2x × x = 2x², 2x × 5 = 10x, 1 × x = x, 1 × 5 = 5 : 2x² + 11x + 5. 2x² + 10x + 5 oublie 1 × x. 2x² + 5 oublie les deux produits du milieu.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-1-3",
+      "prompt": "(x − 3)(x − 2) = …",
+      "spoken": "Le produit de x moins 3 par x moins 2 égale (mot manquant).",
+      "choices": [
+        "x² − 5x − 6",
+        "x² − 5x + 6",
+        "x² + 5x + 6"
+      ],
+      "answer": "x² − 5x + 6",
+      "hint": "(−3) × (−2) : moins par moins donne plus.",
+      "explanation": "x² − 2x − 3x + 6 = x² − 5x + 6. x² − 5x − 6 se trompe sur (−3) × (−2) = +6. x² + 5x + 6 perd les deux signes moins.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-1-4",
+      "prompt": "Pour développer (a + b)(c + d), on écrit combien de produits ?",
+      "spoken": "Pour développer le produit de a plus b par c plus d, on écrit combien de produits ?",
+      "choices": [
+        "2",
+        "3",
+        "4"
+      ],
+      "answer": "4",
+      "hint": "Chaque terme de la première parenthèse multiplie chaque terme de la seconde.",
+      "explanation": "a multiplie c et d, puis b multiplie c et d : 2 × 2 = 4 produits, ac + ad + bc + bd.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-1-5",
+      "prompt": "(x + 1)(x + 1) = …",
+      "spoken": "Le produit de x plus 1 par x plus 1 égale (mot manquant).",
+      "choices": [
+        "x² + 1",
+        "x² + 2x + 1",
+        "2x + 2"
+      ],
+      "answer": "x² + 2x + 1",
+      "hint": "Écris les quatre produits : x × x, x × 1, 1 × x, 1 × 1.",
+      "explanation": "x² + x + x + 1 = x² + 2x + 1. x² + 1 oublie les deux produits du milieu. 2x + 2 ajoute au lieu de multiplier.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-1-6",
+      "prompt": "(3 − x)(x + 2) = …",
+      "spoken": "Le produit de 3 moins x par x plus 2 égale (mot manquant).",
+      "choices": [
+        "−x² + x + 6",
+        "−x² + 5x + 6",
+        "x² + x + 6"
+      ],
+      "answer": "−x² + x + 6",
+      "hint": "(−x) × x = −x², et (−x) × 2 = −2x.",
+      "explanation": "3x + 6 − x² − 2x = −x² + x + 6. −x² + 5x + 6 ajoute 2x au lieu de l’enlever. x² + x + 6 perd le signe moins de −x².",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-identities-1-7",
+      "prompt": "(x − 4)(x + 4) = …",
+      "spoken": "Le produit de x moins 4 par x plus 4 égale (mot manquant).",
+      "choices": [
+        "x² − 16",
+        "x² + 16",
+        "x² − 8x − 16"
+      ],
+      "answer": "x² − 16",
+      "hint": "Les deux produits du milieu, 4x et −4x, s’annulent.",
+      "explanation": "x² + 4x − 4x − 16 = x² − 16. x² + 16 se trompe sur (−4) × 4 = −16. x² − 8x − 16 n’annule pas 4x et −4x.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La double distributivité",
+          "lines": [
+            "(a + b)(c + d) = ac + ad + bc + bd.",
+            "Chaque terme de la première parenthèse multiplie chaque terme de la seconde : quatre produits.",
+            "Puis on réduit : on regroupe les termes en x.",
+            "Signes : plus par moins donne moins ; moins par moins donne plus."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

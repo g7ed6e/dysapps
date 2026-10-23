@@ -1,0 +1,214 @@
+{
+  "id": "french-3e-language-connotation-3",
+  "biome": "french-3e-language",
+  "type": "connotation",
+  "level": 3,
+  "instruction": "Relève les mots qui vont ensemble : quelle impression donnent-ils ? La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-connotation-3-0",
+      "prompt": "« Les volets claquaient, une ombre glissait dans le couloir, le plancher gémissait sous nos pas. » Quelle impression donne l’extrait ?",
+      "spoken": "Les volets claquaient, une ombre glissait dans le couloir, le plancher gémissait sous nos pas. Quelle impression donne l’extrait ?",
+      "choices": [
+        "la peur",
+        "la joie",
+        "le calme"
+      ],
+      "answer": "la peur",
+      "hint": "Relève « claquaient », « ombre », « gémissait ».",
+      "explanation": "« Claquaient », « ombre », « gémissait » : des bruits et une présence inquiétante. Ensemble, ces mots donnent une impression de peur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-3-1",
+      "prompt": "« Le lac dormait, une brise légère caressait l’herbe, les oiseaux se taisaient. » Quelle impression donne l’extrait ?",
+      "spoken": "Le lac dormait, une brise légère caressait l’herbe, les oiseaux se taisaient. Quelle impression donne l’extrait ?",
+      "choices": [
+        "le calme",
+        "la colère",
+        "la peur"
+      ],
+      "answer": "le calme",
+      "hint": "Relève « dormait », « légère », « caressait », « se taisaient ».",
+      "explanation": "« Dormait », « légère », « caressait », « se taisaient » : rien ne bouge fort, rien ne fait de bruit. L’impression est le calme.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-3-2",
+      "prompt": "« Il hurla, frappa la table du poing et claqua la porte derrière lui. » Quelle impression donne l’extrait ?",
+      "spoken": "Il hurla, frappa la table du poing et claqua la porte derrière lui. Quelle impression donne l’extrait ?",
+      "choices": [
+        "la tristesse",
+        "la colère",
+        "la surprise"
+      ],
+      "answer": "la colère",
+      "hint": "Relève « hurla », « frappa », « claqua ».",
+      "explanation": "« Hurla », « frappa », « claqua » : des gestes et des bruits violents. Ensemble, ils disent la colère.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-3-3",
+      "prompt": "« Sous la pluie grise, elle relisait la vieille lettre, les yeux mouillés. » Quelle impression donne l’extrait ?",
+      "spoken": "Sous la pluie grise, elle relisait la vieille lettre, les yeux mouillés. Quelle impression donne l’extrait ?",
+      "choices": [
+        "la tristesse",
+        "la colère",
+        "la joie"
+      ],
+      "answer": "la tristesse",
+      "hint": "Relève « pluie grise », « vieille lettre », « yeux mouillés ».",
+      "explanation": "« Pluie grise », « vieille lettre », « yeux mouillés » : des images sombres et des larmes. L’impression est la tristesse.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-3-4",
+      "prompt": "« Les rires fusaient, la musique éclatait, on dansait jusque dans la rue. » Quelle impression donne l’extrait ?",
+      "spoken": "Les rires fusaient, la musique éclatait, on dansait jusque dans la rue. Quelle impression donne l’extrait ?",
+      "choices": [
+        "l’ennui",
+        "la joie",
+        "la peur"
+      ],
+      "answer": "la joie",
+      "hint": "Relève « rires », « musique », « dansait ».",
+      "explanation": "« Rires », « musique », « dansait » : le champ lexical de la fête. L’impression est la joie.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-3-5",
+      "prompt": "« Les heures s’étiraient ; il regardait la pendule, bâillait, tournait les pages sans les lire. » Quelle impression donne l’extrait ?",
+      "spoken": "Les heures s’étiraient ; il regardait la pendule, bâillait, tournait les pages sans les lire. Quelle impression donne l’extrait ?",
+      "choices": [
+        "la colère",
+        "la joie",
+        "l’ennui"
+      ],
+      "answer": "l’ennui",
+      "hint": "Relève « s’étiraient », « pendule », « bâillait ».",
+      "explanation": "« S’étiraient », « pendule », « bâillait », « sans les lire » : le temps passe lentement, rien n’intéresse. L’impression est l’ennui.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-3-6",
+      "prompt": "« Le sable brûlait sous ses pieds ; la gorge sèche, il cherchait une goutte d’eau. » Quelle impression donne l’extrait ?",
+      "spoken": "Le sable brûlait sous ses pieds ; la gorge sèche, il cherchait une goutte d’eau. Quelle impression donne l’extrait ?",
+      "choices": [
+        "le froid",
+        "la fête",
+        "la chaleur"
+      ],
+      "answer": "la chaleur",
+      "hint": "Relève « brûlait », « sèche », « goutte d’eau ».",
+      "explanation": "« Brûlait », « gorge sèche », « goutte d’eau » : le champ lexical de la chaleur et de la soif. L’impression est la chaleur.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-connotation-3-7",
+      "prompt": "« Le givre couvrait les vitres, le vent glacé mordait les joues, les doigts devenaient raides. » Quelle impression donne l’extrait ?",
+      "spoken": "Le givre couvrait les vitres, le vent glacé mordait les joues, les doigts devenaient raides. Quelle impression donne l’extrait ?",
+      "choices": [
+        "le froid",
+        "la chaleur",
+        "le calme"
+      ],
+      "answer": "le froid",
+      "hint": "Relève « givre », « glacé », « raides ».",
+      "explanation": "« Givre », « glacé », « raides » : le champ lexical du froid. L’impression est le froid.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Des mots qui vont ensemble",
+          "lines": [
+            "Un champ lexical : des mots qui parlent d’un même thème.",
+            "Ensemble, ces mots créent une impression : la peur, le calme, la joie.",
+            "Relève les mots qui vont ensemble, puis demande-toi ce qu’ils font ressentir."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien lu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

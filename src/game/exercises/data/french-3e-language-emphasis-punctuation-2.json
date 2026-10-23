@@ -1,0 +1,222 @@
+{
+  "id": "french-3e-language-emphasis-punctuation-2",
+  "biome": "french-3e-language",
+  "type": "emphasis-punctuation",
+  "level": 2,
+  "instruction": "Trouve le mot mis en relief, ou la phrase qui le met en relief. La règle est affichée.",
+  "items": [
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-0",
+      "prompt": "Quelle phrase met « Tom » en relief ?",
+      "spoken": "Quelle phrase met « Tom » en relief ?",
+      "choices": [
+        "C’est Tom qui a rangé la salle.",
+        "Tom a rangé la salle.",
+        "Tom n’a pas rangé la salle."
+      ],
+      "answer": "C’est Tom qui a rangé la salle.",
+      "hint": "Cherche « c’est », puis « qui ».",
+      "explanation": "« C’est Tom qui » met Tom en avant : la phrase est emphatique. « Tom a rangé la salle » est neutre. « Tom n’a pas rangé la salle » est négative : elle change le sens.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-1",
+      "prompt": "« Ce livre, je l’ai lu trois fois. » Quel groupe est mis en relief ?",
+      "spoken": "Ce livre, je l’ai lu trois fois. Quel groupe est mis en relief ?",
+      "choices": [
+        "ce livre",
+        "je",
+        "trois fois"
+      ],
+      "answer": "ce livre",
+      "hint": "Quel groupe est détaché en tête, puis repris par « l’ » ?",
+      "explanation": "« Ce livre » est détaché en tête, puis repris par le pronom « l’ » : il est mis en relief. Sans relief : j’ai lu ce livre trois fois.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-2",
+      "prompt": "« C’est demain que nous partons. » Comment est cette phrase ?",
+      "spoken": "C’est demain que nous partons. Comment est cette phrase ?",
+      "choices": [
+        "emphatique",
+        "négative",
+        "interrogative"
+      ],
+      "answer": "emphatique",
+      "hint": "Cherche « c’est », puis « que ».",
+      "explanation": "« C’est demain que » met « demain » en avant : la phrase est emphatique. Sans relief : nous partons demain.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-3",
+      "prompt": "« Nous ne partons pas demain. » Comment est cette phrase ?",
+      "spoken": "Nous ne partons pas demain. Comment est cette phrase ?",
+      "choices": [
+        "emphatique",
+        "négative",
+        "interrogative"
+      ],
+      "answer": "négative",
+      "hint": "Cherche « ne » et « pas » autour du verbe.",
+      "explanation": "« Ne » et « pas », autour du verbe, rendent la phrase négative : elle dit le contraire. Aucun mot n’est mis en avant : elle n’est pas emphatique.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-4",
+      "prompt": "« Moi, je préfère la mer. » Quel mot est mis en relief ?",
+      "spoken": "Moi, je préfère la mer. Quel mot est mis en relief ?",
+      "choices": [
+        "moi",
+        "je",
+        "la mer"
+      ],
+      "answer": "moi",
+      "hint": "Quel mot est détaché en tête, avec une virgule ?",
+      "explanation": "« Moi » est détaché en tête, puis repris par « je » : il est mis en relief. « Je » est le sujet ordinaire.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-5",
+      "prompt": "Quelle phrase met « le chocolat » en relief ?",
+      "spoken": "Quelle phrase met « le chocolat » en relief ?",
+      "choices": [
+        "C’est le chocolat que j’aime.",
+        "J’aime le chocolat.",
+        "J’aime beaucoup le chocolat."
+      ],
+      "answer": "C’est le chocolat que j’aime.",
+      "hint": "Cherche « c’est », puis « que ».",
+      "explanation": "« C’est le chocolat que » met le chocolat en avant : la phrase est emphatique. « Beaucoup » dit combien on aime, il ne met pas le mot en relief.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-6",
+      "prompt": "« C’est dans ce village que je suis né. » Quel groupe est mis en relief ?",
+      "spoken": "C’est dans ce village que je suis né. Quel groupe est mis en relief ?",
+      "choices": [
+        "dans ce village",
+        "je",
+        "suis né"
+      ],
+      "answer": "dans ce village",
+      "hint": "Quel groupe est entre « c’est » et « que » ?",
+      "explanation": "« Dans ce village » est entre « c’est » et « que » : il est mis en relief. Sans relief : je suis né dans ce village.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    },
+    {
+      "key": "french-3e-language-emphasis-punctuation-2-7",
+      "prompt": "« Cette chanson, elle me rend joyeux. » Quel groupe est mis en relief ?",
+      "spoken": "Cette chanson, elle me rend joyeux. Quel groupe est mis en relief ?",
+      "choices": [
+        "cette chanson",
+        "me",
+        "joyeux"
+      ],
+      "answer": "cette chanson",
+      "hint": "Quel groupe est détaché en tête, puis repris par « elle » ?",
+      "explanation": "« Cette chanson » est détachée en tête, puis reprise par « elle » : elle est mise en relief. Sans relief : cette chanson me rend joyeux.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "La mise en relief",
+          "lines": [
+            "Une phrase emphatique met un mot ou un groupe en avant.",
+            "Avec « c’est », le mot mis en avant, puis « qui » ou « que » : c’est Léa qui a gagné.",
+            "Avec un groupe détaché en tête, repris par un pronom : ce film, je l’adore.",
+            "Sans la mise en relief, la phrase garde son sens : Léa a gagné."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien vu !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "french-3e-close-reading",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

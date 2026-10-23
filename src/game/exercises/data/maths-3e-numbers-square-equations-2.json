@@ -1,0 +1,213 @@
+{
+  "id": "maths-3e-numbers-square-equations-2",
+  "biome": "maths-3e-numbers",
+  "type": "square-equations",
+  "level": 2,
+  "instruction": "Résous l’équation. La règle est affichée.",
+  "items": [
+    {
+      "key": "maths-3e-numbers-square-equations-2-0",
+      "prompt": "x² = 25. Les solutions sont …",
+      "spoken": "x au carré égale 25. Les solutions sont (mot manquant).",
+      "choices": [
+        "5 seulement",
+        "5 et −5",
+        "12,5 et −12,5"
+      ],
+      "answer": "5 et −5",
+      "hint": "(−5)² vaut aussi 25.",
+      "explanation": "5² = 25 et (−5)² = 25 : deux solutions, 5 et −5. « 5 seulement » oublie la solution négative. 12,5 est la moitié de 25 : 12,5² = 156,25.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-2-1",
+      "prompt": "x² = −16. Les solutions sont …",
+      "spoken": "x au carré égale moins 16. Les solutions sont (mot manquant).",
+      "choices": [
+        "4 et −4",
+        "−4 seulement",
+        "aucune solution"
+      ],
+      "answer": "aucune solution",
+      "hint": "Un carré peut-il être négatif ?",
+      "explanation": "Un carré n’est jamais négatif : x² = −16 n’a aucune solution. (−4)² = 16, pas −16.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-2-2",
+      "prompt": "x² = 0. Les solutions sont …",
+      "spoken": "x au carré égale 0. Les solutions sont (mot manquant).",
+      "choices": [
+        "0 seulement",
+        "aucune solution"
+      ],
+      "answer": "0 seulement",
+      "hint": "Quel nombre au carré donne 0 ?",
+      "explanation": "0² = 0, et c’est le seul : x² = 0 a une seule solution, x = 0.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-2-3",
+      "prompt": "x² = 49. Combien de solutions ?",
+      "spoken": "x au carré égale 49. Combien de solutions ?",
+      "choices": [
+        "aucune",
+        "une",
+        "deux"
+      ],
+      "answer": "deux",
+      "hint": "49 est positif.",
+      "explanation": "49 est positif : deux solutions, 7 et −7, car 7² = 49 et (−7)² = 49.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-2-4",
+      "prompt": "x² = 7. Les solutions sont …",
+      "spoken": "x au carré égale 7. Les solutions sont (mot manquant).",
+      "choices": [
+        "√7 et −√7",
+        "3,5 et −3,5",
+        "49 et −49"
+      ],
+      "answer": "√7 et −√7",
+      "hint": "7 n’est pas un carré de la liste : la solution s’écrit avec √.",
+      "explanation": "7 est positif : x = √7 ou x = −√7. 3,5 est la moitié de 7. 49 est le carré de 7, pas sa racine.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-2-5",
+      "prompt": "x² + 4 = 0. Combien de solutions ?",
+      "spoken": "x au carré plus 4 égale 0. Combien de solutions ?",
+      "choices": [
+        "aucune",
+        "une",
+        "deux"
+      ],
+      "answer": "aucune",
+      "hint": "Écris d’abord l’équation sous la forme x² = a.",
+      "explanation": "x² + 4 = 0 donne x² = −4. Un carré n’est jamais négatif : aucune solution.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-2-6",
+      "prompt": "Un carré a une aire de 81 m². Son côté x vérifie x² = 81. Le côté mesure …",
+      "spoken": "Un carré a une aire de 81 mètres carrés. Son côté x vérifie x au carré égale 81. Le côté mesure (mot manquant).",
+      "choices": [
+        "9 m",
+        "9 m ou −9 m",
+        "40,5 m"
+      ],
+      "answer": "9 m",
+      "hint": "Une longueur peut-elle être négative ?",
+      "explanation": "L’équation a deux solutions, 9 et −9, mais une longueur est positive : le côté mesure 9 m. 40,5 m est la moitié de 81.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    },
+    {
+      "key": "maths-3e-numbers-square-equations-2-7",
+      "prompt": "2x² = 18. Les solutions sont …",
+      "spoken": "2 x au carré égale 18. Les solutions sont (mot manquant).",
+      "choices": [
+        "3 et −3",
+        "3 seulement",
+        "9 et −9"
+      ],
+      "answer": "3 et −3",
+      "hint": "Divise d’abord par 2 : x² = 9.",
+      "explanation": "2x² = 18 donne x² = 9 : x = 3 ou x = −3. 9 et −9 s’arrêtent avant la racine. « 3 seulement » oublie la solution négative.",
+      "aid": {
+        "kind": "rule-card",
+        "props": {
+          "title": "Résoudre x² = a",
+          "lines": [
+            "Si a est positif : deux solutions, √a et −√a. Par exemple x² = 4 : x = 2 ou x = −2.",
+            "Si a = 0 : une seule solution, x = 0.",
+            "Si a est négatif : aucune solution, car un carré n’est jamais négatif."
+          ]
+        }
+      }
+    }
+  ],
+  "feedback": {
+    "correct": "Bien calculé !",
+    "wrong": "{explanation}"
+  },
+  "reward": {
+    "block": "maths-3e-geometry",
+    "amount": 4,
+    "xp": 14
+  },
+  "adaptive": {
+    "promoteAt": 0.85,
+    "demoteAt": 0.5
+  }
+}

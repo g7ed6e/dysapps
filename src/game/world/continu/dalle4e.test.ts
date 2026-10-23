@@ -34,9 +34,9 @@ describe('La Dalle, le Détour de l’Épaule', () => {
     expect(DALLE.land).toBe('epaule');
     expect(DALLE.says).toBe('D’ici, on voit toute la mer.');
     expect(SAVED_IDS).toEqual(DETOUR_IDS);
-    // Le Replat (les Coteaux) vient après elle.
-    expect(DETOUR_IDS.at(-2)).toBe('dalle');
-    expect(DETOUR_IDS.at(-3)).toBe('recoin');
+    // Le Replat (les Coteaux) vient après elle, puis le Cadran du 3e.
+    expect(DETOUR_IDS.indexOf('dalle')).toBe(DETOUR_IDS.indexOf('replat') - 1);
+    expect(DETOUR_IDS.indexOf('recoin')).toBe(DETOUR_IDS.indexOf('dalle') - 1);
     expect(sanitizeDetours(['dalle', 'epave'])).toEqual(['epave', 'dalle']);
     const state = findDetour({ world: { parts: {}, log: [], links: {} } } as never, 'dalle') as { world: { detours: string[] } };
     expect(state.world.detours).toEqual(['dalle']);
