@@ -1410,6 +1410,9 @@ const GO_GAP = 10;
 /** Une bulle à côté de « Y aller » n'a pas plus de lignes : plus haute, elle passe au-dessus de lui, ou en haut. */
 const BESIDE_LINES = 3;
 
+/** La bulle n'est jamais plus étroite, en rem : plus étroite, elle passe ailleurs. */
+const BUBBLE_MIN = 8;
+
 /**
  * Pose la rangée du bas et sa bulle sans couvrir Kéo (choix du mainteneur, 23 octobre 2026 : la caméra ne bouge pas, ce
  * sont elles qui s'adaptent à l'écran et à la taille du texte) et renvoie la place de la rangée. « Y aller » reste en bas
@@ -1423,43 +1426,76 @@ const BESIDE_LINES = 3;
 function placeGoRow(stage: HTMLElement, s: DOMRect, carte: DOMRect | undefined, guarded: boolean): DOMRect | undefined {
   const go = stage.querySelector<HTMLElement>('.open-world-go');
   if (!go) return undefined;
-  const local = (r: DOMRect): ScreenRect => ({ left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height });
-  let zone = keoZone(s.width, s.height, LOOK_UP.footRoom);
-  const set = (key: 'goCote' | 'goLeve' | 'goBulle', value: string) => {
-    if ((stage.dataset[key] ?? '') === value) return;
-    if (value) stage.dataset[key] = value;
-    else delete stage.dataset[key];
-  };
+  const { box, zone, beside } = placeGo(stage, go, s, carte, guarded);
+  placeBubble(stage, go, s, box, zone, beside);
+  return box;
+}
+
+/** Un rectangle de l'écran dans la scène `s`. */
+const inStage = (r: DOMRect, s: DOMRect): ScreenRect => ({ left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height });
+
+/** Pose un attribut d'état de la scène (`''` l'ôte), sans y toucher s'il n'a pas changé. */
+function setStageFlag(stage: HTMLElement, key: 'goCote' | 'goLeve' | 'goBulle', value: string): void {
+  if ((stage.dataset[key] ?? '') === value) return;
+  if (value) stage.dataset[key] = value;
+  else delete stage.dataset[key];
+}
+
+/** Pose une variable de la scène (`null` l'ôte), sans y toucher si elle n'a pas changé. */
+function setStageVar(stage: HTMLElement, name: string, px: number | null): void {
+  const value = px === null ? '' : `${Math.round(px)}px`;
+  if (stage.style.getPropertyValue(name) === value) return;
+  if (value) stage.style.setProperty(name, value);
+  else stage.style.removeProperty(name);
+}
+
+/**
+ * « Y aller » : au milieu ; en bas à droite s'il monte dans la colonne de Kéo, à gauche de la colonne de la caméra s'il
+ * la mordrait (un téléphone couché au plus grand texte : `--open-world-go-droite`). Renvoie sa place et la colonne de
+ * Kéo, qui s'arrête au-dessus de lui au 4e et au 3e (la caméra y garde ses pieds au-dessus de lui, `footRoom`).
+ */
+function placeGo(stage: HTMLElement, go: HTMLElement, s: DOMRect, carte: DOMRect | undefined, guarded: boolean) {
   // Levée au-dessus de « Carte » quand elle déborde sur lui (un écran étroit), lu à l'horizontale seulement.
   const lift = () => {
     const r = go.getBoundingClientRect();
-    set('goLeve', carte && r.width > 0 && r.left < carte.right + MARK_EDGE - 1 ? 'oui' : '');
+    setStageFlag(stage, 'goLeve', carte && r.width > 0 && r.left < carte.right + MARK_EDGE - 1 ? 'oui' : '');
   };
-  // « Y aller » d'abord, au milieu ; à droite de Kéo s'il monte dans sa colonne.
-  set('goCote', '');
+  setStageFlag(stage, 'goCote', '');
+  setStageVar(stage, '--open-world-go-droite', null);
   lift();
-  // Au 4e et au 3e, la caméra garde déjà les pieds de Kéo au-dessus de « Y aller » (`footRoom`) : il reste au milieu, et
-  // sa colonne s'arrête au-dessus de lui.
-  if (guarded) zone = keoZone(s.width, s.height, Math.max(LOOK_UP.footRoom, Math.round(s.bottom - go.getBoundingClientRect().top + GO_CLEAR)));
-  const beside = overlaps(local(go.getBoundingClientRect()), zone);
+  const feet = guarded ? Math.max(LOOK_UP.footRoom, Math.round(s.bottom - go.getBoundingClientRect().top + GO_CLEAR)) : LOOK_UP.footRoom;
+  const zone = keoZone(s.width, s.height, feet);
+  const beside = overlaps(inStage(go.getBoundingClientRect(), s), zone);
   if (beside) {
-    set('goCote', 'oui');
+    setStageFlag(stage, 'goCote', 'oui');
+    const camera = stage.querySelector<HTMLElement>('.open-world-camera')?.getBoundingClientRect();
+    if (camera && overlaps(inStage(go.getBoundingClientRect(), s), inStage(camera, s))) setStageVar(stage, '--open-world-go-droite', s.right - camera.left + GO_GAP);
     lift();
   }
-  const goBox = go.getBoundingClientRect();
+  return { box: go.getBoundingClientRect(), zone, beside };
+}
+
+/**
+ * La bulle de « Y aller » : à sa droite (jusqu'au bord de l'écran, ou jusqu'à la colonne de la caméra), au-dessus de
+ * lui quand il est en bas à droite, sinon en haut entre les colonnes de boutons ; la première place qui ne couvre ni
+ * Kéo ni un bouton et tient dans l'écran, à côté en trois lignes au plus, et jamais plus étroite que `BUBBLE_MIN` rem.
+ */
+function placeBubble(stage: HTMLElement, go: HTMLElement, s: DOMRect, goBox: DOMRect, zone: ScreenRect, beside: boolean): void {
   const bubble = go.querySelector<HTMLElement>('.open-world-go-reason');
   if (!bubble) {
-    set('goBulle', '');
-    return goBox;
+    setStageFlag(stage, 'goBulle', '');
+    setStageVar(stage, '--open-world-bulle', null);
+    return;
   }
   // Les boutons que la bulle ne couvre jamais, « Y aller » compris.
-  const buttons = [...stage.querySelectorAll<HTMLElement>('.world-settings, .world-shortcuts, .open-world-camera, .open-world-bar, .open-world-go-row')].map((el) => local(el.getBoundingClientRect()));
+  const buttons = [...stage.querySelectorAll<HTMLElement>('.world-settings, .world-shortcuts, .open-world-camera, .open-world-bar, .open-world-go-row')].map((el) => inStage(el.getBoundingClientRect(), s));
   const camera = stage.querySelector<HTMLElement>('.open-world-camera')?.getBoundingClientRect();
   const style = getComputedStyle(bubble);
+  // L'interligne des réglages, toujours en pixels ici (`line-height` posé par les réglages) ; sans lui, le compte des
+  // lignes ne limite rien.
   const lineHeight = parseFloat(style.lineHeight) || 0;
   const padding = (parseFloat(style.paddingTop) || 0) + (parseFloat(style.paddingBottom) || 0);
-  // À droite de « Y aller » jusqu'au bord de l'écran, ou jusqu'à la colonne de la caméra (une bulle plus haute, sur un
-  // téléphone) ; au-dessus de « Y aller » posé à droite de Kéo, de son bord droit jusqu'à la colonne de Kéo.
+  const least = BUBBLE_MIN * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
   const tries: { place: 'cote' | 'dessus'; width: number }[] = beside
     ? [{ place: 'dessus', width: goBox.right - s.left - (zone.left + zone.width + GO_GAP) }]
     : [
@@ -1467,17 +1503,16 @@ function placeGoRow(stage: HTMLElement, s: DOMRect, carte: DOMRect | undefined, 
         ...(camera ? [{ place: 'cote' as const, width: camera.left - GO_GAP - (goBox.right + GO_GAP) }] : []),
       ];
   for (const { place, width } of tries) {
-    stage.style.setProperty('--open-world-bulle', `${Math.max(0, Math.round(width))}px`);
-    set('goBulle', place);
-    const b = bubble.getBoundingClientRect();
-    const r = local(b);
+    if (width < least) continue;
+    setStageVar(stage, '--open-world-bulle', width);
+    setStageFlag(stage, 'goBulle', place);
+    const r = inStage(bubble.getBoundingClientRect(), s);
     const inside = r.left >= 0 && r.top >= 0 && r.left + r.width <= s.width && r.top + r.height <= s.height;
     const short = place !== 'cote' || lineHeight <= 0 || Math.round((bubble.clientHeight - padding) / lineHeight) <= BESIDE_LINES;
-    if (inside && short && !overlaps(r, zone) && !buttons.some((o) => overlaps(r, o))) return goBox;
+    if (inside && short && !overlaps(r, zone) && !buttons.some((o) => overlaps(r, o))) return;
   }
-  stage.style.removeProperty('--open-world-bulle');
-  set('goBulle', 'haut');
-  return goBox;
+  setStageVar(stage, '--open-world-bulle', null);
+  setStageFlag(stage, 'goBulle', 'haut');
 }
 
 /** La dernière place posée de chaque cadenas. */

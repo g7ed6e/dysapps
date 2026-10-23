@@ -128,10 +128,10 @@
 }
 /* « Y aller » qui ne tient plus sous les pieds de Kéo (un grand texte, un téléphone) : en bas à droite, loin de lui,
    sur une ligne (choix du mainteneur, 23 octobre 2026 : la caméra ne bouge pas, la rangée s'écarte). La page mesure et
-   pose `data-go-cote` (placeGoRow). */
+   pose `data-go-cote` et, s'il mordrait la colonne de la caméra, `--open-world-go-droite` (placeGo). */
 .world-stage[data-go-cote='oui'] .open-world-go {
   left: auto;
-  right: calc(0.6rem + env(safe-area-inset-right, 0px));
+  right: var(--open-world-go-droite, calc(0.6rem + env(safe-area-inset-right, 0px)));
   margin-inline: 0;
   align-items: flex-end;
 }
