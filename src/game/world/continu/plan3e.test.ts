@@ -276,8 +276,8 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
     expect(bronze).toBeGreaterThan(0);
   });
 
-  it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#E4EAF1, retouche 1)', () => {
-    expect(COLORS_3E.cloud).toBe(0xe4eaf1);
+  it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#DDE5EF, un cran bleu-gris aux restes du 3e)', () => {
+    expect(COLORS_3E.cloud).toBe(0xdde5ef);
     expect('cloudBright' in COLORS_3E).toBe(false);
     expect(luminance(linearRgb(COLORS_3E.snow))).toBeLessThanOrEqual(luminance(linearRgb(COLORS_3E.cloud)));
   });
