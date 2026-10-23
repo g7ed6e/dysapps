@@ -21,8 +21,8 @@ import type { Stage } from './construction';
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, habitant3e, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, quadOut, sceneRight, sceneRise, sheet } from './place4eKit';
+import { C3E, SINK_3E, armLantern3e, benchSized3e, habitant3e, pathLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once, quadOut, sheet } from './place4eKit';
 
 /**
  * Les couleurs propres au Grenier, en plus des matières des Passeurs (`C3E`) : la toile des sacs, au soleil et à l'ombre
@@ -325,14 +325,6 @@ function millerLantern(b: FacetBuilder): void {
   armLantern3e(b, G.door + 0.35, floorY() + G.doorH + 0.1, FRONT + 0.02, 0, 1, true);
 }
 
-/** Le banc de la cour, contre le pignon (les abords). */
-function bench(b: FacetBuilder): void {
-  const B = BENCH;
-  const g = planeY(B.x, B.z);
-  for (const s of [-1, 1]) b.box({ x: B.x + s * (B.len / 2 - 0.15), y: g - 0.1, z: B.z }, [0.18, B.h + 0.1, B.w - 0.08], C3E.graniteShade, C3E.granite);
-  b.box({ x: B.x, y: g + B.h, z: B.z }, [B.len, 0.1, B.w], C3E.woodShade, C3E.wood);
-}
-
 function model(add: AddPiece): void {
   const corps1 = { stage: 0 as Stage, row: 0 };
   const corps2 = { stage: 0 as Stage, row: 1 / 3 };
@@ -396,9 +388,8 @@ function model(add: AddPiece): void {
   // ---- Les abords : la meule debout sous son petit toit ; le banc ; la lanterne du chemin.
   add(2, 0, (b) => {
     millUp(b);
-    bench(b);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    benchSized3e(b, BENCH, planeY);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -488,17 +479,8 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 4) : au nord, vers le grenier et la meule, le pic au loin à gauche. */
 const SCENE_START = capOf(0);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers le meunier). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : devant la porte, sous l'avant-toit. */
 const SCENE_SPOT = { dx: 0, dz: FRONT + 2.4, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et du meunier au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : la terre de la cour. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La planche des écuelles sur ses deux blocs : sa hauteur à l'échelle 1 ; une écuelle choisie se soulève d'un cran. */
 const PLANK = { height: 0.5, lift: 0.3, bowl: 0.14 } as const;
@@ -512,17 +494,8 @@ export const GRENIER: PlaceArt = {
   role: 'Le meunier',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et le meunier de part et d'autre de son milieu ; son sol, la terre de la cour.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 2.9, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x6a6458, 0xb8b2a6);
   },

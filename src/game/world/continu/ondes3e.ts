@@ -22,8 +22,8 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { armLantern3e, C3E, dryTuft3e, fallenPan3e, habitant3e, postLantern3e, SINK_3E, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise, sheet, type P3 } from './place4eKit';
+import { C3E, SINK_3E, armLantern3e, bench3e, dryTufts3e, fallenPan3e, habitant3e, pathLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once, sheet, type P3 } from './place4eKit';
 
 /**
  * Les couleurs propres aux Ondes, en plus des matières des Passeurs (`C3E`) : le fer bruni du pavillon, sombre et un peu
@@ -417,14 +417,6 @@ function alley(l: FacetBuilder): void {
   }
 }
 
-/** Le banc de pierre, à planche de bois. */
-function bench(l: FacetBuilder): void {
-  const { x, z } = BENCH;
-  const y = groundAt(x, z);
-  for (const s of [-1, 1]) l.box({ x: x + s * 0.55, y: y - 0.1, z }, [0.26, 0.55, 0.38], C3E.graniteShade, C3E.granite);
-  l.box({ x, y: y + 0.42, z }, [1.5, 0.1, 0.44], C3E.woodShade, C3E.wood);
-}
-
 /** Le muret bas de pierre claire à chaperon d'ardoise, le long du banc, loin de la rive. */
 function lowWall(l: FacetBuilder): void {
   const W = LOW_WALL;
@@ -473,7 +465,7 @@ function model(add: AddPiece): void {
     haut,
   );
   // Les abords effacent l'herbe sèche.
-  add('ruine', 0, (b) => posed(b, (l) => DRY.forEach((d) => dryTuft3e(l, d.x, groundAt(d.x, d.z), d.z, d.s))), abords);
+  add('ruine', 0, (b) => posed(b, (l) => dryTufts3e(l, DRY, groundAt)), abords);
 
   // ---- La station : son toit d'ardoise sous la neige.
   add(0, 0, (b) => posed(b, stationRoof));
@@ -496,10 +488,9 @@ function model(add: AddPiece): void {
   add(2, 0, (b) =>
     posed(b, (l) => {
       alley(l);
-      bench(l);
+      bench3e(l, BENCH, groundAt);
       lowWall(l);
-      const p = PATH_LANTERN;
-      postLantern3e(l, p.x, groundAt(p.x, p.z), p.z, p.h, true);
+      pathLantern3e(l, PATH_LANTERN, groundAt);
     }),
   );
 }
@@ -619,20 +610,11 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 6) : à l'ouest-sud-ouest, à l'horizontale, vers le large et la montagne. */
 const SCENE_START = capOf(243);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers l'annonceur). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : sur l'herbe devant le pavillon, le mât à gauche, l'auvent à droite. */
 const SCENE_SPOT = (() => {
   const p = local(-1.6, 4.4);
   return { dx: p.x, dz: p.z, half: [2.4, 1.2] as [number, number] } as const;
 })();
-
-/** L'écart de Kéo et de l'annonceur au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe de la Prairie. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La table des boutons : sa hauteur à l'échelle 1 ; un bouton choisi se soulève d'un cran. */
 const KNOBS = { height: 0.62, lift: 0.28, knob: 0.16 } as const;
@@ -647,30 +629,8 @@ export const ONDES: PlaceArt = {
   role: 'L’annonceur',
   model,
   traceStage: 0,
-  sceneSpot: {
-    dx: SCENE_SPOT.dx,
-    dz: SCENE_SPOT.dz,
-    half: SCENE_SPOT.half,
-    fine: true,
-  },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: {
-      dx: -SCENE_RIGHT.x * SCENE_HALF,
-      dz: -SCENE_RIGHT.z * SCENE_HALF,
-      scale: 0.6,
-      yaw: Math.PI - 0.4 + SCENE_START,
-    },
-    habitant: {
-      dx: SCENE_RIGHT.x * SCENE_HALF,
-      dz: SCENE_RIGHT.z * SCENE_HALF,
-    },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (4 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et l'annonceur de part et d'autre de son milieu ; son sol, l'herbe de la Prairie.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 4 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x6a5444);
   },

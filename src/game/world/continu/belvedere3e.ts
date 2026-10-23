@@ -22,8 +22,8 @@ import type { Stage } from './construction';
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, armLantern3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e, wallSpan3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { C3E, SINK_3E, armLantern3e, habitant3e, lantern3e, onCircle, pathLantern3e, scene3e, site3e, wallSpan3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once } from './place4eKit';
 import { PLACES_3E } from './plan3e';
 
 /**
@@ -396,8 +396,7 @@ function model(add: AddPiece): void {
   add(2, 0, (b) => {
     arrowsLaid(b);
     bench(b);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -489,17 +488,8 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 3) : au nord-ouest, vers le gnomon, le pic et le Fanal. */
 const SCENE_START = capOf(323);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers la topographe). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : au pied du gnomon, côté est de la terrasse. */
 const SCENE_SPOT = { dx: 1.4, dz: 1.8, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et de la topographe au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : le dallage. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, deck()));
 
 /** Le madrier des galets sur ses deux blocs : sa hauteur à l'échelle 1 ; un galet choisi se soulève d'un cran. */
 const PLANK = { height: 0.5, lift: 0.3, stone: 0.12 } as const;
@@ -514,18 +504,9 @@ export const BELVEDERE: PlaceArt = {
   model,
   // L'étape la plus basse qui porte une trace ; chaque trace a sa partie (`stage`, `row` : 3 + 1 + 1).
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
-    // Basse, à l'horizontale : la terrasse est plate, et la caméra ne regarde jamais par-dessus le muret.
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et la topographe de part et d'autre de son milieu ; son sol, le dallage.
+  // Basse, à l'horizontale : la terrasse est plate, et la caméra ne regarde jamais par-dessus le muret.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: deck, top: 2.9, pitch: 10 }),
   // Le décor de près : la terrasse et ses pierres sont au lieu ; les abords (./belvedereSurroundings.ts) ajoutent ce qui
   // cadre. Il reste la topographe en pion.
   decor(b, _floor, at, sphere: Sphere, body = true) {

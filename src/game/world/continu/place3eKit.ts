@@ -3,12 +3,14 @@
 // au 4e : les matières des Passeurs au 3e (le granit bleuté, l'ardoise, la pierre claire, le bois gris, le fer bruni, le
 // bronze des seules ferrures, l'ocre des lanternes), le repère d'un lieu (son centre, le sol sous lui, sa porte), la
 // lanterne pendue, sur son poteau ou sur son bras, le muret de granit à chaperon d'ardoise, la terrasse ronde, l'habitant
-// en pion (sa scénette montre son modèle `3e-habitant-<lieu>` à sa place : ./habitants.ts). Les outils sans niveau (le quadrilatère
+// en pion (sa scénette montre son modèle `3e-habitant-<lieu>` à sa place : ./habitants.ts) ; et, depuis la relecture de l'expert
+// frontend (23 octobre 2026), ce que les seize lieux répétaient : leur scénette (`scene3e`), l'herbe sèche d'une ruine, la
+// lanterne du chemin, les deux bancs des abords. Les outils sans niveau (le quadrilatère
 // tourné vers le dehors, le plan du sol, la hauteur d'une scène, le cap d'un regard) restent dans ./place4eKit.ts. Code pur.
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { sheet, type P3 } from './place4eKit';
-import type { Sphere } from './placeArt';
+import { once, sceneRight, sceneRise, sheet, type P3 } from './place4eKit';
+import type { PlaceArt, Sphere } from './placeArt';
 import { COLORS_3E, PATH_NODES_3E, PLACES_3E, type PlaceId3e } from './plan3e';
 import { standingHeight } from './terrain';
 import { heightAt3e } from './terrain3e';
@@ -108,6 +110,65 @@ export function dryTuft3e(b: FacetBuilder, x: number, y: number, z: number, s = 
   b.prism({ x, y: y - 0.05, z, yaw: x + z }, 0.32 * s, 0, 0.62 * s, 4, C3E.dry);
   b.prism({ x: x + 0.28 * s, y: y - 0.05, z: z + 0.12 * s, yaw: x }, 0.22 * s, 0, 0.45 * s, 4, C3E.dryShade);
   b.prism({ x: x - 0.22 * s, y: y - 0.05, z: z - 0.18 * s, yaw: z }, 0.2 * s, 0, 0.4 * s, 4, C3E.dry);
+}
+
+/** Le sol d'un lieu sous un point de son repère (son plan du sol, son sol tel quel, celui d'une terrasse). */
+type Ground3e = (x: number, z: number) => number;
+
+/** L'herbe sèche d'une ruine, touffe par touffe (`dryTuft3e`), chacune posée au sol `ground` sous elle. */
+export function dryTufts3e(b: FacetBuilder, tufts: readonly { x: number; z: number; s: number }[], ground: Ground3e): void {
+  for (const d of tufts) dryTuft3e(b, d.x, ground(d.x, d.z), d.z, d.s);
+}
+
+/** La lanterne du chemin (les abords), allumée sur son poteau, au bord du lieu, hors du chemin : posée au sol `ground` sous elle. */
+export function pathLantern3e(b: FacetBuilder, p: { x: number; z: number; h: number }, ground: Ground3e): void {
+  postLantern3e(b, p.x, ground(p.x, p.z), p.z, p.h, true);
+}
+
+/**
+ * Le banc des abords à la mesure du lieu (le Grenier, l'Abri, le Jardin) : deux pieds de granit sous une planche de bois
+ * gris, le long de `x` ; `at` : son milieu, sa longueur, sa largeur, sa hauteur ; posé au sol `ground` sous son milieu.
+ */
+export function benchSized3e(b: FacetBuilder, at: { x: number; z: number; len: number; w: number; h: number }, ground: Ground3e): void {
+  const g = ground(at.x, at.z);
+  for (const s of [-1, 1]) b.box({ x: at.x + s * (at.len / 2 - 0.15), y: g - 0.1, z: at.z }, [0.18, at.h + 0.1, at.w - 0.08], C3E.graniteShade, C3E.granite);
+  b.box({ x: at.x, y: g + at.h, z: at.z }, [at.len, 0.1, at.w], C3E.woodShade, C3E.wood);
+}
+
+/** Le banc d'une place (le Fanal, la Rampe, les Ondes) : deux pieds de granit sous une planche de bois gris longue de 1,5, le long de `x`, posé au sol `ground` en `at`. */
+export function bench3e(b: FacetBuilder, at: Vec2, ground: Ground3e): void {
+  const { x, z } = at;
+  const y = ground(x, z);
+  for (const s of [-1, 1]) b.box({ x: x + s * 0.55, y: y - 0.1, z }, [0.26, 0.55, 0.38], C3E.graniteShade, C3E.granite);
+  b.box({ x, y: y + 0.42, z }, [1.5, 0.1, 0.44], C3E.woodShade, C3E.wood);
+}
+
+/** L'écart de Kéo et de l'habitant au milieu de la scène, le même à chaque lieu du 3e. */
+const SCENE_HALF_3E = 2.0;
+
+/**
+ * La scénette d'un lieu du 3e, la même partout sauf son cadre : son milieu (`spot`, depuis le centre du lieu), son cap de
+ * départ (`start`, `capOf`), le sol de la scène sous son milieu (`floor`), le haut de ce que la caméra cadre (`top`) et
+ * sa plongée (`pitch`, en degrés). Kéo à gauche, l'habitant à droite, chacun à `SCENE_HALF_3E` du milieu, le long de la
+ * droite de l'écran au départ ; le sol de la scène levé au-dessus de son point (`sceneRise`), calculé une fois, au
+ * premier regard. Ce que le lieu donne à `PlaceArt` (`sceneSpot`, `site`).
+ */
+export function scene3e(site: Site3e, o: { start: number; spot: { dx: number; dz: number; half: [number, number] }; floor: Ground3e; top: number; pitch: number }): Pick<PlaceArt, 'sceneSpot' | 'site'> {
+  const right = sceneRight(o.start);
+  const rise = once(() => sceneRise(site.ground, o.spot, o.floor(o.spot.dx, o.spot.dz)));
+  return {
+    sceneSpot: { dx: o.spot.dx, dz: o.spot.dz, half: o.spot.half, fine: true },
+    site: {
+      get rise() {
+        return rise();
+      },
+      keo: { dx: -right.x * SCENE_HALF_3E, dz: -right.z * SCENE_HALF_3E, scale: 0.6, yaw: Math.PI - 0.4 + o.start },
+      habitant: { dx: right.x * SCENE_HALF_3E, dz: right.z * SCENE_HALF_3E },
+      subject: { halfWidth: 3.0, bottom: -0.5, top: o.top, depth: 0.3 },
+      pitch: (o.pitch * Math.PI) / 180,
+      start: o.start,
+    },
+  };
 }
 
 /** Un point d'un cercle de rayon `r` au cap `deg` (en degrés depuis le nord, dans le sens des aiguilles d'une montre). */

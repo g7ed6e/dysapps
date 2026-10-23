@@ -20,9 +20,9 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
+import { C3E, SINK_3E, dryTufts3e, habitant3e, lantern3e, onCircle, pathLantern3e, postLantern3e, scene3e, site3e } from './place3eKit';
 import { COLORS_3E } from './plan3e';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { capOf, groundPlane4e, inWorld, once } from './place4eKit';
 
 /**
  * Les couleurs propres à l'Ermitage, en plus des matières des Passeurs (`C3E`) : les pins des pentes (ceux du 3e) ; le
@@ -274,7 +274,7 @@ function model(add: AddPiece): void {
     0,
     (b) => {
       fountainInside(b, false);
-      for (const d of DRY) dryTuft3e(b, d.x, planeY(d.x, d.z), d.z, d.s);
+      dryTufts3e(b, DRY, planeY);
     },
     abords,
   );
@@ -295,8 +295,7 @@ function model(add: AddPiece): void {
   add(2, 0, (b) => {
     fountainInside(b, true);
     paving(b);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -361,17 +360,8 @@ export const ERMITAGE_RANKS = {
 /** Le cap de départ de la scénette (proposition, § 7) : à l'ouest, entre deux colonnes, vers les pins. */
 const SCENE_START = capOf(270);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers la traductrice). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : à l'est de la colonnade, sur les aiguilles, hors du chemin. */
 const SCENE_SPOT = { dx: 6.2, dz: 1.6, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et de la traductrice au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** Le rebord de pierre des pommes de pin : sa hauteur à l'échelle 1 ; une pomme choisie se soulève d'un cran. */
 const LEDGE = { height: 0.45, lift: 0.3, cone: 0.3 } as const;
@@ -386,17 +376,8 @@ export const ERMITAGE: PlaceArt = {
   role: 'La traductrice',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et la traductrice de part et d'autre de son milieu ; son sol, les aiguilles de pin.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x4f4339);
   },

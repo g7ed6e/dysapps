@@ -18,8 +18,8 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, armLantern3e, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { C3E, armLantern3e, dryTufts3e, habitant3e, lantern3e, onCircle, pathLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once } from './place4eKit';
 
 /**
  * Les couleurs propres au Kiosque, en plus des matières des Passeurs (`C3E`) : le gris des feuilles pliées et des cadres
@@ -269,7 +269,7 @@ function model(add: AddPiece): void {
       standsFallen(b);
       for (const f of FRAMES.fallen) b.box({ x: f.x, y: planeY(f.x, f.z) - 0.02, z: f.z, yaw: f.yaw }, [0.62, 0.06, 0.46], C3E.woodShade, C.frame);
       mailbox(b, true);
-      for (const d of DRY) dryTuft3e(b, d.x, planeY(d.x, d.z), d.z, d.s);
+      dryTufts3e(b, DRY, planeY);
     },
     abords,
   );
@@ -291,8 +291,7 @@ function model(add: AddPiece): void {
     for (const deg of FRAMES.caps) frameHung(b, deg);
     mailbox(b, false);
     bench(b);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -369,17 +368,8 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 3) : au nord-est, vers le comptoir, l'arête ouest et le pic au bord droit. */
 const SCENE_START = capOf(45);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers la journaliste). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : au sud-ouest, hors du socle, le comptoir devant, entre les poteaux. */
 const SCENE_SPOT = { dx: -5.4, dz: 4.2, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et de la journaliste au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe du pâturage. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La planche des rouleaux : sa hauteur à l'échelle 1 ; un rouleau choisi se soulève d'un cran. */
 const SHELF = { height: 0.55, lift: 0.3, roll: 0.18 } as const;
@@ -395,17 +385,8 @@ export const KIOSQUE: PlaceArt = {
   role: 'La journaliste',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et la journaliste de part et d'autre de son milieu ; son sol, l'herbe du pâturage.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x5a4a3e);
   },
