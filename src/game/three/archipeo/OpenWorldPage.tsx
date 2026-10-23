@@ -51,7 +51,7 @@ import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
-import { constructionState, placeConstruction, posedShapes, restoredLine } from './constructionParts';
+import { constructionState, fanalRestored, placeConstruction, posedShapes, restoredLine } from './constructionParts';
 import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
@@ -187,6 +187,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni départ ; sa fiche pose ses trois
   // parures (GD-25), les feux arrivant avec deux lieux restaurés.
   const nefResting = nefAtRest(level);
+  // Les pièces du Rafiot rendues au Fanal du 3e (la fin des Ferrailleurs, jouée au Fanal restauré) : au 4e, le pont du
+  // Rafiot est vide (consultant d'Archipéo, relecture de la PR du 3e). La scène le lit à sa création.
+  const piecesReturned = useRef(false);
+  piecesReturned.current = level === '4e' && fanalRestored(state.world.parts);
   const nefLookNow = useMemo(() => (nefResting ? 3 : nefLookOf(state, sail.kit, nefStage)), [nefResting, state, sail.kit, nefStage]);
   const feux = useMemo(() => paruresFeux(state.progress, achieved), [state.progress, achieved]);
   const paruresNow = useMemo(() => (nefResting ? paruresLook(state.world.parts, state.progress, achieved) : 0), [nefResting, state.world.parts, state.progress, achieved]);
@@ -449,6 +453,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     const w = createOpenWorld(el, {
       plan,
       start,
+      piecesReturned: piecesReturned.current,
       reduceMotion,
       meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
       onDepart: () => {

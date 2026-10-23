@@ -93,8 +93,11 @@ interface Departure {
   lookAt: PlaceId | null;
   /** Ou un haut fixe que le regard levé cadre au quai (au 4e, le cratère du volcan : ./crique4e.ts, `CRIQUE_LOOK`). */
   lookTop?: Vec3;
-  /** Ce qui ne change jamais autour du lieu de départ (au 5e, la graine géante et la lumière du Phare), ou rien. */
-  decor(): Facets | null;
+  /**
+   * Ce qui ne change jamais autour du lieu de départ (au 5e, la graine géante et la lumière du Phare), ou rien ; au 4e,
+   * `returned` : les pièces du Rafiot rendues au Fanal du 3e (le pont du Rafiot vide).
+   */
+  decor(returned?: boolean): Facets | null;
   /**
    * Un décor du monde qui n'est pas sur la Carte (au 3e, le zeppelin des Ferrailleurs : un décor, pas un repère ; fiche du
    * 3e, § 5 bis), dessiné avec `decor` hors de la Carte ; rien ailleurs.
@@ -249,7 +252,7 @@ const WORLD_5E: LevelWorld = {
   mapOverlay: (ground) => mergeFacets([cliffMapLine(), pathMapEdges5e(ground, CLIFF_MAP_COLORS.dark)]),
 };
 
-let decor4e: Facets | null = null;
+const decor4e = new Map<boolean, Facets>();
 const DEPARTURE_4E_SITE: Departure = {
   port: CRIQUE_SITE,
   nef: NEF_4E,
@@ -258,7 +261,11 @@ const DEPARTURE_4E_SITE: Departure = {
   facadeYaw: CRIQUE.yaw,
   lookAt: null,
   lookTop: CRIQUE_LOOK,
-  decor: () => (decor4e ??= criqueDecorFacets()),
+  decor: (returned = false) => {
+    let f = decor4e.get(returned);
+    if (!f) decor4e.set(returned, (f = criqueDecorFacets(returned)));
+    return f;
+  },
 };
 
 /**

@@ -4,9 +4,9 @@
 // devient les tranches d'étapes qu'elle pose dans le lieu, qui se rebâtit lui-même (world/continu/construction.ts) : le plan `<lieu>-1`
 // est le corps, `-2` le haut, `-3` les abords ; un plan coupé en deux ou en trois rangées (GD-14) en tranches qui se
 // suivent, de bas en haut. Sans Three.js : testé sous jsdom.
-import type { IleId } from '../../biomes';
+import { getIle, type IleId } from '../../biomes';
 import type { PartShape, Stage } from '../../world/continu/construction';
-import { hasScenette, levelOfPlace, type OpenPlace } from '../../world/continu/levelPlan';
+import { hasScenette, levelOfPlace, placeById, type OpenPlace } from '../../world/continu/levelPlan';
 import { scenetteOf } from '../../world/continu/scenette';
 import type { IslandStateId } from '../../world/islandState';
 import { partiePosee, partiesDe, type Partie } from '../../world/parts';
@@ -81,6 +81,15 @@ export function constructionState(c: PlaceConstruction): 'en-chantier' | 'restau
   const n = c.posed.filter(Boolean).length;
   if (!n || !c.shapes.length) return null;
   return n === c.shapes.length ? 'restauree' : 'en-chantier';
+}
+
+/**
+ * Le Fanal du 3e est-il restauré dans cette sauvegarde ? Alors la fin des Ferrailleurs est jouée : les six pièces du
+ * Rafiot sont au pied du Fanal, et le pont du Rafiot, au 4e, est vide.
+ */
+export function fanalRestored(parts: Record<string, string[]>): boolean {
+  const island = getIle(placeById('fanal').island);
+  return island !== undefined && constructionState(placeConstruction(island.id, parts)) === 'restauree';
 }
 
 /**

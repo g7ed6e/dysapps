@@ -33,9 +33,11 @@ import {
   envelopeShown,
   nef4eFlight,
   nef4eSiteTriangles,
+  rafiotPiece,
   skyIslandTouched,
   skyIslandsFacets,
 } from './crique4e';
+import { FacetBuilder } from './facets';
 import { distance, distanceToPolyline, linearRgb, type Vec2, type Vec3 } from './geometry';
 import { LISIERE_SITE } from './lisiere';
 import { levelWorld } from './levelWorld';
@@ -406,6 +408,16 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     let lamp = 0;
     for (let k = 0; k < decor.colors.length; k += 3) if (`${decor.colors[k].toFixed(4)},${decor.colors[k + 1].toFixed(4)},${decor.colors[k + 2].toFixed(4)}` === key(C4E.lantern)) lamp++;
     expect(lamp).toBe(0);
+  });
+
+  it('le pont du Rafiot vide quand ses six pièces sont rendues au Fanal du 3e, le reste du décor identique', () => {
+    const full = criqueDecorFacets();
+    const empty = criqueDecorFacets(true);
+    expect(empty.triangles).toBeLessThan(full.triangles);
+    // Rien d'autre ne change : seules les pièces partent (le même nombre de triangles que le dessin des six pièces).
+    const b = new FacetBuilder();
+    for (const id of ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const) rafiotPiece(b, id, 0, 0, 0, { bronze: 0x9c8452, bronzeTop: 0xb39a64 });
+    expect(full.triangles - empty.triangles).toBe(b.build().triangles);
   });
 
   it('les Aiguilles au sud, sur la mer, sous 60 triangles, hors de la première image, dans l’image au demi-tour', () => {
