@@ -124,6 +124,16 @@ export function reframeMap(plan: LevelPlan, aspect: number, open: readonly Vec2[
   return best.view;
 }
 
+/**
+ * Le bout de la caméra de la Carte pour une vue : au-delà du point regardé, de toute l'île (sa diagonale). Au téléphone
+ * en portrait, l'île entière demande déjà une caméra plus loin qu'en paysage, et le plus grand texte la recule encore
+ * jusqu'à `MAP_REFRAME.most` fois (`reframeMap`) : un bout fixe coupait alors l'île, et la Carte restait vide.
+ */
+export function mapFarPlane(plan: LevelPlan, view: MapView): number {
+  const { minX, maxX, minZ, maxZ } = islandBox(plan);
+  return view.distance + Math.hypot(maxX - minX, maxZ - minZ);
+}
+
 /** La Carte à l'ouverture : l'île entière, au milieu de l'écran. */
 export function mapStart(plan: LevelPlan, aspect: number): MapView {
   const box = islandBox(plan);

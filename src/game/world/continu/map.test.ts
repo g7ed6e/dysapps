@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest';
 import { markOffset, screenOf } from './camera';
 import type { Vec3 } from './geometry';
-import { MAP_BAR_ROOM, MAP_EDGE_4E, MAP_LEAD_FROM, MAP_PIN_CLEAR, islandBox, mapLeader, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView, type Rect } from './map';
+import { MAP_BAR_ROOM, MAP_EDGE_4E, MAP_LEAD_FROM, MAP_PIN_CLEAR, islandBox, mapLeader, MAP_CAMERA, grown, MAP_COMPACT, MAP_KEO_DISC, MAP_LABEL_GAP, MAP_LOCK, MAP_REFRAME, clampMap, fitDistance, layoutMapLabels, mapFarPlane, mapPose, mapStart, nameLines, panMap, reframeMap, zoomMap, type MapLabel, type MapLabelSpot, type MapView, type Rect } from './map';
 import { PLACES, placeById } from './plan6e';
 import { PORT_MAP_POINT } from './port';
 import { heightAt, standingHeight } from './terrain';
@@ -1145,3 +1145,19 @@ describe('La pastille de Kéo au 4e, sans place libre près de son point (retouc
   });
 });
 
+
+describe('La Carte au téléphone en portrait (restes du 4e)', () => {
+  it('le bout de la caméra passe toujours au-delà du coin le plus loin de l’île, même reculée au plus grand texte', () => {
+    for (const level of ['6e', '5e', '4e', '3e'] as const) {
+      const plan = planFor(level);
+      const { minX, maxX, minZ, maxZ } = islandBox(plan);
+      for (const [w, h] of [[390, 844], [800, 1280], [1024, 768]] as const) {
+        const start = mapStart(plan, w / h);
+        const view = { ...start, distance: start.distance * MAP_REFRAME.most };
+        const pose = mapPose(view);
+        const far = Math.max(...[[minX, minZ], [maxX, minZ], [minX, maxZ], [maxX, maxZ]].map(([x, z]) => Math.hypot(x - pose.position.x, -pose.position.y, z - pose.position.z)));
+        expect(mapFarPlane(plan, view), `${level} ${w} × ${h}`).toBeGreaterThan(far);
+      }
+    }
+  });
+});

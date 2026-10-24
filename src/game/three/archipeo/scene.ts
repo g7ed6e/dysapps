@@ -32,7 +32,7 @@ import { lacFacets } from '../../world/continu/lac3e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
-import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
+import { clampMap, mapFarPlane, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { BRIDGE_TOUCH, bridgeDeck, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeLockRange, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, colGalleryOf, colRoofOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { creuxFacets } from '../../world/continu/creux5e';
@@ -563,6 +563,7 @@ const FOLLOW_FAR_OF: Readonly<Record<OpenWorldLevel, number>> = { '6e': FOLLOW_F
  * tournée à moins de tant de son cap (en radians).
  */
 const QUAY_LOOK_TURN = 0.6;
+/** Le bout de la caméra de la Carte, au moins (`mapFarPlane` le recule avec la vue). */
 const MAP_FAR = 2000;
 /** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`) ; dessiné sans profondeur, tout le reste passe devant. */
 const SKY_RADIUS = 450;
@@ -2920,6 +2921,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const aspect = () => viewW / viewH;
   const showMap = () => {
     if (!mapView) return;
+    // Le bout de la caméra suit la vue : jamais en deçà de l'île (au téléphone en portrait, elle est loin).
+    const far = Math.max(MAP_FAR, mapFarPlane(plan, mapView));
+    if (camera.far !== far) {
+      camera.far = far;
+      camera.updateProjectionMatrix();
+      fog.near = Math.max(MAP_FOG, far);
+      fog.far = fog.near + 1;
+    }
     applyPose(mapPose(mapView, mapCamera));
     mapDirty = true;
   };
