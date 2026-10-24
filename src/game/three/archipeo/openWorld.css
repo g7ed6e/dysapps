@@ -3256,8 +3256,8 @@
   justify-content: center;
 }
 .world-dial-cran {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   border: 2px solid currentColor;
 }
@@ -3297,4 +3297,31 @@
 }
 .world-question .world-hand .world-sort-verbe {
   font-weight: 400;
+}
+
+/* Le carnet plus haut que sa place (GD-26) : un chevron sur un trait pointillé, collé à son bas, tant qu'il reste à
+   lire plus bas ; le carnet défile seul. */
+.world-question .world-carnet .world-carnet-suite {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  margin: 0.25rem -0.5rem 0;
+  border-top: 2px dashed var(--ink);
+  background: inherit;
+  background-color: var(--surface);
+  color: var(--ink);
+}
+.world-question .world-carnet .world-carnet-suite svg {
+  width: 28px;
+  height: 28px;
+}
+/* Le repère d'une caisse ou d'une porte (GD-26) : 24 px au moins (référent dys). */
+.world-question .world-sort-bins .world-sort-panier {
+  width: max(24px, 1.1em);
+  height: max(24px, 1.1em);
+}
+/* « Vue simple » proposé dans la bulle : la bulle repart de son haut, « Lire la suite » passe dans « Vue simple ». */
+.world-question .in-world.bulle.offer .world-consigne-more {
+  display: none;
 }

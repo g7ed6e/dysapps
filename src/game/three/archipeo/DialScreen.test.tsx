@@ -33,10 +33,10 @@ it('règle un coup par appui, sans montrer la valeur, puis juge le nombre de cou
   const validate = screen.getByRole('button', { name: /Valider/ });
   expect(validate).toBeDisabled();
   for (let i = 0; i < dial.answer; i++) await user.click(screen.getByRole('button', { name: 'Un coup de plus' }));
-  expect(screen.getByRole('status')).toHaveTextContent(`${dial.answer} coups`);
+  expect(screen.getByRole('status')).toHaveTextContent(`${dial.answer} coups sur 7`);
   expect(screen.getByRole('status')).not.toHaveTextContent('=');
   await user.click(validate);
-  expect(onAnswer).toHaveBeenCalledWith({ results: [{ key: item.key, correct: true }], detail: { chosen: item.answer } });
+  expect(onAnswer).toHaveBeenCalledWith({ results: [{ key: item.key, correct: true }], detail: { chosen: String((item as Record<string, unknown>).answer) } });
 });
 
 it('ne règle pas sous zéro ni au-delà de sept coups', async () => {
@@ -44,7 +44,7 @@ it('ne règle pas sous zéro ni au-delà de sept coups', async () => {
   const user = userEvent.setup();
   expect(screen.getByRole('button', { name: 'Un coup de moins' })).toBeDisabled();
   for (let i = 0; i < 8; i++) await user.click(screen.getByRole('button', { name: 'Un coup de plus' }));
-  expect(screen.getByRole('status')).toHaveTextContent('7 coups');
+  expect(screen.getByRole('status')).toHaveTextContent('7 coups sur 7');
   expect(screen.getByRole('button', { name: 'Un coup de plus' })).toBeDisabled();
 });
 

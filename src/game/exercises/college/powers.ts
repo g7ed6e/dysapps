@@ -51,7 +51,7 @@ export const powerOfTenReverse: ItemGenerator = (rng) => {
     choices: textChoices(answer, [pow(10, n - 1), pow(10, n + 1), pow(n, 10), pow(10, n * 10)], rng),
     answer,
     hint: 'Compte les zéros : c’est l’exposant.',
-    explanation: `${fmt(10 ** n)} a ${n} zéros : c’est ${answer}.`,
+    explanation: `${fmt(10 ** n)} a ${n} zéros : c’est ${answer}, ${n} fois × 10.`,
     aid: { kind: 'rule-card', props: { title: 'Puissances de 10', lines: POW10_RULES } },
     // Dans le lieu (GD-26) : régler le nombre de coups, chacun multiplie par 10 ; la valeur ne s'allume qu'à « Valider »
     // (avis du contenu : sinon l'élève règle jusqu'à ce que les nombres se ressemblent). La grille garde les choix.

@@ -2,7 +2,8 @@
 // question (la place de la scène, « Vue simple », la consigne, l'item à montrer), la scène d'un item, la place d'une
 // réponse posée sur la scène, la règle et la figure d'un item, les icônes d'action d'un écran bas et la voix coupée
 // entre deux items.
-import { createContext, useContext, useEffect, type CSSProperties, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { Icon } from '../../../components/Icon';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
@@ -154,6 +155,23 @@ export function PlaceAid({ aid, layout, simple, lang }: { aid: AidData; layout: 
  * toujours ouverts pendant l'action ; il défile seul s'il est plus haut que sa place.
  */
 export function PlaceCarnet({ box, children }: { box: ScreenBox; children: ReactNode }) {
+  // Le repère « Suite plus bas » tant que le carnet est plus haut que sa place (relectures de la PR 1 : un rappel qui
+  // défile se dit) ; il part quand on a lu jusqu'en bas.
+  const ref = useRef<HTMLDivElement>(null);
+  const [more, setMore] = useState(false);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const check = () => setMore(el.scrollHeight > el.clientHeight + 1 && el.scrollTop + el.clientHeight < el.scrollHeight - 1);
+    check();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(check);
+    observer?.observe(el);
+    el.addEventListener('scroll', check, { passive: true });
+    return () => {
+      observer?.disconnect();
+      el.removeEventListener('scroll', check);
+    };
+  }, []);
   const style: CSSProperties = {
     left: `${Math.round(box.left)}px`,
     top: `${Math.round(box.top)}px`,
@@ -161,8 +179,14 @@ export function PlaceCarnet({ box, children }: { box: ScreenBox; children: React
     maxHeight: `${Math.round(box.bottom - box.top)}px`,
   };
   return (
-    <div className="aid world-question-aid world-carnet beside" style={style}>
+    <div ref={ref} className="aid world-question-aid world-carnet beside" style={style} data-suite={more ? '' : undefined}>
       {children}
+      {more && (
+        // Le repère seul, caché aux lecteurs d'écran (ils lisent tout le carnet), comme celui des panneaux.
+        <span className="world-carnet-suite" aria-hidden="true">
+          <Icon name="chevronDown" />
+        </span>
+      )}
     </div>
   );
 }

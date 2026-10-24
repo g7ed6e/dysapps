@@ -395,7 +395,7 @@ Pour tous les items :
 4. énoncé : "Une région d’Europe touchée par un séisme\nL’Union européenne envoie de l’argent pour reconstruire.\nDes secouristes d’autres pays viennent aider."
    - question : À quelle échelle se fait cette solidarité ?
    - geste : placer
-   - scène : l’argent pour reconstruire après le séisme
+   - scène : l’argent de l’Union européenne pour reconstruire après un séisme
    - consigne courte : Pose le panier devant sa porte.
    - lu : Une région d’Europe touchée par un séisme. L’Union européenne envoie de l’argent pour reconstruire. Des secouristes d’autres pays viennent aider.
    - choix : à l’échelle de la commune · à l’échelle de la famille · à l’échelle européenne

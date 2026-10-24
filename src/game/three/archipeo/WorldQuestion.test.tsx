@@ -591,9 +591,11 @@ describe('Les lieux au décor neutre, dans la bulle (GD-26)', () => {
       await vi.waitFor(() => expect(world.question).toHaveBeenCalled());
       const last = vi.mocked(world.question).mock.calls.at(-1)![0]!;
       expect(last).toMatchObject({ place, mission, item: { scene: { kind: 'column' }, answered: false } });
-      // Une place par réponse sur la rangée, chaque réponse posée à la sienne.
-      expect(last.layout.slots).toHaveLength(answers().length);
-      for (const a of answers()) expect(a.style.left).not.toBe('');
+      // Une place par réponse sur la rangée, chaque réponse posée à la sienne ; les fiches à ranger (GD-26) sont en main
+      // dans la bulle, hors de la rangée.
+      const onRow = answers().filter((a) => !a.closest('.world-hand'));
+      expect(last.layout.slots).toHaveLength(onRow.length);
+      for (const a of onRow) expect(a.style.left).not.toBe('');
       expect(panel().classList.contains('bulle')).toBe(true);
       expect(screen.queryByRole('button', { name: /Commencer/ })).toBeNull();
       // Le document et le rappel hors de la bulle, dans le carnet, à leur place à côté de la scène.

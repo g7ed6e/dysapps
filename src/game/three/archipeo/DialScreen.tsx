@@ -71,7 +71,8 @@ export function DialScreen({ items, answered, onAnswer, ruledOut }: ScreenProps)
       ))}
     </span>
   );
-  const coups = `${count} coup${count > 1 ? 's' : ''}`;
+  // « 0 coup sur 7 » : les points vides se disent aussi en mots (référent dys).
+  const coups = `${count} coup${count > 1 ? 's' : ''} sur ${dial.max}`;
   const verdict = answered ? (chosen === answer ? 'right' : 'wrong') : '';
   const minus = at(0);
   const middle = at(1);

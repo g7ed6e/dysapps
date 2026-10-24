@@ -182,7 +182,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // graduations passeraient sous 8 px l'une de l'autre.
     const column = item?.scene.kind === 'jauge' && lowScreen;
     return scenetteLayout({ count, widen, small: place === 'phare', words, grand: grandTexte, aid: hasAid, wideRow, validate, column }, size.w || 1, size.h || 1, base);
-  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow, picked, item?.scene.kind]);
+  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow, picked, item?.scene.kind, item?.gesture]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
   const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
   const [finished, setFinished] = useState(false);
@@ -287,6 +287,17 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       return;
     }
     if (offer) return;
+    // Au plus grand texte, un carnet qui ne montre pas trois lignes de son rappel (référent dys, PR 1 de GD-26) : « Vue
+    // simple », où le rappel est entier.
+    const carnet = root.querySelector<HTMLElement>('.world-carnet');
+    if (bulle && grandTexte && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && !autoSimple.current) {
+      const line = parseFloat(getComputedStyle(carnet).lineHeight) || 32;
+      if (carnet.clientHeight < 4 * line) {
+        autoSimple.current = true;
+        openSimple();
+        return;
+      }
+    }
     // Une bulle plus haute que sa place (35 % de l'écran, GD-26) : une phrase coupée par son bas mène à « Vue simple ».
     if (!column || !overflows(column)) return;
     // Une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran bas, après l'avoir
@@ -321,6 +332,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     refocus.current = false;
     next.focus({ preventScroll: true });
   }, [simple, itemKey]);
+  // « Vue simple » proposé dans la bulle : la bulle repart de son haut, le rôle et la consigne d'abord (relectures de la
+  // PR 1 de GD-26 : au téléphone, le bouton posé sur la bulle cachait la consigne).
+  useEffect(() => {
+    if (!offer || !bulle) return;
+    const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
+    if (panel) panel.scrollTop = 0;
+  }, [offer, bulle]);
   // Chaque item de « Vue simple » s'ouvre en haut du panneau, sa phrase d'abord, même si l'élève avait descendu jusqu'aux
   // réponses de l'item d'avant (relecture de L2, au plus grand texte sur téléphone).
   useEffect(() => {

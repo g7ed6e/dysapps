@@ -1680,3 +1680,11 @@ describe('Les gestes des items (GD-26)', () => {
     for (const it of [...(vivant?.items ?? []), ...(solidarite?.items ?? [])].filter((x) => itemGesture(x))) expect(it.choices).toContain(it.answer);
   });
 });
+
+describe('Les caisses d’une manche (GD-26, avis du contenu)', () => {
+  it('donne à chaque fiche de la Mangrove une caisse de sa manche', async () => {
+    const fiches = (await loadExercise('life-earth-sciences-6e-living-world-living-groups-1'))!.items.filter((it) => itemGesture(it) === 'ranger');
+    const bins = gestureBins(fiches).map((b) => b.id);
+    for (const f of fiches) expect(bins).toContain(f.answer);
+  });
+});

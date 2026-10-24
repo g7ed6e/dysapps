@@ -543,6 +543,11 @@ export const SCENETTE_LAYOUT = {
   aidShare: 0.3,
   /** Sur un écran bas, où le carnet descend jusqu'en bas et la rangée se tient à sa droite. */
   aidShareLow: 0.26,
+  /**
+   * Au-dessus des étiquettes de la rangée, la place de leur repère (le panier, la porte, « tenu ») : le carnet s'arrête
+   * avant, jamais recouvert (relectures de la PR 1 de GD-26 : UX UI, référent dys).
+   */
+  noteRoom: 34,
   row: { top: 0.66, bottom: 0.9 },
   low: { left: 0.4, top: 0.16, bottom: 0.62, rowTop: 0.64, rowBottom: 0.88 },
   /**
@@ -752,7 +757,7 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const labelsTop = Math.min(...slots.map((s) => s.label.top));
   const bubbleBottom = Math.min(top + (base.low ? S.bubbleLow : S.bubble) * height, labelsTop - L.gap);
   // Le rappel (la règle, l'aide de calcul) reste affiché pendant l'action, à gauche sous la bulle ; la scène à sa droite.
-  const aid = needs.aid ? { left: edge, top: bubbleBottom + L.gap, right: aidRight, bottom: carnetDown ? height - L.edgeLow : labelsTop - L.gap } : null;
+  const aid = needs.aid ? { left: edge, top: bubbleBottom + L.gap, right: aidRight, bottom: carnetDown ? height - L.edgeLow : labelsTop - S.noteRoom } : null;
   const stage = { left: aid ? aid.right + edge : edge, top: S.stage.top * height, right: width - edge, bottom: Math.min(S.stage.bottom * height, highest - L.gap) };
   return {
     low: false,

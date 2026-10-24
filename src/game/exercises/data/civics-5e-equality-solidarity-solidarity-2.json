@@ -103,7 +103,7 @@
       "hint": "Qui envoie l’argent ?",
       "explanation": "L’Union européenne et des secouristes d’autres pays aident : c’est une solidarité à l’échelle européenne.",
       "gesture": "placer",
-      "shows": "l’argent pour reconstruire après le séisme",
+      "shows": "l’argent de l’Union européenne pour reconstruire après un séisme",
       "shortInstruction": "Pose le panier devant sa porte.",
       "aid": {
         "kind": "rule-card",
