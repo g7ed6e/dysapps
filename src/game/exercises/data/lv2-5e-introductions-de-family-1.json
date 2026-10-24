@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis la question, puis la phrase ou le panneau en allemand, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis le panneau, puis touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-5e-introductions-de-family-1-0",

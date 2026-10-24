@@ -4,6 +4,7 @@
   "type": "word-forms",
   "level": 2,
   "instruction": "Lis la phrase, puis choisis le sens du mot entre guillemets dans cette phrase. La règle est affichée.",
+  "shortInstruction": "Touche le sens du mot entre guillemets.",
   "programme": [
     "c3.fr.lecture.lexique-contexte"
   ],

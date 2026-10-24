@@ -17,6 +17,7 @@ créature : Tick
 - compétences : c3.en.langue.groupe-verbal · c3.en.langue.phrase
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-6e-grammar
@@ -106,6 +107,7 @@ Pour tous les items :
 - compétences : c3.en.langue.groupe-verbal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-6e-grammar
@@ -193,6 +195,7 @@ Pour tous les items :
 - compétences : c3.en.langue.groupe-verbal · c3.en.langue.phrase
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-6e-grammar
@@ -309,6 +312,7 @@ Pour tous les items :
 - compétences : c3.en.ecouter.histoire
 - langue : en
 - consigne : Lis la question, puis écoute l’histoire en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.
+- consigne courte : Écoute en anglais, touche la bonne réponse.
 - bravo : Bien entendu !
 - erreur : {explanation}
 - bloc gagné : english-6e-grammar

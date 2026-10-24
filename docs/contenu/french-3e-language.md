@@ -35,6 +35,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-language-verb-moods-1`
 
 - consigne : Indicatif ou subjonctif ? Choisis la forme. La règle est affichée.
+- consigne courte : Indicatif ou subjonctif ? Touche la forme.
 
 Pour tous les items :
 - aide « Indicatif ou subjonctif ? » :
@@ -86,6 +87,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-language-verb-moods-2`
 
 - consigne : Choisis l’auxiliaire du passé du subjonctif. La règle est affichée.
+- consigne courte : Touche l’auxiliaire du passé du subjonctif.
 
 Pour tous les items :
 - aide « Le passé du subjonctif » :
@@ -138,6 +140,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-language-verb-moods-3`
 
 - consigne : Choisis la forme qui suit « si ». La règle est affichée.
+- consigne courte : Touche la forme qui suit « si ».
 
 Pour tous les items :
 - aide « Si et le conditionnel » :
@@ -207,6 +210,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-language-complex-agreements-1`
 
 - consigne : Accorde l’adjectif avec le nom qui le commande. La règle est affichée.
+- consigne courte : Touche l’adjectif bien accordé.
 
 Pour tous les items :
 - aide « Le nom qui commande » :
@@ -259,6 +263,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-language-complex-agreements-2`
 
 - consigne : Accorde le participe passé avec avoir. La règle est affichée.
+- consigne courte : Touche le participe passé bien accordé.
 
 Pour tous les items :
 - aide « Avoir et le COD placé avant » :
@@ -311,6 +316,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-language-complex-agreements-3`
 
 - consigne : Trouve le mot qui commande, puis accorde le verbe. La règle est affichée.
+- consigne courte : Touche le verbe accordé avec son sujet.
 
 Pour tous les items :
 - aide « Le sujet difficile » :
@@ -377,6 +383,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-language-connotation-1`
 
 - consigne : Lis l’extrait : quelle image donne le mot ? La règle est affichée.
+- consigne courte : Lis l’extrait, puis touche l’image du mot.
 
 Pour tous les items :
 - aide « Dénotation et connotation » :
@@ -437,6 +444,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-language-connotation-2`
 
 - consigne : Trouve le mot qui sert à analyser le texte. Les définitions sont affichées.
+- consigne courte : Touche le mot d’analyse du texte.
 
 Pour tous les items :
 - aide « Les mots pour analyser » :
@@ -497,6 +505,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-language-connotation-3`
 
 - consigne : Relève les mots qui vont ensemble : quelle impression donnent-ils ? La règle est affichée.
+- consigne courte : Touche l’impression que donnent ces mots.
 
 Pour tous les items :
 - aide « Des mots qui vont ensemble » :
@@ -570,6 +579,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-language-emphasis-punctuation-1`
 
 - consigne : Quel signe va à la place du trou ? La règle est affichée.
+- consigne courte : Touche le signe qui va dans le trou.
 
 Pour tous les items :
 - trou lu : " (signe manquant) "
@@ -615,6 +625,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-language-emphasis-punctuation-2`
 
 - consigne : Trouve le mot mis en relief, ou la phrase qui le met en relief. La règle est affichée.
+- consigne courte : Touche le mot ou la phrase en relief.
 
 Pour tous les items :
 - aide « La mise en relief » :
@@ -675,6 +686,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-language-emphasis-punctuation-3`
 
 - consigne : Quel registre convient, et quel effet produit-il ? La règle est affichée.
+- consigne courte : Touche le registre qui convient et son effet.
 
 Pour tous les items :
 - aide « Choisir son registre » :
@@ -752,6 +764,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-language-verb-stems-1`
 
 - consigne : Choisis la bonne écriture du verbe. La règle est affichée.
+- consigne courte : Touche la bonne écriture du verbe.
 
 Pour tous les items :
 - aide « Futur ou conditionnel ? » :
@@ -804,6 +817,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-language-verb-stems-2`
 
 - consigne : Choisis la bonne écriture du verbe au subjonctif. La règle est affichée.
+- consigne courte : Touche la bonne écriture du verbe au subjonctif.
 
 Pour tous les items :
 - aide « Le radical au subjonctif » :

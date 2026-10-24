@@ -4,6 +4,7 @@
   "type": "verb-stems",
   "level": 1,
   "instruction": "Choisis la bonne écriture du verbe. La règle est affichée.",
+  "shortInstruction": "Touche la bonne écriture du verbe.",
   "items": [
     {
       "key": "french-3e-language-verb-stems-1-0",

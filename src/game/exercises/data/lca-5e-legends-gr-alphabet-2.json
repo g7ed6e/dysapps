@@ -4,6 +4,7 @@
   "type": "gr-alphabet",
   "level": 2,
   "instruction": "Regarde la lettre ou le mot grec, puis choisis la bonne réponse. L’alphabet est affiché.",
+  "shortInstruction": "Regarde le grec, puis touche la bonne réponse.",
   "items": [
     {
       "key": "lca-5e-legends-gr-alphabet-2-0",

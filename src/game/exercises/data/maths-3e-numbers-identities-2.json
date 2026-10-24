@@ -4,6 +4,7 @@
   "type": "identities",
   "level": 2,
   "instruction": "Développe avec la bonne identité. Les trois identités sont affichées.",
+  "shortInstruction": "Touche le développement avec la bonne identité.",
   "items": [
     {
       "key": "maths-3e-numbers-identities-2-0",

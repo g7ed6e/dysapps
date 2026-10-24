@@ -4,6 +4,7 @@
   "type": "relative-clauses",
   "level": 1,
   "instruction": "Trouve le pronom relatif, le nom qu’il remplace ou la relative. La règle est affichée.",
+  "shortInstruction": "Touche le pronom relatif, son nom, la relative.",
   "items": [
     {
       "key": "french-4e-sentence-relative-clauses-1-0",

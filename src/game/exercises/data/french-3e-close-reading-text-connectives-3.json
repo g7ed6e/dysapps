@@ -4,6 +4,7 @@
   "type": "text-connectives",
   "level": 3,
   "instruction": "Lis la phrase, puis réponds à la question sur ses propositions. Le rappel est affiché.",
+  "shortInstruction": "Lis la phrase, puis touche la bonne réponse.",
   "items": [
     {
       "key": "french-3e-close-reading-text-connectives-3-0",

@@ -29,6 +29,7 @@ Pour tous les items :
 ### Niveau 1 · `french-5e-conjugation-past-tenses-1`
 
 - consigne : Choisis le verbe au bon temps du passé : imparfait ou passé composé. La règle est affichée.
+- consigne courte : Touche le verbe : imparfait ou passé composé.
 
 Pour tous les items :
 - aide « Imparfait ou passé composé ? » :
@@ -80,6 +81,7 @@ Pour tous les items :
 ### Niveau 2 · `french-5e-conjugation-past-tenses-2`
 
 - consigne : Choisis le verbe au passé simple, le temps du récit écrit. La règle est affichée.
+- consigne courte : Touche le verbe au passé simple.
 
 Pour tous les items :
 - aide « Passé simple » :
@@ -147,6 +149,7 @@ Pour tous les items :
 ### Niveau 1 · `french-5e-conjugation-future-tense-1`
 
 - consigne : Futur ou conditionnel ? Choisis le verbe qui convient. La règle est affichée.
+- consigne courte : Futur ou conditionnel ? Touche le bon verbe.
 
 Pour tous les items :
 - aide « Futur ou conditionnel ? » :
@@ -198,6 +201,7 @@ Pour tous les items :
 ### Niveau 2 · `french-5e-conjugation-future-tense-2`
 
 - consigne : Conjugue au futur : choisis la bonne forme. La règle est affichée.
+- consigne courte : Conjugue au futur, puis touche la bonne forme.
 
 Pour tous les items :
 - aide « Le futur » :
@@ -231,6 +235,7 @@ Pour tous les items :
 ### Niveau 1 · `french-5e-conjugation-tense-recognition-1`
 
 - consigne : Quel est le temps du verbe de la phrase ? Le tableau des temps est affiché.
+- consigne courte : Touche le temps du verbe de la phrase.
 
 Pour tous les items :
 - aide « Reconnaître le temps » :
@@ -302,6 +307,7 @@ Pour tous les items :
 ### Niveau 2 · `french-5e-conjugation-tense-recognition-2`
 
 - consigne : Le verbe est-il à l’indicatif ou à l’impératif ? La règle est affichée.
+- consigne courte : Indicatif ou impératif ? Touche la bonne réponse.
 
 Pour tous les items :
 - aide « Indicatif ou impératif ? » :
@@ -373,6 +379,7 @@ Pour tous les items :
 ### Niveau 1 · `french-5e-conjugation-tense-choice-1`
 
 - consigne : Présent ou impératif : choisis la bonne forme du verbe. La règle est affichée.
+- consigne courte : Touche la bonne forme du verbe.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -426,6 +433,7 @@ Pour tous les items :
 ### Niveau 2 · `french-5e-conjugation-tense-choice-2`
 
 - consigne : Choisis le verbe au temps demandé : plus-que-parfait ou futur antérieur. La règle est affichée.
+- consigne courte : Touche le verbe au temps demandé.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -480,6 +488,7 @@ Pour tous les items :
 ### Niveau 3 · `french-5e-conjugation-tense-choice-3`
 
 - consigne : Lis la phrase : que dit le temps du verbe, ou quelle action a lieu en premier ? La règle est affichée.
+- consigne courte : Que dit le temps ? Touche la bonne réponse.
 
 Pour tous les items :
 - aide « Ce que dit le temps » :
@@ -552,6 +561,7 @@ Pour tous les items :
 ### Niveau 1 · `french-5e-conjugation-sentence-grammar-1`
 
 - consigne : Lis la phrase, puis réponds à la question. La règle est affichée.
+- consigne courte : Lis la phrase, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « La phrase » :
@@ -613,6 +623,7 @@ Pour tous les items :
 ### Niveau 2 · `french-5e-conjugation-sentence-grammar-2`
 
 - consigne : Lis la phrase, puis trouve la fonction du groupe demandé. La règle est affichée.
+- consigne courte : Touche la fonction du groupe demandé.
 
 Pour tous les items :
 - aide « Les fonctions dans la phrase » :

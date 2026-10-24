@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis écoute le récit en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.",
+  "shortInstruction": "Écoute en anglais, touche la bonne réponse.",
   "items": [
     {
       "key": "english-4e-comprehension-stories-2-0",

@@ -4,6 +4,7 @@
   "type": "text-connectives",
   "level": 2,
   "instruction": "Quelle est la fonction du mot ou du groupe demandé ? Le rappel est affiché.",
+  "shortInstruction": "Touche la fonction du mot demandé.",
   "items": [
     {
       "key": "french-3e-close-reading-text-connectives-2-0",

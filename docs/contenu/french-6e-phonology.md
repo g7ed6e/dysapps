@@ -27,6 +27,7 @@ Pour tous les items :
 ### Niveau 1 · `french-6e-phonology-syllables-warmup-001`
 
 - consigne : Écoute le mot, puis tape le nombre de syllabes que tu entends.
+- consigne courte : Écoute, puis tape le nombre de syllabes.
 - par partie : 6
 - blocs : 3
 - XP : 10
@@ -49,6 +50,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-phonology-syllables-warmup-002`
 
 - consigne : Écoute le mot, puis tape le nombre de syllabes que tu entends. Les mots sont longs : compte sur tes doigts.
+- consigne courte : Écoute, puis tape le nombre de syllabes.
 - par partie : 8
 - blocs : 4
 - XP : 12
@@ -75,6 +77,7 @@ Pour tous les items :
 ### Niveau 3 · `french-6e-phonology-syllables-warmup-003`
 
 - consigne : Écoute le mot, puis tape le nombre de syllabes que tu entends. Ce sont des mots du collège : dis-les à voix basse en tapant dans tes mains.
+- consigne courte : Écoute, puis tape le nombre de syllabes.
 - par partie : 8
 - blocs : 4
 - XP : 12
@@ -114,6 +117,7 @@ Pour tous les items :
 
 - cible : an
 - consigne : Tape les mots où tu entends le son [an], comme dans maman. Puis valide.
+- consigne courte : Tape les mots du son [an], puis valide.
 - bravo : Bravo, tu entends bien [an] !
 - blocs : 4
 - XP : 12
@@ -137,6 +141,7 @@ Pour tous les items :
 
 - cible : ch
 - consigne : Tape les mots où tu entends le son [ch], comme dans chapeau. Puis valide.
+- consigne courte : Tape les mots du son [ch], puis valide.
 - bravo : Bravo, tu entends bien [ch] !
 - blocs : 4
 - XP : 12
@@ -160,6 +165,7 @@ Pour tous les items :
 
 - cible : in
 - consigne : Tape les mots où tu entends le son [in]. Attention : les lettres i et n ne font pas toujours ce son, écoute bien. Puis valide.
+- consigne courte : Écoute bien, tape les mots du son [in].
 - bravo : Bravo, tu entends bien [in], même caché !
 - blocs : 5
 - XP : 14
@@ -183,6 +189,7 @@ Pour tous les items :
 
 - cible : in
 - consigne : Tape les mots où tu entends le son [in], comme dans lapin. Puis valide.
+- consigne courte : Tape les mots du son [in], puis valide.
 - bravo : Bravo, tu entends bien [in] !
 - blocs : 4
 - XP : 12
@@ -206,6 +213,7 @@ Pour tous les items :
 
 - cible : oi
 - consigne : Tape les mots où tu entends le son [oi], comme dans étoile. Puis valide.
+- consigne courte : Tape les mots du son [oi], puis valide.
 - bravo : Bravo, tu entends bien [oi] !
 - blocs : 4
 - XP : 12
@@ -229,6 +237,7 @@ Pour tous les items :
 
 - cible : on
 - consigne : Tape les mots où tu entends le son [on], comme dans ballon. Puis valide.
+- consigne courte : Tape les mots du son [on], puis valide.
 - bravo : Bravo, tu entends bien [on] !
 - blocs : 4
 - XP : 12
@@ -252,6 +261,7 @@ Pour tous les items :
 
 - cible : s
 - consigne : Tape les mots où tu entends le son [s], comme dans soleil. Puis valide.
+- consigne courte : Tape les mots du son [s], puis valide.
 - bravo : Bravo, tu entends bien [s] !
 - blocs : 4
 - XP : 12
@@ -287,6 +297,7 @@ Pour tous les items :
 
 - cible : chapeau
 - consigne : Tape les mots qui riment avec chapeau. Puis valide.
+- consigne courte : Tape les mots qui riment avec chapeau.
 - bravo : Ça rime !
 - blocs : 3
 - XP : 10
@@ -306,6 +317,7 @@ Pour tous les items :
 
 - cible : fourchette
 - consigne : Tape les mots qui riment avec fourchette. Puis valide.
+- consigne courte : Tape les mots qui riment avec fourchette.
 - bravo : Ça rime !
 - blocs : 4
 - XP : 10
@@ -325,6 +337,7 @@ Pour tous les items :
 
 - cible : histoire
 - consigne : Tape les mots qui riment avec histoire : écoute la fin du mot, pas son orthographe. Puis valide.
+- consigne courte : Tape les mots qui riment avec histoire.
 - bravo : Ça rime, même avec une autre orthographe !
 - blocs : 5
 - XP : 12
@@ -344,6 +357,7 @@ Pour tous les items :
 
 - cible : ballon
 - consigne : Tape les mots qui riment avec ballon. Puis valide.
+- consigne courte : Tape les mots qui riment avec ballon.
 - bravo : Ça rime !
 - blocs : 3
 - XP : 10

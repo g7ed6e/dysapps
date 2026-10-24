@@ -4,6 +4,7 @@
   "type": "prime-factors",
   "level": 1,
   "instruction": "Utilise les critères pour répondre. La règle est affichée.",
+  "shortInstruction": "Utilise les critères, puis touche la réponse.",
   "items": [
     {
       "key": "maths-3e-numbers-prime-factors-1-0",

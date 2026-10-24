@@ -4,6 +4,7 @@
   "type": "conjunctions",
   "level": 3,
   "instruction": "Choisis le verbe au subjonctif présent après « bien que », « pour que », « avant que ».",
+  "shortInstruction": "Touche le verbe au subjonctif présent.",
   "programme": [
     "c4.fr.langue.temps-a-memoriser",
     "c4.fr.langue.morphologie-verbale"

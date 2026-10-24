@@ -7,6 +7,7 @@ import { fractionWords } from '../../../core/fractions';
 import { pourLaVoix } from '../../../core/speech';
 import { seeded } from '../../../core/random';
 import { CATALOG, loadExercise } from '../../exercises';
+import { SHORT_INSTRUCTIONS } from '../../exercises/shortInstructions';
 import { MATHS_EXERCISES } from '../../exercises/maths';
 import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
@@ -1686,5 +1687,14 @@ describe('Les caisses d’une manche (GD-26, avis du contenu)', () => {
     const fiches = (await loadExercise('life-earth-sciences-6e-living-world-living-groups-1'))!.items.filter((it) => itemGesture(it) === 'ranger');
     const bins = gestureBins(fiches).map((b) => b.id);
     for (const f of fiches) expect(bins).toContain(f.answer);
+  });
+});
+
+describe('Les consignes courtes des missions produites par le code (GD-26)', () => {
+  it('tiennent en huit mots, et chaque mission du code en a une', async () => {
+    const all = await Promise.all(CATALOG.map((m) => loadExercise(m.id)));
+    const words = (t: string) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+    for (const t of Object.values(SHORT_INSTRUCTIONS)) expect(words(t), t).toBeLessThanOrEqual(8);
+    for (const ex of all) if (ex?.generate) expect(ex.shortInstruction, ex.id).toBeTruthy();
   });
 });

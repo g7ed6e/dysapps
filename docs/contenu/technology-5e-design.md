@@ -18,6 +18,7 @@ créature : Rabot
 - description : Le besoin et le problème technique, puis le cahier des charges : fonctions, contraintes et normes.
 - compétences : c4.te.usages.interactions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-5e-design
@@ -153,6 +154,7 @@ Pour tous les items :
 - description : Associer une solution technique à chaque fonction, puis choisir la solution qui respecte le cahier des charges.
 - compétences : c4.te.conception.solutions · c4.te.usages.interactions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-5e-design
@@ -290,6 +292,7 @@ Pour tous les items :
 - description : Le cycle de vie d’un objet, de la matière au recyclage, puis l’énergie qu’il consomme et son impact sur la planète.
 - compétences : c4.te.usages.choisir · c4.te.fonctionnement.materiaux
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-5e-design
@@ -426,6 +429,7 @@ Pour tous les items :
 - description : Les étapes d’un projet et la revue de projet, puis lire un planning des tâches et penser à la planète dès la conception.
 - compétences : c4.te.conception.projet
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-5e-design

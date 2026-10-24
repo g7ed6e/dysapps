@@ -34,6 +34,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-sentence-relative-clauses-1`
 
 - consigne : Trouve le pronom relatif, le nom qu’il remplace ou la relative. La règle est affichée.
+- consigne courte : Touche le pronom relatif, son nom, la relative.
 
 Pour tous les items :
 - aide « Le pronom relatif » :
@@ -94,6 +95,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-sentence-relative-clauses-2`
 
 - consigne : Choisis le pronom relatif qui complète la phrase. La règle est affichée.
+- consigne courte : Touche le pronom relatif qui complète.
 
 Pour tous les items :
 - aide « Qui, que, dont, où » :
@@ -146,6 +148,7 @@ Pour tous les items :
 ### Niveau 3 · `french-4e-sentence-relative-clauses-3`
 
 - consigne : Lis la phrase : que fait la relative ? La règle est affichée.
+- consigne courte : Que fait la relative ? Touche la réponse.
 
 Pour tous les items :
 - aide « Ce que fait la relative » :
@@ -223,6 +226,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-sentence-subordinate-clauses-1`
 
 - consigne : Trouve la conjonction de subordination, la subordonnée ou la principale. La règle est affichée.
+- consigne courte : Touche la conjonction, la subordonnée ou la principale.
 
 Pour tous les items :
 - aide « La conjonctive » :
@@ -282,6 +286,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-sentence-subordinate-clauses-2`
 
 - consigne : Que dit la subordonnée : complément du verbe, ou une circonstance ? La règle est affichée.
+- consigne courte : Touche : complément du verbe, ou circonstance ?
 
 Pour tous les items :
 - aide « Ce que dit la conjonctive » :
@@ -342,6 +347,7 @@ Pour tous les items :
 ### Niveau 3 · `french-4e-sentence-subordinate-clauses-3`
 
 - consigne : Question rapportée : dis si elle est totale ou partielle, ou choisis la bonne fin. La règle est affichée.
+- consigne courte : Touche la bonne réponse sur la question rapportée.
 
 Pour tous les items :
 - aide « L’interrogative indirecte » :
@@ -415,6 +421,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-sentence-passive-reported-1`
 
 - consigne : Voix active ou passive ? Trouve aussi qui fait l’action. La règle est affichée.
+- consigne courte : Voix active ou passive ? Touche la réponse.
 
 Pour tous les items :
 - aide « La voix passive » :
@@ -475,6 +482,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-sentence-passive-reported-2`
 
 - consigne : Paroles rapportées : choisis la phrase au discours indirect, ou trouve-la. La règle est affichée.
+- consigne courte : Touche la phrase au discours indirect.
 
 Pour tous les items :
 - aide « Du direct à l’indirect » :
@@ -552,6 +560,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-sentence-compound-tenses-1`
 
 - consigne : Quel est le temps du verbe ? Regarde d’abord l’auxiliaire. La règle est affichée.
+- consigne courte : Touche le temps du verbe. Regarde l’auxiliaire.
 
 Pour tous les items :
 - aide « Les temps composés » :
@@ -612,6 +621,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-sentence-compound-tenses-2`
 
 - consigne : Choisis la bonne forme du verbe : son radical change. La règle est affichée.
+- consigne courte : Touche la bonne forme du verbe.
 
 Pour tous les items :
 - aide « Les verbes dont le radical change » :
@@ -680,6 +690,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-sentence-moods-1`
 
 - consigne : Que dit le conditionnel dans cette phrase ? La règle est affichée.
+- consigne courte : Touche ce que dit le conditionnel.
 
 Pour tous les items :
 - aide « Les emplois du conditionnel » :
@@ -740,6 +751,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-sentence-moods-2`
 
 - consigne : Que dit le subjonctif dans cette phrase ? La règle est affichée.
+- consigne courte : Touche ce que dit le subjonctif.
 
 Pour tous les items :
 - aide « Ce que dit le subjonctif » :

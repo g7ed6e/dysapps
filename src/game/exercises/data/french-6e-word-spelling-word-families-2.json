@@ -4,6 +4,7 @@
   "type": "word-families",
   "level": 2,
   "instruction": "Lis ce que veut dire le mot, puis choisis le morceau de la fin qui le fabrique avec la racine.",
+  "shortInstruction": "Touche la fin qui fabrique le mot.",
   "items": [
     {
       "key": "jardinet",

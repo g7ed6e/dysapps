@@ -4,6 +4,7 @@
   "type": "literary-eras",
   "level": 1,
   "instruction": "Lis l’extrait, puis trouve son genre. Le rappel est affiché.",
+  "shortInstruction": "Lis l’extrait, puis touche son genre.",
   "items": [
     {
       "key": "french-3e-close-reading-literary-eras-1-0",

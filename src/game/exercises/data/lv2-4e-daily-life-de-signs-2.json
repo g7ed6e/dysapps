@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Lis et écoute la phrase en allemand. Choisis la bonne réaction. La règle est affichée.",
+  "shortInstruction": "Écoute en allemand, touche la bonne réaction.",
   "programme": [
     "c4.de.dialoguer.reagir"
   ],

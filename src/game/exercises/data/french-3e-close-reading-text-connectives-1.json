@@ -4,6 +4,7 @@
   "type": "text-connectives",
   "level": 1,
   "instruction": "Quelle est la nature du mot ? Le tableau des natures est affiché.",
+  "shortInstruction": "Touche la nature du mot.",
   "items": [
     {
       "key": "french-3e-close-reading-text-connectives-1-0",

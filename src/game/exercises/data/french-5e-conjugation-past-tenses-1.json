@@ -4,6 +4,7 @@
   "type": "past-tenses",
   "level": 1,
   "instruction": "Choisis le verbe au bon temps du passé : imparfait ou passé composé. La règle est affichée.",
+  "shortInstruction": "Touche le verbe : imparfait ou passé composé.",
   "items": [
     {
       "key": "french-5e-conjugation-past-tenses-1-0",

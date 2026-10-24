@@ -390,6 +390,26 @@ function mouthGlow(b: FacetBuilder, color: number): void {
   onSouthFace(b, 0.045, (l) => l.plate({ x: 0, y: 0, z: 0 }, archOutline(MOUTH.half, MOUTH.spring), color));
 }
 
+/**
+ * La lueur réglée (GD-26, le geste « régler ») : devant la gueule, elle monte du seuil d'un cran par coup, de la pierre
+ * tiède à la lueur pleine (les teintes du fondu, puis la gueule allumée au dernier cran) ; rien à zéro coup.
+ */
+function dialFacets(c: Vec3, count: number, max: number): Facets {
+  const b = new FacetBuilder();
+  if (count <= 0 || max <= 0) return b.build();
+  const k = Math.min(1, count / max);
+  const color = FORGE_GLOW_DRAWN[k >= 1 ? 0 : 1 + Math.min(2, Math.floor(k * 3))];
+  const outline = archOutline(MOUTH.half * 0.92, MOUTH.spring).map(([x, y]) => [x, y * k] as const);
+  onSouthFace(b, 0.07, (l) => l.plate({ x: 0, y: 0, z: 0 }, outline, color));
+  const f = b.build();
+  for (let i = 0; i < f.positions.length; i += 3) {
+    f.positions[i] += c.x;
+    f.positions[i + 1] += c.y;
+    f.positions[i + 2] += c.z;
+  }
+  return f;
+}
+
 /** Les flancs d'une dent, en part de son pas : le pied à 0, le haut de la dent de `TOOTH_TOP[0]` à `TOOTH_TOP[1]`. */
 const TOOTH_TOP = [0.2, 0.8] as const;
 
@@ -1120,6 +1140,7 @@ export const FORGE: PlaceArt = {
   mapPoint: MAP_POINT,
   reach,
   restoration: { seconds: RESTORATION.seconds, draw: restorationFacets, frame: restorationFrame },
+  dial: dialFacets,
 };
 
 /** Le plan de la Forge, pour les tests et ses abords : la cour, le fourneau, ses machines, la rigole, la caméra. */

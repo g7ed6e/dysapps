@@ -386,7 +386,7 @@ interface QuestionRequest {
   mission: string;
   layout: ScenetteLayout;
   /** `key` : la clé de l'item (un autre item ramène la caméra de la scénette de face). */
-  item: { key?: string; scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook };
+  item: { key?: string; scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook; dial?: { count: number; max: number } };
   /**
    * Les réponses sorties de la scène (un mot coupé dans son étiquette : l'offre de « Vue simple ») : les objets des
    * réponses et leur support ne se dessinent pas, pour qu'aucun objet sans étiquette ne semble se toucher (retouche 3 du
@@ -3593,6 +3593,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
           hang || placeArt(place)?.answer?.facing ? sceneYaw : 0,
         ),
       );
+    // Le geste « régler » (GD-26) : ce que le lieu montre des crans réglés (la lueur de la Forge), dans le même maillage.
+    const dialArt = item.dial ? placeArt(place)?.dial : undefined;
+    const dialFoot = feet.get(place);
+    if (item.dial && dialArt && dialFoot) merged.append(dialArt(dialFoot, item.dial.count, item.dial.max));
     setGeometry(itemMesh, merged.build());
     itemShown = itemMesh.visible;
     if (descent.active) itemMesh.visible = false;

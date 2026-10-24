@@ -4,6 +4,7 @@
   "type": "sentence-order",
   "level": 2,
   "instruction": "Lis la question, puis la phrase. Trouve la fonction du mot ou du groupe de mots. Le rappel est affiché.",
+  "shortInstruction": "Touche la fonction du mot ou du groupe.",
   "items": [
     {
       "key": "french-6e-reading-sentence-order-2-0",

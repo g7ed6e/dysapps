@@ -4,6 +4,7 @@
   "type": "voices",
   "level": 3,
   "instruction": "Nomme la subordonnée, ou trouve l’antécédent et la fonction du pronom relatif. Le rappel est affiché.",
+  "shortInstruction": "Touche la subordonnée, l’antécédent ou la fonction.",
   "items": [
     {
       "key": "french-3e-close-reading-voices-3-0",

@@ -26,6 +26,7 @@ créature : Astra
 ### Niveau 1 · `french-3e-close-reading-inference-1`
 
 - consigne : Lis le passage et choisis ce qu’il laisse comprendre sans le dire. Relie tous les indices.
+- consigne courte : Touche ce que le passage laisse comprendre.
 
 Pour tous les items :
 - aide « Lire entre les lignes » :
@@ -85,6 +86,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-close-reading-inference-2`
 
 - consigne : Devine le sentiment ou la cause à partir des indices de la phrase.
+- consigne courte : Touche le sentiment ou la cause.
 
 Pour tous les items :
 - trou lu : " (mot manquant) "
@@ -143,6 +145,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-close-reading-inference-3`
 
 - consigne : Lis la question, puis cherche la réponse dans les lignes du document. Le rappel est affiché.
+- consigne courte : Lis la question, puis touche la bonne ligne.
 
 Pour tous les items :
 - aide « Lire un document » :
@@ -222,6 +225,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-close-reading-figures-of-speech-1`
 
 - consigne : Quelle figure de style ? Comparaison, métaphore, personnification ou hyperbole. Le rappel est affiché.
+- consigne courte : Touche la bonne figure de style.
 
 Pour tous les items :
 - aide « Figures de style » :
@@ -282,6 +286,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-close-reading-figures-of-speech-2`
 
 - consigne : Quelle figure de style ? Énumération, répétition, antithèse ou litote. Le rappel est affiché.
+- consigne courte : Touche la bonne figure de style.
 
 Pour tous les items :
 - aide « Autres figures » :
@@ -342,6 +347,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-close-reading-figures-of-speech-3`
 
 - consigne : Lis la phrase, puis réponds à la question sur son type, sa forme ou son effet. Le rappel est affiché.
+- consigne courte : Lis la phrase, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Types et formes de phrase » :
@@ -418,6 +424,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-close-reading-text-connectives-1`
 
 - consigne : Quelle est la nature du mot ? Le tableau des natures est affiché.
+- consigne courte : Touche la nature du mot.
 
 Pour tous les items :
 - aide « Nature des mots » :
@@ -471,6 +478,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-close-reading-text-connectives-2`
 
 - consigne : Quelle est la fonction du mot ou du groupe demandé ? Le rappel est affiché.
+- consigne courte : Touche la fonction du mot demandé.
 
 Pour tous les items :
 - aide « Fonctions dans la phrase » :
@@ -534,6 +542,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-close-reading-text-connectives-3`
 
 - consigne : Lis la phrase, puis réponds à la question sur ses propositions. Le rappel est affiché.
+- consigne courte : Lis la phrase, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Phrase simple, phrase complexe » :
@@ -608,6 +617,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-close-reading-voices-1`
 
 - consigne : Paroles rapportées : lis la phrase, puis réponds à la question. Le rappel est affiché.
+- consigne courte : Lis la phrase, puis touche la bonne réponse.
 
 Pour tous les items :
 - trou lu : " (mot manquant) "
@@ -668,6 +678,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-close-reading-voices-2`
 
 - consigne : Voix active, voix passive ou forme impersonnelle : qui fait l’action ? Le rappel est affiché.
+- consigne courte : Touche la voix, ou qui fait l’action.
 
 Pour tous les items :
 - aide « Voix active, voix passive » :
@@ -729,6 +740,7 @@ Pour tous les items :
 ### Niveau 3 · `french-3e-close-reading-voices-3`
 
 - consigne : Nomme la subordonnée, ou trouve l’antécédent et la fonction du pronom relatif. Le rappel est affiché.
+- consigne courte : Touche la subordonnée, l’antécédent ou la fonction.
 
 Pour tous les items :
 - aide « Les subordonnées » :
@@ -802,6 +814,7 @@ Pour tous les items :
 ### Niveau 1 · `french-3e-close-reading-literary-eras-1`
 
 - consigne : Lis l’extrait, puis trouve son genre. Le rappel est affiché.
+- consigne courte : Lis l’extrait, puis touche son genre.
 
 Pour tous les items :
 - aide « Reconnaître un genre » :
@@ -872,6 +885,7 @@ Pour tous les items :
 ### Niveau 2 · `french-3e-close-reading-literary-eras-2`
 
 - consigne : Lis l’œuvre et sa date. Situe-la dans son époque. Le rappel est affiché.
+- consigne courte : Touche l’époque de l’œuvre.
 
 Pour tous les items :
 - aide « Repères d’histoire littéraire » :

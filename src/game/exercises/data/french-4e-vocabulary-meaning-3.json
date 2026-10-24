@@ -4,6 +4,7 @@
   "type": "meaning",
   "level": 3,
   "instruction": "Champ lexical dans une phrase : trouve le thème, ou le mot qui en fait partie. La règle est affichée.",
+  "shortInstruction": "Touche le thème ou un mot du thème.",
   "items": [
     {
       "key": "french-4e-vocabulary-meaning-3-0",

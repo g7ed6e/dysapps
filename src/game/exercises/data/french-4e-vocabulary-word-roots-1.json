@@ -4,6 +4,7 @@
   "type": "word-roots",
   "level": 1,
   "instruction": "Retrouve le sens de la racine grecque ou latine. Les racines sont affichées.",
+  "shortInstruction": "Touche le sens de la racine.",
   "items": [
     {
       "key": "french-4e-vocabulary-word-roots-1-0",

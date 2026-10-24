@@ -4,6 +4,7 @@
   "type": "plurals",
   "level": 2,
   "instruction": "Trouve le sujet avec « qui est-ce qui ? », même s’il est après le verbe, puis accorde le verbe. La règle est affichée.",
+  "shortInstruction": "Trouve le sujet, puis touche le verbe accordé.",
   "programme": [
     "c3.fr.langue.accord-sujet-verbe"
   ],

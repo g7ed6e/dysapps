@@ -16,6 +16,7 @@ créature : Brio
 - description : La Constitution de 1958, la séparation des pouvoirs et le contrôle du gouvernement, une République laïque, ses révisions, puis les institutions européennes.
 - compétences : c4.emc.3e.regles.constitution
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-3e-democratic-life
@@ -151,6 +152,7 @@ Pour tous les items :
 - description : L’opinion publique, les médias et les sondages, puis vérifier une information, repérer la désinformation et le complotisme, et distinguer savoir, opinion et croyance.
 - compétences : c4.emc.3e.opinion.information
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-3e-democratic-life
@@ -285,6 +287,7 @@ Pour tous les items :
 - description : Les élections et le référendum, le vote, puis l’engagement politique, syndical, associatif, dans les institutions et au collège, et la liberté de manifester.
 - compétences : c4.emc.3e.engagement.collectif
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-3e-democratic-life

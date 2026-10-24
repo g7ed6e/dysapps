@@ -49,10 +49,12 @@ export function DialScreen({ items, answered, onAnswer, ruledOut }: ScreenProps)
   useEffect(() => setCount(0), [itemKey]);
   const right = Boolean(answered?.results.length) && Boolean(answered?.results.every((r) => r.correct));
   const inBubble = !simple && scene !== null;
+  const max = dial?.max ?? 0;
   useEffect(() => {
     if (!scene) return;
-    show({ key: itemKey, scene, answered: right, right: [], picked: [], count: SLOTS, aid: Boolean(aid) && inBubble, gesture: 'régler', short });
-  }, [show, itemKey, scene, right, aid, inBubble, short]);
+    // La scène montre les crans sans nombre (à la Forge, la lueur de la gueule monte d'un cran par coup).
+    show({ key: itemKey, scene, answered: right, right: [], picked: [], count: SLOTS, aid: Boolean(aid) && inBubble, gesture: 'régler', short, dial: { count, max } });
+  }, [show, itemKey, scene, right, aid, inBubble, short, count, max]);
   if (!item || !scene || !dial) return null;
 
   const tried = ruledOut ?? [];

@@ -17,6 +17,7 @@ créature : Lyre
 - compétences : c4.la.culture.origines-rome · c4.la.reperes.chronologie · c4.la.lecture.situer
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-5e-legends
@@ -151,6 +152,7 @@ Pour tous les items :
 - compétences : c4.la.culture.vie-publique · c4.la.reperes.heritage · c4.la.langue.lexique
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-5e-legends
@@ -283,6 +285,7 @@ Pour tous les items :
 - compétences : c4.la.langue.cas-fonctions · c4.la.langue.declinaisons · c4.la.langue.intercomprehension
 - option : la
 - consigne : Lis la phrase latine et sa traduction, ou la question, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis le latin, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-5e-legends
@@ -427,6 +430,7 @@ Pour tous les items :
 - compétences : c4.gr.culture.origines-rome · c4.gr.reperes.chronologie · c4.gr.lecture.situer
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-5e-legends
@@ -561,6 +565,7 @@ Pour tous les items :
 - compétences : c4.gr.culture.vie-publique · c4.gr.reperes.heritage · c4.gr.langue.lexique
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-5e-legends
@@ -694,6 +699,7 @@ Pour tous les items :
 - option : gr
 - en attente : la police grecque
 - consigne : Regarde la lettre ou le mot grec, puis choisis la bonne réponse. L’alphabet est affiché.
+- consigne courte : Regarde le grec, puis touche la bonne réponse.
 - bravo : Bien lu !
 - erreur : {explanation}
 - bloc gagné : lca-5e-legends

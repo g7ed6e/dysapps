@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Écoute le nombre en allemand et choisis le bon nombre. La règle est affichée.",
+  "shortInstruction": "Écoute en allemand, touche le bon nombre.",
   "items": [
     {
       "key": "lv2-5e-introductions-de-numbers-1-0",

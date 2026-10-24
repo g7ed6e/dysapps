@@ -4,6 +4,7 @@
   "type": "participles",
   "level": 2,
   "instruction": "Choisis la forme qui complète la phrase. La règle est affichée.",
+  "shortInstruction": "Touche la forme qui complète la phrase.",
   "items": [
     {
       "key": "french-5e-homophones-participles-2-0",

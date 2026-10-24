@@ -4,6 +4,7 @@
   "type": "syllables",
   "level": 2,
   "instruction": "Écoute le mot, puis tape le nombre de syllabes que tu entends. Les mots sont longs : compte sur tes doigts.",
+  "shortInstruction": "Écoute, puis tape le nombre de syllabes.",
   "items": [
     {
       "key": "parapluie",

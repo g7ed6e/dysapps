@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Lis la question, puis le document en espagnol : tu remplis une fiche. Le lexique est affiché.",
+  "shortInstruction": "Lis le document, puis remplis la fiche.",
   "items": [
     {
       "key": "lv2-3e-travel-es-media-2-0",

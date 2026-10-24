@@ -4,6 +4,7 @@
   "type": "inference",
   "level": 2,
   "instruction": "Devine le sentiment ou la cause à partir des indices de la phrase.",
+  "shortInstruction": "Touche le sentiment ou la cause.",
   "items": [
     {
       "key": "french-3e-close-reading-inference-2-0",

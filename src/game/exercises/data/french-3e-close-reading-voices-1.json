@@ -4,6 +4,7 @@
   "type": "voices",
   "level": 1,
   "instruction": "Paroles rapportées : lis la phrase, puis réponds à la question. Le rappel est affiché.",
+  "shortInstruction": "Lis la phrase, puis touche la bonne réponse.",
   "items": [
     {
       "key": "french-3e-close-reading-voices-1-0",

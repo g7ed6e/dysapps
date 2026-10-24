@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Lis la question, puis lis le document en allemand pour comparer. La règle est affichée.",
+  "shortInstruction": "Compare avec le document, puis touche la réponse.",
   "items": [
     {
       "key": "lv2-3e-travel-de-on-the-road-2-0",

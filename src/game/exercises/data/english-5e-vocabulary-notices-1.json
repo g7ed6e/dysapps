@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Lis la question, puis le panneau ou la consigne en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis le panneau, puis touche la bonne réponse.",
   "items": [
     {
       "key": "english-5e-vocabulary-notices-1-0",

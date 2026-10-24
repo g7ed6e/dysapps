@@ -17,6 +17,7 @@ monde ouvert seulement : oui
 - description : La moyenne pondérée d’une série, puis la médiane, l’étendue et ce que change une valeur extrême.
 - compétences : c4.ma.b.indicateurs · c4.ma.b.lire-donnees
 - consigne : Lis la série ou le tableau, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-4e-powers
@@ -155,6 +156,7 @@ Pour tous les items :
 - description : La probabilité d’un évènement et de l’évènement contraire, puis des expériences à deux épreuves.
 - compétences : c4.ma.b.probabilites
 - consigne : Lis l’expérience, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : maths-4e-powers
@@ -287,6 +289,7 @@ Pour tous les items :
 - description : Grandeurs quotients et quatrième proportionnelle, puis coefficient multiplicateur d’une hausse ou d’une baisse, puis ratio et partage.
 - compétences : c4.ma.b.proportionnalite · c4.ma.c.grandeurs-composees · c4.ma.b.pourcentages-echelles · c4.ma.b.ratio
 - consigne : Lis la phrase, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-4e-powers
@@ -480,6 +483,7 @@ Pour tous les items :
 - description : Appliquer un programme de calcul à un nombre puis à x, puis le remonter, et lire comment une grandeur dépend d’une autre.
 - compétences : c4.ma.b.image-antecedent · c4.ma.a.reduire-developper
 - consigne : Suis le programme, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Suis le programme, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-4e-powers
@@ -613,6 +617,7 @@ Pour tous les items :
 - description : Ce que garde une translation et le parallélogramme, puis la droite des milieux et le cercle d’un triangle rectangle.
 - compétences : c4.ma.d.transformations · c4.ma.d.triangles-parallelogramme · c4.ma.d.angles-triangles · c4.ma.d.thales
 - consigne : Lis la phrase ou la figure, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : maths-4e-powers

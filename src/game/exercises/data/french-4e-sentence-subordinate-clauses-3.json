@@ -4,6 +4,7 @@
   "type": "subordinate-clauses",
   "level": 3,
   "instruction": "Question rapportée : dis si elle est totale ou partielle, ou choisis la bonne fin. La règle est affichée.",
+  "shortInstruction": "Touche la bonne réponse sur la question rapportée.",
   "items": [
     {
       "key": "french-4e-sentence-subordinate-clauses-3-0",

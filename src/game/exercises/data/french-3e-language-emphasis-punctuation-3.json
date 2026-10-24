@@ -4,6 +4,7 @@
   "type": "emphasis-punctuation",
   "level": 3,
   "instruction": "Quel registre convient, et quel effet produit-il ? La règle est affichée.",
+  "shortInstruction": "Touche le registre qui convient et son effet.",
   "items": [
     {
       "key": "french-3e-language-emphasis-punctuation-3-0",

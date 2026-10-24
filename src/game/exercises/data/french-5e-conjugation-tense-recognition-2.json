@@ -4,6 +4,7 @@
   "type": "tense-recognition",
   "level": 2,
   "instruction": "Le verbe est-il à l’indicatif ou à l’impératif ? La règle est affichée.",
+  "shortInstruction": "Indicatif ou impératif ? Touche la bonne réponse.",
   "items": [
     {
       "key": "french-5e-conjugation-tense-recognition-2-0",

@@ -4,6 +4,7 @@
   "type": "states-of-matter",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "physics-chemistry-6e-matter-energy-states-of-matter-2-0",

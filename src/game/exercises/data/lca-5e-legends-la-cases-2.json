@@ -4,6 +4,7 @@
   "type": "la-cases",
   "level": 2,
   "instruction": "Lis la phrase latine et sa traduction, ou la question, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis le latin, puis touche la bonne réponse.",
   "items": [
     {
       "key": "lca-5e-legends-la-cases-2-0",

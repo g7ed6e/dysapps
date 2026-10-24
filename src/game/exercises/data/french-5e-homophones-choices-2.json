@@ -4,6 +4,7 @@
   "type": "choices",
   "level": 2,
   "instruction": "Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "programme": [
     "c4.fr.5e.vocabulaire.orthographe",
     "c4.fr.5e.grammaire.classes-de-mots",

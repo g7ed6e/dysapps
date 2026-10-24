@@ -34,6 +34,7 @@ Pour tous les items :
 ### Niveau 1 · `maths-3e-numbers-power-rules-1`
 
 - consigne : Choisis l’écriture décimale de la puissance. Le tableau est affiché.
+- consigne courte : Touche l’écriture décimale de la puissance.
 
 Pour tous les items :
 - aide « Les puissances de 10 » :
@@ -93,6 +94,7 @@ Pour tous les items :
 ### Niveau 2 · `maths-3e-numbers-power-rules-2`
 
 - consigne : Écris avec une seule puissance. La règle est affichée.
+- consigne courte : Touche l’écriture avec une seule puissance.
 
 Pour tous les items :
 - aide « Puissances d’un même nombre » :
@@ -153,6 +155,7 @@ Pour tous les items :
 ### Niveau 3 · `maths-3e-numbers-power-rules-3`
 
 - consigne : Trouve la notation scientifique. La règle est affichée.
+- consigne courte : Touche la notation scientifique.
 
 Pour tous les items :
 - aide « La notation scientifique » :
@@ -230,6 +233,7 @@ Pour tous les items :
 ### Niveau 1 · `maths-3e-numbers-square-equations-1`
 
 - consigne : Calcule ou encadre la racine carrée. Les carrés sont affichés.
+- consigne courte : Calcule ou encadre, puis touche la réponse.
 
 Pour tous les items :
 - aide « La racine carrée » :
@@ -290,6 +294,7 @@ Pour tous les items :
 ### Niveau 2 · `maths-3e-numbers-square-equations-2`
 
 - consigne : Résous l’équation. La règle est affichée.
+- consigne courte : Résous l’équation, puis touche la réponse.
 
 Pour tous les items :
 - aide « Résoudre x² = a » :
@@ -366,6 +371,7 @@ Pour tous les items :
 ### Niveau 1 · `maths-3e-numbers-prime-factors-1`
 
 - consigne : Utilise les critères pour répondre. La règle est affichée.
+- consigne courte : Utilise les critères, puis touche la réponse.
 
 Pour tous les items :
 - aide « Diviseurs et nombres premiers » :
@@ -426,6 +432,7 @@ Pour tous les items :
 ### Niveau 2 · `maths-3e-numbers-prime-factors-2`
 
 - consigne : Décompose, ou simplifie jusqu’au bout. La règle est affichée.
+- consigne courte : Décompose ou simplifie, puis touche la réponse.
 
 Pour tous les items :
 - aide « Facteurs premiers et fractions » :
@@ -502,6 +509,7 @@ Pour tous les items :
 ### Niveau 1 · `maths-3e-numbers-identities-1`
 
 - consigne : Développe et réduis. La règle est affichée.
+- consigne courte : Développe et réduis, puis touche la réponse.
 
 Pour tous les items :
 - aide « La double distributivité » :
@@ -562,6 +570,7 @@ Pour tous les items :
 ### Niveau 2 · `maths-3e-numbers-identities-2`
 
 - consigne : Développe avec la bonne identité. Les trois identités sont affichées.
+- consigne courte : Touche le développement avec la bonne identité.
 
 Pour tous les items :
 - aide « Les trois identités remarquables » :
@@ -622,6 +631,7 @@ Pour tous les items :
 ### Niveau 3 · `maths-3e-numbers-identities-3`
 
 - consigne : Factorise : écris un produit. Les identités sont affichées.
+- consigne courte : Factorise, puis touche le produit.
 
 Pour tous les items :
 - aide « Factoriser » :
@@ -699,6 +709,7 @@ Pour tous les items :
 ### Niveau 1 · `maths-3e-numbers-zero-product-1`
 
 - consigne : Résous l’équation produit. La règle est affichée.
+- consigne courte : Résous l’équation produit, puis touche la réponse.
 
 Pour tous les items :
 - aide « Un produit égal à 0 » :
@@ -758,6 +769,7 @@ Pour tous les items :
 ### Niveau 2 · `maths-3e-numbers-zero-product-2`
 
 - consigne : Résous l’inéquation. La règle est affichée.
+- consigne courte : Résous l’inéquation, puis touche la réponse.
 
 Pour tous les items :
 - aide « Résoudre une inéquation » :
@@ -818,6 +830,7 @@ Pour tous les items :
 ### Niveau 3 · `maths-3e-numbers-zero-product-3`
 
 - consigne : Mets le problème en équation, ou résous-le. La méthode est affichée.
+- consigne courte : Mets en équation, ou résous, puis touche.
 
 Pour tous les items :
 - aide « Mettre un problème en équation » :

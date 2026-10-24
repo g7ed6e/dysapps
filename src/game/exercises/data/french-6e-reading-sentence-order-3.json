@@ -4,6 +4,7 @@
   "type": "sentence-order",
   "level": 3,
   "instruction": "Lis la question, puis la phrase. Compte les verbes conjugués, ou trouve ce qui relie les propositions. Le rappel est affiché.",
+  "shortInstruction": "Compte les verbes conjugués, ou trouve le lien.",
   "items": [
     {
       "key": "french-6e-reading-sentence-order-3-0",

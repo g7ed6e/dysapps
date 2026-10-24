@@ -4,6 +4,7 @@
   "type": "reflexive-verbs",
   "level": 2,
   "instruction": "Accorde le participe passé du verbe pronominal. La règle est affichée.",
+  "shortInstruction": "Touche le bon participe du verbe pronominal.",
   "items": [
     {
       "key": "french-4e-agreement-reflexive-verbs-2-0",

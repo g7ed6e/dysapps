@@ -16,6 +16,7 @@ créature : Voix
 - description : Élire des représentants, de la classe à l’Union européenne, et servir l’intérêt général, celui de tous, aujourd’hui et demain.
 - compétences : c3.emc.6e.representer.interet-general
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-6e-democratic-society
@@ -152,6 +153,7 @@ Pour tous les items :
 - description : La liberté de croire ou de ne pas croire, la neutralité de l’État et la loi de 1905, puis l’école laïque, qui protège chaque élève de toute pression.
 - compétences : c3.emc.6e.laicite.ecole
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-6e-democratic-society
@@ -288,6 +290,7 @@ Pour tous les items :
 - description : Le droit au respect de la vie privée, pour l’enfant comme pour l’adulte : l’intimité, le droit à l’image, puis les données et les traces que l’on laisse en ligne.
 - compétences : c3.emc.6e.vie-privee.droit
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-6e-democratic-society

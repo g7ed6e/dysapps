@@ -17,6 +17,7 @@ créature : Pudding
 - compétences : c4.en.5e.interagir.echanges · c4.en.5e.langue.lexique · c3.en.dialoguer.renseignements
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-5e-vocabulary
@@ -136,6 +137,7 @@ Pour tous les items :
 - compétences : c4.en.5e.langue.verbe · c4.en.5e.culture.quotidien · c3.en.culture.vie-quotidienne
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-5e-vocabulary
@@ -247,6 +249,7 @@ Pour tous les items :
 - compétences : c4.en.5e.comprendre.oral-ecrit
 - langue : en
 - consigne : Écoute la phrase en anglais, puis choisis ce qu’elle veut dire.
+- consigne courte : Écoute en anglais, touche le sens.
 - bravo : Bien entendu !
 - erreur : {explanation}
 - bloc gagné : english-5e-vocabulary
@@ -355,6 +358,7 @@ Pour tous les items :
 ### Niveau 1 · `english-5e-vocabulary-notices-1`
 
 - consigne : Lis la question, puis le panneau ou la consigne en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le panneau, puis touche la bonne réponse.
 
 Pour tous les items :
 - langue des choix : fr
@@ -425,6 +429,7 @@ Pour tous les items :
 ### Niveau 2 · `english-5e-vocabulary-notices-2`
 
 - consigne : Lis la question, puis trouve la bonne ligne du menu ou de l’horaire en anglais. Le lexique est affiché.
+- consigne courte : Touche la bonne ligne du document.
 
 1. énoncé : "Snack bar\nTomato soup: £2.50\nCheese sandwich: £3.00\nChips: £1.50\nCrisps: £0.80"
    - question : Tu as envie de frites. Que commandes-tu ?
@@ -546,6 +551,7 @@ Pour tous les items :
 ### Niveau 1 · `english-5e-vocabulary-united-kingdom-1`
 
 - consigne : Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - langue des choix : fr
@@ -616,6 +622,7 @@ Pour tous les items :
 ### Niveau 2 · `english-5e-vocabulary-united-kingdom-2`
 
 - consigne : Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Une langue, des lieux, l’école » :

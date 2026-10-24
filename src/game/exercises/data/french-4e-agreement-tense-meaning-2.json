@@ -4,6 +4,7 @@
   "type": "tense-meaning",
   "level": 2,
   "instruction": "Ponctuation : lis la phrase, puis réponds à la question. La règle est affichée.",
+  "shortInstruction": "Lis la phrase, puis touche la bonne réponse.",
   "items": [
     {
       "key": "french-4e-agreement-tense-meaning-2-0",

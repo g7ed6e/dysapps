@@ -26,6 +26,7 @@ créature : Robin
 - compétences : c3.en.dialoguer.contact-social   qu’elle travaille (et `lv2 : es` ou `de` sur l’île de la LV2)
 - langue : en                                 ← champs communs à tous les niveaux de la mission
 - consigne : Choisis le mot qui complète la phrase en anglais.
+- consigne courte : Touche le mot qui complète la phrase.
 
 ### Niveau 1 · `english-6e-vocabulary-hello-1` ← un niveau : son numéro, puis l’identifiant de l’exercice
 
@@ -304,6 +305,7 @@ Les cases des monuments qui demandent ces blocs restent dans le code (`src/game/
 
 - compétences : c3.fr.langue.genre-nombre · c3.ma.nombres.problemes
 - consigne : Lis, calcule, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, calcule, puis touche la bonne réponse.
 - bravo : Bien assemblé !
 - erreur : {explanation}
 

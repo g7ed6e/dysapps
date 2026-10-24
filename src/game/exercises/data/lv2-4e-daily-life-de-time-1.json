@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Appuie sur Écouter pour entendre l’heure en allemand, puis choisis la bonne heure. La règle est affichée.",
+  "shortInstruction": "Écoute l’heure en allemand, touche la bonne.",
   "items": [
     {
       "key": "lv2-4e-daily-life-de-time-1-0",

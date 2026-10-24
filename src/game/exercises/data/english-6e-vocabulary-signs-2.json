@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis le petit texte en anglais, et trouve la phrase qui répond. Le lexique est affiché.",
+  "shortInstruction": "Touche la phrase du texte qui répond.",
   "items": [
     {
       "key": "english-6e-vocabulary-signs-2-0",

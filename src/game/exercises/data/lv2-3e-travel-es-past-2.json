@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Lis la question en espagnol, ou appuie sur Écouter. Hier ou demain ? Choisis la bonne réponse. La règle est affichée.",
+  "shortInstruction": "Hier ou demain ? Touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-3e-travel-es-past-2-0",

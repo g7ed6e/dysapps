@@ -4,6 +4,7 @@
   "type": "coordinates",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-3e-functions-coordinates-2-0",

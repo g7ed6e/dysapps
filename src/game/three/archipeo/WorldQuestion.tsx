@@ -447,7 +447,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const instruction = placed && entry ? `${entry} ${placed}` : placed;
   // Dans la bulle (GD-26), la consigne courte : celle de l'item (son geste), sinon celle du niveau ; la consigne entière
   // reste dans « Vue simple » et pour les lecteurs d'écran.
-  const short = item?.short ?? ready?.def.shortInstruction;
+  // Un lieu qui a sa consigne à lui (le Phare, l'Enclos, les Écluses, la jauge) la garde : la consigne courte du niveau
+  // ne remplace que la consigne de référence.
+  const short = item?.short ?? (ready && placed === ready.def.instruction ? ready.def.shortInstruction : undefined);
   const bubbleLine = short ? (entry ? `${entry} ${short}` : short) : instruction;
   // La fin d'un morceau de révision : la file et les blocs d'une révision, jamais la session de l'application.
   const runnerRevision = useMemo<RunnerRevision | undefined>(

@@ -5,6 +5,7 @@
   "level": 3,
   "target": "in",
   "instruction": "Tape les mots où tu entends le son [in]. Attention : les lettres i et n ne font pas toujours ce son, écoute bien. Puis valide.",
+  "shortInstruction": "Écoute bien, tape les mots du son [in].",
   "items": [
     {
       "key": "peinture",

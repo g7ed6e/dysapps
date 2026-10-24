@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "es",
   "instruction": "Lis la phrase en espagnol, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.",
+  "shortInstruction": "Lis ou écoute en espagnol, touche la réponse.",
   "items": [
     {
       "key": "lv2-3e-travel-es-past-1-0",

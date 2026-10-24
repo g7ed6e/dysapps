@@ -4,6 +4,7 @@
   "type": "tense-values",
   "level": 2,
   "instruction": "Lis la question, puis le petit récit. Trouve ce que dit le temps du verbe. Le rappel est affiché.",
+  "shortInstruction": "Lis le récit, touche le temps du verbe.",
   "items": [
     {
       "key": "french-6e-reading-tense-values-2-0",

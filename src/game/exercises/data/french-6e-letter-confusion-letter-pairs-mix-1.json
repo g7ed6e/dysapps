@@ -5,6 +5,7 @@
   "level": 1,
   "target": "b, d, p ou q",
   "instruction": "À chaque bloc, la lettre à piocher change : lis-la, pioche seulement si le bloc la porte. Laisse passer les autres.",
+  "shortInstruction": "Pioche seulement les blocs avec la lettre.",
   "items": [
     {
       "key": "0-b-b",

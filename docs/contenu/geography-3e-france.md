@@ -30,6 +30,7 @@ créature : Jalon
 ### Niveau 1 · `geography-3e-france-territories-1`
 
 - consigne : Choisis le mot qui complète la phrase. Le rappel est affiché.
+- consigne courte : Touche le mot qui complète la phrase.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -85,6 +86,7 @@ Pour tous les items :
 ### Niveau 2 · `geography-3e-france-territories-2`
 
 - consigne : Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire un document de géographie » :
@@ -165,6 +167,7 @@ Pour tous les items :
 ### Niveau 1 · `geography-3e-france-planning-1`
 
 - consigne : Choisis le mot qui complète la phrase. Le rappel est affiché.
+- consigne courte : Touche le mot qui complète la phrase.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -219,6 +222,7 @@ Pour tous les items :
 ### Niveau 2 · `geography-3e-france-planning-2`
 
 - consigne : Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire un document de géographie » :
@@ -299,6 +303,7 @@ Pour tous les items :
 ### Niveau 1 · `geography-3e-france-france-eu-1`
 
 - consigne : Choisis le mot qui complète la phrase. Le rappel est affiché.
+- consigne courte : Touche le mot qui complète la phrase.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -354,6 +359,7 @@ Pour tous les items :
 ### Niveau 2 · `geography-3e-france-france-eu-2`
 
 - consigne : Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire un document de géographie » :

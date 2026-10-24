@@ -4,6 +4,7 @@
   "type": "past-participle",
   "level": 2,
   "instruction": "Accorde le participe passé avec avoir : il s’accorde avec le complément d’objet direct placé avant. Pose la question « quoi ? ».",
+  "shortInstruction": "Pose « quoi ? », puis touche le participe accordé.",
   "items": [
     {
       "key": "french-4e-agreement-past-participle-2-0",

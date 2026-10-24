@@ -4,6 +4,7 @@
   "type": "events",
   "level": 1,
   "instruction": "Lis l’expérience, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-4e-data-events-1-0",

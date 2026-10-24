@@ -4,6 +4,7 @@
   "type": "power-rules",
   "level": 3,
   "instruction": "Trouve la notation scientifique. La règle est affichée.",
+  "shortInstruction": "Touche la notation scientifique.",
   "items": [
     {
       "key": "maths-3e-numbers-power-rules-3-0",

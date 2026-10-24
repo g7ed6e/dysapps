@@ -4,6 +4,7 @@
   "type": "literary-eras",
   "level": 2,
   "instruction": "Lis l’œuvre et sa date. Situe-la dans son époque. Le rappel est affiché.",
+  "shortInstruction": "Touche l’époque de l’œuvre.",
   "items": [
     {
       "key": "french-3e-close-reading-literary-eras-2-0",

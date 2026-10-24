@@ -4,6 +4,7 @@
   "type": "zero-product",
   "level": 1,
   "instruction": "Résous l’équation produit. La règle est affichée.",
+  "shortInstruction": "Résous l’équation produit, puis touche la réponse.",
   "items": [
     {
       "key": "maths-3e-numbers-zero-product-1-0",

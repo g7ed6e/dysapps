@@ -4,6 +4,7 @@
   "type": "nuances",
   "level": 3,
   "instruction": "Registres : reconnais le registre, ou choisis la phrase qui convient à la situation. Le rappel est affiché.",
+  "shortInstruction": "Touche le registre, ou la phrase qui convient.",
   "items": [
     {
       "key": "french-4e-vocabulary-nuances-3-0",

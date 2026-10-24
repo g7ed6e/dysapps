@@ -4,6 +4,7 @@
   "type": "future-tense",
   "level": 2,
   "instruction": "Conjugue au futur : choisis la bonne forme. La règle est affichée.",
+  "shortInstruction": "Conjugue au futur, puis touche la bonne forme.",
   "items": [
     {
       "key": "french-5e-conjugation-future-tense-2-0",

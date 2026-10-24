@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Cette fois, une scène de la journée : lis la question, puis appuie sur Écouter pour entendre la phrase en allemand. Le lexique est affiché.",
+  "shortInstruction": "Écoute en allemand, puis touche la bonne réponse.",
   "programme": [
     "c4.de.ecouter.indices"
   ],

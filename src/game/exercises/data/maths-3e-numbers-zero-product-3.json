@@ -4,6 +4,7 @@
   "type": "zero-product",
   "level": 3,
   "instruction": "Mets le problème en équation, ou résous-le. La méthode est affichée.",
+  "shortInstruction": "Mets en équation, ou résous, puis touche.",
   "items": [
     {
       "key": "maths-3e-numbers-zero-product-3-0",

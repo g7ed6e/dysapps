@@ -4,6 +4,7 @@
   "type": "sight-words",
   "level": 4,
   "instruction": "Écoute le mot ou la phrase, puis choisis l’écriture du mot.",
+  "shortInstruction": "Écoute, puis touche l’écriture du mot.",
   "items": [
     {
       "key": "parce que",

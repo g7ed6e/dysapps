@@ -5,6 +5,7 @@
   "level": 1,
   "title": "Le réveil de Mousso",
   "instruction": "Lis « Le réveil de Mousso » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.",
+  "shortInstruction": "Lis à voix haute, puis valide.",
   "items": [
     {
       "key": "p1",

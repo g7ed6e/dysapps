@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis le message en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis le message, puis touche la bonne réponse.",
   "items": [
     {
       "key": "english-3e-grammar-messages-2-0",

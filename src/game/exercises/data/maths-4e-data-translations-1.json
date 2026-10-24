@@ -4,6 +4,7 @@
   "type": "translations",
   "level": 1,
   "instruction": "Lis la phrase ou la figure, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-4e-data-translations-1-0",

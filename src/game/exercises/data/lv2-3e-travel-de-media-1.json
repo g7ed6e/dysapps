@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis la question, puis le document en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.",
+  "shortInstruction": "Lis le document, puis touche la bonne réponse.",
   "programme": [
     "c4.de.culture.langages"
   ],

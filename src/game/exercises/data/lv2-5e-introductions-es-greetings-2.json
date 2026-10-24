@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Lis et écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Écoute en espagnol, touche la bonne réaction.",
   "programme": [
     "c4.es.5e.interagir.reagir"
   ],

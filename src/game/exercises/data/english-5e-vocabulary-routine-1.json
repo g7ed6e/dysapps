@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "english-5e-vocabulary-routine-1-0",

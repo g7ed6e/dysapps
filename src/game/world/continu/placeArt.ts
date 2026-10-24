@@ -179,4 +179,10 @@ export interface PlaceArt {
    * (expert frontend, lot 2 du 4e).
    */
   restoration?: { readonly seconds: number; draw(c: Vec3, t: number): Facets; frame(t: number): string };
+  /**
+   * Le geste « régler » dans la scénette (GD-26) : ce que le lieu montre pour `count` crans réglés sur `max`, sans
+   * nombre (à la Forge du 4e, la lueur qui monte dans la gueule du fourneau, d'un cran par coup) ; `c` : le centre du lieu
+   * à son sol. Dans le maillage de l'item, refait à chaque cran.
+   */
+  dial?(c: Vec3, count: number, max: number): Facets;
 }

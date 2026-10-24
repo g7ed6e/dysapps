@@ -17,6 +17,7 @@ créature : Stylet
 - compétences : c4.la.3e.culture.republique-principat · c4.la.3e.culture.empire · c4.la.reperes.chronologie
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-3e-ideas
@@ -155,6 +156,7 @@ Pour tous les items :
 - compétences : c4.la.3e.culture.vie-sociale · c4.la.3e.langue.lexique · c4.la.reperes.chronologie
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-3e-ideas
@@ -292,6 +294,7 @@ Pour tous les items :
 - compétences : c4.la.3e.culture.mediterranee · c4.la.3e.langue.lexique · c4.la.reperes.heritage · c4.la.langue.intercomprehension
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-3e-ideas
@@ -422,6 +425,7 @@ Pour tous les items :
 - compétences : c4.gr.3e.culture.mythe-histoire · c4.gr.reperes.chronologie · c4.gr.lecture.situer
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-3e-ideas
@@ -559,6 +563,7 @@ Pour tous les items :
 - compétences : c4.gr.3e.culture.unite-diversite · c4.gr.3e.culture.vie-sociale · c4.gr.reperes.heritage
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-3e-ideas
@@ -694,6 +699,7 @@ Pour tous les items :
 - compétences : c4.gr.3e.culture.mediterranee · c4.gr.3e.langue.lexique · c4.gr.reperes.heritage · c4.gr.langue.intercomprehension
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-3e-ideas

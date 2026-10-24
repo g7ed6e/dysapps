@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Lis la question, puis le document en espagnol, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis le document, puis touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-5e-introductions-es-sentences-2-0",

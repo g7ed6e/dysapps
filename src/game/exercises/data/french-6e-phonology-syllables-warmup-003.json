@@ -4,6 +4,7 @@
   "type": "syllables",
   "level": 3,
   "instruction": "Écoute le mot, puis tape le nombre de syllabes que tu entends. Ce sont des mots du collège : dis-les à voix basse en tapant dans tes mains.",
+  "shortInstruction": "Écoute, puis tape le nombre de syllabes.",
   "items": [
     {
       "key": "géographie",

@@ -37,6 +37,7 @@ créature : Bazar
 - description : Lire un tableau de valeurs et écrire une formule, puis remplacer la lettre, tester une égalité et développer.
 - compétences : c4.ma.5e.proportionnalite.fonctions · c4.ma.5e.nombres.calcul-litteral
 - consigne : Lis la phrase, la formule ou le tableau, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-5e-proportionality
@@ -185,6 +186,7 @@ Pour tous les items :
 - description : Lire un tableau, calculer une fréquence et une moyenne, puis dire les chances d’un évènement.
 - compétences : c4.ma.5e.donnees.statistiques · c4.ma.5e.donnees.probabilites
 - consigne : Lis la phrase, le tableau ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-5e-proportionality

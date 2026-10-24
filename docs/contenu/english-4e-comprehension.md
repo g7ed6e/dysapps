@@ -17,6 +17,7 @@ créature : Puck
 - compétences : c4.en.ecouter.intervention-breve · c4.en.dialoguer.reagir · c3.en.dialoguer.reagir
 - langue : en
 - consigne : Écoute la question en anglais, puis choisis la bonne réponse.
+- consigne courte : Écoute en anglais, touche la bonne réponse.
 - bravo : Bonne réplique !
 - erreur : {explanation}
 - bloc gagné : english-4e-comprehension
@@ -112,6 +113,7 @@ Pour tous les items :
 - compétences : c4.en.langue.groupe-nominal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-4e-comprehension
@@ -229,6 +231,7 @@ Pour tous les items :
 - compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-4e-comprehension
@@ -338,6 +341,7 @@ Pour tous les items :
 - compétences : c4.en.ecouter.recit · c4.en.ecouter.indices
 - langue : en
 - consigne : Lis la question, puis écoute le récit en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.
+- consigne courte : Écoute en anglais, touche la bonne réponse.
 - bravo : Bien entendu !
 - erreur : {explanation}
 - bloc gagné : english-4e-comprehension

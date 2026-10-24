@@ -18,6 +18,7 @@ créature : Humus
 - description : Les couches de la Terre, les plaques qui bougent, les séismes et les volcans, puis les risques et comment s’en protéger.
 - compétences : c4.sv.terre.geologie · c4.sv.demarches.langages · c4.sv.demarches.raisonner
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-5e-active-planet
@@ -152,6 +153,7 @@ Pour tous les items :
 - description : Distinguer la météo et le climat, comprendre ce qui fait bouger l’air et l’eau, puis le climat qui change et les risques météo.
 - compétences : c4.sv.terre.climat · c4.sv.demarches.langages · c4.sv.demarches.raisonner
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien observé !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-5e-active-planet
@@ -282,6 +284,7 @@ Pour tous les items :
 - description : Les ressources que l’humain prend dans la nature, celles qui s’épuisent, puis ce qu’il change dans les écosystèmes et les gestes qui les protègent.
 - compétences : c4.sv.terre.action-humaine · c4.sv.demarches.raisonner · c4.sv.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien raisonné !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-5e-active-planet

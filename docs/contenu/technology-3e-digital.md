@@ -18,6 +18,7 @@ créature : Navette
 - description : Les éléments d’un réseau et l’adresse de chaque appareil, puis internet, les protocoles et le stockage des données.
 - compétences : c4.te.fonctionnement.reseaux · c4.te.usages.numerique
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-3e-digital
@@ -151,6 +152,7 @@ Pour tous les items :
 - description : Comment les objets évoluent et changent la société, les objets connectés, puis protéger ses données personnelles.
 - compétences : c4.te.usages.evolution · c4.te.usages.numerique
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-3e-digital
@@ -285,6 +287,7 @@ Pour tous les items :
 - description : Un algorithme et un programme : séquence, boucle et événement, puis condition et variable, dans un programme court à lire.
 - compétences : c4.te.fonctionnement.programme
 - consigne : Lis la phrase ou le programme, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-3e-digital
@@ -422,6 +425,7 @@ Pour tous les items :
 - description : Décrire un objet par des données (descripteur, type, bit), puis trier, filtrer et calculer dans un petit tableau.
 - compétences : c4.te.fonctionnement.donnees
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-3e-digital

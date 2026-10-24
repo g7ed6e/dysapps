@@ -17,6 +17,7 @@ créature : Knight
 - compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-3e-grammar
@@ -119,6 +120,7 @@ Pour tous les items :
 - compétences : c4.en.langue.phrase-complexe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-3e-grammar
@@ -227,6 +229,7 @@ Pour tous les items :
 - compétences : c4.en.langue.modaux-passif
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-3e-grammar
@@ -354,6 +357,7 @@ Pour tous les items :
 ### Niveau 1 · `english-3e-grammar-messages-1`
 
 - consigne : Lis la question, puis le document en anglais. Choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - langue des choix : fr
@@ -423,6 +427,7 @@ Pour tous les items :
 ### Niveau 2 · `english-3e-grammar-messages-2`
 
 - consigne : Lis la question, puis le message en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le message, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire un message » :

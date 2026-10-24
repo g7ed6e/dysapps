@@ -26,6 +26,7 @@ créature : Tunel
 
 - cible : b
 - consigne : Pioche seulement les blocs avec la lettre b. Laisse passer les autres.
+- consigne courte : Pioche seulement les blocs avec la lettre b.
 - XP : 12
 
 Pour tous les items :
@@ -50,6 +51,7 @@ Pour tous les items :
 
 - cible : d
 - consigne : Pioche seulement les blocs avec la lettre d. Laisse passer les autres.
+- consigne courte : Pioche seulement les blocs avec la lettre d.
 - XP : 12
 
 Pour tous les items :
@@ -74,6 +76,7 @@ Pour tous les items :
 
 - cible : b, d, p ou q
 - consigne : À chaque bloc, la lettre à piocher change : lis-la, pioche seulement si le bloc la porte. Laisse passer les autres.
+- consigne courte : Pioche seulement les blocs avec la lettre.
 - XP : 14
 
 | clé | lettre | cible | juste | astuce |
@@ -95,6 +98,7 @@ Pour tous les items :
 
 - cible : b, d, p ou q
 - consigne : À chaque bloc, la lettre à piocher change : lis-la, pioche seulement si le bloc la porte. Laisse passer les autres.
+- consigne courte : Pioche seulement les blocs avec la lettre.
 - XP : 14
 
 | clé | lettre | cible | juste | astuce |
@@ -120,6 +124,7 @@ Pour tous les items :
 
 - cible : p
 - consigne : Pioche seulement les blocs avec la lettre p. Laisse passer les autres.
+- consigne courte : Pioche seulement les blocs avec la lettre p.
 - XP : 12
 
 Pour tous les items :
@@ -144,6 +149,7 @@ Pour tous les items :
 
 - cible : q
 - consigne : Pioche seulement les blocs avec la lettre q. Laisse passer les autres.
+- consigne courte : Pioche seulement les blocs avec la lettre q.
 - XP : 12
 
 Pour tous les items :
@@ -181,6 +187,7 @@ Pour tous les items :
 ### Niveau 1 · `french-6e-letter-confusion-sound-discrimination-1`
 
 - consigne : Écoute bien le mot, puis choisis le bloc qui est écrit comme tu entends.
+- consigne courte : Écoute le mot, touche le bloc bien écrit.
 - blocs : 3
 - XP : 10
 
@@ -200,6 +207,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-letter-confusion-sound-discrimination-2`
 
 - consigne : Écoute bien le mot dans sa phrase, puis choisis le bloc qui est écrit comme tu entends.
+- consigne courte : Écoute le mot, touche le bloc bien écrit.
 - blocs : 4
 - XP : 12
 

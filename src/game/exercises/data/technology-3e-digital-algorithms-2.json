@@ -4,6 +4,7 @@
   "type": "algorithms",
   "level": 2,
   "instruction": "Lis la phrase ou le programme, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "technology-3e-digital-algorithms-2-0",

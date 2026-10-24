@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Lis et écoute la phrase en allemand, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Écoute en allemand, touche la bonne réaction.",
   "programme": [
     "c4.de.5e.interagir.reagir"
   ],

@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis et écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Écoute en allemand, touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-5e-introductions-de-greetings-1-0",

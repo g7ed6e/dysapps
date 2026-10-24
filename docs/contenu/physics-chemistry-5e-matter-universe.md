@@ -18,6 +18,7 @@ créature : Perle
 - description : Les molécules dans un solide, un liquide et un gaz, puis les changements d’état : le palier, la masse qui se conserve, le volume qui change.
 - compétences : c4.pc.matiere.etats · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-5e-matter-universe
@@ -149,6 +150,7 @@ Pour tous les items :
 - description : Corps purs et mélanges, dissoudre et mélanger deux liquides, puis la masse et le volume : ce qui flotte et ce qui coule.
 - compétences : c4.pc.matiere.etats · c4.pc.demarches.experimenter · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-5e-matter-universe
@@ -283,6 +285,7 @@ Pour tous les items :
 - description : Du système solaire aux galaxies, l’année-lumière, puis l’âge de l’Univers, ses éléments et les atomes nés dans les étoiles.
 - compétences : c4.pc.matiere.univers · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-5e-matter-universe

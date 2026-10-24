@@ -34,6 +34,8 @@ export interface ItemShown {
   gesture?: ItemGesture | null;
   /** La consigne de la bulle propre à l'item (son geste), huit mots au plus. */
   short?: string;
+  /** Le geste « régler » : les crans réglés et leur nombre au plus, que la scène montre sans nombre (la lueur). */
+  dial?: { count: number; max: number };
 }
 
 export interface QuestionContextValue {
@@ -64,7 +66,9 @@ export const sameItem = (a: ItemShown, b: ItemShown) =>
   a.picked.every((r, i) => r === b.picked[i]) &&
   JSON.stringify(a.sort ?? null) === JSON.stringify(b.sort ?? null) &&
   (a.gesture ?? null) === (b.gesture ?? null) &&
-  a.short === b.short;
+  a.short === b.short &&
+  a.dial?.count === b.dial?.count &&
+  a.dial?.max === b.dial?.max;
 
 export function useQuestion(): QuestionContextValue {
   const ctx = useContext(QuestionContext);

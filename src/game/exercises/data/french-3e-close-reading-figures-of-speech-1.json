@@ -4,6 +4,7 @@
   "type": "figures-of-speech",
   "level": 1,
   "instruction": "Quelle figure de style ? Comparaison, métaphore, personnification ou hyperbole. Le rappel est affiché.",
+  "shortInstruction": "Touche la bonne figure de style.",
   "items": [
     {
       "key": "french-3e-close-reading-figures-of-speech-1-0",

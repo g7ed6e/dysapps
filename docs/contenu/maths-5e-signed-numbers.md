@@ -37,6 +37,7 @@ créature : Frimas
 - description : Les priorités et les parenthèses, les carrés et le cube de 10, puis les programmes de calcul et les équations simples.
 - compétences : c4.ma.5e.nombres.operations · c4.ma.5e.nombres.puissances · c4.ma.5e.nombres.equations
 - consigne : Calcule, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Calcule, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-5e-signed-numbers
@@ -181,6 +182,7 @@ Pour tous les items :
 - description : Convertir des longueurs, des aires, des volumes et des litres, calculer un volume, puis les angles et l’aire d’un triangle.
 - compétences : c4.ma.5e.geometrie.conversions · c4.ma.5e.geometrie.espace · c4.ma.5e.geometrie.angles · c4.ma.5e.geometrie.triangles
 - consigne : Lis la phrase, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-5e-signed-numbers

@@ -4,6 +4,7 @@
   "type": "viewpoints",
   "level": 2,
   "instruction": "Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis le document, puis touche la bonne réponse.",
   "items": [
     {
       "key": "history-6e-antiquity-viewpoints-2-0",

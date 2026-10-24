@@ -16,6 +16,7 @@ créature : Rouxel
 - description : Glisse le bloc de lettres qui manque.
 - compétences : c3.fr.langue.mots-frequents
 - consigne : Écoute le mot, puis tape le bloc de lettres qui manque.
+- consigne courte : Écoute le mot, puis tape le bloc manquant.
 - bravo : Le mot est complet !
 - erreur : {word} s’écrit avec « {answer} », pas « {chosen} ».
 - bloc gagné : french-6e-word-spelling
@@ -74,6 +75,7 @@ Pour tous les items :
 ### Niveau 1 · `french-6e-word-spelling-word-families-1`
 
 - consigne : Lis ce que veut dire le mot, puis choisis le morceau qui le fabrique avec la racine.
+- consigne courte : Touche le morceau qui fabrique le mot.
 - blocs : 3
 - XP : 10
 
@@ -96,6 +98,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-word-spelling-word-families-2`
 
 - consigne : Lis ce que veut dire le mot, puis choisis le morceau de la fin qui le fabrique avec la racine.
+- consigne courte : Touche la fin qui fabrique le mot.
 - blocs : 4
 - XP : 12
 
@@ -132,6 +135,7 @@ Pour tous les items :
 ### Niveau 1 · `french-6e-word-spelling-sight-words-1`
 
 - consigne : Écoute, puis choisis la bonne écriture. Ces mots-outils reviennent tout le temps : on les apprend par cœur.
+- consigne courte : Écoute, puis touche la bonne écriture.
 - blocs : 3
 - XP : 10
 
@@ -179,6 +183,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-word-spelling-sight-words-2`
 
 - consigne : Écoute le mot ou la phrase, puis choisis l’écriture du mot. Ces mots-outils se révisent souvent.
+- consigne courte : Écoute, puis touche l’écriture du mot.
 - blocs : 4
 - XP : 12
 
@@ -228,6 +233,7 @@ Pour tous les items :
 ### Niveau 3 · `french-6e-word-spelling-sight-words-3`
 
 - consigne : Écoute, puis choisis la bonne écriture. Ces mots-outils s’apprennent par cœur.
+- consigne courte : Écoute, puis touche la bonne écriture.
 - blocs : 5
 - XP : 14
 
@@ -275,6 +281,7 @@ Pour tous les items :
 ### Niveau 4 · `french-6e-word-spelling-sight-words-4`
 
 - consigne : Écoute le mot ou la phrase, puis choisis l’écriture du mot.
+- consigne courte : Écoute, puis touche l’écriture du mot.
 - blocs : 6
 - XP : 16
 
@@ -335,6 +342,7 @@ Pour tous les items :
 ### Niveau 1 · `french-6e-word-spelling-word-forms-1`
 
 - consigne : Choisis le mot de même sens pour compléter la deuxième phrase. La règle est affichée.
+- consigne courte : Touche le mot de même sens pour compléter.
 - bravo : Même sens, bien trouvé !
 - blocs : 4
 - XP : 12
@@ -390,6 +398,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-word-spelling-word-forms-2`
 
 - consigne : Lis la phrase, puis choisis le sens du mot entre guillemets dans cette phrase. La règle est affichée.
+- consigne courte : Touche le sens du mot entre guillemets.
 - programme : c3.fr.lecture.lexique-contexte
 - bravo : Tu as trouvé le bon sens !
 - blocs : 5

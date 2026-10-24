@@ -4,6 +4,7 @@
   "type": "emphasis-punctuation",
   "level": 2,
   "instruction": "Trouve le mot mis en relief, ou la phrase qui le met en relief. La règle est affichée.",
+  "shortInstruction": "Touche le mot ou la phrase en relief.",
   "items": [
     {
       "key": "french-3e-language-emphasis-punctuation-2-0",

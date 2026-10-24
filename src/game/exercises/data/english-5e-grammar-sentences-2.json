@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Choisis le mot qui complète la phrase en anglais. La règle est affichée.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "english-5e-grammar-sentences-2-0",

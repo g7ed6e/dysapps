@@ -4,6 +4,7 @@
   "type": "prime-factors",
   "level": 2,
   "instruction": "Décompose, ou simplifie jusqu’au bout. La règle est affichée.",
+  "shortInstruction": "Décompose ou simplifie, puis touche la réponse.",
   "items": [
     {
       "key": "maths-3e-numbers-prime-factors-2-0",

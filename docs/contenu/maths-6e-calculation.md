@@ -44,6 +44,7 @@ créature : Coco
 - description : Aire, volume, angles et solides, puis triangles, cercles et petits tableaux, tout dit en mots et en nombres.
 - compétences : c3.ma.grandeurs.aire · c3.ma.grandeurs.volume · c3.ma.espace.angles · c3.ma.espace.figures-solides · c3.ma.espace.relations · c3.ma.espace.triangles · c3.ma.donnees.donnees
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-6e-calculation

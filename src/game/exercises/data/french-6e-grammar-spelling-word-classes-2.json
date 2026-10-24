@@ -4,6 +4,7 @@
   "type": "word-classes",
   "level": 2,
   "instruction": "Attention aux pièges : cherche qui fait l’action, choisis le verbe, puis valide.",
+  "shortInstruction": "Qui agit ? Touche le verbe, puis valide.",
   "items": [
     {
       "key": "paul-et-léa",

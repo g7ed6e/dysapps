@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Écoute le mot anglais, puis choisis ce qu’il veut dire.",
+  "shortInstruction": "Écoute le mot anglais, touche son sens.",
   "items": [
     {
       "key": "english-6e-vocabulary-first-listening-2-0",

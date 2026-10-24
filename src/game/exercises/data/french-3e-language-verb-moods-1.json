@@ -4,6 +4,7 @@
   "type": "verb-moods",
   "level": 1,
   "instruction": "Indicatif ou subjonctif ? Choisis la forme. La règle est affichée.",
+  "shortInstruction": "Indicatif ou subjonctif ? Touche la forme.",
   "items": [
     {
       "key": "french-3e-language-verb-moods-1-0",

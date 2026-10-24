@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Lis la question, puis trouve la bonne ligne du menu ou du programme en espagnol. Le lexique est affiché.",
+  "shortInstruction": "Touche la bonne ligne du document.",
   "items": [
     {
       "key": "lv2-4e-daily-life-es-timetable-2-0",

@@ -4,6 +4,7 @@
   "type": "e-er-ez",
   "level": 1,
   "instruction": "Choisis la bonne fin du verbe : é, er ou ez. Astuce : remplace par vendre ou vendu.",
+  "shortInstruction": "Touche la bonne fin : é, er ou ez.",
   "items": [
     {
       "key": "va-manger",

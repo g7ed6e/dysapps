@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Écoute le mot en allemand, puis choisis les lettres qui manquent. La règle est affichée.",
+  "shortInstruction": "Écoute le mot allemand, touche les lettres manquantes.",
   "programme": [
     "c4.de.5e.exprimer.dictee"
   ],

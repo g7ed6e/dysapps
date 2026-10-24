@@ -4,6 +4,7 @@
   "type": "passive-reported",
   "level": 1,
   "instruction": "Voix active ou passive ? Trouve aussi qui fait l’action. La règle est affichée.",
+  "shortInstruction": "Voix active ou passive ? Touche la réponse.",
   "items": [
     {
       "key": "french-4e-sentence-passive-reported-1-0",

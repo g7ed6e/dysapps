@@ -4,6 +4,7 @@
   "type": "subordinate-clauses",
   "level": 1,
   "instruction": "Trouve la conjonction de subordination, la subordonnée ou la principale. La règle est affichée.",
+  "shortInstruction": "Touche la conjonction, la subordonnée ou la principale.",
   "items": [
     {
       "key": "french-4e-sentence-subordinate-clauses-1-0",

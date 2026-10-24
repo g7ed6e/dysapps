@@ -18,6 +18,7 @@ créature : Nectar
 - description : La cellule, unité du vivant, puis comment les plantes fabriquent leur matière et comment les animaux s’en nourrissent et respirent.
 - compétences : c4.sv.vivant.nutrition · c4.sv.demarches.langages · c4.sv.demarches.raisonner
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-4e-cells-evolution
@@ -147,6 +148,7 @@ Pour tous les items :
 - description : Reproduction sexuée et asexuée, les populations qui grandissent ou diminuent, puis les chromosomes, les gènes et l’ADN, qui font de chacun un être unique.
 - compétences : c4.sv.vivant.genetique · c4.sv.demarches.langages · c4.sv.demarches.raisonner
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien raisonné !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-4e-cells-evolution
@@ -276,6 +278,7 @@ Pour tous les items :
 - description : La biodiversité, les espèces qui apparaissent et disparaissent, les liens de parenté, puis la sélection naturelle qui fait évoluer les espèces.
 - compétences : c4.sv.vivant.evolution · c4.sv.demarches.raisonner · c4.sv.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien raisonné !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-4e-cells-evolution

@@ -4,6 +4,7 @@
   "type": "relative-clauses",
   "level": 3,
   "instruction": "Lis la phrase : que fait la relative ? La règle est affichée.",
+  "shortInstruction": "Que fait la relative ? Touche la réponse.",
   "items": [
     {
       "key": "french-4e-sentence-relative-clauses-3-0",

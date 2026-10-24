@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Lis la question en allemand, ou appuie sur Écouter. haben ou sein ? Choisis la bonne réponse. La règle est affichée.",
+  "shortInstruction": "haben ou sein ? Touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-3e-travel-de-past-2-0",

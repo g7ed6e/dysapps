@@ -37,6 +37,7 @@ créature : Fi
 - description : Reconnaître la proportionnalité, pourcentages et échelles, puis évolutions, vitesse, débit et conversions.
 - compétences : c4.ma.b.proportionnalite · c4.ma.b.pourcentages-echelles · c4.ma.c.grandeurs-composees · c4.ma.c.conversions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-3e-functions
@@ -188,6 +189,7 @@ Pour tous les items :
 - description : Sur une droite graduée, dans un repère du plan, dans un pavé droit, puis sur la Terre : latitude et longitude.
 - compétences : c4.ma.d.reperage
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien repéré !
 - erreur : {explanation}
 - bloc gagné : maths-3e-functions

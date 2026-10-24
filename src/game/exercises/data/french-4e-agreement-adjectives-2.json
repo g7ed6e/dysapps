@@ -4,6 +4,7 @@
   "type": "adjectives",
   "level": 2,
   "instruction": "Accorde ou non les adjectifs de couleur et les cas particuliers. La règle est affichée.",
+  "shortInstruction": "Touche l’adjectif de couleur bien écrit.",
   "items": [
     {
       "key": "french-4e-agreement-adjectives-2-0",

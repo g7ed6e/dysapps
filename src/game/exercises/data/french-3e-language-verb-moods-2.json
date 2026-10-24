@@ -4,6 +4,7 @@
   "type": "verb-moods",
   "level": 2,
   "instruction": "Choisis l’auxiliaire du passé du subjonctif. La règle est affichée.",
+  "shortInstruction": "Touche l’auxiliaire du passé du subjonctif.",
   "items": [
     {
       "key": "french-3e-language-verb-moods-2-0",

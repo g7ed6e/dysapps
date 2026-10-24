@@ -4,6 +4,7 @@
   "type": "relative-clauses",
   "level": 2,
   "instruction": "Choisis le pronom relatif qui complète la phrase. La règle est affichée.",
+  "shortInstruction": "Touche le pronom relatif qui complète.",
   "items": [
     {
       "key": "french-4e-sentence-relative-clauses-2-0",

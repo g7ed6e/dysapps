@@ -4,6 +4,7 @@
   "type": "formulas",
   "level": 1,
   "instruction": "Lis la phrase, la formule ou le tableau, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-5e-proportionality-formulas-1-0",

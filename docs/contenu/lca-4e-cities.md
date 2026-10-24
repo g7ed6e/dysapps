@@ -17,6 +17,7 @@ créature : Figue
 - compétences : c4.la.culture.vie-privee · c4.la.langue.lexique · c4.la.langue.intercomprehension
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-4e-cities
@@ -152,6 +153,7 @@ Pour tous les items :
 - compétences : c4.la.culture.vie-publique · c4.la.culture.republique · c4.la.langue.lexique
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-4e-cities
@@ -289,6 +291,7 @@ Pour tous les items :
 - compétences : c4.la.culture.mediterranee · c4.la.reperes.chronologie · c4.la.lecture.situer
 - option : la
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-4e-cities
@@ -427,6 +430,7 @@ Pour tous les items :
 - compétences : c4.gr.culture.vie-privee · c4.gr.culture.vie-publique · c4.gr.langue.lexique
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-4e-cities
@@ -563,6 +567,7 @@ Pour tous les items :
 - compétences : c4.gr.culture.vie-publique · c4.gr.culture.republique · c4.gr.langue.lexique
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-4e-cities
@@ -696,6 +701,7 @@ Pour tous les items :
 - compétences : c4.gr.culture.mediterranee · c4.gr.reperes.chronologie · c4.gr.lecture.situer
 - option : gr
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : lca-4e-cities

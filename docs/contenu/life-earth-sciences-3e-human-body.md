@@ -20,6 +20,7 @@ créature : Olive
 - description : Ce que change un effort dans les muscles, le cœur et la respiration, puis le trajet d’un message nerveux, et ce que le sommeil, les écrans, l’alcool et le tabac changent au cerveau.
 - compétences : c4.sv.corps.effort-nerveux · c4.sv.demarches.langages · c4.sv.demarches.raisonner
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-3e-human-body
@@ -154,6 +155,7 @@ Pour tous les items :
 - description : Le trajet des aliments et ce qu’ils deviennent, le microbiote, puis les microbes, les défenses du corps, les vaccins, les antiseptiques et les antibiotiques.
 - compétences : c4.sv.corps.digestion-microbes · c4.sv.demarches.raisonner · c4.sv.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien raisonné !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-3e-human-body
@@ -285,6 +287,7 @@ Pour tous les items :
 - description : Ce qui change à la puberté, les cellules et les organes de la reproduction, puis la fécondation, la grossesse et ce que permet la contraception.
 - compétences : c4.sv.corps.reproduction · c4.sv.vivant.genetique · c4.sv.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-3e-human-body

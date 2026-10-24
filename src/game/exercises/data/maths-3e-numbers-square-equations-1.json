@@ -4,6 +4,7 @@
   "type": "square-equations",
   "level": 1,
   "instruction": "Calcule ou encadre la racine carrée. Les carrés sont affichés.",
+  "shortInstruction": "Calcule ou encadre, puis touche la réponse.",
   "items": [
     {
       "key": "maths-3e-numbers-square-equations-1-0",

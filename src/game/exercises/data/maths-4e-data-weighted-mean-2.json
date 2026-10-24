@@ -4,6 +4,7 @@
   "type": "weighted-mean",
   "level": 2,
   "instruction": "Lis la série ou le tableau, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-4e-data-weighted-mean-2-0",

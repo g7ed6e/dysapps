@@ -34,6 +34,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-4e-daily-life-es-time-1`
 
 - consigne : Appuie sur Écouter pour entendre l’heure en espagnol, puis choisis la bonne heure. La règle est affichée.
+- consigne courte : Écoute l’heure en espagnol, touche la bonne.
 
 Pour tous les items :
 - aide « La hora » :
@@ -97,6 +98,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-4e-daily-life-es-time-2`
 
 - consigne : Cette fois, une scène de la journée : lis la question, puis appuie sur Écouter pour entendre la phrase en espagnol. Le lexique est affiché.
+- consigne courte : Écoute en espagnol, puis touche la bonne réponse.
 - programme : c4.es.ecouter.indices
 
 Pour tous les items :
@@ -171,6 +173,7 @@ Pour tous les items :
 - lv2 : es
 - langue : es
 - consigne : Lis ou écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en espagnol, touche la bonne réponse.
 - bravo : Bien répondu !
 - erreur : {explanation}
 - bloc gagné : lv2-4e-daily-life
@@ -320,6 +323,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-4e-daily-life-es-timetable-1`
 
 - consigne : Lis la question, puis trouve la bonne ligne du document en espagnol. Le lexique est affiché.
+- consigne courte : Touche la bonne ligne du document.
 
 Pour tous les items :
 - aide « Leer un horario » :
@@ -390,6 +394,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-4e-daily-life-es-timetable-2`
 
 - consigne : Lis la question, puis trouve la bonne ligne du menu ou du programme en espagnol. Le lexique est affiché.
+- consigne courte : Touche la bonne ligne du document.
 
 1. énoncé : "Menú del día: 11 euros\nPrimer plato: ensalada\nSegundo plato: pescado con patatas\nPostre: flan o fruta"
    - question : Quel est le plat principal du menu ?
@@ -499,6 +504,7 @@ Pour tous les items :
 - lv2 : es
 - langue : es
 - consigne : Lis ou écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en espagnol, touche la bonne réponse.
 - bravo : Bien répondu !
 - erreur : {explanation}
 - bloc gagné : lv2-4e-daily-life
@@ -645,6 +651,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-4e-daily-life-es-signs-1`
 
 - consigne : Lis la question, puis trouve la bonne ligne du panneau ou du message en espagnol. Le lexique est affiché.
+- consigne courte : Touche la bonne ligne du document.
 - bravo : Bien lu !
 
 Pour tous les items :
@@ -717,6 +724,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-4e-daily-life-es-signs-2`
 
 - consigne : Lis ou écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée.
+- consigne courte : Écoute en espagnol, touche la bonne réaction.
 - bravo : Bien répondu !
 
 Pour tous les items :
@@ -797,6 +805,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-4e-daily-life-de-time-1`
 
 - consigne : Appuie sur Écouter pour entendre l’heure en allemand, puis choisis la bonne heure. La règle est affichée.
+- consigne courte : Écoute l’heure en allemand, touche la bonne.
 
 Pour tous les items :
 - aide « Die Uhrzeit » :
@@ -859,6 +868,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-4e-daily-life-de-time-2`
 
 - consigne : Cette fois, une scène de la journée : lis la question, puis appuie sur Écouter pour entendre la phrase en allemand. Le lexique est affiché.
+- consigne courte : Écoute en allemand, puis touche la bonne réponse.
 - programme : c4.de.ecouter.indices
 
 Pour tous les items :
@@ -933,6 +943,7 @@ Pour tous les items :
 - lv2 : de
 - langue : de
 - consigne : Lis ou écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en allemand, touche la bonne réponse.
 - bravo : Bien répondu !
 - erreur : {explanation}
 - bloc gagné : lv2-4e-daily-life
@@ -1081,6 +1092,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-4e-daily-life-de-timetable-1`
 
 - consigne : Lis la question, puis trouve la bonne ligne du document en allemand. Le lexique est affiché.
+- consigne courte : Touche la bonne ligne du document.
 
 Pour tous les items :
 - aide « Einen Stundenplan lesen » :
@@ -1151,6 +1163,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-4e-daily-life-de-timetable-2`
 
 - consigne : Lis la question, puis trouve la bonne ligne du menu ou du programme en allemand. Le lexique est affiché.
+- consigne courte : Touche la bonne ligne du document.
 
 1. énoncé : "Mensa: Speiseplan\nMontag: Nudeln mit Tomatensoße\nDienstag: Hähnchen mit Reis\nMittwoch: Gemüsesuppe"
    - question : Que mange-t-on à la cantine le lundi ?
@@ -1264,6 +1277,7 @@ Pour tous les items :
 - lv2 : de
 - langue : de
 - consigne : Lis ou écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en allemand, touche la bonne réponse.
 - bravo : Bien répondu !
 - erreur : {explanation}
 - bloc gagné : lv2-4e-daily-life
@@ -1411,6 +1425,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-4e-daily-life-de-signs-1`
 
 - consigne : Lis la question, puis le panneau ou le message en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
+- consigne courte : Lis le message, puis touche la bonne réponse.
 - programme : c4.de.lire.consignes-panneaux
 - bravo : Bien lu !
 
@@ -1485,6 +1500,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-4e-daily-life-de-signs-2`
 
 - consigne : Lis et écoute la phrase en allemand. Choisis la bonne réaction. La règle est affichée.
+- consigne courte : Écoute en allemand, touche la bonne réaction.
 - programme : c4.de.dialoguer.reagir
 - bravo : Bien réagi !
 

@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "es",
   "instruction": "Lis la question, puis trouve la bonne ligne du document en espagnol. Le lexique est affiché.",
+  "shortInstruction": "Touche la bonne ligne du document.",
   "items": [
     {
       "key": "lv2-3e-travel-es-countries-1-0",

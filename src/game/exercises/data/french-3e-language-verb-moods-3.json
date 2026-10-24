@@ -4,6 +4,7 @@
   "type": "verb-moods",
   "level": 3,
   "instruction": "Choisis la forme qui suit « si ». La règle est affichée.",
+  "shortInstruction": "Touche la forme qui suit « si ».",
   "items": [
     {
       "key": "french-3e-language-verb-moods-3-0",

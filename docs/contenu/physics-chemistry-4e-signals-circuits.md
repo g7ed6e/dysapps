@@ -18,6 +18,7 @@ créature : Radar
 - description : La lumière va en ligne droite et très vite ; le son a besoin de matière pour avancer, sa fréquence fait un son aigu ou grave, et un son trop fort abîme l’oreille.
 - compétences : c4.pc.signaux.lumiere-son · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-4e-signals-circuits
@@ -152,6 +153,7 @@ Pour tous les items :
 - description : Série et dérivation, l’intensité et la tension et leurs lois, la résistance et la loi d’Ohm, et la sécurité.
 - compétences : c4.pc.energie.circuits · c4.pc.demarches.experimenter · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-4e-signals-circuits
@@ -286,6 +288,7 @@ Pour tous les items :
 - description : Reconnaître une transformation chimique, la combustion, les réactifs et les produits, puis les atomes qui se regroupent, la masse qui se conserve et l’équation de réaction.
 - compétences : c4.pc.matiere.transformations · c4.pc.demarches.experimenter · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-4e-signals-circuits

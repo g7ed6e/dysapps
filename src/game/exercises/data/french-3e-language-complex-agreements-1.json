@@ -4,6 +4,7 @@
   "type": "complex-agreements",
   "level": 1,
   "instruction": "Accorde l’adjectif avec le nom qui le commande. La règle est affichée.",
+  "shortInstruction": "Touche l’adjectif bien accordé.",
   "items": [
     {
       "key": "french-3e-language-complex-agreements-1-0",

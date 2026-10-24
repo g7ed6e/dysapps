@@ -4,6 +4,7 @@
   "type": "subject-verb",
   "level": 2,
   "instruction": "Sujet éloigné, pronom « qui », deux sujets : accorde le verbe. La règle est affichée.",
+  "shortInstruction": "Accorde le verbe, puis touche la bonne forme.",
   "items": [
     {
       "key": "french-4e-agreement-subject-verb-2-0",

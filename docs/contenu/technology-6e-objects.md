@@ -18,6 +18,7 @@ créature : Pince
 - description : Le besoin, la fonction d’usage et les éléments d’un objet, puis l’énergie qui le fait marcher et les mouvements qu’il transmet.
 - compétences : c3.te.objets.fonction · c3.te.objets.fonctionnement · c3.te.demarches.representer
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-6e-objects
@@ -151,6 +152,7 @@ Pour tous les items :
 - description : Les familles de matériaux et leurs propriétés, puis d’où ils viennent, comment les recycler et comment jeter moins.
 - compétences : c3.te.objets.materiaux · c3.te.objets.recyclage
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-6e-objects
@@ -284,6 +286,7 @@ Pour tous les items :
 - description : Les capteurs et les actionneurs d’un objet programmable, chercher et ranger avec le numérique, puis comment les objets ont changé.
 - compétences : c3.te.objets.information · c3.te.demarches.numerique · c3.te.objets.evolution
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-6e-objects
@@ -418,6 +421,7 @@ Pour tous les items :
 - description : Comparer des solutions à un problème technique en tenant compte d’une contrainte, puis lire un programme simple, dire ce qu’il fait et le critiquer.
 - compétences : c3.te.objets.probleme · c3.te.objets.programmer
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-6e-objects

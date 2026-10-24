@@ -4,6 +4,7 @@
   "type": "future-tense",
   "level": 1,
   "instruction": "Futur ou conditionnel ? Choisis le verbe qui convient. La règle est affichée.",
+  "shortInstruction": "Futur ou conditionnel ? Touche le bon verbe.",
   "items": [
     {
       "key": "french-5e-conjugation-future-tense-1-0",

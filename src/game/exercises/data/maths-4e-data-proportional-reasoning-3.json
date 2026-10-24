@@ -4,6 +4,7 @@
   "type": "proportional-reasoning",
   "level": 3,
   "instruction": "Lis la phrase, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-4e-data-proportional-reasoning-3-0",
