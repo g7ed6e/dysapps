@@ -101,6 +101,7 @@ import {
   gestureBins,
   gestureScreens,
   itemGesture,
+  placeShortInstruction,
 } from './questions';
 
 const reference = (
@@ -1696,5 +1697,18 @@ describe('Les consignes courtes des missions produites par le code (GD-26)', () 
     const words = (t: string) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
     for (const t of Object.values(SHORT_INSTRUCTIONS)) expect(words(t), t).toBeLessThanOrEqual(8);
     for (const ex of all) if (ex?.generate) expect(ex.shortInstruction, ex.id).toBeTruthy();
+  });
+});
+
+describe('Les consignes courtes des consignes de lieu (GD-26)', () => {
+  it('existent pour chaque consigne de lieu et tiennent en huit mots', () => {
+    const words = (t: string) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+    const placed = [...ENCLOS_INSTRUCTION, `${PHARE_SYLLABLES} Puis valide.`, PAIR_INSTRUCTION, JAUGE_INSTRUCTION];
+    for (const p of placed) {
+      const short = placeShortInstruction(p);
+      expect(short, p).toBeTruthy();
+      expect(words(short!), short).toBeLessThanOrEqual(8);
+    }
+    expect(placeShortInstruction('Lis, puis touche la bonne réponse.')).toBeUndefined();
   });
 });

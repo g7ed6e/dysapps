@@ -391,16 +391,35 @@ function mouthGlow(b: FacetBuilder, color: number): void {
 }
 
 /**
- * La lueur réglée (GD-26, le geste « régler ») : devant la gueule, elle monte du seuil d'un cran par coup, de la pierre
- * tiède à la lueur pleine (les teintes du fondu, puis la gueule allumée au dernier cran) ; rien à zéro coup.
+ * Le foyer du geste « régler » (GD-26) : la gueule du fourneau sort du cadre de la scénette sur tablette, le feu que les
+ * coups de soufflet attisent se montre donc au milieu de la scène, derrière Kéo et la chaudronnière (de `back` vers le fond).
+ * Son bac (largeur, hauteur, profondeur) et la flamme la plus haute, à sept coups.
+ */
+const DIAL_HEARTH = { back: 1.1, w: 1.1, h: 0.45, d: 0.7, flame: 1.7 } as const;
+
+/**
+ * La lueur réglée (GD-26, le geste « régler ») : sur le foyer (`DIAL_HEARTH`), la flamme monte d'un cran par coup, de la
+ * braise (la dernière teinte du fondu) à la lueur de la gueule allumée, dès la moitié des coups ; à zéro
+ * coup, le foyer froid.
  */
 function dialFacets(c: Vec3, count: number, max: number): Facets {
   const b = new FacetBuilder();
-  if (count <= 0 || max <= 0) return b.build();
-  const k = Math.min(1, count / max);
-  const color = FORGE_GLOW_DRAWN[k >= 1 ? 0 : 1 + Math.min(2, Math.floor(k * 3))];
-  const outline = archOutline(MOUTH.half * 0.92, MOUTH.spring).map(([x, y]) => [x, y * k] as const);
-  onSouthFace(b, 0.07, (l) => l.plate({ x: 0, y: 0, z: 0 }, outline, color));
+  const H = DIAL_HEARTH;
+  const fwd = { x: -Math.sin(SCENE_START), z: -Math.cos(SCENE_START) };
+  const x = SCENE_SPOT.dx + fwd.x * H.back;
+  const z = SCENE_SPOT.dz + fwd.z * H.back;
+  const y = yardY(x, z) + SHED_FLOOR.rise;
+  // Le foyer, toujours là pendant l'item : un bac de pierre bas, ses braises froides dessus.
+  b.box({ x, y, z, yaw: SCENE_START }, [H.w, H.h, H.d], C.stoneShade, C.coal);
+  const k = max > 0 ? Math.min(1, count / max) : 0;
+  if (k > 0) {
+    // La flamme, une pointe dressée face à la caméra (et à son revers, la caméra tourne) : sa hauteur suit les coups.
+    const color = FORGE_GLOW_DRAWN[k >= 0.5 ? 0 : 3];
+    const w = H.w * 0.42;
+    const top = H.flame * k;
+    const flame = [[-w, 0], [w, 0], [w * 0.7, top * 0.55], [0, top], [-w * 0.7, top * 0.55]] as const;
+    for (const turn of [0, Math.PI]) drawPosed(b, { x, y: y + H.h, z, yaw: SCENE_START + turn }, (l) => l.plate({ x: 0, y: 0, z: 0 }, flame, color));
+  }
   const f = b.build();
   for (let i = 0; i < f.positions.length; i += 3) {
     f.positions[i] += c.x;

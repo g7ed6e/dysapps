@@ -43,7 +43,7 @@ import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelP
 import { placePoseWords } from './constructionParts';
 import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { DialScreen } from './DialScreen';
@@ -450,9 +450,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const instruction = placed && entry ? `${entry} ${placed}` : placed;
   // Dans la bulle (GD-26), la consigne courte : celle de l'item (son geste), sinon celle du niveau ; la consigne entière
   // reste dans « Vue simple » et pour les lecteurs d'écran.
-  // Un lieu qui a sa consigne à lui (le Phare, l'Enclos, les Écluses, la jauge) la garde : la consigne courte du niveau
-  // ne remplace que la consigne de référence.
-  const short = item?.short ?? (ready && placed === ready.def.instruction ? ready.def.shortInstruction : undefined);
+  // Un lieu qui a sa consigne à lui (le Phare, l'Enclos, les Écluses, la jauge) a aussi sa consigne courte : celle du
+  // niveau ne remplace que la consigne de référence.
+  const short = item?.short ?? (ready && placed === ready.def.instruction ? ready.def.shortInstruction : placeShortInstruction(placed));
   const bubbleLine = short ? (entry ? `${entry} ${short}` : short) : instruction;
   // La fin d'un morceau de révision : la file et les blocs d'une révision, jamais la session de l'application.
   const runnerRevision = useMemo<RunnerRevision | undefined>(

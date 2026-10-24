@@ -208,6 +208,21 @@ export function placeInstruction(anyPlace: AnyPlaceId, exerciseId: string, level
     : 'Regarde le sas : en bas, le nombre de parts égales ; en haut, le nombre de parts pleines d’eau.';
 }
 
+/**
+ * La consigne courte d'une consigne de lieu (GD-26), dans la bulle : la consigne entière reste dans « Vue simple », lue
+ * avec la question. Une consigne qui n'est pas celle d'un lieu n'en a pas ici (celle du niveau s'applique).
+ */
+export function placeShortInstruction(placed: string): string | undefined {
+  if (placed === ENCLOS_INSTRUCTION[0]) return 'Range chaque sujet dans son panier.';
+  if (placed === ENCLOS_INSTRUCTION[1]) return 'Range chaque sujet : attention aux pièges.';
+  if (placed.startsWith(PHARE_SYLLABLES)) return 'Écoute, touche la cloche.';
+  if (placed === PAIR_INSTRUCTION) return 'Touche la plus grande fraction.';
+  if (placed === JAUGE_INSTRUCTION) return 'Lis le nombre où arrive l’eau.';
+  if (placed.startsWith('Sur l’échelle, compte')) return 'Compte les parts jusqu’à l’eau.';
+  if (placed.startsWith('Regarde le sas :')) return 'Regarde le sas, puis compte les parts.';
+  return undefined;
+}
+
 /** Les items du lieu d'un exercice, dans un univers (aujourd'hui, Archipéo seul) : par clé de leur jumeau. */
 function twinsOf(exerciseId: string): Map<string, QuestionItem> {
   const all = (PLACE_ITEMS as Record<string, Record<string, QuestionItem[]>>).archipeo ?? {};
