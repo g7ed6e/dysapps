@@ -499,6 +499,11 @@ const DECK_RAISES = 4;
  */
 const SLOW_FRAME_MS = 45;
 const SLOW_FRAMES = 30;
+/**
+ * Kéo arrêté depuis tant de millisecondes avant qu'une texture d'habitant ou d'équipier parte à la carte graphique : la
+ * caméra a fini de se poser, l'image qui l'envoie ne coupe aucun mouvement.
+ */
+const UPLOAD_STILL_MS = 600;
 /** Les anneaux du terrain se refont quand le point suivi s'est éloigné de tant d'unités de leur centre. */
 const RING_MOVE = 3;
 /**
@@ -1157,7 +1162,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Un modèle prêt après l'entrée de la remise de son lieu (« Livrer » touché aussitôt arrivé) prend la place du pion : rien
   // de la remise ne dépend du pion ; dans une mission, ce qui pend de la main de l'habitant s'y règle, le pion reste.
   // Les textures de l'habitant et de l'équipier, préparées pendant la marche, attendent que Kéo s'arrête pour partir à la
-  // carte graphique, une par image (`stepUploads`) : envoyée aussitôt, une texture faisait l'image la plus longue de la
+  // carte graphique, une par image (`stepUploads`), la caméra posée (`UPLOAD_STILL_MS`) : envoyée aussitôt, une texture faisait l'image la plus longue de la
   // marche, aux quatre niveaux (mesure iPad du 24 octobre 2026). Une scénette ouverte avant leur départ les envoie à son
   // premier dessin, comme Three.js le fait de lui-même. Une texture libérée en attente quitte la file.
   const uploads = new Set<THREE.Texture>();
@@ -4327,6 +4332,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let frame = 0;
   let last = performance.now();
   let slowFrames = 0;
+  let movedAt = 0;
   const loop = () => {
     frame = requestAnimationFrame(loop);
     const now = performance.now();
@@ -4456,7 +4462,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
-    if (!moving) stepUploads();
+    if (moving) movedAt = now;
+    else if (now - movedAt > UPLOAD_STILL_MS) stepUploads();
     stepDetour(now, moving, dt);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
