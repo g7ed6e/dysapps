@@ -102,6 +102,7 @@ import {
   gestureScreens,
   itemGesture,
   placeShortInstruction,
+  SAS_INSTRUCTION,
 } from './questions';
 
 const reference = (
@@ -1703,7 +1704,7 @@ describe('Les consignes courtes des missions produites par le code (GD-26)', () 
 describe('Les consignes courtes des consignes de lieu (GD-26)', () => {
   it('existent pour chaque consigne de lieu et tiennent en huit mots', () => {
     const words = (t: string) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
-    const placed = [...ENCLOS_INSTRUCTION, `${PHARE_SYLLABLES} Puis valide.`, PAIR_INSTRUCTION, JAUGE_INSTRUCTION];
+    const placed = [...ENCLOS_INSTRUCTION, `${PHARE_SYLLABLES} Puis valide.`, PAIR_INSTRUCTION, JAUGE_INSTRUCTION, ...SAS_INSTRUCTION];
     for (const p of placed) {
       const short = placeShortInstruction(p);
       expect(short, p).toBeTruthy();

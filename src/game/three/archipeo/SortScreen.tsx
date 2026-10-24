@@ -13,7 +13,7 @@ import { useSettings } from '../../../core/SettingsContext';
 import { texteGrand } from '../../../core/settings';
 import type { ScreenProps } from '../../exercises/registry';
 import type { ExerciseItem } from '../../exercises/types';
-import { EMPTY_RANGEMENT, binOf, cancel, complete, drop, rangementResults, sortSlots, take, type Rangement } from '../../world/continu/rangement';
+import { EMPTY_RANGEMENT, binOf, cancel, complete, drop, lastIn, rangementResults, sortSlots, take, type Rangement } from '../../world/continu/rangement';
 import { agreedSentence, agreedVerb, gestureBins, itemGesture, placeRuleLine, rangeGesture, type RangeBin } from '../../world/continu/questions';
 import { ConsigneIcon, IconLabel, PlaceAid, PlaceCarnet, aidOf, placeSceneOf, slotStyles, useQuestion, useStopOnLeave } from './placeScreen';
 
@@ -156,7 +156,8 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
     }
     // Rangée, la fiche a quitté la bulle pour sa caisse (GD-26) : la caisse touchée sans rien tenir rend la dernière posée,
     // qui se reprend jusqu'à « Valider ».
-    const last = !held && hand ? [...items].reverse().find((it) => binOf(state, it.key) === bin.id) : undefined;
+    const lastKey = !held && hand ? lastIn(state, bin.id) : null;
+    const last = lastKey === null ? undefined : items.find((it) => it.key === lastKey);
     if (last) {
       setState(take(state, last.key));
       setStatus(`Tu reprends : ${subjectOf(last)}.`);

@@ -249,6 +249,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // « Vue simple » ouverte d'elle-même (une bulle trop haute, une étiquette coupée) : une seule fois par visite, tant
   // que la question reste montée ; revenu à « Scène », l'élève garde son choix.
   const autoSimple = useRef(false);
+  // La consigne de la ligne repliée est coupée (« … ») : « Lire la suite » revient pour la consigne courte de la bulle.
+  const [shortCut, setShortCut] = useState(false);
   const startItems = useCallback(() => {
     setIntroDone(true);
     // La consigne élargie pour être lue en entier : la colonne reprend sa largeur pour la scène.
@@ -291,11 +293,15 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // simple », où le rappel est entier.
     const carnet = root.querySelector<HTMLElement>('.world-carnet');
     if (bulle && grandTexte && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && !autoSimple.current) {
-      const line = parseFloat(getComputedStyle(carnet).lineHeight) || 32;
-      // Les lignes du rappel qu'on voit sous son titre : du haut de la première au bas du carnet.
+      // La hauteur d'une ligne du rappel : celle de son premier point (« normal » se mesure sur lui, jamais un nombre fixe).
       const first = carnet.querySelector<HTMLElement>('li') ?? carnet;
+      const lh = parseFloat(getComputedStyle(first).lineHeight);
+      const line = Number.isFinite(lh) ? lh : parseFloat(getComputedStyle(first).fontSize) * 1.5;
+      // Les lignes du rappel qu'on voit sous son titre : du haut de la première au bas du carnet.
       const shown = (carnet.getBoundingClientRect().bottom - first.getBoundingClientRect().top) / line;
-      if (shown < 3) {
+      // Une figure sans liste (les rangées de jetons des Quais) qui déborde : sa légende est sous le chevron, coupée
+      // (consultant UX UI, deuxième passe) ; « Vue simple » aussi.
+      if (shown < 3 || first === carnet) {
         autoSimple.current = true;
         openSimple();
         return;
@@ -503,9 +509,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
             <Icon name="play" /> Commencer
           </button>
         )}
-        {/* La consigne courte de la bulle (GD-26) tient sur sa ligne : pas de « Lire la suite » ; la consigne entière est
-            dans « Vue simple ». */}
-        {tight && !(bulle && bubbleLine !== instruction) && (
+        {/* La consigne courte de la bulle (GD-26) : pas de « Lire la suite » quand elle tient sur sa ligne (la consigne
+            entière est dans « Vue simple ») ; coupée, il revient, et la déplie (directeur artistique, deuxième passe). */}
+        {tight && (!(bulle && bubbleLine !== instruction) || shortCut) && (
           <button
             type="button"
             className="button world-consigne-more"
@@ -718,14 +724,21 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
         if (panel && more && more.getBoundingClientRect().top >= row.getBoundingClientRect().bottom - 1) panel.dataset.livre = 'dessous';
       }
     };
-    fit();
+    // La consigne courte coupée de la bulle rend « Lire la suite » (jamais une fin qui n'existerait qu'à voix haute).
+    const fitAndTell = () => {
+      fit();
+      if (consigneOpen) return;
+      const ellipsis = line.querySelector<HTMLElement>('.world-consigne-ellipsis');
+      setShortCut(Boolean(ellipsis && !ellipsis.hidden));
+    };
+    fitAndTell();
     let alive = true;
-    void document.fonts?.ready.then(() => alive && fit());
+    void document.fonts?.ready.then(() => alive && fitAndTell());
     return () => {
       alive = false;
     };
     // Refaite aussi quand « Vue simple » s'ouvre d'office (le rôle passe alors sur sa ligne) : sinon la consigne entière.
-  }, [stage, consigneOpen, size.w, settings, simple, layout.low, foldedSimple, bulle]);
+  }, [stage, consigneOpen, size.w, settings, simple, layout.low, foldedSimple, bulle, shortCut]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,

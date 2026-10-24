@@ -101,6 +101,8 @@ Le mainteneur a retenu le 27 septembre 2026 toutes les recommandations du direct
 
 Trois décisions du 27 septembre 2026, communes aux univers, sont inscrites dans [les décisions du game design](../../gameplay/decisions.md) : le village en cinq états (lot 3b), les tuiles du menu (lot 4a) et les états des îles sur la Carte (lot 4b).
 
+**Les quatre gestes du métier ([GD-26](../../gameplay/propositions/GD-26.md), 24 octobre 2026).** Les mots des gestes (fiche, caisse, panier, porte, coups) et les consignes courtes de la bulle restent ceux du jeu commun tant qu’Archipéo n’a pas habillé le métier. Archipéo apportera plus tard, sans changer le geste ni la place des éléments, le nom et le dessin de l’instrument de chaque lieu, la voix de l’habitant (réplique de retour, indice) et le décor du geste. Le foyer de la Forge reste une flamme pleine, sans fumée, étincelle ni éclair (consultant d’Archipéo, deuxième passe de la PR 1).
+
 ## 6. Le plan en lots
 
 Chaque lot est **une pull request livrable seule**. Aucun ne casse la vue simple (la liste des îles, qui prend aussi la place de la 3D sans WebGL) ni une sauvegarde, et aucun n’enfreint les règles dys.

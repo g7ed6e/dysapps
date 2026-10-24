@@ -1,5 +1,5 @@
 // Le geste « ranger » (GD-20, point 8, lot L4) : l'état pur d'une manche, sans vue.
-import { EMPTY_RANGEMENT, binOf, cancel, complete, drop, rangementResults, reset, sortSlots, take } from './rangement';
+import { EMPTY_RANGEMENT, binOf, cancel, complete, drop, lastIn, rangementResults, reset, sortSlots, take } from './rangement';
 
 describe('Ranger : toucher l’objet, puis le panier', () => {
   it('prendre, ranger, reprendre, reposer : rien ne se perd', () => {
@@ -46,5 +46,16 @@ describe('Ranger : toucher l’objet, puis le panier', () => {
     expect(sortSlots(4, 2)).toEqual({ objects: [1, 2, 3, 4], bins: [0, 5], count: 6 });
     expect(sortSlots(3, 2)).toEqual({ objects: [1, 2, 3], bins: [0, 4], count: 5 });
     expect(sortSlots(4, 3)).toEqual({ objects: [2, 3, 4, 5], bins: [0, 1, 6], count: 7 });
+  });
+});
+
+describe('Le dernier objet rangé dans un panier (GD-26)', () => {
+  it('suit l’ordre des dépôts, pas celui des objets', () => {
+    let s = drop(take(EMPTY_RANGEMENT, 'b'), 'caisse');
+    s = drop(take(s, 'a'), 'caisse');
+    expect(lastIn(s, 'caisse')).toBe('a');
+    s = drop(take(s, 'b'), 'caisse');
+    expect(lastIn(s, 'caisse')).toBe('b');
+    expect(lastIn(s, 'autre')).toBeNull();
   });
 });

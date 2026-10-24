@@ -1679,15 +1679,16 @@
   margin: 0;
   padding: 0;
 }
-/* Sur un écran bas (un téléphone couché), « Lire la suite » n'est que son icône (son nom dit), la bulle plus serrée : elle
-   tient en deux lignes, la consigne repliée et la phrase. */
+/* Dans la bulle, « Lire la suite » n'est que son icône (son nom dit) : à côté d'une consigne courte coupée, le mot la
+   coupait encore (directeur artistique, deuxième passe de la PR 1). Sur un écran bas (un téléphone couché), la bulle plus
+   serrée tient en deux lignes, la consigne repliée et la phrase. */
+.world-question .in-world.bulle .world-consigne-more-word {
+  display: none;
+}
 @media (max-height: 499px) {
   .world-question .quiz.in-world.scenette.bulle {
     padding-block: 3px;
     row-gap: 2px;
-  }
-  .world-question .in-world.bulle .world-consigne-more-word {
-    display: none;
   }
 }
 .world-question .quiz.in-world.simple-bas > *,

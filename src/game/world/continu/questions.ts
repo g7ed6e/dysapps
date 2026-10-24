@@ -203,10 +203,14 @@ export function placeInstruction(anyPlace: AnyPlaceId, exerciseId: string, level
   if (place !== 'ecluses') return reference;
   if (missionIs(exerciseId, 'equivalence')) return !scene || scene.kind === 'lockPair' ? PAIR_INSTRUCTION : reference;
   if (!missionIs(exerciseId, 'number-line')) return reference;
-  return level >= 2
-    ? 'Sur l’échelle, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’à l’eau.'
-    : 'Regarde le sas : en bas, le nombre de parts égales ; en haut, le nombre de parts pleines d’eau.';
+  return SAS_INSTRUCTION[level >= 2 ? 1 : 0];
 }
+
+/** Les consignes des Nénuphars aux Écluses : le sas au niveau 1, l'échelle au niveau 2. */
+export const SAS_INSTRUCTION = [
+  'Regarde le sas : en bas, le nombre de parts égales ; en haut, le nombre de parts pleines d’eau.',
+  'Sur l’échelle, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’à l’eau.',
+] as const;
 
 /**
  * La consigne courte d'une consigne de lieu (GD-26), dans la bulle : la consigne entière reste dans « Vue simple », lue
@@ -214,12 +218,12 @@ export function placeInstruction(anyPlace: AnyPlaceId, exerciseId: string, level
  */
 export function placeShortInstruction(placed: string): string | undefined {
   if (placed === ENCLOS_INSTRUCTION[0]) return 'Range chaque sujet dans son panier.';
-  if (placed === ENCLOS_INSTRUCTION[1]) return 'Range chaque sujet : attention aux pièges.';
+  if (placed === ENCLOS_INSTRUCTION[1]) return 'Range chaque sujet selon son verbe.';
   if (placed.startsWith(PHARE_SYLLABLES)) return 'Écoute, touche la cloche.';
-  if (placed === PAIR_INSTRUCTION) return 'Touche la plus grande fraction.';
+  if (placed === PAIR_INSTRUCTION) return 'Touche la plus grande, ou « Elles sont égales ».';
   if (placed === JAUGE_INSTRUCTION) return 'Lis le nombre où arrive l’eau.';
-  if (placed.startsWith('Sur l’échelle, compte')) return 'Compte les parts jusqu’à l’eau.';
-  if (placed.startsWith('Regarde le sas :')) return 'Regarde le sas, puis compte les parts.';
+  if (placed === SAS_INSTRUCTION[1]) return 'Compte les parts jusqu’à l’eau.';
+  if (placed === SAS_INSTRUCTION[0]) return 'Regarde le sas, puis compte les parts.';
   return undefined;
 }
 

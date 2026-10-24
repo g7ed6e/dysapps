@@ -399,8 +399,7 @@ const DIAL_HEARTH = { back: 1.1, w: 1.1, h: 0.45, d: 0.7, flame: 1.7 } as const;
 
 /**
  * La lueur réglée (GD-26, le geste « régler ») : sur le foyer (`DIAL_HEARTH`), la flamme monte d'un cran par coup, de la
- * braise (la dernière teinte du fondu) à la lueur de la gueule allumée, dès la moitié des coups ; à zéro
- * coup, le foyer froid.
+ * lueur de la gueule allumée dès le premier (directeur artistique, deuxième passe) ; à zéro coup, le foyer froid.
  */
 function dialFacets(c: Vec3, count: number, max: number): Facets {
   const b = new FacetBuilder();
@@ -414,11 +413,10 @@ function dialFacets(c: Vec3, count: number, max: number): Facets {
   const k = max > 0 ? Math.min(1, count / max) : 0;
   if (k > 0) {
     // La flamme, une pointe dressée face à la caméra (et à son revers, la caméra tourne) : sa hauteur suit les coups.
-    const color = FORGE_GLOW_DRAWN[k >= 0.5 ? 0 : 3];
     const w = H.w * 0.42;
     const top = H.flame * k;
     const flame = [[-w, 0], [w, 0], [w * 0.7, top * 0.55], [0, top], [-w * 0.7, top * 0.55]] as const;
-    for (const turn of [0, Math.PI]) drawPosed(b, { x, y: y + H.h, z, yaw: SCENE_START + turn }, (l) => l.plate({ x: 0, y: 0, z: 0 }, flame, color));
+    for (const turn of [0, Math.PI]) drawPosed(b, { x, y: y + H.h, z, yaw: SCENE_START + turn }, (l) => l.plate({ x: 0, y: 0, z: 0 }, flame, FORGE_GLOW_DRAWN[0]));
   }
   const f = b.build();
   for (let i = 0; i < f.positions.length; i += 3) {
