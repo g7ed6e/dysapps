@@ -7,7 +7,7 @@
 import * as THREE from 'three';
 
 /** La hauteur d'une bande, en pixels : seize bandes pour une image de 2048, huit pour une de 1024. */
-export const BAND_ROWS = 128;
+const BAND_ROWS = 128;
 
 interface Pending {
   texture: THREE.Texture;
@@ -122,7 +122,7 @@ export function createTextureUploads(renderer: THREE.WebGLRenderer, rows = BAND_
     },
     has: (texture) => queue.has(texture),
     clear: () => {
-      for (const p of [...queue.values()]) forget(p);
+      for (const p of queue.values()) forget(p);
     },
   };
 }

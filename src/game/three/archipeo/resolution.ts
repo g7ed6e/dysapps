@@ -6,9 +6,9 @@
 // fait descendre. Le repli d'urgence à 1, sous 22 images par seconde, reste à part (`SLOW_FRAME_MS` de ./scene.ts).
 
 /** Les crans du rapport de pixels, du plus fin au plus grossier. */
-export const RESOLUTION_STEPS = [2, 1.75, 1.5] as const;
+const RESOLUTION_STEPS = [2, 1.75, 1.5] as const;
 /** Une image médiane plus longue que cela (moins de 50 images par seconde) : la fenêtre est lente. */
-export const SLOW_MS = 20;
+const SLOW_MS = 20;
 /** Les images d'une fenêtre (environ une seconde et demie à 60 images par seconde). */
 export const WINDOW_FRAMES = 90;
 /** Les fenêtres lentes de suite avant de descendre d'un cran. */
