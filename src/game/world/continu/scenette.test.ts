@@ -10,7 +10,8 @@ import { startOf } from './paths';
 import { PLACES, placeById } from './plan6e';
 import { hasScenette } from './levelPlan';
 import { PLACES_5E } from './plan5e';
-import { BUILT_PLACES_4E } from './plan4e';
+import { BUILT_PLACES_4E, PLACES_4E } from './plan4e';
+import { PLACES_3E } from './plan3e';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
 import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, facingAnswerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
@@ -48,6 +49,7 @@ import {
   scenetteDeck,
   LAND_DECK,
   PHARE_SOCLE,
+  TIERS_LIEUX,
 } from './scenette';
 import { COLUMN } from './questions';
 import { heightAt, standingHeight } from './terrain';
@@ -1536,6 +1538,11 @@ describe('La réplique de fin à la dernière pose (reste des Fabriques)', () =>
 });
 
 describe('Le plan de scénette des 4e et 3e (GD-26, PR 2)', () => {
+  it('vaut pour tous les lieux à scénette des 4e et 3e, sauf les Roches', () => {
+    const expected = [...PLACES_4E, ...PLACES_3E].map((p) => p.id).filter((id) => hasScenette(id) && id !== 'roches');
+    expect([...TIERS_LIEUX].sort()).toEqual([...new Set(expected)].sort());
+  });
+
   const LIEUX = ['forge', 'etalon', 'dynamo', 'fanal', 'coupole', 'maquette', 'belvedere', 'palais'] as const;
 
   it('l’habitant se tient au tiers droit du cadre, Kéo au tiers gauche, un peu en retrait vers le fond', () => {

@@ -5,7 +5,7 @@
 // (« 10⁴ ») face à celle de l'item, une seule fois. À la Montée, le godet sur l'échelle graduée de « −3 + 5 » : il part
 // de −3 (`start`), descend sous zéro, un cran par appui, et « Valider » est actif dès le départ (rester sur −3 est une
 // réponse) ; l'aide ne montre que le départ (`aid` du réglage), jamais le bond ni l'arrivée.
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Icon } from '../../../components/Icon';
 import { frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
@@ -32,8 +32,9 @@ export interface Dial {
 /** Le réglage d'un item à régler, ou `null` s'il n'en a pas un d'entier. */
 export function dialOf(item: ExerciseItem | undefined): Dial | null {
   const d = item?.dial as Partial<Dial> | undefined;
-  if (!d || typeof d.min !== 'number' || typeof d.max !== 'number' || typeof d.answer !== 'number' || !Array.isArray(d.values)) return null;
-  const start = typeof d.start === 'number' ? d.start : 0;
+  const finite = (n: unknown): n is number => typeof n === 'number' && Number.isFinite(n);
+  if (!d || !finite(d.min) || !finite(d.max) || !finite(d.answer) || !Array.isArray(d.values)) return null;
+  const start = finite(d.start) ? d.start : 0;
   return { min: d.min, max: d.max, answer: d.answer, values: d.values.map(String), start, unit: d.unit === 'cran' ? 'cran' : 'coup', aid: d.aid };
 }
 
@@ -64,7 +65,8 @@ export function DialScreen({ items, answered, onAnswer, ruledOut }: ScreenProps)
   const spoken = String(item?.spoken ?? prompt);
   const answer = String(item?.answer ?? '');
   const short = typeof item?.shortInstruction === 'string' ? item.shortInstruction : undefined;
-  const aid = dial?.aid !== undefined ? aidData(dial.aid) : aidOf(item);
+  const dialAid = dial?.aid;
+  const aid = useMemo(() => (dialAid !== undefined ? aidData(dialAid) : aidOf(item)), [dialAid, item]);
   // Au départ, aucun coup (la lueur vaut 1), ou le godet sur le premier nombre. Au deuxième essai, le réglage tenté
   // reste, barré dans la correction.
   const start = dial?.start ?? 0;

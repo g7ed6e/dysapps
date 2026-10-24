@@ -479,12 +479,18 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   );
   // Le geste « ranger » : trois objets par manche (GD-26), deux au plus grand texte, un au plus grand texte sur un écran
   // bas (relecture de L4 : la manche tient au-dessus de « Valider ») ; fixé de même au premier découpage.
-  const sortCut = useRef<{ key: string; perRound: number } | null>(null);
+  // Sur un écran bas, des fiches en phrases vont une par manche (`longPerRound`), fixé de même.
+  const sortCut = useRef<{ key: string; perRound: number; longPerRound?: number } | null>(null);
   const sortsPerRound = useCallback(
-    (seed: string): number => {
+    (seed: string): { perRound: number; longPerRound?: number } => {
       const key = `${run}:${seed}`;
-      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: lowScreen ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : grandTexte ? RANGE_PER_GRAND_WIDE_ROUND : RANGE_PER_ROUND };
-      return sortCut.current.perRound;
+      if (sortCut.current?.key !== key)
+        sortCut.current = {
+          key,
+          perRound: lowScreen ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : grandTexte ? RANGE_PER_GRAND_WIDE_ROUND : RANGE_PER_ROUND,
+          longPerRound: lowScreen ? RANGE_PER_LONG_LOW_ROUND : undefined,
+        };
+      return sortCut.current;
     },
     [run, lowScreen, grandTexte],
   );
@@ -608,8 +614,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       screens: marks
         ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
         : ranges
-          ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed))
-          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed), lowScreen ? RANGE_PER_LONG_LOW_ROUND : undefined),
+          ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed).perRound)
+          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed).perRound, sortsPerRound(seed).longPerRound),
       Screen: marks ? BellScreen : ranges ? SortScreen : GestureScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
@@ -627,7 +633,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     bubbleLine,
     bellsPerRound,
     sortsPerRound,
-    lowScreen,
     bellTarget,
     grandTexte,
     plain,

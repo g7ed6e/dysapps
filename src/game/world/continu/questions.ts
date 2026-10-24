@@ -732,7 +732,7 @@ export function gestureBins(items: readonly object[]): RangeBin[] {
  */
 export function gestureScreens<T extends object>(items: readonly T[], perRound: number, longPerRound = perRound): T[][] {
   const sorting = items.filter((it) => itemGesture(it) === 'ranger');
-  const long = sorting.some((it) => String((it as { subject?: unknown }).subject ?? '').length > LONG_FICHE);
+  const long = sorting.some((it) => [(it as { subject?: unknown }).subject, (it as { shows?: unknown }).shows].some((t) => typeof t === 'string' && t.length > LONG_FICHE));
   const rounds = sorting.length ? rangeRounds(sorting, long ? Math.min(perRound, longPerRound) : perRound) : [];
   const out: T[][] = [];
   for (const it of items) {

@@ -851,9 +851,6 @@ function quayFloor(): Vec3 {
  */
 const TIERS_RETRAIT = 0.5;
 
-/** Les lieux des 4e et 3e dont le décor interdit ce plan : leur habitant et Kéo restent où leur fichier les met. */
-const TIERS_EXCLUS: readonly PlaceId[] = ['roches'];
-
 /** Le site `site` (ses places depuis le sol) au plan de scénette : habitant au tiers droit, Kéo au tiers gauche, en retrait. */
 function tiersOf<S extends Pick<ScenetteSite, 'keo' | 'habitant' | 'subject' | 'start'>>(site: S): S & { frameDx: number } {
   const start = site.start ?? 0;
@@ -873,13 +870,16 @@ function tiersOf<S extends Pick<ScenetteSite, 'keo' | 'habitant' | 'subject' | '
   };
 }
 
-/** Les lieux des 4e et 3e : le plan de scénette leur est commun. */
-const TIERS_LIEUX = new Set<PlaceId>(['loge', 'terminus', 'orgues', 'dynamo', 'herbier', 'roches', 'jonction', 'veillee', 'basilique', 'forge', 'soute', 'porte', 'etalon', 'gabarit', 'chariot', 'manufacture', 'belvedere', 'grenier', 'abri', 'jardin', 'kiosque', 'maquette', 'tribune', 'douane', 'ermitage', 'standard', 'rampe', 'fanal', 'ondes', 'lutherie', 'coupole', 'palais']);
+/**
+ * Les lieux des 4e et 3e : le plan de scénette leur est commun. Sauf les Roches, dont le toit du décor interdit de
+ * déplacer la géologue : leur habitant et Kéo restent où leur fichier les met (un test compare la liste aux lieux).
+ */
+export const TIERS_LIEUX = new Set<PlaceId>(['loge', 'terminus', 'orgues', 'dynamo', 'herbier', 'jonction', 'veillee', 'basilique', 'forge', 'soute', 'porte', 'etalon', 'gabarit', 'chariot', 'manufacture', 'belvedere', 'grenier', 'abri', 'jardin', 'kiosque', 'maquette', 'tribune', 'douane', 'ermitage', 'standard', 'rampe', 'fanal', 'ondes', 'lutherie', 'coupole', 'palais']);
 
 /** La scénette d'un lieu du rivage nord (lot L7) : celle de son fichier (placeArt.ts), son sol au-dessus de la scène. */
 function northSite(place: PlaceId): ScenetteSite {
   const { rise, ...art } = placeArt(place)!.site;
-  const site = TIERS_LIEUX.has(place) && !TIERS_EXCLUS.includes(place) ? tiersOf(art) : art;
+  const site = TIERS_LIEUX.has(place) ? tiersOf(art) : art;
   return {
     floor: () => {
       const s = sceneSpot(place);

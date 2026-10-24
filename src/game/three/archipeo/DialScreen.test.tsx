@@ -101,3 +101,16 @@ it('dit le trou d’une fiche « blanc », « blank » en anglais', () => {
   expect(spokenFiche('Il va mang… à midi.')).toBe('Il va mang blanc à midi.');
   expect(spokenFiche('I … got a dog.', 'en')).toBe('I blank got a dog.');
 });
+
+it('chaque réglage a une valeur par position, la réponse dans ses bornes, et l’aide de la Montée sans l’arrivée', () => {
+  for (const gen of [powerOfTenReverse, addRelatifs, subRelatifs])
+    for (let k = 0; k < 40; k++) {
+      const x = gen(Math.random);
+      const d = dialOf(x)!;
+      const lowest = Math.min(d.start, d.min);
+      expect(d.values).toHaveLength(d.max - lowest + 1);
+      expect(d.answer).toBeGreaterThanOrEqual(d.min);
+      expect(d.answer).toBeLessThanOrEqual(d.max);
+      if (d.aid) expect((d.aid as { props: { points: number[] } }).props.points).not.toContain(d.answer);
+    }
+});
