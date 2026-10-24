@@ -167,8 +167,9 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
       setStatus(`Touche d’abord ${gesture === 'ranger' ? 'une' : 'un'} ${words.thing}, puis ${gesture === 'ranger' ? 'sa' : 'son'} ${words.bin.toLowerCase()}.`);
       return;
     }
-    setState(drop(state, bin.id));
-    setStatus(`${subjectOf(held)} : rangé dans ${bin.label}.`);
+    const next = drop(state, bin.id);
+    setState(next);
+    setStatus(`${subjectOf(held)} : rangé dans ${bin.label}.${hand && complete(next, keys) ? ' Tout est rangé, valide.' : ''}`);
     focusNext.current = true;
   };
   const validate = () => {
@@ -236,6 +237,8 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
           </li>
         );
       })}
+      {/* Tout est rangé (GD-26) : la bulle vide dit la suite, à la place des fiches (consultant UX UI, PR 2). */}
+      {hand && done && !answered && <li className="world-hand-fini">{gesture === 'placer' ? 'Le panier est posé, valide.' : 'Tout est rangé, valide.'}</li>}
     </ul>
   );
   const binList = (

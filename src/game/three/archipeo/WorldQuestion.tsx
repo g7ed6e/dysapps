@@ -289,23 +289,14 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       return;
     }
     if (offer) return;
-    // Au plus grand texte, un carnet qui ne montre pas trois lignes de son rappel (référent dys, PR 1 de GD-26) : « Vue
-    // simple », où le rappel est entier.
+    // Une figure sans liste (les rangées de jetons des Quais) qui déborde du carnet : sa légende est sous le chevron,
+    // coupée (consultant UX UI) ; « Vue simple », une fois. Un rappel en lignes, lui, défile sous son chevron : le carnet
+    // est assez large pour en montrer trois lignes (PR 2 de GD-26), jamais « Vue simple » au seul motif du grand texte.
     const carnet = root.querySelector<HTMLElement>('.world-carnet');
-    if (bulle && grandTexte && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && !autoSimple.current) {
-      // La hauteur d'une ligne du rappel : celle de son premier point (« normal » se mesure sur lui, jamais un nombre fixe).
-      const first = carnet.querySelector<HTMLElement>('li') ?? carnet;
-      const lh = parseFloat(getComputedStyle(first).lineHeight);
-      const line = Number.isFinite(lh) ? lh : parseFloat(getComputedStyle(first).fontSize) * 1.5;
-      // Les lignes du rappel qu'on voit sous son titre : du haut de la première au bas du carnet.
-      const shown = (carnet.getBoundingClientRect().bottom - first.getBoundingClientRect().top) / line;
-      // Une figure sans liste (les rangées de jetons des Quais) qui déborde : sa légende est sous le chevron, coupée
-      // (consultant UX UI, deuxième passe) ; « Vue simple » aussi.
-      if (shown < 3 || first === carnet) {
-        autoSimple.current = true;
-        openSimple();
-        return;
-      }
+    if (bulle && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && !carnet.querySelector('li') && !autoSimple.current) {
+      autoSimple.current = true;
+      openSimple();
+      return;
     }
     // Une bulle plus haute que sa place (35 % de l'écran, GD-26) : une phrase coupée par son bas mène à « Vue simple ».
     if (!column || !overflows(column)) return;
@@ -522,7 +513,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
             title={consigneOpen ? 'Replier la consigne' : 'Lire la suite de la consigne'}
             onClick={() => setConsigneOpen((open) => !open)}
           >
-            <Icon name="book" />
+            {/* Dans la bulle, le chevron du dépli : le livre y est celui de l'aide (GD-26 ; consultant UX UI, PR 2). */}
+            <Icon name={bulle ? (consigneOpen ? 'chevronDown' : 'chevronRight') : 'book'} />
             <span className="world-consigne-more-word">{consigneOpen ? 'Replier' : 'Lire la suite'}</span>
           </button>
         )}

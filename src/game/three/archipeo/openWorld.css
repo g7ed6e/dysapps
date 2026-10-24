@@ -1615,6 +1615,28 @@
 .world-question .in-world:not(.low) .world-question-prompt > .aid.world-question-aid.world-carnet {
   min-height: 0;
 }
+/* Le titre du rappel ouvre sa première ligne (« Classer le vivant : On classe… ») au lieu de prendre la sienne : une
+   ligne de règle de plus dans le carnet (piste 1 du consultant UX UI, PR 2 de GD-26). */
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) figcaption {
+  display: inline;
+  margin: 0;
+}
+/* Les deux-points collés au titre (espace insécable) : jamais seuls en tête de ligne. Un lexique d'anglais, dont chaque
+   ligne porte son bouton Écouter, garde son titre sur sa ligne. */
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) figcaption::after {
+  content: '\00a0: ';
+}
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) ul {
+  display: inline;
+  padding: 0;
+}
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) li:first-child {
+  display: inline;
+}
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) li:not(:first-child) {
+  display: list-item;
+  margin-left: 1.2rem;
+}
 .world-question .world-carnet > * + * {
   margin-top: 0.5rem;
 }
@@ -3224,6 +3246,13 @@
 .world-question .in-world.bulle .world-question-prompt > .world-answers.world-hand {
   grid-column: 1;
   grid-row: 1;
+}
+/* « Tout est rangé, valide. » : à la hauteur d'une fiche, la bulle ne change pas de taille. */
+.world-question .world-answers.world-hand .world-hand-fini {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  font-weight: 700;
 }
 .world-question .world-answers.world-hand .world-answer {
   position: relative;

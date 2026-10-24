@@ -541,8 +541,12 @@ export const SCENETTE_LAYOUT = {
   bubbleLow: 0.4,
   /** La largeur du rappel, à gauche de la scène sous la bulle, en part de la largeur (GD-26). */
   aidShare: 0.3,
-  /** Sur un écran bas, où le carnet descend jusqu'en bas et la rangée se tient à sa droite. */
-  aidShareLow: 0.26,
+  /**
+   * Au plus grand texte, et sur un écran bas, où le carnet descend jusqu'en bas et la rangée se tient à sa droite : plus
+   * large, pour que trois lignes du rappel se voient au moins (piste 1 du consultant UX UI, PR 2 de GD-26).
+   */
+  aidShareGrand: 0.4,
+  aidShareLow: 0.34,
   /**
    * Au-dessus des étiquettes de la rangée, la place de leur repère (le panier, la porte, « tenu ») : le carnet s'arrête
    * avant, jamais recouvert (relectures de la PR 1 de GD-26 : UX UI, référent dys).
@@ -743,7 +747,7 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   // Un mot coupé dans son étiquette (une réponse en phrase, aux Ondes) : les étiquettes s'élargissent d'abord.
   // Sur un écran bas, le carnet descend jusqu'en bas, à gauche, et la rangée se tient à sa droite : sous la bulle, il
   // n'aurait que la hauteur d'une ligne.
-  const aidRight = edge + (base.low ? S.aidShareLow : S.aidShare) * width;
+  const aidRight = edge + (base.low ? S.aidShareLow : needs.grand ? S.aidShareGrand : S.aidShare) * width;
   const carnetDown = base.low && needs.aid;
   const { slots, objectHeight } = rowSlots(n, carnetDown ? aidRight + L.gap : S.rowEdge, rowRight, S.row.top * height, rowBottom, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
   // Sur un écran bas, la bulle passe sous « Vue simple » et la pause, sur toute la largeur : à côté d'eux, la phrase y
