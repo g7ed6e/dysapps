@@ -61,6 +61,9 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level, lang 
   // Au plus grand texte sur un écran bas, en « Vue simple » : « Écouter les sujets » passe dans la bande de « Valider »,
   // comme les cloches du Phare ; la règle va sous la liste.
   const compact = simple && lowScreen && texteGrand(settings);
+  // En « Vue simple » sur un écran bas, la carte de la règle passe sous les caisses et les fiches : à l'ouverture, on voit
+  // ce qu'il faut ranger avant « Valider » (référent dys, PR 2 de GD-26).
+  const aidBelow = simple && lowScreen;
   useStopOnLeave();
   const gesture = itemGesture(items[0]);
   const words = WORDS[gesture === 'régler' ? 'enclos' : (gesture ?? 'enclos')];
@@ -310,7 +313,7 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level, lang 
           </div>
           {hand && subjectList}
           {simple && rule}
-          {aid && !hand && <PlaceAid aid={aid} layout={layout} simple={simple} />}
+          {aid && !hand && !aidBelow && <PlaceAid aid={aid} layout={layout} simple={simple} />}
         </div>
       )}
       {aid && hand && layout.aid && (
@@ -337,7 +340,7 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level, lang 
           {binList}
         </>
       )}
-      {compact && aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
+      {aidBelow && aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
       <p className="visually-hidden" role="status">
         {status}
       </p>
