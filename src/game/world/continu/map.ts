@@ -293,7 +293,7 @@ export const MAP_EDGE = 16;
  * laissaient que 190 px sur 390, presque tous les lieux étaient « hors écran » et la vue reculait au plus loin). Les
  * étiquettes restent entières dans l'écran d'elles-mêmes (`MAP_EDGE`).
  */
-export const MAP_LABEL_SIDE = { share: 0.1, most: 100 } as const;
+const MAP_LABEL_SIDE = { share: 0.1, most: 100 } as const;
 
 /** La bande gardée à gauche et à droite de la Carte, en pixels, pour un écran de `width` pixels de large. */
 export const mapLabelSide = (width: number): number => Math.min(MAP_LABEL_SIDE.most, Math.round(width * MAP_LABEL_SIDE.share));
