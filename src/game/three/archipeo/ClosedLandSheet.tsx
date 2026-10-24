@@ -46,6 +46,9 @@ export function afterLabel(land: LinkedLand, first: LinkedLand): string {
   return `${landById(land).name} : relie d'abord ${inSentence(landById(first).name)}.`;
 }
 
+/** L'action d'une terre fermée qu'on peut relier, dans la bulle du monde quand rien d'autre n'attend : « Relier le Bastion ». */
+export const linkActionLabel = (land: LinkedLand): string => `Relier ${inSentence(landById(land).name)}`;
+
 /** La phrase d'une terre qui devient reliable, celle d'avant reliée : « Le pont des Crêtes peut être rebâti. » */
 export const linkableLabel = (land: LinkedLand): string => {
   const name = landById(land).bridgeName ?? '';

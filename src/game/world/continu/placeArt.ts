@@ -124,8 +124,8 @@ export interface PlaceArt {
    * bâti, au-dessus de `look` (depuis le centre du lieu : le bord du haut le plus près d'elle). Absent : la caméra qui suit.
    * `top` : une hauteur fixe à cadrer, depuis le pied du lieu, au lieu de son haut bâti : un repère au-delà de lui (à
    * l'Oracle, lot 13b, le haut de la tour du Donjon, au-dessus de sa paroi basse). `maxBack` : le recul le plus grand
-   * qu'elle prend quand le haut du lieu et Kéo ne tiennent pas ensemble avec `back` (au téléphone couché, ou sous la
-   * phrase « Aucune mission » ; `fitArrivalBack`, ./camera.ts) : le Fanal du 3e restauré, relecture du directeur
+   * qu'elle prend quand le haut du lieu et Kéo ne tiennent pas ensemble avec `back` (au téléphone couché, ou sous une
+   * phrase au-dessus de « Y aller », le rappel des révisions ou l'action d'une terre à relier ; `fitArrivalBack`, ./camera.ts) : le Fanal du 3e restauré, relecture du directeur
    * artistique avant la PR, la lanterne coupée. Absent : `back`, toujours.
    */
   arrivalView?: { look: Vec2; back: number; top?: number; maxBack?: number };
