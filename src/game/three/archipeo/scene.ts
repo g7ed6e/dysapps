@@ -1030,7 +1030,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   seaTexture.magFilter = THREE.LinearFilter;
   seaTexture.minFilter = THREE.LinearFilter;
   seaTexture.needsUpdate = true;
-  const seaSize = 2000;
+  // Assez grand pour la Carte la plus reculée (au téléphone en portrait, au plus grand texte, son haut voyait le ciel au-delà
+  // d'un plan de 2 000 : retouche 2 des restes du monde ouvert du 4e) ; le suivi n'en voit jamais le bord (`followFar`).
+  const seaSize = 8000;
   const seaGeometry = keep(new THREE.PlaneGeometry(seaSize, seaSize).rotateX(-Math.PI / 2));
   // Les coordonnées de l'image suivent x et z du monde : le carré de l'image au milieu, son bord étiré au-delà.
   const uv = seaGeometry.getAttribute('uv') as THREE.BufferAttribute;

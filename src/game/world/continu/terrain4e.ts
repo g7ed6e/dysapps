@@ -172,7 +172,15 @@ const SLOPE_UP = 0.97;
  * Un talus des Coteaux moins droit que ça (une pente de plus de 32° environ) montre la terre noire, au soleil ; les
  * Coteaux n'ont presque pas de pente au-delà de `ROCK_UP` (retouche 1 des restes du monde ouvert du 4e, point 1).
  */
-const COTEAUX_TALUS_UP = 0.85;
+const COTEAUX_TALUS_UP = 0.8;
+/**
+ * Un talus des Coteaux ne montre la terre noire que sur une tache (`patch`) au-dessus de ça : des plaques, pas tout le
+ * talus ; ailleurs, l'olive (retouche 2 des restes du monde ouvert du 4e, directeur artistique : la terre noire à l'écran
+ * ne se distinguait plus du cône, le volcan semblait descendre jusqu'à Kéo).
+ */
+const COTEAUX_TALUS_PATCH = 0.5;
+/** Au pied du basalte du cône, une lisière d'olive de cette largeur, sans terre noire (même retouche). */
+const CONE_FOOT_OLIVE = 3;
 /** Au-dessus de cette tache (`patch`), le sol à plat des Coteaux est de terre noire (même retouche). */
 const COTEAUX_EARTH_PATCH = 0.8;
 /** Le haut du volcan : au-dessus de cette hauteur du cône, le basalte. */
@@ -231,6 +239,13 @@ function flat4e(x: number, z: number, h: number): number {
   return k < 0.68 ? COLORS_4E.soil : COLORS_4E.soilSun;
 }
 
+/** Près du pied du basalte du cône (là où il passe au-dessus de `ROCK_FROM`), à moins de `CONE_FOOT_OLIVE`. */
+function nearConeFoot(p: Vec2): boolean {
+  const { crater, radius, height } = VOLCANO_4E;
+  const d = Math.hypot(p.x - crater.x, p.z - crater.z);
+  return d < radius * (1 - ROCK_FROM / height) + CONE_FOOT_OLIVE;
+}
+
 /** La teinte à l'ombre de chaque aplat du sol (jamais presque noire). */
 const SHADE_OF: Readonly<Record<number, number>> = {
   [COLORS_4E.soil]: COLORS_4E.soilShade,
@@ -267,15 +282,16 @@ function facet4e(a: P3, b: P3, c: P3): number {
   // Les talus des Coteaux, dès une pente de 32° environ (`COTEAUX_TALUS_UP`), montrent la terre noire sous l'herbe, au
   // soleil ; à l'ombre, l'olive sombre (la terre noire y tomberait presque noire à l'écran). Hors bassin, coulée, sable et
   // ravin : là où le sol à plat est l'olive ou sa terre noire (retouche 1 des restes du monde ouvert du 4e, point 1).
+  // Seulement par plaques (`COTEAUX_TALUS_PATCH`), jamais au pied du cône (`CONE_FOOT_OLIVE`) : retouche 2.
   if (up < COTEAUX_TALUS_UP && (base === COLORS_4E.burnt || base === COLORS_4E.burntSun || base === COLORS_4E.blackEarthTop) && h >= 0.4 && bassinClearance(p) >= 2 && couleeClearance(p) >= 2 && ravinClearance(p) > 0.4)
-    return sunny ? COLORS_4E.blackEarth : COLORS_4E.burntShade;
+    return sunny && patch(x, z) >= COTEAUX_TALUS_PATCH && !nearConeFoot(p) ? COLORS_4E.blackEarth : COLORS_4E.burntShade;
   if (up < ROCK_UP) {
     if (bassinClearance(p) < 2) return sunny ? COLORS_4E.stoneSun : COLORS_4E.stone;
     if (couleeClearance(p) < 2) return COLORS_4E.crustShade;
     if (h < 0.4) return COLORS_4E.sand;
     if (volcanoHeight(p) > ROCK_FROM) return sunny ? COLORS_4E.basaltSun : COLORS_4E.coneShade;
     // Les talus raides des Coteaux que la branche ci-dessus laisse (au bord de la grève) : de même.
-    if (insidePolygon(p, COTEAUX_AREA) && ravinClearance(p) > 0.4) return sunny ? COLORS_4E.blackEarth : COLORS_4E.burntShade;
+    if (insidePolygon(p, COTEAUX_AREA) && ravinClearance(p) > 0.4) return sunny && patch(x, z) >= COTEAUX_TALUS_PATCH && !nearConeFoot(p) ? COLORS_4E.blackEarth : COLORS_4E.burntShade;
     return sunny ? COLORS_4E.rockSun : COLORS_4E.rockShade;
   }
   if (up >= SLOPE_UP || base === COLORS_4E.sand || base === COLORS_4E.gully) return base;

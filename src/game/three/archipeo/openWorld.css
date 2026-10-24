@@ -163,11 +163,12 @@
 /* « Relier le Bastion » : un bouton secondaire (fond et bord de bouton, pas ceux d'une bulle), à 48 px au moins, posé
    comme la bulle ; il ouvre la fiche de la terre. Son texte, plafonné à 24 px comme le mot sous l'icône d'un bouton du
    monde, passe à la ligne entre deux mots, jamais au milieu d'un mot (au plus grand texte, en 390 × 844, « Bastion » se
-   coupait entre les colonnes). */
+   coupait entre les colonnes). 8 px de marge de chaque côté : il ne touche pas la colonne de gauche en 390 (consultant
+   UX UI, deuxième passe). */
 .world-stage .open-world-go .button.open-world-go-link {
   min-height: 48px;
   min-width: 0;
-  max-width: min(var(--open-world-bulle, 90vw), 24rem);
+  max-width: min(calc(var(--open-world-bulle, 90vw) - 16px), 24rem);
   padding: 0.3rem 1rem;
   border-color: var(--ink);
   background: var(--button-bg);
