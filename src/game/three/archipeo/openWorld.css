@@ -3345,3 +3345,12 @@
 .world-question .world-carnet .number-line text {
   font-size: 21px;
 }
+
+/* En « Vue simple » sur un écran bas, la règle passe sous les caisses et les fiches (référent dys, PR 2 de GD-26) :
+   après elles dans l'ordre affiché aussi, les listes ayant leur propre rang (order: 2). */
+.world-question .in-world.simple .world-sort > .world-question-aid {
+  order: 3;
+}
+.world-question .in-world.simple .world-sort > .world-simple-validate {
+  order: 4;
+}

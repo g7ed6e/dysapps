@@ -290,10 +290,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     }
     if (offer) return;
     // Une figure sans liste (les rangées de jetons des Quais) qui déborde du carnet : sa légende est sous le chevron,
-    // coupée (consultant UX UI) ; « Vue simple », une fois. Un rappel en lignes, lui, défile sous son chevron : le carnet
-    // est assez large pour en montrer trois lignes (PR 2 de GD-26), jamais « Vue simple » au seul motif du grand texte.
+    // coupée (consultant UX UI) ; « Vue simple », une fois. Sur tablette, un rappel en lignes défile sous son chevron : le
+    // carnet est assez large pour en montrer trois lignes (PR 2 de GD-26). Sur un téléphone, une règle coupée ouvre
+    // « Vue simple », une fois, où elle se lit entière (choix du mainteneur, 24 octobre 2026).
     const carnet = root.querySelector<HTMLElement>('.world-carnet');
-    if (bulle && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && !carnet.querySelector('li') && !autoSimple.current) {
+    if (bulle && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && (lowScreen || !carnet.querySelector('li')) && !autoSimple.current) {
       autoSimple.current = true;
       openSimple();
       return;
@@ -318,7 +319,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (intro) setWiden(widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, bulle]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, bulle, lowScreen]);
   // La barre du haut change de bouton à la bascule (« Scène », « Vue simple ») : le focus, resté sur le bouton parti,
   // passe à celui qui le remplace.
   useEffect(() => {
