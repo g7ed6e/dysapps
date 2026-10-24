@@ -399,14 +399,17 @@ const REPAIR_TRIES = 12;
  *    plus proche à `NEAR.reach` au plus, d'abord hors de la place du nom d'une terre fermée, sous son cadenas. Un nom qui
  *    ne tient nulle part près de son lieu se tait : sa pastille se réduit à son icône (`name: false`, le nom et l'état
  *    restent dits par le bouton), jamais un nom coupé, posé sur un autre ni relié de loin par un trait ;
- * 3. la pastille de Kéo, près de son point, sans couvrir aucun nom ouvert : les noms qui suivent l'évitent ;
+ * 3. la pastille de Kéo, près de son point, sans couvrir aucun nom ouvert ni aucune pastille, plus loin s'il le faut
+ *    (deux fois `NEAR.reach`, puis tout l'écran) : les noms qui suivent l'évitent ;
  * 4. le nom de chaque terre fermée, sous son cadenas, glissé de côté au besoin, descendu jusqu'à `NEAR.reach`, au-dessus
  *    en dernier recours, sinon tu (le cadenas reste ; son toucher ouvre la fiche de la terre) ;
  * 5. les lieux des terres fermées, en pastilles d'icône sans nom (`pale`) ;
  * 6. « Toi », à côté de la pastille de Kéo, seulement s'il ne couvre rien, sinon la pastille seule.
  * Si les noms ouverts peuvent se poser autrement, tous près de leur lieu, en laissant à une terre fermée la place de son
  * nom, la pose est refaite avec cette place gardée (`repair`, la reprise ; sur la tablette, en texte normal, le nom de
- * l'Imprimerie prenait la place de celui des Filets). Sans `repair` (les vues essayées de `reframeMap`, qui ne comptent que
+ * l'Imprimerie prenait la place de celui des Filets) ; s'ils ne le peuvent pas, le nom de la terre fermée garde quand
+ * même sa place, et le moins possible de noms ouverts se taisent. Aucune pastille ne passe sous un bouton ni sous un nom,
+ * même en dernier recours : elle s'éloigne plutôt de son lieu. Sans `repair` (les vues essayées de `reframeMap`, qui ne comptent que
  * les lieux ouverts), pas de reprise.
  */
 export function layoutMapLabels(labels: readonly MapLabel[], obstacles: readonly Rect[] = [], screen = { width: Infinity, height: Infinity }, repair = true): MapLabelSpot[] {
@@ -430,6 +433,32 @@ export function layoutMapLabels(labels: readonly MapLabel[], obstacles: readonly
         break;
       }
     }
+  }
+  // Un nom de terre fermée encore tu reprend une place sous son cadenas (au-dessus de lui seulement s'il n'y en a aucune),
+  // et le nom d'un lieu ouvert qui la prenait se pose ailleurs ou se tait (sa pastille reste, son nom est dit par le
+  // bouton et écrit dans « Lieux ») ; parmi les places essayées, celle qui tait le moins de noms ouverts (consultant
+  // d'Archipéo et consultant UX UI, relecture des restes du 4e : au plus grand texte, en 1024 × 768, « Le Bastion »
+  // disparaissait, et l'élève ne retrouvait nulle part sur la Carte la terre que la bulle lui dit de relier).
+  tries = REPAIR_TRIES;
+  // Le lieu suggéré, l'Escale et les lieux épinglés gardent leur nom, toujours.
+  const kept = labels.filter((l) => l.kind === 'open' && (l.first || l.pinned) && best.namedOpen.has(l.id)).map((l) => l.id);
+  for (const id of best.mute) {
+    if (!best.mute.includes(id)) continue;
+    const all = best.room(id);
+    // Le coût d'une place : les noms ouverts tus, puis la pastille de Kéo poussée plus loin de son point (libre toujours).
+    let pick: { next: typeof best; cost: number } | undefined;
+    for (const side of [all.filter((c) => c.drop >= 0), all.filter((c) => c.drop < 0)]) {
+      for (const place of side) {
+        if (tries-- <= 0) break;
+        const next = run(new Map(best.reserved).set(id, place));
+        if (next.closedNamed <= best.closedNamed || kept.some((k) => !next.namedOpen.has(k))) continue;
+        const cost = [...best.namedOpen].filter((named) => !next.namedOpen.has(named)).length * 2 + Math.max(0, next.keoSqueezed - best.keoSqueezed);
+        if (!pick || cost < pick.cost) pick = { next, cost };
+        if (!cost) break;
+      }
+      if (pick) break;
+    }
+    if (pick) best = pick.next;
   }
   return best.spots;
 }
@@ -524,15 +553,22 @@ function attemptLayout(labels: readonly MapLabel[], obstacles: readonly Rect[], 
       // « La Carte au plus grand texte », directeur artistique : une portée au-delà de 80 px est refusée) ; le nom et l'état
       // restent dits par le bouton.
       const small = places(MAP_COMPACT, MAP_COMPACT);
-      // Une pastille pâle reste près de son lieu ; celle d'un lieu ouvert le cherche dans tout l'écran avant de toucher une
-      // autre étiquette.
-      r = small.find(clear) ?? near(l, MAP_COMPACT, MAP_COMPACT, clear) ?? (l.pale ? undefined : anywhere(screen, l, { w: MAP_COMPACT, h: MAP_COMPACT }, clear));
+      // Une pastille pâle reste près de son lieu (deux fois `NEAR.reach` au plus, plutôt que couvrir une autre pastille et
+      // son état) ; celle d'un lieu ouvert le cherche dans tout l'écran avant de toucher une autre étiquette.
+      r = small.find(clear) ?? near(l, MAP_COMPACT, MAP_COMPACT, clear) ?? (l.pale ? near(l, MAP_COMPACT, MAP_COMPACT, clear, 2 * NEAR.reach) : anywhere(screen, l, { w: MAP_COMPACT, h: MAP_COMPACT }, clear));
       if (!r) {
-        // Au pire, il peut toucher une autre pastille d'icône, jamais un bouton de la page, un cadenas, un nom montré ni
-        // la pastille de Kéo.
+        // Plus serrée : collée à une autre étiquette, sans écart, sur aucune, près de son lieu, puis un peu plus loin, puis
+        // où que ce soit dans l'écran ; au pire, sur une autre pastille d'icône, jamais sur un bouton de la page, un
+        // cadenas, un nom montré ni la pastille de Kéo, plutôt que coupée par un nom ou sous la colonne des boutons
+        // (consultant UX UI et référent dys, relecture des restes du 4e : au 5e en 390 × 844, une pastille passait sous la
+        // colonne ; au 4e, une pastille pâle sous « La Jonction », trois autres l'une sur l'autre). Sur un écran sans
+        // taille seulement (les tests), hors des boutons, puis à sa première place.
+        const size = { w: MAP_COMPACT, h: MAP_COMPACT };
+        const snug = (c: Rect) => onScreen(c) && !placed.some((p) => (p.id === null ? clash(p.r, c) : cross(p.r, c)));
         const off = (c: Rect) => onScreen(c) && !placed.some((p) => (p.id === null || !compact.has(p.id)) && cross(p.r, c));
         const touch = (c: Rect) => onScreen(c) && !obstacles.some((o) => clash(o, c));
-        r = small.find(off) ?? near(l, MAP_COMPACT, MAP_COMPACT, off) ?? small.find(touch) ?? near(l, MAP_COMPACT, MAP_COMPACT, touch) ?? small[0];
+        const around = (ok: (c: Rect) => boolean) => small.find(ok) ?? near(l, size.w, size.h, ok) ?? near(l, size.w, size.h, ok, 2 * NEAR.reach);
+        r = around(snug) ?? anywhere(screen, l, size, snug) ?? around(off) ?? anywhere(screen, l, size, off) ?? small.find(touch) ?? near(l, size.w, size.h, touch) ?? small[0];
       }
       compact.add(l.id);
     }
@@ -544,9 +580,10 @@ function attemptLayout(labels: readonly MapLabel[], obstacles: readonly Rect[], 
   // avant les noms des terres fermées et les lieux pâles, qui l'évitent comme un obstacle de plus (retouche 1 du lot 1 du
   // 3e, consultant UX UI et référent dys : au téléphone, au plus grand texte, « Toi » cachait « Le Kiosque » ; aux quatre
   // niveaux depuis la piste B).
-  // Sans place libre à `NEAR.reach` de son point (Kéo cerné de noms : l'Auberge, relecture des restes du 5e), sa pastille
-  // passe à cheval sur le bord du nom de son lieu (le lieu ouvert le plus proche de son point), jamais sur le nom d'un
-  // voisin.
+  // Sans place libre à `NEAR.reach` de son point (Kéo cerné de noms), sa pastille va à la place libre la plus proche,
+  // jusqu'à deux fois `NEAR.reach`, puis où que ce soit dans l'écran : jamais sur une pastille ni sur un nom, pas même
+  // celui de son lieu (consultant UX UI, référent dys et directeur artistique, relecture des restes du 4e : en 390 × 844,
+  // elle couvrait une pastille et son état ; en 1024 × 768 au plus grand texte, elle touchait « La Forge »).
   const keoDisc = new Map<string, Rect>();
   // Kéo sans place libre près de son point : la reprise ne garde pas une place à un nom de terre qui le serrerait.
   let keoSqueezed = 0;
@@ -557,27 +594,16 @@ function attemptLayout(labels: readonly MapLabel[], obstacles: readonly Rect[], 
       .filter((x) => x.kind === 'open' && !x.pale && Math.hypot(x.x - l.x, x.y - l.y) <= NEAR.reach)
       .sort((a, b) => Math.hypot(a.x - l.x, a.y - l.y) - Math.hypot(b.x - l.x, b.y - l.y))[0]?.id;
     ownOf.set(l.id, own);
-    const ownBox = placed.find((p) => own !== undefined && p.id === own)?.r;
     const at = (top: number) => rect(l.x - MAP_KEO_DISC / 2, top, MAP_KEO_DISC, l.h);
     const fixedAt = [at(l.y), at(l.y - l.h)];
     const ok = (r: Rect) => onScreen(r) && uncovered(r, own ?? l.id) && free(r);
-    const mine = (r: Rect) => onScreen(r) && uncovered(r, own ?? l.id) && !placed.some((p) => (p.id === null || p.id !== own) && clash(p.r, r));
-    const edge = (r: Rect) => {
-      const cx = (r.left + r.right) / 2,
-        cy = (r.top + r.bottom) / 2;
-      return mine(r) && !(ownBox && cx > ownBox.left && cx < ownBox.right && cy > ownBox.top && cy < ownBox.bottom);
-    };
     const find = (test: (r: Rect) => boolean, reach: number, step?: number) => fixedAt.find(test) ?? near(l, MAP_KEO_DISC, l.h, test, reach, step);
-    // Plus serré encore : sur une pastille d'icône plutôt que sur un nom.
-    const icon = (r: Rect) => onScreen(r) && !placed.some((p) => (p.id === null || (p.id !== own && !compact.has(p.id))) && clash(p.r, r)) && (!ownBox || !cross(rect(ownBox.left + MAP_KEO_DISC / 2, ownBox.top, Math.max(0, ownBox.right - ownBox.left - MAP_KEO_DISC), ownBox.bottom - ownBox.top), r));
     // Une place libre d'abord, cherchée au pas de 4 px en dernier : sur un téléphone en portrait, entre deux noms, l'écart
     // d'une pastille tient parfois entre deux pas de la grille.
     const spare = find(ok, MAP_KEO_DISC) ?? find(ok, NEAR.reach) ?? find(ok, NEAR.reach, KEO_FINE_STEP);
     if (!spare) keoSqueezed++;
-    // Sinon à cheval sur le bord du nom de son lieu, ou sur une pastille d'icône ; puis libre un peu plus loin (deux fois
-    // `NEAR.reach`) plutôt qu'au milieu d'un nom (au téléphone en portrait, au plus grand texte, le nom du Belvédère suggéré
-    // sous Kéo, au 3e) ; au pire sur le nom de son lieu, puis de son côté fixe.
-    const r = spare ?? find(edge, NEAR.reach) ?? find(icon, NEAR.reach) ?? find(ok, 2 * NEAR.reach) ?? find(mine, NEAR.reach) ?? at(l.y);
+    // Sur un écran sans taille seulement (les tests), hors des boutons, puis de son côté fixe.
+    const r = spare ?? find(ok, 2 * NEAR.reach) ?? anywhere(screen, l, { w: MAP_KEO_DISC, h: l.h }, ok) ?? find((c) => onScreen(c) && !obstacles.some((o) => clash(o, c)), NEAR.reach) ?? at(l.y);
     keoDisc.set(l.id, r);
     placed.push({ id: l.id, r });
   }

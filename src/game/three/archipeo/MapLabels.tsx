@@ -352,6 +352,9 @@ export function MapLabels({ places, openPlaces, closedLands, onPick, placer, onC
     });
     observer.observe(el);
     for (const node of el.querySelectorAll<HTMLElement>('[data-lieu]')) observer.observe(node);
+    // Les boutons évités aussi : une colonne qui grandit après la première pose (un bouton qui s'y ajoute) est relue, et
+    // aucune pastille ne reste dessous (relecture des restes du 4e : au 5e, en 390 × 844, une pastille sous la colonne).
+    for (const node of stage?.querySelectorAll<HTMLElement>('.open-world-bar, .world-settings, .world-shortcuts') ?? []) observer.observe(node);
     return () => observer.disconnect();
   }, [openPlaces, closedLands, place]);
 

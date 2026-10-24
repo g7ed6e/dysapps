@@ -518,7 +518,7 @@ describe('Les étiquettes de la Carte', () => {
     expect(spot.name).toBe(false);
   });
 
-  it('le nom d’un lieu ouvert, près de son lieu, passe avant celui d’un lieu fermé (GD-20, directeur artistique)', () => {
+  it('le nom d’une terre fermée garde sa place sous son cadenas, même au prix du nom d’un lieu ouvert, qui se tait (relecture des restes du 4e : « Le Bastion » disparaissait)', () => {
     // Une seule place près du Phare ouvert : celle du nom des Quais fermés, sous leur cadenas, au-dessus du Phare.
     const screen = { width: 1024, height: 768 };
     const box = { left: 180, top: 50, right: 420, bottom: 168 };
@@ -532,9 +532,18 @@ describe('Les étiquettes de la Carte', () => {
       { id: 'quais', kind: 'closed', x: 300, y: 100, w: 200, h: 84 },
       { id: 'phare', kind: 'open', x: 300, y: 150, w: 200, h: 40 },
     ];
+    // Sans la reprise (les vues essayées de la Carte, qui ne pèsent que les lieux ouverts), le nom ouvert d'abord.
+    const [plainQuais, plainPhare] = layoutMapLabels(labels, walls, screen, false);
+    expect(plainPhare.name).toBe(true);
+    expect(plainQuais.name).toBe(false);
+    // Avec elle, le nom des Quais sous leur cadenas, le Phare réduit à sa pastille, qui ne passe pas sous lui.
     const [quais, phare] = layoutMapLabels(labels, walls, screen);
-    expect(phare.name).toBe(true);
-    expect(quais.name).toBe(false);
+    expect(quais.name).toBe(true);
+    expect(quais.drop ?? 0).toBeGreaterThanOrEqual(0);
+    expect(phare.name).toBe(false);
+    const name = { left: 300 - 100 + (quais.shift ?? 0), top: 100 + (quais.drop ?? 0), right: 300 + 100 + (quais.shift ?? 0), bottom: 100 + (quais.drop ?? 0) + 84 - MAP_LOCK };
+    const pastille = { left: phare.left, top: phare.top, right: phare.left + MAP_COMPACT, bottom: phare.top + MAP_COMPACT };
+    expect(pastille.left < name.right && name.left < pastille.right && pastille.top < name.bottom && name.top < pastille.bottom).toBe(false);
     // Le cadenas reste.
     expect(quais.top).toBe(100 - MAP_LOCK);
   });
@@ -716,7 +725,7 @@ describe('La reprise des noms fermés tus (relecture de L9)', () => {
     expect(spots.find((s) => s.id === 'dernier')!.drop).toBeLessThan(0);
   });
 
-  it('un nom ouvert ne s’échange pas contre un nom fermé', () => {
+  it('sans autre place que celle du nom fermé, au-dessus de son cadenas, le nom ouvert se tait : la terre fermée garde son nom (relecture des restes du 4e)', () => {
     // Le nom du lieu ouvert n'a de place que sur celle du nom fermé, au-dessus du cadenas : il la garde. À gauche, une
     // place pour sa pastille réduite à son icône, trop étroite pour son nom.
     const box = { left: 300, top: 482, right: 588, bottom: 566 };
@@ -732,9 +741,14 @@ describe('La reprise des noms fermés tus (relecture de L9)', () => {
     ];
     // Seul, le lieu fermé a sa place au-dessus de son cadenas.
     expect(layoutMapLabels([last[0]], walls, screen)[0].name).toBe(true);
+    // Sans la reprise, le nom ouvert d'abord ; avec elle, le nom fermé au-dessus de son cadenas, le lieu ouvert en pastille.
+    const plain = layoutMapLabels(last, walls, screen, false);
+    expect(named(plain, 'ouvert')).toBe(true);
+    expect(named(plain, 'dernier')).toBe(false);
     const spots = layoutMapLabels(last, walls, screen);
-    expect(named(spots, 'ouvert')).toBe(true);
-    expect(named(spots, 'dernier')).toBe(false);
+    expect(named(spots, 'ouvert')).toBe(false);
+    expect(named(spots, 'dernier')).toBe(true);
+    expect(spots.find((s) => s.id === 'dernier')!.drop).toBeLessThan(0);
   });
 });
 
@@ -1038,17 +1052,18 @@ describe('La pastille de Kéo sans place libre près de son point (aux quatre ni
   const discOf = (s: MapLabelSpot): Rect => ({ left: s.left, top: s.top, right: s.left + MAP_KEO_DISC, bottom: s.top + KEO.h });
   const gap = (r: Rect) => Math.hypot(Math.max(r.left - KEO.x, 0, KEO.x - r.right), Math.max(r.top - KEO.y, 0, KEO.y - r.bottom));
 
-  it('rien de libre à 80 px : à cheval sur le bord du nom de son lieu, jamais au milieu, jamais sur un voisin', () => {
+  it('rien de libre à 160 px : la place libre la plus proche dans l’écran, jamais sur le nom de son lieu (relecture des restes du 4e : elle touchait « La Forge »)', () => {
     const own: MapLabel = { id: 'forge', kind: 'open', x: 340, y: 300, w: 200, h: 60, side: 'right' };
-    const spots = layoutMapLabels([own, KEO], [{ left: 0, top: 0, right: 312, bottom: 600 }, ...BAND], SCREEN);
+    const wall = { left: 0, top: 0, right: 312, bottom: 800 };
+    const screen = { width: 800, height: 600 };
+    const spots = layoutMapLabels([own, KEO], [wall, ...BAND.map((b) => ({ ...b, right: 800 }))], screen);
     const box = { left: spots[0].left, top: spots[0].top, right: spots[0].left + own.w, bottom: spots[0].top + own.h };
     const disc = discOf(spots[1]);
     expect(spots[0].name).toBe(true);
-    expect(spots[1].name).toBe(false);
-    expect(gap(disc)).toBeLessThanOrEqual(80);
-    expect(hits(disc, box)).toBe(true);
-    const cx = (disc.left + disc.right) / 2;
-    expect(cx > box.left && cx < box.right).toBe(false);
+    expect(gap(disc)).toBeGreaterThan(160);
+    expect(hits(disc, box)).toBe(false);
+    for (const b of [wall, ...BAND]) expect(hits(disc, b)).toBe(false);
+    expect(disc.right).toBeLessThanOrEqual(screen.width - MAP_EDGE);
   });
 
   it('rien de libre à 80 px, aucun nom à lui : libre un peu plus loin, à 160 px au plus, plutôt que sur un nom', () => {
@@ -1105,14 +1120,16 @@ describe('La Carte aux quatre niveaux (piste B, « Noms plafonnés, sans trait �
     labels
       .filter((x) => x.kind === 'open' && !x.pale && Math.hypot(x.x - keo.x, x.y - keo.y) <= 80)
       .sort((a, b) => Math.hypot(a.x - keo.x, a.y - keo.y) - Math.hypot(b.x - keo.x, b.y - keo.y))[0]?.id;
-  const layout = (level: (typeof LEVELS)[number], w: number, h: number, setting: number, view?: MapView, repair = false) => {
+  // `shut` : la seule terre fermée (les autres reliées), comme le Bastion fermé des captures du 4e ; sinon, seule la terre
+  // de départ est ouverte.
+  const layout = (level: (typeof LEVELS)[number], w: number, h: number, setting: number, view?: MapView, repair = false, shut?: string) => {
     const plan = planFor(level);
     const f = font(setting);
     const pose = mapPose(view ?? mapStart(plan, w / h));
     const at = (p: { x: number; z: number }) => screenOf(pose, { x: p.x, y: 0, z: p.z }, w, h);
     const side = mapLabelSide(w);
     const shown = (s: { x: number; y: number }) => s.x > side && s.x < w - side && s.y > 64 && s.y < h - 24;
-    const open = new Set<string>(plan.lands[0].places);
+    const open = new Set<string>(shut ? plan.lands.filter((l) => l.id !== shut).flatMap((l) => l.places) : plan.lands[0].places);
     const suggested = plan.firstPlace ?? plan.lands[0].places[0];
     const first = plan.places.find((p) => p.id === plan.lands[0].places[0])!;
     const keo = at({ x: first.center.x + 3, z: first.center.z + 4 });
@@ -1124,7 +1141,7 @@ describe('La Carte aux quatre niveaux (piste B, « Noms plafonnés, sans trait �
       const w0 = Math.round(f * (0.6 * p.name.length + 1.8 + 0.4 + 1.15)) + 4;
       labels.push({ id: p.id, kind: 'open', x: s.x, y: s.y, w: w0, h: Math.max(48, Math.round(f * 2.1) + 4), first: p.id === suggested, ...(open.has(p.id) ? {} : { pale: true as const }) });
     }
-    for (const land of plan.lands.slice(1)) {
+    for (const land of shut ? plan.lands.filter((l) => l.id === shut) : plan.lands.slice(1)) {
       const pts = land.places.map((id) => at(plan.places.find((p) => p.id === id)!.center));
       const c = { x: pts.reduce((n, p) => n + p.x, 0) / pts.length, y: pts.reduce((n, p) => n + p.y, 0) / pts.length };
       if (shown(c)) labels.push({ id: `pont-${land.id}`, kind: 'closed', x: c.x, y: c.y, w: Math.round(f * (0.6 * land.name.length + 1.2)) + 4, h: MAP_LOCK + 2 + Math.round(f * 1.7) + 4 });
@@ -1136,7 +1153,7 @@ describe('La Carte aux quatre niveaux (piste B, « Noms plafonnés, sans trait �
     ];
     const spots = layoutMapLabels(labels, buttons, { width: w, height: h }, repair);
     // Ce qui manque à cette vue, pesé comme la page (MapLabels.tsx, `MISSING`) : un lieu ouvert sans nom ou hors de l'écran.
-    const missing = plan.lands[0].places.filter((id) => !labels.some((l) => l.id === id)).length * 100 + spots.filter((s, i) => labels[i].kind === 'open' && !labels[i].pale && !s.name).length * 100;
+    const missing = [...open].filter((id) => !labels.some((l) => l.id === id)).length * 100 + spots.filter((s, i) => labels[i].kind === 'open' && !labels[i].pale && !s.name).length * 100;
     const boxOf = (l: MapLabel, s: MapLabelSpot): Rect => {
       if (l.kind === 'closed') {
         const left = s.left + (s.shift ?? 0);
@@ -1151,11 +1168,11 @@ describe('La Carte aux quatre niveaux (piste B, « Noms plafonnés, sans trait �
     return { labels, spots, buttons, boxes: labels.map((l, i) => boxOf(l, spots[i])), suggested, missing };
   };
   // La vue de départ que choisit la Carte (`reframeMap`, comme la scène), puis la pose entière, avec la reprise.
-  const chosen = (level: (typeof LEVELS)[number], w: number, h: number, setting: number) => {
+  const chosen = (level: (typeof LEVELS)[number], w: number, h: number, setting: number, shut?: string) => {
     const plan = planFor(level);
-    const open = plan.lands[0].places.map((id) => plan.places.find((p) => p.id === id)!.center);
-    const v = reframeMap(plan, w / h, open, (view) => layout(level, w, h, setting, view).missing);
-    return layout(level, w, h, setting, clampMap(plan, v, w / h, v.distance), true);
+    const open = (shut ? plan.lands.filter((l) => l.id !== shut).flatMap((l) => l.places) : plan.lands[0].places).map((id) => plan.places.find((p) => p.id === id)!.center);
+    const v = reframeMap(plan, w / h, open, (view) => layout(level, w, h, setting, view, false, shut).missing);
+    return layout(level, w, h, setting, clampMap(plan, v, w / h, v.distance), true, shut);
   };
 
   for (const level of LEVELS)
@@ -1174,14 +1191,12 @@ describe('La Carte aux quatre niveaux (piste B, « Noms plafonnés, sans trait �
             expect(r.left >= MAP_EDGE && r.top >= MAP_EDGE && r.right <= w - MAP_EDGE && r.bottom <= h - MAP_EDGE, l.id).toBe(true);
             for (const b of buttons) expect(clashes(r, b), `${l.id} sur un bouton`).toBe(false);
             expect(gapTo(l, r), l.id).toBeLessThanOrEqual(80);
-            // Sur aucune autre étiquette : ni un nom, ni un cadenas, ni une pastille, ni Kéo (sa pastille peut seulement, sans
-            // place libre, passer à cheval sur le bord du nom de son lieu, jamais au milieu).
+            // Sur aucune autre étiquette : ni un nom, ni un cadenas, ni une pastille, ni Kéo (sa pastille ne touche pas même le
+            // nom de son lieu : relecture des restes du 4e).
             labels.forEach((o, j) => {
               if (j === i) return;
               if (o.kind === 'keo' && l.id === ownOf(labels, o)) {
-                const cx = spots[j].left + MAP_KEO_DISC / 2,
-                  cy = spots[j].top + o.h / 2;
-                expect(cx > r.left && cx < r.right && cy > r.top && cy < r.bottom, `Kéo au milieu de ${l.id} ${JSON.stringify(spots[j])} ${JSON.stringify(o)} ${JSON.stringify(labels.map((x, k) => [x.id, x.kind, x.pale ? 'p' : '', spots[k].name, boxes[k]]))}`).toBe(false);
+                expect(crosses(r, boxes[j]), `Kéo sur ${l.id}`).toBe(false);
                 return;
               }
               // Une pastille d'icône, au pire, peut toucher un nom sans écart, jamais le couvrir.
@@ -1192,6 +1207,45 @@ describe('La Carte aux quatre niveaux (piste B, « Noms plafonnés, sans trait �
           // Le lieu suggéré, à l'écran, garde son nom.
           const next = labels.findIndex((l) => l.id === suggested);
           if (next >= 0) expect(spots[next].name, suggested).toBe(true);
+        });
+
+  // Relecture des restes du 4e (consultant UX UI, référent dys, consultant d'Archipéo) : les colonnes de boutons interdites
+  // à toute étiquette ; Kéo sur aucune pastille ni aucun nom ; une pastille pâle coupée par aucun nom ; le nom d'une terre
+  // fermée sous son cadenas, au plus grand texte aussi.
+  // Au départ (toutes les terres fermées sauf une), sur tablette ; une seule terre fermée (comme le Bastion fermé du 4e),
+  // sur tout écran. Au départ, en 390 × 844 (une fenêtre étroite d'ordinateur : l'appareil tactile en portrait demande
+  // qu'on le tourne), quatre cadenas sur une île de 190 px de large : le nom d'une terre peut y monter au-dessus de son
+  // cadenas ou se taire, le cadenas le dit.
+  const CASES = LEVELS.flatMap((level) => [
+    ...SCREENS.filter(([w]) => w >= 800).map(([w, h]) => ({ level, w, h, shut: undefined as string | undefined })),
+    ...planFor(level).lands.slice(1).flatMap((land) => SCREENS.map(([w, h]) => ({ level, w, h, shut: land.id as string | undefined }))),
+  ]);
+  for (const { level, w, h, shut } of CASES)
+      for (const [text, setting] of Object.entries(TEXTS))
+        it(`${level}, ${shut ? `seule ${shut} fermée` : 'au départ'}, ${w} × ${h}, texte ${text} : rien sous un bouton, Kéo sur rien, aucune pastille couverte, chaque terre fermée nommée`, () => {
+          const { labels, spots, buttons, boxes } = chosen(level, w, h, setting, shut);
+          const what = (k: number) => `${labels[k].id} ${JSON.stringify(boxes[k])}`;
+          labels.forEach((l, i) => {
+            const r = boxes[i];
+            // Hors des boutons : à un écart pour un nom, sans les couvrir pour une pastille ou un cadenas.
+            const named = (l.kind === 'open' && spots[i].name) || (l.kind === 'closed' && spots[i].name);
+            for (const b of buttons) expect(named ? clashes(r, b) : crosses(r, b), `${what(i)} sous un bouton`).toBe(false);
+            if (l.kind === 'keo')
+              labels.forEach((_, j) => {
+                if (j !== i) expect(crosses(r, boxes[j]), `Kéo ${JSON.stringify(r)} sur ${what(j)}`).toBe(false);
+              });
+            if (l.pale)
+              labels.forEach((o, j) => {
+                if (j !== i && spots[j].name && o.kind !== 'keo') expect(crosses(r, boxes[j]), `${what(i)} coupée par ${what(j)}`).toBe(false);
+              });
+            // Une pastille d'icône sur aucune autre étiquette, pas même une autre pastille.
+            if (l.kind === 'open' && !spots[i].name)
+              labels.forEach((_, j) => {
+                if (j !== i) expect(crosses(r, boxes[j]), `${what(i)} sur ${what(j)}`).toBe(false);
+              });
+            // Sous son cadenas, ou juste au-dessus en dernier recours (`drop` négatif), jamais tu.
+            if (l.kind === 'closed') expect(spots[i].name, `${l.id} sans nom`).toBe(true);
+          });
         });
 
   it('au téléphone en portrait, la bande des côtés en part de la largeur montre plus de lieux ouverts qu’une bande de 100 px', () => {
