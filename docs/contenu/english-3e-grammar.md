@@ -40,34 +40,66 @@ Pour tous les items :
   - for / since → present perfect : I have lived here for ten years.
 
 1. énoncé : I have lived here … ten years.
+   - sujet : I have lived here … ten years.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : for · since · ago
    - réponse : for
    - explication : ten years est une durée → for.
 2. énoncé : She has been ill … Monday.
+   - sujet : She has been ill … Monday.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : since · for · ago
    - réponse : since
    - explication : Monday est un point de départ → since.
 3. énoncé : We have known each other … 2019.
+   - sujet : We have known each other … 2019.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : since · for · ago
    - réponse : since
    - explication : 2019 est un point de départ → since.
 4. énoncé : They have been married … a long time.
+   - sujet : They have been married … a long time.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : for · since · ago
    - réponse : for
    - explication : a long time est une durée → for.
 5. énoncé : I saw him two days … .
+   - sujet : I saw him two days … .
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : ago · for · since
    - réponse : ago
    - explication : two days ago = il y a deux jours (avec le prétérit saw).
 6. énoncé : He has played the guitar … he was six.
+   - sujet : He has played the guitar … he was six.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : since · for · ago
    - réponse : since
    - explication : he was six est un point de départ → since.
 7. énoncé : I have waited … twenty minutes!
+   - sujet : I have waited … twenty minutes!
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : for · since · ago
    - réponse : for
    - explication : twenty minutes est une durée → for.
 8. énoncé : She moved to London three years … .
+   - sujet : She moved to London three years … .
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : ago · for · since
    - réponse : ago
    - explication : three years ago = il y a trois ans (avec le prétérit moved).

@@ -51,6 +51,7 @@ import { onPlateau, plateauShare } from '../../world/continu/terrain5e';
 import { freeRoute, isWalkable, nearestWalkable, onPathCell, walkGridSteps, type WalkGrid } from '../../world/continu/freeWalk';
 import { distanceSign, markOnScreen, type MarkOnScreen } from '../../world/continu/mission';
 import { edgesNear, pathTopAt, type NetworkPoint } from '../../world/continu/paths';
+import type { DialShown } from '../../world/continu/placeArt';
 import { COLORS_6E, hidesTraces, portNode, type PortSpot } from '../../world/continu/plan6e';
 import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternLight, modelOfPlace } from '../../world/continu/places';
 import { PAPER_COLOR } from '../../world/continu/printworks';
@@ -388,7 +389,7 @@ interface QuestionRequest {
   mission: string;
   layout: ScenetteLayout;
   /** `key` : la clé de l'item (un autre item ramène la caméra de la scénette de face). */
-  item: { key?: string; scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook; dial?: { count: number; max: number } };
+  item: { key?: string; scene: ItemScene; answered: boolean; right: readonly number[]; picked: readonly number[]; sort?: SortLook; dial?: DialShown };
   /**
    * Les réponses sorties de la scène (un mot coupé dans son étiquette : l'offre de « Vue simple ») : les objets des
    * réponses et leur support ne se dessinent pas, pour qu'aucun objet sans étiquette ne semble se toucher (retouche 3 du
@@ -3598,7 +3599,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // La scène de l'item et les objets des réponses : un seul maillage.
     const merged = new FacetBuilder();
     merged.append(facets.still);
-    if (!q.answersOut)
+    // Pendant un réglage (GD-26), aucun objet de réponse : trois objets semblables se liraient comme trois choix.
+    if (!q.answersOut && !item.dial)
       merged.append(
         facingAnswerObjects(
           place,
@@ -3621,7 +3623,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Le geste « régler » (GD-26) : ce que le lieu montre des crans réglés (la lueur de la Forge), dans le même maillage.
     const dialArt = item.dial ? placeArt(place)?.dial : undefined;
     const dialFoot = feet.get(place);
-    if (item.dial && dialArt && dialFoot) merged.append(dialArt(dialFoot, item.dial.count, item.dial.max));
+    if (item.dial && dialArt && dialFoot) merged.append(dialArt(dialFoot, item.dial));
     setGeometry(itemMesh, merged.build());
     itemShown = itemMesh.visible;
     if (descent.active) itemMesh.visible = false;

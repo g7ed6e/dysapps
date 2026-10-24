@@ -35,6 +35,7 @@
     {
       "key": "technology-3e-digital-data-tables-1-1",
       "prompt": "Dans la colonne « Âge », la donnée 12 est de type …",
+      "subject": "Âge : 12",
       "spoken": "Dans la colonne « Âge », la donnée 12 est de type  (mot manquant) ",
       "choices": [
         "mot",
@@ -44,6 +45,9 @@
       "answer": "nombre",
       "hint": "Relis la ligne « Le type d’une donnée » du rappel.",
       "explanation": "12 est un nombre : on peut le comparer ou faire un calcul avec. Un booléen ne vaut que vrai ou faux.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -88,6 +92,7 @@
     {
       "key": "technology-3e-digital-data-tables-1-3",
       "prompt": "« Le casier est fermé : vrai » est une donnée de type …",
+      "subject": "Le casier est fermé : vrai",
       "spoken": "« Le casier est fermé : vrai » est une donnée de type  (mot manquant) ",
       "choices": [
         "mot",
@@ -97,6 +102,9 @@
       "answer": "booléen",
       "hint": "Combien de valeurs peut prendre cette donnée ?",
       "explanation": "Le casier est fermé ou ne l’est pas : la donnée vaut vrai ou faux, c’est un booléen. Même écrit en lettres, « vrai » est ici une des deux valeurs d’un booléen.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -671,8 +671,14 @@ export function agreedVerb(item: QuestionItem): string {
   return typeof verb === 'string' ? verb : '';
 }
 
-/** Le nombre d'objets à ranger par manche : quatre sujets, comme l'Enclos de la grille. */
-export const RANGE_PER_ROUND = 4;
+/**
+ * Le nombre d'objets à ranger par manche : trois au plus (GD-26 ; référent dys, PR 2 : l'Enclos en rangeait quatre). La
+ * manche ne regroupe que l'affichage : une réponse, une clé, un verdict par item.
+ */
+export const RANGE_PER_ROUND = 3;
+
+/** Au plus grand texte sur une tablette, deux par manche (GD-26). */
+export const RANGE_PER_GRAND_WIDE_ROUND = 2;
 
 /**
  * Sur un écran bas (un téléphone couché), trois sujets par manche : avec les deux paniers, la rangée de cinq étiquettes
@@ -724,9 +730,10 @@ export function gestureBins(items: readonly object[]): RangeBin[] {
  * Les écrans d'une mission dont des items ont un geste : les items « ranger » de la partie en manches de `perRound`,
  * posées à la place du premier d'entre eux ; les autres, un par écran, dans leur ordre.
  */
-export function gestureScreens<T extends object>(items: readonly T[], perRound: number): T[][] {
+export function gestureScreens<T extends object>(items: readonly T[], perRound: number, longPerRound = perRound): T[][] {
   const sorting = items.filter((it) => itemGesture(it) === 'ranger');
-  const rounds = sorting.length ? rangeRounds(sorting, perRound) : [];
+  const long = sorting.some((it) => [(it as { subject?: unknown }).subject, (it as { shows?: unknown }).shows].some((t) => typeof t === 'string' && t.length > LONG_FICHE));
+  const rounds = sorting.length ? rangeRounds(sorting, long ? Math.min(perRound, longPerRound) : perRound) : [];
   const out: T[][] = [];
   for (const it of items) {
     if (itemGesture(it) !== 'ranger') out.push([it]);
@@ -735,7 +742,14 @@ export function gestureScreens<T extends object>(items: readonly T[], perRound: 
   return out;
 }
 
-/** Les manches du geste « ranger » : les items dans leur ordre, par quatre. */
+/**
+ * Une fiche plus longue qu'un mot ou deux : une phrase (« Je viens pour chant… avec toi. »). Sur un écran bas, la bulle
+ * n'en montre qu'une ligne : ces fiches s'y rangent une par manche (`RANGE_PER_LONG_LOW_ROUND`, GD-26, PR 2).
+ */
+const LONG_FICHE = 20;
+export const RANGE_PER_LONG_LOW_ROUND = 1;
+
+/** Les manches du geste « ranger » : les items dans leur ordre, par trois. */
 export function rangeRounds<T>(items: readonly T[], perRound = RANGE_PER_ROUND): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += perRound) out.push(items.slice(i, i + perRound));

@@ -482,7 +482,7 @@ export const MAQUETTE: PlaceArt = {
   model,
   traceStage: 0,
   // La scénette : Kéo et l'urbaniste de part et d'autre de son milieu ; son sol, l'herbe.
-  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 4.8, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x4f4339);
   },

@@ -311,18 +311,30 @@ Pour tous les items :
   - Basique : plus d’ions hydroxyde que d’ions hydrogène.
 
 1. énoncé : Le jus de citron a un pH de 2 : il est …
+   - sujet : Le jus de citron, pH 2
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Le jus de citron a un pé-ache de 2, il est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : acide
    - indice : 2 est-il plus petit ou plus grand que 7 ?
    - explication : Le pH 2 est plus petit que 7 : le jus de citron est acide.
 2. énoncé : L’eau pure a un pH de 7 : elle est …
+   - sujet : L’eau pure, pH 7
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : L’eau pure a un pé-ache de 7, elle est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : neutre
    - indice : Relis la ligne « pH égal à 7 » du rappel.
    - explication : Un pH égal à 7, c’est une solution neutre, ni acide ni basique.
 3. énoncé : L’eau savonneuse a un pH de 10 : elle est …
+   - sujet : L’eau savonneuse, pH 10
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : L’eau savonneuse a un pé-ache de 10, elle est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : basique

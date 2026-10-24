@@ -99,6 +99,9 @@
       "answer": "d’Europe",
       "hint": "Les Pays-Bas sont au nord de la France.",
       "explanation": "Rotterdam est le premier port d’Europe, au bord de la mer du Nord.",
+      "gesture": "placer",
+      "shows": "Rotterdam",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

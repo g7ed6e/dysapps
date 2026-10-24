@@ -24,7 +24,7 @@
 import type { Stage } from './construction';
 import { drawPosed, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
+import type { AddPiece, DialShown, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E, RIGOLE_4E } from './plan4e';
 import { unlitSource } from './rendered5e';
 import { LIGHT_4E } from './sky';
@@ -401,7 +401,7 @@ const DIAL_HEARTH = { back: 1.1, w: 1.1, h: 0.45, d: 0.7, flame: 1.7 } as const;
  * La lueur réglée (GD-26, le geste « régler ») : sur le foyer (`DIAL_HEARTH`), la flamme monte d'un cran par coup, de la
  * lueur de la gueule allumée dès le premier (directeur artistique, deuxième passe) ; à zéro coup, le foyer froid.
  */
-function dialFacets(c: Vec3, count: number, max: number): Facets {
+function dialFacets(c: Vec3, { count, max }: DialShown): Facets {
   const b = new FacetBuilder();
   const H = DIAL_HEARTH;
   const fwd = { x: -Math.sin(SCENE_START), z: -Math.cos(SCENE_START) };

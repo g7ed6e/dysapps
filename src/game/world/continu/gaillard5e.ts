@@ -1330,7 +1330,7 @@ export const GAILLARD: PlaceArt = {
     // Un cadre serré, plongeant, le point visé bas : la porte, plus haute que Kéo, et le bas de son linteau au haut de
     // l'image ; la galerie, à 4 au-dessus de la cour, reste hors du cadre (retouche 1).
     subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
-    pitch: (34 * Math.PI) / 180,
+    pitch: (14 * Math.PI) / 180,
   },
   // Le décor de près : le plancher est la cour du lieu, le bas de la façade, la porte, son linteau et le perron derrière ;
   // la galerie reste hors du cadre ; la roche qui cadre est aux abords (./gaillardSurroundings.ts). Il reste la peintre en

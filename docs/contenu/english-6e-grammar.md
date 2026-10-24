@@ -32,6 +32,9 @@ Pour tous les items :
 ### Niveau 1 · `english-6e-grammar-to-be-1`
 
 Pour tous les items :
+- consigne courte : Range chaque fiche.
+- geste : ranger
+- scène : ""
 - choix : am · is · are
 - indice : Remplace le sujet par I, he, she, it, we, you ou they.
 - aide « To be (être) au présent » :
@@ -41,16 +44,16 @@ Pour tous les items :
   - Un nom au singulier (my dog, Tom) = he, she ou it → is.
   - Deux personnes ou plus (Tom and Lina) = they → are.
 
-| énoncé | réponse | explication |
-| --- | --- | --- |
-| I … eleven years old. | am | I am : avec I, toujours am. |
-| She … my sister. | is | She is : avec he, she, it, c’est is. |
-| We … in the same class. | are | We are : avec we, you, they, c’est are. |
-| My dog … very funny. | is | My dog = it : it is. |
-| They … from London. | are | They are : avec they, c’est are. |
-| You … my best friend. | are | You are : avec you, c’est are. |
-| It … a big house. | is | It is : avec it, c’est is. |
-| Tom and Lina … at school. | are | Tom and Lina = they : they are. |
+| énoncé | sujet | réponse | explication |
+| --- | --- | --- | --- |
+| I … eleven years old. | I … eleven years old. | am | I am : avec I, toujours am. |
+| She … my sister. | She … my sister. | is | She is : avec he, she, it, c’est is. |
+| We … in the same class. | We … in the same class. | are | We are : avec we, you, they, c’est are. |
+| My dog … very funny. | My dog … very funny. | is | My dog = it : it is. |
+| They … from London. | They … from London. | are | They are : avec they, c’est are. |
+| You … my best friend. | You … my best friend. | are | You are : avec you, c’est are. |
+| It … a big house. | It … a big house. | is | It is : avec it, c’est is. |
+| Tom and Lina … at school. | Tom and Lina … at school. | are | Tom and Lina = they : they are. |
 
 ### Niveau 2 · `english-6e-grammar-to-be-2`
 
@@ -122,6 +125,9 @@ Pour tous les items :
 ### Niveau 1 · `english-6e-grammar-have-got-1`
 
 Pour tous les items :
+- consigne courte : Range chaque fiche.
+- geste : ranger
+- scène : ""
 - choix : have · has
 - indice : He, she, it (une seule personne ou chose) : has. Les autres : have.
 - aide « Have (avoir) » :
@@ -129,16 +135,16 @@ Pour tous les items :
   - he / she / it has
   - have = avoir, posséder : I have a dog = j’ai un chien.
 
-| énoncé | réponse | explication |
-| --- | --- | --- |
-| I … a brother. | have | I have : avec I, c’est have. |
-| She … long hair. | has | She has : avec she, c’est has. |
-| We … a new teacher. | have | We have : avec we, c’est have. |
-| My cat … green eyes. | has | My cat = it : it has. |
-| They … a big garden. | have | They have : avec they, c’est have. |
-| He … a red bike. | has | He has : avec he, c’est has. |
-| You … a nice smile. | have | You have : avec you, c’est have. |
-| Lina … two sisters. | has | Lina = she : she has. |
+| énoncé | sujet | réponse | explication |
+| --- | --- | --- | --- |
+| I … a brother. | I … a brother. | have | I have : avec I, c’est have. |
+| She … long hair. | She … long hair. | has | She has : avec she, c’est has. |
+| We … a new teacher. | We … a new teacher. | have | We have : avec we, c’est have. |
+| My cat … green eyes. | My cat … green eyes. | has | My cat = it : it has. |
+| They … a big garden. | They … a big garden. | have | They have : avec they, c’est have. |
+| He … a red bike. | He … a red bike. | has | He has : avec he, c’est has. |
+| You … a nice smile. | You … a nice smile. | have | You have : avec you, c’est have. |
+| Lina … two sisters. | Lina … two sisters. | has | Lina = she : she has. |
 
 ### Niveau 2 · `english-6e-grammar-have-got-2`
 

@@ -9,15 +9,19 @@
     {
       "key": "technology-6e-objects-information-networks-1-0",
       "prompt": "Le détecteur de présence repère qu’une personne arrive : c’est un …",
+      "subject": "Détecteur de présence",
       "spoken": "Le détecteur de présence repère qu’une personne arrive : c’est un  (mot manquant) ",
       "choices": [
         "capteur",
         "actionneur",
-        "générateur"
+        "programme"
       ],
       "answer": "capteur",
       "hint": "Relis la ligne « Un capteur » du rappel.",
       "explanation": "Le détecteur prend une information : quelqu’un arrive. C’est un capteur. Un actionneur, lui, agit, comme un moteur.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -36,6 +40,7 @@
     {
       "key": "technology-6e-objects-information-networks-1-1",
       "prompt": "Le robot avance grâce à son moteur : le moteur est un …",
+      "subject": "Moteur du robot",
       "spoken": "Le robot avance grâce à son moteur : le moteur est un  (mot manquant) ",
       "choices": [
         "capteur",
@@ -45,6 +50,9 @@
       "answer": "actionneur",
       "hint": "Le moteur prend-il une information, ou fait-il bouger le robot ?",
       "explanation": "Le moteur fait bouger le robot : il agit, c’est un actionneur. Le capteur, lui, prend une information.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -402,7 +402,7 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     const user = await begin();
     const subjects = () => within(screen.getByRole('list', { name: 'Sujets à ranger' })).getAllByRole('button');
     const bins = () => within(screen.getByRole('list', { name: 'Paniers' })).getAllByRole('button');
-    await vi.waitFor(() => expect(subjects()).toHaveLength(4));
+    await vi.waitFor(() => expect(subjects()).toHaveLength(3));
     expect(bins().map((b) => b.textContent)).toEqual(['Singulier', 'Pluriel']);
     // La consigne dit le geste ; « Valider » attend que tout soit rangé.
     expect(document.querySelector('.quiz.in-world')!.textContent).toMatch(/Pour chaque sujet, son verbe est-il au singulier ou au pluriel\s?\? Touche le sujet, puis son panier\./);
@@ -421,7 +421,7 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     expect(subjects()[0]).toHaveAttribute('aria-pressed', 'true');
     expect(status).toHaveTextContent(`Tu tiens : ${first}`);
     expect(bins()[1]).toHaveAccessibleName(`Panier Pluriel : y ranger ${first}`);
-    expect(lastRequest().item).toMatchObject({ scene: { kind: 'enclos' }, count: 6, sort: { bins: [0, 5], held: 1 } });
+    expect(lastRequest().item).toMatchObject({ scene: { kind: 'enclos' }, count: 5, sort: { bins: [0, 4], held: 1 } });
 
     // Échap repose le sujet ; le panneau n'entend pas Échap tant qu'un sujet est tenu.
     const closes = vi.fn();
@@ -435,21 +435,22 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     expect(closes).toHaveBeenCalledTimes(1);
     window.removeEventListener('keydown', closes);
 
-    // Ranger les quatre : après chaque dépôt, le focus va au prochain sujet pas encore rangé, puis à « Valider ».
-    for (let i = 0; i < 4; i++) {
+    // Ranger les trois (GD-26 : trois par manche au plus) : après chaque dépôt, le focus va au prochain sujet pas encore
+    // rangé, puis à « Valider ».
+    for (let i = 0; i < 3; i++) {
       await user.click(subjects()[i]);
       await user.click(bins()[i % 2]);
       expect(status).toHaveTextContent('rangé dans');
-      if (i < 3) expect(subjects()[i + 1]).toHaveFocus();
+      if (i < 2) expect(subjects()[i + 1]).toHaveFocus();
     }
     expect(validate).toHaveFocus();
     expect(validate).toBeEnabled();
-    expect(lastRequest().item.sort).toMatchObject({ held: null, placed: [null, 0, 5, 0, 5, null] });
+    expect(lastRequest().item.sort).toMatchObject({ held: null, placed: [null, 0, 4, 0, null] });
     // Un sujet rangé se reprend jusqu'à « Valider » : il sort de son panier.
     await user.click(subjects()[1]);
     expect(validate).toBeDisabled();
     await user.click(bins()[0]);
-    expect(lastRequest().item.sort).toMatchObject({ placed: [null, 0, 0, 0, 5, null] });
+    expect(lastRequest().item.sort).toMatchObject({ placed: [null, 0, 0, 0, null] });
     const round = subjects().map((b) => b.textContent);
     await user.click(validate);
     // La manche est corrigée : la suivante s'ouvre, rien de tenu, rien de rangé.
@@ -474,7 +475,7 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     const user = await begin();
     const subjects = () => within(screen.getByRole('list', { name: 'Sujets à ranger' })).getAllByRole('button');
     const bins = () => within(screen.getByRole('list', { name: 'Paniers' })).getAllByRole('button');
-    await vi.waitFor(() => expect(subjects()).toHaveLength(4));
+    await vi.waitFor(() => expect(subjects()).toHaveLength(3));
     expect(bins().every((b) => b.querySelector('svg'))).toBe(true);
     // Les sujets en texte simple : aucune syllabe colorée (elle marquerait le -s final).
     expect(document.querySelector('.world-sort-prise .syllable, .world-sort-prise [class*="syll"]')).toBeNull();
@@ -494,10 +495,15 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     vi.unstubAllGlobals();
   });
 
-  it.each([
-    ['sorting', 2],
-    ['e-er-ez', 3],
-  ])('%s : la phrase dans le panneau, un panier par réponse, rien dans la scène ne désigne la réponse', async (mission, n) => {
+  // « e-er-ez » se range depuis la PR 2 de GD-26 (directeur du contenu, 24/10) : trois fiches, trois caisses.
+  it('e-er-ez se range : les phrases en fiches, une caisse par terminaison', async () => {
+    vi.mocked(world.question).mockClear();
+    renderPlace('filets', 'e-er-ez');
+    await begin();
+    await vi.waitFor(() => expect(lastRequest()).toMatchObject({ place: 'filets', mission: 'e-er-ez', item: { gesture: 'ranger' } }));
+  });
+
+  it.each([['sorting', 2]])('%s : la phrase dans le panneau, un panier par réponse, rien dans la scène ne désigne la réponse', async (mission, n) => {
     vi.mocked(world.question).mockClear();
     renderPlace('filets', mission);
     await begin();

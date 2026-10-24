@@ -192,11 +192,19 @@ Pour tous les items :
    - indice : Cherche « quitter son pays » dans le rappel.
    - explication : Émigrer : quitter son pays. Immigrer : arriver dans un pays. La même personne émigre du Mali et immigre en France.
 3. énoncé : Une personne qui fuit la guerre dans son pays est un … .
+   - sujet : Il fuit la guerre
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : réfugié · touriste · saisonnier
    - réponse : réfugié
    - indice : Elle cherche un refuge, un endroit sûr.
    - explication : Un réfugié fuit la guerre ou les persécutions : il cherche un refuge dans un autre pays.
 4. énoncé : Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur … .
+   - sujet : Il travaille une saison puis rentre
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - choix : saisonnier · réfugié · touriste
    - réponse : saisonnier
    - indice : Une saison : l’été, ou le temps des vendanges.

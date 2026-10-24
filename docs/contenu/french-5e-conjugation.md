@@ -316,48 +316,80 @@ Pour tous les items :
   - L’impératif n’a que trois personnes : tu, nous, vous.
 
 1. énoncé : « Tu ranges ta chambre. »
+   - sujet : Tu ranges ta chambre.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Tu ranges ta chambre. »
    - choix : indicatif · impératif
    - réponse : indicatif
    - indice : Y a-t-il un sujet écrit devant le verbe ?
    - explication : Le sujet « tu » est écrit : on dit ce qui se passe, c’est l’indicatif présent.
 2. énoncé : « Range ta chambre ! »
+   - sujet : Range ta chambre !
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Range ta chambre ! »
    - choix : indicatif · impératif
    - réponse : impératif
    - indice : Y a-t-il un sujet écrit devant le verbe ?
    - explication : Pas de sujet écrit, et un ordre : c’est l’impératif présent, avec tu.
 3. énoncé : « Nous partons tôt. »
+   - sujet : Nous partons tôt.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Nous partons tôt. »
    - choix : indicatif · impératif
    - réponse : indicatif
    - indice : Y a-t-il un sujet écrit devant le verbe ?
    - explication : Le sujet « nous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.
 4. énoncé : « Partons tôt ! »
+   - sujet : Partons tôt !
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Partons tôt ! »
    - choix : indicatif · impératif
    - réponse : impératif
    - indice : Y a-t-il un sujet écrit devant le verbe ?
    - explication : Pas de sujet écrit : on se donne un ordre à nous-mêmes. C’est l’impératif présent, avec nous.
 5. énoncé : « Écoutez bien la consigne. »
+   - sujet : Écoutez bien la consigne.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Écoutez bien la consigne. »
    - choix : indicatif · impératif
    - réponse : impératif
    - indice : Qui écoute ? Le sujet est-il écrit ?
    - explication : Pas de sujet écrit : c’est un conseil donné à vous. C’est l’impératif présent.
 6. énoncé : « Vous écoutez la radio. »
+   - sujet : Vous écoutez la radio.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Vous écoutez la radio. »
    - choix : indicatif · impératif
    - réponse : indicatif
    - indice : Y a-t-il un sujet écrit devant le verbe ?
    - explication : Le sujet « vous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.
 7. énoncé : « Va au tableau, Léo. »
+   - sujet : Va au tableau, Léo.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Va au tableau, Léo. »
    - choix : indicatif · impératif
    - réponse : impératif
    - indice : Léo est-il le sujet, ou celui à qui on parle ?
    - explication : On parle à Léo, sans sujet écrit : c’est un ordre, l’impératif présent. « Léo » n’est pas le sujet, c’est celui qu’on appelle.
 8. énoncé : « Léo va au tableau. »
+   - sujet : Léo va au tableau.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Léo va au tableau. »
    - choix : indicatif · impératif
    - réponse : indicatif
@@ -498,18 +530,30 @@ Pour tous les items :
   - Plus-que-parfait et futur antérieur : l’action a lieu avant une autre.
 
 1. énoncé : « Un triangle a trois côtés. » Que dit ce présent ?
+   - sujet : Un triangle a trois côtés.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Un triangle a trois côtés. Que dit ce présent ?
    - choix : toujours vrai · maintenant · habitude
    - réponse : toujours vrai
    - indice : Est-ce vrai seulement aujourd’hui ?
    - explication : Un triangle a trois côtés hier, aujourd’hui et demain : c’est toujours vrai. On l’appelle le présent de vérité générale.
 2. énoncé : « Chut, le bébé dort ! » Que dit ce présent ?
+   - sujet : Chut, le bébé dort !
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Chut, le bébé dort ! Que dit ce présent ?
    - choix : maintenant · habitude · toujours vrai
    - réponse : maintenant
    - indice : Pourquoi dit-on « chut » ?
    - explication : Le bébé dort au moment où l’on parle : c’est ce qui se passe maintenant.
 3. énoncé : « Le mercredi, je vais au judo. » Que dit ce présent ?
+   - sujet : Le mercredi, je vais au judo.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Le mercredi, je vais au judo. Que dit ce présent ?
    - choix : habitude · toujours vrai · maintenant
    - réponse : habitude

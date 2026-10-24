@@ -63,6 +63,7 @@
     {
       "key": "geography-4e-globalization-mobilities-1-2",
       "prompt": "Une personne qui fuit la guerre dans son pays est un … .",
+      "subject": "Il fuit la guerre",
       "spoken": "Une personne qui fuit la guerre dans son pays est un (mot manquant) .",
       "choices": [
         "réfugié",
@@ -72,6 +73,9 @@
       "answer": "réfugié",
       "hint": "Elle cherche un refuge, un endroit sûr.",
       "explanation": "Un réfugié fuit la guerre ou les persécutions : il cherche un refuge dans un autre pays.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -90,6 +94,7 @@
     {
       "key": "geography-4e-globalization-mobilities-1-3",
       "prompt": "Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur … .",
+      "subject": "Il travaille une saison puis rentre",
       "spoken": "Une personne qui vient travailler une saison, puis rentre chez elle, est un travailleur (mot manquant) .",
       "choices": [
         "saisonnier",
@@ -99,6 +104,9 @@
       "answer": "saisonnier",
       "hint": "Une saison : l’été, ou le temps des vendanges.",
       "explanation": "Le travailleur saisonnier vient pour une saison, puis repart. Le touriste voyage pour ses loisirs ; le réfugié fuit la guerre.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

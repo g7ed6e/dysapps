@@ -9,6 +9,7 @@
     {
       "key": "french-4e-vocabulary-nuances-3-0",
       "prompt": "« J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?",
+      "subject": "J’étais à la bourre.",
       "spoken": "« J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?",
       "choices": [
         "familier",
@@ -18,6 +19,9 @@
       "answer": "familier",
       "hint": "Le « ne » manque, et « à la bourre » se dit entre amis.",
       "explanation": "Registre familier : « ne » oublié, « à la bourre » (en courant : en retard).",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -34,6 +38,7 @@
     {
       "key": "french-4e-vocabulary-nuances-3-1",
       "prompt": "« Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?",
+      "subject": "J’étais en retard.",
       "spoken": "« Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?",
       "choices": [
         "soutenu",
@@ -43,6 +48,9 @@
       "answer": "courant",
       "hint": "La phrase est correcte, avec des mots de tous les jours.",
       "explanation": "Registre courant : le « ne » est là, et les mots sont ceux de tous les jours.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -59,6 +67,7 @@
     {
       "key": "french-4e-vocabulary-nuances-3-2",
       "prompt": "« Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?",
+      "subject": "J’accusais un retard.",
       "spoken": "« Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?",
       "choices": [
         "courant",
@@ -68,6 +77,9 @@
       "answer": "soutenu",
       "hint": "« point », « apercevoir », « accuser un retard » : des mots recherchés.",
       "explanation": "Registre soutenu : des mots recherchés, qu’on trouve surtout à l’écrit.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

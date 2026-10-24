@@ -344,7 +344,7 @@ Pour tous les items :
    - question : Qui aide les personnes âgées ?
    - geste : placer
    - scène : l’aide aux personnes âgées
-   - consigne courte : Pose le panier devant sa porte.
+   - consigne courte : Pose le panier à sa porte.
    - lu : Qui fait quoi ? La commune, la cantine de l’école. Le département, l’aide aux personnes âgées. La région, les trains régionaux.
    - choix : la commune · la région · le département
    - réponse : le département
@@ -396,7 +396,7 @@ Pour tous les items :
    - question : À quelle échelle se fait cette solidarité ?
    - geste : placer
    - scène : l’argent de l’Union européenne pour reconstruire après un séisme
-   - consigne courte : Pose le panier devant sa porte.
+   - consigne courte : Pose le panier à sa porte.
    - lu : Une région d’Europe touchée par un séisme. L’Union européenne envoie de l’argent pour reconstruire. Des secouristes d’autres pays viennent aider.
    - choix : à l’échelle de la commune · à l’échelle de la famille · à l’échelle européenne
    - réponse : à l’échelle européenne

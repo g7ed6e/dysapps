@@ -541,8 +541,12 @@ export const SCENETTE_LAYOUT = {
   bubbleLow: 0.4,
   /** La largeur du rappel, à gauche de la scène sous la bulle, en part de la largeur (GD-26). */
   aidShare: 0.3,
-  /** Sur un écran bas, où le carnet descend jusqu'en bas et la rangée se tient à sa droite. */
-  aidShareLow: 0.26,
+  /**
+   * Au plus grand texte, et sur un écran bas, où le carnet descend jusqu'en bas et la rangée se tient à sa droite : plus
+   * large, pour que trois lignes du rappel se voient au moins (piste 1 du consultant UX UI, PR 2 de GD-26).
+   */
+  aidShareGrand: 0.4,
+  aidShareLow: 0.34,
   /**
    * Au-dessus des étiquettes de la rangée, la place de leur repère (le panier, la porte, « tenu ») : le carnet s'arrête
    * avant, jamais recouvert (relectures de la PR 1 de GD-26 : UX UI, référent dys).
@@ -562,10 +566,11 @@ export const SCENETTE_LAYOUT = {
    */
   lowAidInset: 28,
   /**
-   * « Valider » en bas à droite : la place gardée, en pixels (le bouton peut être plus large en grand texte), et
-   * l'écart au-dessus de lui, plus large que celui des réponses (retour UX UI).
+   * « Valider » en bas à droite : la place gardée, en pixels, et l'écart au-dessus de lui, plus large que celui des
+   * réponses (retour UX UI). Au plus grand texte, le bouton s'élargit (« Valider » en OpenDyslexic à 28 px en prend
+   * près de 300) : la place gardée aussi, sinon la dernière caisse d'un téléphone couché passait dessous (GD-26, PR 2).
    */
-  validate: { width: 176, height: 60, gap: 20 },
+  validate: { width: 176, grandWidth: 310, height: 60, gap: 20 },
   /** Les cloches, d'un tiers plus petites que la place au-dessus de leur mot : la poutre descend sous Kéo et l'habitant. */
   objectShare: 2 / 3,
   /** La largeur d'une étiquette au plus quand la rangée passe sous la colonne pour un mot coupé (`wideRow`), en pixels. */
@@ -733,7 +738,8 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   // côté d'elle si l'écran est trop court.
   const edge = S.edge * width;
   const lh = base.low ? L.labelLow : L.label;
-  const validate = needs.validate === false ? null : { left: width - edge - S.validate.width, right: width - edge, top: height - L.edgeLow - S.validate.height, bottom: height - L.edgeLow };
+  const validateWidth = needs.grand ? S.validate.grandWidth : S.validate.width;
+  const validate = needs.validate === false ? null : { left: width - edge - validateWidth, right: width - edge, top: height - L.edgeLow - S.validate.height, bottom: height - L.edgeLow };
   // La rangée s'arrête au-dessus de « Valider » ; sur un écran trop court pour cela, elle s'arrête à sa gauche.
   const above = validate ? Math.min(S.row.bottom * height, validate.top - S.validate.gap) : S.row.bottom * height;
   const roomy = !validate || above - S.row.top * height >= 2 * lh + L.lift;
@@ -743,7 +749,7 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   // Un mot coupé dans son étiquette (une réponse en phrase, aux Ondes) : les étiquettes s'élargissent d'abord.
   // Sur un écran bas, le carnet descend jusqu'en bas, à gauche, et la rangée se tient à sa droite : sous la bulle, il
   // n'aurait que la hauteur d'une ligne.
-  const aidRight = edge + (base.low ? S.aidShareLow : S.aidShare) * width;
+  const aidRight = edge + (base.low ? S.aidShareLow : needs.grand ? S.aidShareGrand : S.aidShare) * width;
   const carnetDown = base.low && needs.aid;
   const { slots, objectHeight } = rowSlots(n, carnetDown ? aidRight + L.gap : S.rowEdge, rowRight, S.row.top * height, rowBottom, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
   // Sur un écran bas, la bulle passe sous « Vue simple » et la pause, sur toute la largeur : à côté d'eux, la phrase y
@@ -794,6 +800,11 @@ interface ScenetteSite {
   subject: { halfWidth: number; bottom: number; top: number; depth: number };
   pitch: number;
   /**
+   * Le décalage, depuis le sol, du milieu du cadre (en x) ; absent, le milieu de Kéo et de l'habitant. Aux 4e et 3e, 0 :
+   * le cadre reste centré sur l'instrument quand Kéo recule d'un pas.
+   */
+  frameDx?: number;
+  /**
    * Le cap de départ de la caméra, l'angle dont elle a déjà tourné autour du point visé quand la scénette s'ouvre et à
    * chaque nouvel item (comme à deux doigts, `orbitAround`) ; nul ou absent : de face, vue du sud.
    */
@@ -832,9 +843,43 @@ function quayFloor(): Vec3 {
   return { x: o.x, y: o.y, z: o.z + QUAY.depth / 2 - QUAY.strip / 2 };
 }
 
+/**
+ * Le plan de scénette des 4e et 3e (GD-26, PR 2, directeur artistique) : l'habitant à son poste, au tiers droit du cadre
+ * (`halfWidth / 3` du milieu), Kéo au tiers gauche, un peu en retrait vers le fond (`TIERS_RETRAIT`, en unités du monde),
+ * au lieu de la symétrie près des bords. L'écart se mesure le long de la droite de l'écran au cap de départ ; ce que
+ * chaque lieu règle de plus (la profondeur, le cap) reste à lui.
+ */
+const TIERS_RETRAIT = 0.5;
+
+/** Le site `site` (ses places depuis le sol) au plan de scénette : habitant au tiers droit, Kéo au tiers gauche, en retrait. */
+function tiersOf<S extends Pick<ScenetteSite, 'keo' | 'habitant' | 'subject' | 'start'>>(site: S): S & { frameDx: number } {
+  const start = site.start ?? 0;
+  const right = { x: Math.cos(start), z: -Math.sin(start) };
+  const front = { x: Math.sin(start), z: Math.cos(start) };
+  const third = site.subject.halfWidth / 3;
+  const along = (p: { dx: number; dz: number }) => p.dx * right.x + p.dz * right.z;
+  const to = (p: { dx: number; dz: number }, target: number, back = 0) => ({
+    dx: p.dx + right.x * (target - along(p)) - front.x * back,
+    dz: p.dz + right.z * (target - along(p)) - front.z * back,
+  });
+  return {
+    ...site,
+    keo: { ...site.keo, ...to(site.keo, -third, TIERS_RETRAIT) },
+    habitant: { ...site.habitant, ...to(site.habitant, third) },
+    frameDx: 0,
+  };
+}
+
+/**
+ * Les lieux des 4e et 3e : le plan de scénette leur est commun. Sauf les Roches, dont le toit du décor interdit de
+ * déplacer la géologue : leur habitant et Kéo restent où leur fichier les met (un test compare la liste aux lieux).
+ */
+export const TIERS_LIEUX = new Set<PlaceId>(['loge', 'terminus', 'orgues', 'dynamo', 'herbier', 'jonction', 'veillee', 'basilique', 'forge', 'soute', 'porte', 'etalon', 'gabarit', 'chariot', 'manufacture', 'belvedere', 'grenier', 'abri', 'jardin', 'kiosque', 'maquette', 'tribune', 'douane', 'ermitage', 'standard', 'rampe', 'fanal', 'ondes', 'lutherie', 'coupole', 'palais']);
+
 /** La scénette d'un lieu du rivage nord (lot L7) : celle de son fichier (placeArt.ts), son sol au-dessus de la scène. */
 function northSite(place: PlaceId): ScenetteSite {
-  const { rise, ...site } = placeArt(place)!.site;
+  const { rise, ...art } = placeArt(place)!.site;
+  const site = TIERS_LIEUX.has(place) ? tiersOf(art) : art;
   return {
     floor: () => {
       const s = sceneSpot(place);
@@ -1446,7 +1491,7 @@ export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: numbe
 export function scenettePose(anyPlace: AnyPlaceId, stage: ScreenBox, width: number, height: number, posed = true): { pose: CameraPose; shift: { x: number; y: number } } {
   const place = scenePlace(anyPlace);
   const site = siteOf(place, posed);
-  return poseOfSubject(site, site.subject, site.floor().x + (site.keo.dx + site.habitant.dx) / 2, stage, width, height);
+  return poseOfSubject(site, site.subject, site.floor().x + (site.frameDx ?? (site.keo.dx + site.habitant.dx) / 2), stage, width, height);
 }
 
 /** La marge autour de l'aménagement dans le cadrage de la remise, en unités du monde. */
@@ -1466,7 +1511,7 @@ export function remisePose(anyPlace: AnyPlaceId, include: { min: readonly number
   const site = siteOf(place, posed);
   const S = site.subject;
   const f = site.floor();
-  const mid = f.x + (site.keo.dx + site.habitant.dx) / 2;
+  const mid = f.x + (site.frameDx ?? (site.keo.dx + site.habitant.dx) / 2);
   const left = Math.min(mid - S.halfWidth, include.min[0] - REMISE_MARGIN);
   const right = Math.max(mid + S.halfWidth, include.max[0] + REMISE_MARGIN);
   const subject = { ...S, halfWidth: (right - left) / 2, bottom: Math.min(S.bottom, include.min[1] - f.y - REMISE_MARGIN / 2), top: Math.max(S.top, include.max[1] - f.y + REMISE_MARGIN / 2) };

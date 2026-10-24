@@ -10,7 +10,8 @@ import { startOf } from './paths';
 import { PLACES, placeById } from './plan6e';
 import { hasScenette } from './levelPlan';
 import { PLACES_5E } from './plan5e';
-import { BUILT_PLACES_4E } from './plan4e';
+import { BUILT_PLACES_4E, PLACES_4E } from './plan4e';
+import { PLACES_3E } from './plan3e';
 import { COMMONS, OBSERVATORY, SHIPYARD, SHORES, SLIP_N, STEAM_GAP, commonsPillars, drumFace, hullEdge, modelOfPlace } from './places';
 import { ANSWER_LAYOUT, COMMONS_PAVING_RISE, ENGINE_PAVING_RISE, FOUNTAIN, JAUGE, LOCK, OBSERVATORY_BAY, OBSERVATORY_PAVING_RISE, PLANK, SHIPYARD_FLOOR_RISE, VALVE, answerObjects, facingAnswerObjects, plankOnHull, filetsBasketAt, fullBasket, itemScene, loadedBoat, lockFull, placeTrace, questionLayout, sceneSpot, swingTo, type ScreenBox } from './questionScene';
 import {
@@ -43,10 +44,12 @@ import {
   scenetteHidesPieces,
   scenetteTraces,
   scenettePose,
+  scenetteStartYaw,
   answerLeaves,
   scenetteDeck,
   LAND_DECK,
   PHARE_SOCLE,
+  TIERS_LIEUX,
 } from './scenette';
 import { COLUMN } from './questions';
 import { heightAt, standingHeight } from './terrain';
@@ -1531,5 +1534,40 @@ describe('La réplique de fin à la dernière pose (reste des Fabriques)', () =>
     expect(saysRestored('soute')).toBe(true);
     expect(saysRestored('etalon')).toBe(false);
     expect(saysRestored('lookout')).toBe(false);
+  });
+});
+
+describe('Le plan de scénette des 4e et 3e (GD-26, PR 2)', () => {
+  it('vaut pour tous les lieux à scénette des 4e et 3e, sauf les Roches', () => {
+    const expected = [...PLACES_4E, ...PLACES_3E].map((p) => p.id).filter((id) => hasScenette(id) && id !== 'roches');
+    expect([...TIERS_LIEUX].sort()).toEqual([...new Set(expected)].sort());
+  });
+
+  const LIEUX = ['forge', 'etalon', 'dynamo', 'fanal', 'coupole', 'maquette', 'belvedere', 'palais'] as const;
+
+  it('l’habitant se tient au tiers droit du cadre, Kéo au tiers gauche, un peu en retrait vers le fond', () => {
+    for (const place of LIEUX) {
+      const start = scenetteStartYaw(place);
+      const right = { x: Math.cos(start), z: -Math.sin(start) };
+      const front = { x: Math.sin(start), z: Math.cos(start) };
+      const keo = scenetteKeo(place).at;
+      const hab = scenetteHabitant(place);
+      const third = 1; // la demi-largeur cadrée est de 3,0
+      const along = (p: { x: number; z: number }, v: { x: number; z: number }) => (p.x - hab.x) * v.x + (p.z - hab.z) * v.z;
+      expect(along(keo, right), place).toBeCloseTo(-2 * third, 5);
+      expect(along(keo, front), place).toBeLessThan(0);
+    }
+  });
+
+  it('le cadre reste centré sur l’instrument, pas sur le milieu de Kéo et de l’habitant', () => {
+    const stage = { left: 0, right: 1024, top: 0, bottom: 768 };
+    for (const place of LIEUX) {
+      const { pose } = scenettePose(place, stage, 1024, 768);
+      expect(pose.target.x, place).toBeCloseTo(sceneSpot(place).x, 5);
+    }
+  });
+
+  it('les Roches gardent leur plan : le décor du toit interdit de déplacer la géologue', () => {
+    expect(distance(scenetteHabitant('roches'), scenetteKeo('roches').at)).toBeGreaterThan(3);
   });
 });

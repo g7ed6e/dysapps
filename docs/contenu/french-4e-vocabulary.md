@@ -164,12 +164,20 @@ Pour tous les items :
   - Un mot peut avoir plusieurs sens : c’est la polysémie.
 
 1. énoncé : « Une pluie de cadeaux » : quel sens ?
+   - sujet : Une pluie de cadeaux
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Une pluie de cadeaux » : quel sens ?
    - choix : figuré · propre
    - réponse : figuré
    - indice : Des cadeaux ne tombent pas vraiment du ciel : image.
    - explication : Image (beaucoup de cadeaux) : sens figuré.
 2. énoncé : « Il pleut depuis ce matin » : quel sens ?
+   - sujet : Il pleut depuis ce matin
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Il pleut depuis ce matin » : quel sens ?
    - choix : propre · figuré
    - réponse : propre
@@ -186,12 +194,20 @@ Pour tous les items :
    - indice : On ne mange pas un livre : sens figuré.
    - explication : Sens figuré : lire vite et avec plaisir.
 5. énoncé : « La bouche du métro » : quel sens ?
+   - sujet : La bouche du métro
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « La bouche du métro » : quel sens ?
    - choix : figuré · propre
    - réponse : figuré
    - indice : Le métro n’a pas de vraie bouche : image de l’entrée.
    - explication : Image : l’entrée ressemble à une bouche, sens figuré.
 6. énoncé : « Il a cassé un verre » : quel sens ?
+   - sujet : Il a cassé un verre
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Il a cassé un verre » : quel sens ?
    - choix : propre · figuré
    - réponse : propre
@@ -203,6 +219,10 @@ Pour tous les items :
    - indice : Expression imagée.
    - explication : Sens figuré : perdre connaissance.
 8. énoncé : « Le pied de la table » : quel sens ?
+   - sujet : Le pied de la table
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Le pied de la table » : quel sens ?
    - choix : figuré · propre
    - réponse : figuré
@@ -473,18 +493,30 @@ Pour tous les items :
   - Le familier oublie souvent le « ne » et emploie des mots comme bouquin, bagnole, ouais.
 
 1. énoncé : « J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?
+   - sujet : J’étais à la bourre.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?
    - choix : familier · courant · soutenu
    - réponse : familier
    - indice : Le « ne » manque, et « à la bourre » se dit entre amis.
    - explication : Registre familier : « ne » oublié, « à la bourre » (en courant : en retard).
 2. énoncé : « Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?
+   - sujet : J’étais en retard.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?
    - choix : soutenu · courant · familier
    - réponse : courant
    - indice : La phrase est correcte, avec des mots de tous les jours.
    - explication : Registre courant : le « ne » est là, et les mots sont ceux de tous les jours.
 3. énoncé : « Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?
+   - sujet : J’accusais un retard.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : « Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?
    - choix : courant · familier · soutenu
    - réponse : soutenu

@@ -9,6 +9,14 @@ import type { FacetBuilder, Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { Reaction } from './questionScene';
 
+/** Le réglage que la scène montre (GD-26) : la position réglée, de `min` à `max`, partie de `start`. */
+export interface DialShown {
+  count: number;
+  max: number;
+  min: number;
+  start: number;
+}
+
 /** Un volume du lieu : la ruine, ou l'étape et la rangée où il se pose, et la rangée qui l'enlève (`until`). */
 export type AddPiece = (stage: Stage | 'ruine', row: number, draw: (b: FacetBuilder) => void, until?: { stage: Stage; row: number }) => void;
 
@@ -180,9 +188,9 @@ export interface PlaceArt {
    */
   restoration?: { readonly seconds: number; draw(c: Vec3, t: number): Facets; frame(t: number): string };
   /**
-   * Le geste « régler » dans la scénette (GD-26) : ce que le lieu montre pour `count` crans réglés sur `max`, sans
-   * nombre (à la Forge du 4e, la lueur qui monte dans la gueule du fourneau, d'un cran par coup) ; `c` : le centre du lieu
-   * à son sol. Dans le maillage de l'item, refait à chaque cran.
+   * Le geste « régler » dans la scénette (GD-26) : ce que le lieu montre du réglage, sans nombre (à la Forge du 4e, la
+   * flamme du foyer qui monte d'un cran par coup ; à la Montée du 5e, le godet sur l'échelle graduée) ; `c` : le centre
+   * du lieu à son sol. Dans le maillage de l'item, refait à chaque cran.
    */
-  dial?(c: Vec3, count: number, max: number): Facets;
+  dial?(c: Vec3, dial: DialShown): Facets;
 }

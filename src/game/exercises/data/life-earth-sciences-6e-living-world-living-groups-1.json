@@ -21,7 +21,7 @@
       "explanation": "La chauve-souris a des poils : c’est un mammifère. Voler ne compte pas : on classe selon ce qu’on a, pas selon ce qu’on fait.",
       "gesture": "ranger",
       "shows": "ailes, poils",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -52,7 +52,7 @@
       "explanation": "Le manchot a des plumes : c’est un oiseau, même s’il nage et ne vole pas.",
       "gesture": "ranger",
       "shows": "plumes, ailes courtes",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -83,7 +83,7 @@
       "explanation": "La baleine a des mamelles : c’est un mammifère. Vivre dans la mer ne fait pas d’elle un poisson.",
       "gesture": "ranger",
       "shows": "mamelles, nageoires",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

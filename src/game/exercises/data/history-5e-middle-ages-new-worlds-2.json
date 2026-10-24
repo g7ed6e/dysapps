@@ -19,6 +19,9 @@
       "answer": "au XVe siècle",
       "hint": "Dans le rappel, 1492 est-il entre 1401 et 1500 ?",
       "explanation": "L’an 1492 est entre l’an 1401 et l’an 1500 : c’est le XVe siècle. Le 14 du début ne donne pas le siècle.",
+      "gesture": "placer",
+      "shows": "1492 : Colomb arrive en Amérique",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

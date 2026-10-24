@@ -10,6 +10,7 @@
       "key": "french-6e-reading-sentence-order-1-0",
       "prompt": "Tu viens au foot samedi ?",
       "question": "Quel est le type de cette phrase ?",
+      "subject": "Tu viens au foot samedi ?",
       "choices": [
         "interrogative",
         "déclarative",
@@ -18,6 +19,9 @@
       "answer": "interrogative",
       "hint": "Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?",
       "explanation": "Les mots sont rangés comme pour raconter, mais le point d’interrogation montre qu’on pose une question : la phrase est interrogative.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -37,6 +41,7 @@
       "key": "french-6e-reading-sentence-order-1-1",
       "prompt": "Range ton sac avant de partir.",
       "question": "Quel est le type de cette phrase ?",
+      "subject": "Range ton sac avant de partir.",
       "choices": [
         "impérative",
         "déclarative",
@@ -45,6 +50,9 @@
       "answer": "impérative",
       "hint": "Cherche le sujet du verbe « Range ». Y en a-t-il un ?",
       "explanation": "« Range » n’a pas de sujet et donne un ordre : la phrase est impérative. Elle finit par un point, comme beaucoup de phrases impératives.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -64,6 +72,7 @@
       "key": "french-6e-reading-sentence-order-1-2",
       "prompt": "Je me demande où est mon stylo.",
       "question": "Quel est le type de cette phrase ?",
+      "subject": "Je me demande où est mon stylo.",
       "choices": [
         "déclarative",
         "interrogative",
@@ -72,6 +81,9 @@
       "answer": "déclarative",
       "hint": "Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?",
       "explanation": "La phrase parle d’une question, mais elle ne la pose pas : pas de point d’interrogation, elle finit par un point. Elle est déclarative.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -91,6 +103,7 @@
       "key": "french-6e-reading-sentence-order-1-3",
       "prompt": "Ne cours pas dans le couloir !",
       "question": "Quel est le type de cette phrase ?",
+      "subject": "Ne cours pas dans le couloir !",
       "choices": [
         "impérative",
         "déclarative",
@@ -99,6 +112,9 @@
       "answer": "impérative",
       "hint": "Qui fait l’action de courir ? Le sujet est-il écrit ?",
       "explanation": "Le verbe « cours » n’a pas de sujet écrit et donne un ordre : la phrase est impérative. Avec « Ne » et « pas », elle est aussi négative, et le point d’exclamation la rend exclamative.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -118,6 +134,7 @@
       "key": "french-6e-reading-sentence-order-1-4",
       "prompt": "Où as-tu rangé la télécommande ?",
       "question": "Quel est le type de cette phrase ?",
+      "subject": "Où as-tu rangé la télécommande ?",
       "choices": [
         "interrogative",
         "impérative",
@@ -126,6 +143,9 @@
       "answer": "interrogative",
       "hint": "La phrase attend-elle une réponse ?",
       "explanation": "« Où » et le point d’interrogation montrent qu’on pose une question : la phrase est interrogative. Le sujet « tu » est placé après le verbe.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

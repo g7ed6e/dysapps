@@ -36,6 +36,7 @@
     {
       "key": "civics-3e-democratic-life-constitution-1-1",
       "prompt": "Voter les lois est le rôle du pouvoir …",
+      "subject": "Voter les lois",
       "spoken": "Voter les lois est le rôle du pouvoir  (mot manquant) ",
       "choices": [
         "exécutif",
@@ -45,6 +46,9 @@
       "answer": "législatif",
       "hint": "Relis la deuxième ligne du rappel.",
       "explanation": "Le pouvoir législatif vote les lois : c’est le Parlement. L’exécutif les applique, le judiciaire juge.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -63,6 +67,7 @@
     {
       "key": "civics-3e-democratic-life-constitution-1-2",
       "prompt": "Le pouvoir de juger appartient aux juges : c’est le pouvoir …",
+      "subject": "Juger",
       "spoken": "Le pouvoir de juger appartient aux juges : c’est le pouvoir  (mot manquant) ",
       "choices": [
         "judiciaire",
@@ -72,6 +77,9 @@
       "answer": "judiciaire",
       "hint": "Relis l’avant-dernière ligne du rappel.",
       "explanation": "Le pouvoir judiciaire appartient aux juges. Il est séparé des deux autres pouvoirs : la justice est indépendante.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -118,6 +126,7 @@
     {
       "key": "civics-3e-democratic-life-constitution-1-4",
       "prompt": "Le président de la République et le gouvernement forment le pouvoir …",
+      "subject": "Le président et le gouvernement",
       "spoken": "Le président de la République et le gouvernement forment le pouvoir  (mot manquant) ",
       "choices": [
         "législatif",
@@ -127,6 +136,9 @@
       "answer": "exécutif",
       "hint": "Relis la quatrième ligne du rappel.",
       "explanation": "Le président de la République et le gouvernement forment le pouvoir exécutif : ils dirigent le pays et font appliquer les lois.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

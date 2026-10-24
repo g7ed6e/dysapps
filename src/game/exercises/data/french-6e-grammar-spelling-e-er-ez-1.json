@@ -9,6 +9,7 @@
     {
       "key": "va-manger",
       "prompt": "Il va mang… à midi.",
+      "subject": "Il va mang… à midi.",
       "spoken": "Il va mang(terminaison) à midi.",
       "choices": [
         "é",
@@ -17,6 +18,9 @@
       ],
       "answer": "er",
       "rule": "Après « va », on peut dire « vendre » : c’est -er.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -32,6 +36,7 @@
     {
       "key": "a-mange",
       "prompt": "Il a mang… une pomme.",
+      "subject": "Il a mang… une pomme.",
       "spoken": "Il a mang(terminaison) une pomme.",
       "choices": [
         "é",
@@ -40,6 +45,9 @@
       ],
       "answer": "é",
       "rule": "Après « a », on peut dire « vendu » : c’est -é.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -55,6 +63,7 @@
     {
       "key": "vous-mangez",
       "prompt": "Vous mang… trop vite.",
+      "subject": "Vous mang… trop vite.",
       "spoken": "Vous mang(terminaison) trop vite.",
       "choices": [
         "é",
@@ -63,6 +72,9 @@
       ],
       "answer": "ez",
       "rule": "Avec « vous », le verbe finit par -ez.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -78,6 +90,7 @@
     {
       "key": "veut-jouer",
       "prompt": "Elle veut jou… dehors.",
+      "subject": "Elle veut jou… dehors.",
       "spoken": "Elle veut jou(terminaison) dehors.",
       "choices": [
         "é",
@@ -86,6 +99,9 @@
       ],
       "answer": "er",
       "rule": "Après « veut », on peut dire « vendre » : c’est -er.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -101,6 +117,7 @@
     {
       "key": "est-tombe",
       "prompt": "Le vase est tomb… par terre.",
+      "subject": "Le vase est tomb… par terre.",
       "spoken": "Le vase est tomb(terminaison) par terre.",
       "choices": [
         "é",
@@ -109,6 +126,9 @@
       ],
       "answer": "é",
       "rule": "Après « est », on peut dire « vendu » : c’est -é.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -124,6 +144,7 @@
     {
       "key": "vous-chantez",
       "prompt": "Vous chant… très bien.",
+      "subject": "Vous chant… très bien.",
       "spoken": "Vous chant(terminaison) très bien.",
       "choices": [
         "é",
@@ -132,6 +153,9 @@
       ],
       "answer": "ez",
       "rule": "Avec « vous », le verbe finit par -ez.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -147,6 +171,7 @@
     {
       "key": "pour-chanter",
       "prompt": "Je viens pour chant… avec toi.",
+      "subject": "Je viens pour chant… avec toi.",
       "spoken": "Je viens pour chant(terminaison) avec toi.",
       "choices": [
         "é",
@@ -155,6 +180,9 @@
       ],
       "answer": "er",
       "rule": "Après « pour », on peut dire « vendre » : c’est -er.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -170,6 +198,7 @@
     {
       "key": "ont-fini",
       "prompt": "Ils ont termin… le travail.",
+      "subject": "Ils ont termin… le travail.",
       "spoken": "Ils ont termin(terminaison) le travail.",
       "choices": [
         "é",
@@ -178,6 +207,9 @@
       ],
       "answer": "é",
       "rule": "Après « ont », on peut dire « vendu » : c’est -é.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

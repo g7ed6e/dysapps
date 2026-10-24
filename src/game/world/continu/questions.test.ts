@@ -1167,7 +1167,7 @@ describe('Le geste « ranger » aux Filets (GD-20, point 8, lot L4)', () => {
     const placed = placeItems('filets', 'french-6e-grammar-spelling-word-classes-1', items);
     expect(placed.map((it) => it.key)).toEqual(items.map((it) => it.key));
     expect(placed.every((it) => it.placeScene === ENCLOS && it.answer === items.find((r) => r.key === it.key)!.answer)).toBe(true);
-    expect(rangeRounds(placed).map((r) => r.length)).toEqual(Array.from({ length: Math.ceil(items.length / 4) }, (_, i) => Math.min(4, items.length - 4 * i)));
+    expect(rangeRounds(placed).map((r) => r.length)).toEqual(Array.from({ length: Math.ceil(items.length / 3) }, (_, i) => Math.min(3, items.length - 3 * i)));
     // La Récolte (et le Tri des graines, au même écran) : la pêche du jour, la même pour tous les items (rien ne dit la
     // réponse).
     for (const id of ['french-6e-grammar-spelling-e-er-ez-1', 'french-6e-grammar-spelling-e-er-ez-2']) {
@@ -1674,6 +1674,13 @@ describe('Les gestes des items (GD-26)', () => {
     const [a, b, c] = ['a', 'b', 'c'].map((k) => fiche(k, ['x']));
     expect(gestureScreens([t1, a, t2, b, c], 2)).toEqual([[t1], [a, b], [c], [t2]]);
     expect(gestureScreens([t1, t2], 3)).toEqual([[t1], [t2]]);
+  });
+  it('sur un écran bas, des fiches en phrases se rangent une par manche, des mots par trois', () => {
+    const words = ['a', 'b', 'c'].map((k) => ({ ...fiche(k, ['x']), subject: 'la baleine' }));
+    const sentences = ['a', 'b', 'c'].map((k) => ({ ...fiche(k, ['x']), subject: 'Je viens pour chant… avec toi.' }));
+    expect(gestureScreens(words, 3, 1)).toEqual([words]);
+    expect(gestureScreens(sentences, 3, 1)).toEqual(sentences.map((f) => [f]));
+    expect(gestureScreens(sentences, 3)).toEqual([sentences]);
   });
   it('écrit les fiches de la Mangrove et les paniers du Hameau dans le contenu, la réponse parmi les choix', async () => {
     const vivant = await loadExercise('life-earth-sciences-6e-living-world-living-groups-1');

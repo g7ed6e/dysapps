@@ -9,6 +9,7 @@
     {
       "key": "french-3e-language-connotation-1-0",
       "prompt": "« Le vieux bâtiment était devenu une bicoque où personne n’entrait plus. » Quelle image donne le mot « bicoque » ?",
+      "subject": "une bicoque",
       "spoken": "Le vieux bâtiment était devenu une bicoque où personne n’entrait plus. Quelle image donne le mot « bicoque » ?",
       "choices": [
         "mélioratif",
@@ -18,6 +19,9 @@
       "answer": "péjoratif",
       "hint": "Aurais-tu envie d’entrer dans une bicoque ?",
       "explanation": "« Bicoque » désigne une maison, avec une image de maison pauvre et mal tenue : il est péjoratif. Le mot neutre serait « maison ».",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -34,6 +38,7 @@
     {
       "key": "french-3e-language-connotation-1-1",
       "prompt": "« Au fond du jardin se dressait une demeure élégante, aux volets bleus. » Quelle image donne le mot « demeure » ?",
+      "subject": "une demeure",
       "spoken": "Au fond du jardin se dressait une demeure élégante, aux volets bleus. Quelle image donne le mot « demeure » ?",
       "choices": [
         "mélioratif",
@@ -43,6 +48,9 @@
       "answer": "mélioratif",
       "hint": "Le mot va avec « élégante » : quelle image en ressort ?",
       "explanation": "« Demeure » désigne une maison, avec une image de grande et belle maison : il est mélioratif.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -59,6 +67,7 @@
     {
       "key": "french-3e-language-connotation-1-2",
       "prompt": "« La maison a trois chambres et un garage. » Quelle image donne le mot « maison » ?",
+      "subject": "la maison",
       "spoken": "La maison a trois chambres et un garage. Quelle image donne le mot « maison » ?",
       "choices": [
         "mélioratif",
@@ -68,6 +77,9 @@
       "answer": "neutre",
       "hint": "La phrase décrit-elle, ou juge-t-elle ?",
       "explanation": "Ici, « maison » donne son sens sans rien ajouter : la phrase décrit, elle ne juge pas. Le mot est neutre.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -84,6 +96,7 @@
     {
       "key": "french-3e-language-connotation-1-3",
       "prompt": "« Un chauffard a traversé le carrefour sans s’arrêter au feu rouge. » Quelle image donne le mot « chauffard » ?",
+      "subject": "un chauffard",
       "spoken": "Un chauffard a traversé le carrefour sans s’arrêter au feu rouge. Quelle image donne le mot « chauffard » ?",
       "choices": [
         "mélioratif",
@@ -93,6 +106,9 @@
       "answer": "péjoratif",
       "hint": "Compare avec « un conducteur ».",
       "explanation": "« Chauffard » désigne un conducteur, avec un jugement : il conduit mal et met les autres en danger. Il est péjoratif.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -109,6 +125,7 @@
     {
       "key": "french-3e-language-connotation-1-4",
       "prompt": "« Le chevalier sauta sur son destrier et partit au galop. » Quelle image donne le mot « destrier » ?",
+      "subject": "un destrier",
       "spoken": "Le chevalier sauta sur son destrier et partit au galop. Quelle image donne le mot « destrier » ?",
       "choices": [
         "mélioratif",
@@ -118,6 +135,9 @@
       "answer": "mélioratif",
       "hint": "Compare avec « un cheval » : lequel fait plus noble ?",
       "explanation": "« Destrier » désigne un cheval, avec l’image d’un noble cheval de chevalier : il est mélioratif.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -134,6 +154,7 @@
     {
       "key": "french-3e-language-connotation-1-5",
       "prompt": "« Le conducteur s’arrête au feu rouge et laisse passer les piétons. » Quelle image donne le mot « conducteur » ?",
+      "subject": "le conducteur",
       "spoken": "Le conducteur s’arrête au feu rouge et laisse passer les piétons. Quelle image donne le mot « conducteur » ?",
       "choices": [
         "mélioratif",
@@ -143,6 +164,9 @@
       "answer": "neutre",
       "hint": "Le mot ajoute-t-il un jugement à son sens ?",
       "explanation": "« Conducteur » dit seulement qui conduit : il n’ajoute aucune image. Il est neutre.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -159,6 +183,7 @@
     {
       "key": "french-3e-language-connotation-1-6",
       "prompt": "« Un relent de poisson flottait dans la cuisine. » Quelle image donne le mot « relent » ?",
+      "subject": "un relent",
       "spoken": "Un relent de poisson flottait dans la cuisine. Quelle image donne le mot « relent » ?",
       "choices": [
         "mélioratif",
@@ -168,6 +193,9 @@
       "answer": "péjoratif",
       "hint": "Compare avec « une odeur ».",
       "explanation": "« Relent » désigne une odeur, avec l’image d’une odeur mauvaise qui reste : il est péjoratif.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -184,6 +212,7 @@
     {
       "key": "french-3e-language-connotation-1-7",
       "prompt": "« Un parfum de lilas montait du jardin. » Quelle image donne le mot « parfum » ?",
+      "subject": "un parfum",
       "spoken": "Un parfum de lilas montait du jardin. Quelle image donne le mot « parfum » ?",
       "choices": [
         "mélioratif",
@@ -193,6 +222,9 @@
       "answer": "mélioratif",
       "hint": "Compare avec « une odeur ».",
       "explanation": "« Parfum » désigne une odeur, avec l’image d’une odeur agréable : il est mélioratif.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

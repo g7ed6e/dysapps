@@ -9,6 +9,7 @@
     {
       "key": "french-4e-sentence-subordinate-clauses-3-0",
       "prompt": "« Je me demande si le car est arrivé. » Totale ou partielle ?",
+      "subject": "Je me demande si le car est arrivé.",
       "spoken": "Je me demande si le car est arrivé. Totale ou partielle ?",
       "choices": [
         "totale",
@@ -17,6 +18,9 @@
       "answer": "totale",
       "hint": "Peut-on répondre par oui ou par non ?",
       "explanation": "Le car est-il arrivé ? On répond oui ou non : la question est totale. Elle commence par « si ».",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -33,6 +37,7 @@
     {
       "key": "french-4e-sentence-subordinate-clauses-3-1",
       "prompt": "« Dis-moi pourquoi tu ris. » Totale ou partielle ?",
+      "subject": "Dis-moi pourquoi tu ris.",
       "spoken": "Dis-moi pourquoi tu ris. Totale ou partielle ?",
       "choices": [
         "totale",
@@ -41,6 +46,9 @@
       "answer": "partielle",
       "hint": "Peut-on répondre par oui ou par non ?",
       "explanation": "Pourquoi ris-tu ? On ne répond pas par oui ou non, mais par une raison : la question est partielle, et porte sur la cause.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -57,6 +65,7 @@
     {
       "key": "french-4e-sentence-subordinate-clauses-3-2",
       "prompt": "« Il ne sait pas quand le cours commence. » Totale ou partielle ?",
+      "subject": "Il ne sait pas quand le cours commence.",
       "spoken": "Il ne sait pas quand le cours commence. Totale ou partielle ?",
       "choices": [
         "partielle",
@@ -65,6 +74,9 @@
       "answer": "partielle",
       "hint": "La question porte-t-elle sur une seule chose ?",
       "explanation": "Quand le cours commence-t-il ? On répond par un moment : la question est partielle.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

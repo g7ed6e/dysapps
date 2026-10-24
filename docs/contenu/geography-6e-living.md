@@ -11,7 +11,7 @@ créature : Boussole
 
 # Pointe des paysages
 
-> Écrans existants seulement : le niveau 1 de chaque mission est une question à trou (repères et lexique), le niveau 2 une question sur un document. Pas de carte à voir : un document est un texte court, un petit tableau ou la description d’une photo de paysage, quatre lignes au plus, une information par ligne. Plus tard, une carte à toucher ferait situer les métropoles, les déserts, les ports et les foyers de peuplement ; une photo de paysage à légender ferait trouver le premier plan et l’arrière-plan.
+> Écrans existants seulement : le niveau 1 de chaque mission est une question à trou (repères et lexique), le niveau 2 une question sur un document. Pas de carte à voir : un document est un texte court, un petit tableau ou la description d’une photo de paysage, quatre lignes au plus, une information par ligne. Plus tard, une carte à toucher ferait situer les métropoles, les déserts, les ports et les foyers de peuplement ; une photo de paysage à légender ferait trouver le premier plan et l’arrière-plan. Dans le lieu (GD-26), quatre items se placent devant leur porte : le pays ou le continent, avec son nom écrit, jamais une carte à lire.
 
 > Les nombres sont arrondis (« environ », « plus de ») et datés de 2024 ou 2025 ; ils sont à revoir quand les estimations de l’ONU et de l’INSEE changent. Aucun calcul : on compare deux nombres écrits. Dans `lu`, les milliers et les millions s’écrivent en lettres ; à l’affichage, une espace insécable sépare les milliers.
 
@@ -48,11 +48,17 @@ Pour tous les items :
    - indice : Quel mot du rappel parle d’une ville qui attire ?
    - explication : New York est une métropole : elle attire habitants et entreprises du monde entier. Ce n’est pas une capitale : la capitale des États-Unis est Washington.
 2. énoncé : Tokyo est la grande métropole du … .
+   - geste : placer
+   - scène : Tokyo
+   - consigne courte : Pose le panier à sa porte.
    - choix : Japon · Brésil · Chine
    - réponse : Japon
    - indice : Tokyo est la capitale de ce pays.
    - explication : Tokyo est au Japon, en Asie : c’est sa capitale.
 3. énoncé : Mumbai est une grande métropole. Elle est en … .
+   - geste : placer
+   - scène : Mumbai
+   - consigne courte : Pose le panier à sa porte.
    - choix : Inde · Égypte · Brésil
    - réponse : Inde
    - indice : Son ancien nom est Bombay. Cherche le pays d’Asie.
@@ -184,6 +190,9 @@ Pour tous les items :
    - indice : Regarde la deuxième ligne du rappel.
    - explication : Peu d’habitants pour beaucoup d’espace : la densité est faible. Nulle voudrait dire personne.
 2. énoncé : Le Sahara, le plus grand désert chaud du monde, se trouve en … .
+   - geste : placer
+   - scène : le Sahara
+   - consigne courte : Pose le panier à sa porte.
    - choix : Asie · Amérique · Afrique
    - réponse : Afrique
    - indice : Il touche le Maroc, l’Algérie, l’Égypte.
@@ -331,6 +340,9 @@ Pour tous les items :
    - indice : Les conteneurs voyagent par bateau.
    - explication : Shanghai est le premier port à conteneurs du monde. La Chine vend ses marchandises partout.
 4. énoncé : Rotterdam, aux Pays-Bas, est le premier port … .
+   - geste : placer
+   - scène : Rotterdam
+   - consigne courte : Pose le panier à sa porte.
    - choix : d’Europe · d’Afrique · d’Asie
    - réponse : d’Europe
    - indice : Les Pays-Bas sont au nord de la France.

@@ -38,6 +38,32 @@ export const readRelatif: ItemGenerator = (rng) => {
   };
 };
 
+/** Les positions de l'échelle de la Montée, de −10 à 10. */
+const LADDER = { min: -10, max: 10 } as const;
+
+/**
+ * Dans le lieu (GD-26, la Montée) : régler le godet sur l'échelle graduée, parti de `a`, un cran par appui, jusqu'au
+ * résultat `s`. « Valider » est actif dès le départ (rester sur `a` est une réponse) ; le nombre atteint ne s'écrit qu'à
+ * « Valider ». L'aide du lieu ne montre que le départ : celle de l'item dessine le bond, donc l'arrivée (avis du contenu).
+ * La grille garde les choix.
+ */
+function climb(a: number, s: number, shortInstruction: string) {
+  const positions = Array.from({ length: LADDER.max - LADDER.min + 1 }, (_, i) => LADDER.min + i);
+  return {
+    gesture: 'régler',
+    shortInstruction,
+    dial: {
+      min: LADDER.min,
+      max: LADDER.max,
+      start: a,
+      unit: 'cran',
+      answer: s,
+      values: positions.map(fmt),
+      aid: { kind: 'number-line', props: { min: LADDER.min, max: LADDER.max, points: [a] } },
+    },
+  };
+}
+
 /** Addition de relatifs, avec le bond sur la droite. */
 export const addRelatifs: ItemGenerator = (rng) => {
   let a = nonZero(-9, 9, rng);
@@ -57,6 +83,7 @@ export const addRelatifs: ItemGenerator = (rng) => {
     hint: `Pars de ${fmt(a)} et fais un bond de ${Math.abs(b)} vers la ${b > 0 ? 'droite' : 'gauche'}.`,
     explanation: `De ${fmt(a)}, ${b > 0 ? 'on avance' : 'on recule'} de ${Math.abs(b)} : on arrive à ${fmt(s)}.`,
     aid: { kind: 'number-line', props: { min: -10, max: 10, points: [a, s], jump: [a, s] } },
+    ...climb(a, s, 'Fais le bond, puis valide.'),
   };
 };
 
@@ -78,6 +105,7 @@ export const subRelatifs: ItemGenerator = (rng) => {
     hint: `Soustraire ${fmt(b)}, c’est ajouter son opposé : ${fmt(a)} + ${par(-b)}.`,
     explanation: `${fmt(a)} − ${par(b)} = ${fmt(a)} + ${par(-b)} = ${fmt(d)}.`,
     aid: { kind: 'number-line', props: { min: -10, max: 10, points: [a, d], jump: [a, d] } },
+    ...climb(a, d, 'Fais le bond, puis valide.'),
   };
 };
 

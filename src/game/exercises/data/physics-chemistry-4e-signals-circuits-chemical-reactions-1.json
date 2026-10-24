@@ -9,6 +9,7 @@
     {
       "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-0",
       "prompt": "Le bois brûle et donne de la cendre et des fumées : c’est …",
+      "subject": "Le bois brûle",
       "spoken": "Le bois brûle et donne de la cendre et des fumées : c’est  (mot manquant) ",
       "choices": [
         "un changement d’état",
@@ -18,6 +19,9 @@
       "answer": "une transformation chimique",
       "hint": "La cendre, c’était là avant ?",
       "explanation": "La cendre et les fumées sont de nouvelles espèces chimiques : le bois a subi une transformation chimique, une combustion.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -36,6 +40,7 @@
     {
       "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-1",
       "prompt": "Le chocolat fond au soleil : c’est …",
+      "subject": "Le chocolat fond",
       "spoken": "Le chocolat fond au soleil : c’est  (mot manquant) ",
       "choices": [
         "un changement d’état",
@@ -45,6 +50,9 @@
       "answer": "un changement d’état",
       "hint": "Relis la ligne « Fondre » du rappel.",
       "explanation": "Le chocolat passe de solide à liquide : c’est toujours du chocolat. C’est un changement d’état, la fusion.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -63,6 +71,7 @@
     {
       "key": "physics-chemistry-4e-signals-circuits-chemical-reactions-1-2",
       "prompt": "Le sucre se dissout dans le lait : c’est …",
+      "subject": "Le sucre dans le lait",
       "spoken": "Le sucre se dissout dans le lait : c’est  (mot manquant) ",
       "choices": [
         "une transformation chimique",
@@ -72,6 +81,9 @@
       "answer": "un mélange",
       "hint": "Relis la ligne « Fondre » du rappel.",
       "explanation": "Le sucre est toujours là, le lait est sucré : rien de nouveau n’apparaît. C’est un mélange.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -9,6 +9,7 @@
     {
       "key": "civics-3e-democratic-life-information-1-0",
       "prompt": "« L’eau bout à 100 degrés au niveau de la mer. » Cette phrase exprime …",
+      "subject": "L’eau bout à 100 degrés",
       "spoken": "« L’eau bout à 100 degrés au niveau de la mer. » Cette phrase exprime  (mot manquant) ",
       "choices": [
         "une opinion",
@@ -18,6 +19,9 @@
       "answer": "un savoir",
       "hint": "Peut-on le vérifier par une expérience ?",
       "explanation": "C’est un savoir : on peut le vérifier et le démontrer. Une opinion se discute, une croyance ne se prouve pas.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -36,6 +40,7 @@
     {
       "key": "civics-3e-democratic-life-information-1-1",
       "prompt": "« Le meilleur sport, c’est le basket. » Cette phrase exprime …",
+      "subject": "Le meilleur sport, c’est le basket",
       "spoken": "« Le meilleur sport, c’est le basket. » Cette phrase exprime  (mot manquant) ",
       "choices": [
         "une opinion",
@@ -45,6 +50,9 @@
       "answer": "une opinion",
       "hint": "Tout le monde est-il obligé d’être d’accord ?",
       "explanation": "C’est une opinion : un avis personnel, qui se discute. D’autres préfèrent le foot ou la danse, et aucun n’a tort.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -63,6 +71,7 @@
     {
       "key": "civics-3e-democratic-life-information-1-2",
       "prompt": "« Ce porte-clés me porte bonheur. » Cette phrase exprime …",
+      "subject": "Ce porte-clés me porte bonheur",
       "spoken": "« Ce porte-clés me porte bonheur. » Cette phrase exprime  (mot manquant) ",
       "choices": [
         "un savoir",
@@ -72,6 +81,9 @@
       "answer": "une croyance",
       "hint": "Peut-on prouver qu’un objet porte bonheur ?",
       "explanation": "C’est une croyance : une conviction qu’on ne peut pas prouver. On peut y tenir, mais ce n’est pas un savoir.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

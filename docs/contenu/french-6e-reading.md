@@ -240,30 +240,50 @@ Pour tous les items :
   - Exclamative : une émotion, un point d’exclamation. Comme il fait chaud !
 
 1. énoncé : Tu viens au foot samedi ?
+   - sujet : Tu viens au foot samedi ?
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : interrogative · déclarative · impérative
    - réponse : interrogative
    - indice : Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?
    - explication : Les mots sont rangés comme pour raconter, mais le point d’interrogation montre qu’on pose une question : la phrase est interrogative.
 2. énoncé : Range ton sac avant de partir.
+   - sujet : Range ton sac avant de partir.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : impérative · déclarative · interrogative
    - réponse : impérative
    - indice : Cherche le sujet du verbe « Range ». Y en a-t-il un ?
    - explication : « Range » n’a pas de sujet et donne un ordre : la phrase est impérative. Elle finit par un point, comme beaucoup de phrases impératives.
 3. énoncé : Je me demande où est mon stylo.
+   - sujet : Je me demande où est mon stylo.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : déclarative · interrogative · impérative
    - réponse : déclarative
    - indice : Regarde le signe à la fin : un point, un point d’interrogation ou un point d’exclamation ?
    - explication : La phrase parle d’une question, mais elle ne la pose pas : pas de point d’interrogation, elle finit par un point. Elle est déclarative.
 4. énoncé : Ne cours pas dans le couloir !
+   - sujet : Ne cours pas dans le couloir !
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : impérative · déclarative · interrogative
    - réponse : impérative
    - indice : Qui fait l’action de courir ? Le sujet est-il écrit ?
    - explication : Le verbe « cours » n’a pas de sujet écrit et donne un ordre : la phrase est impérative. Avec « Ne » et « pas », elle est aussi négative, et le point d’exclamation la rend exclamative.
 5. énoncé : Où as-tu rangé la télécommande ?
+   - sujet : Où as-tu rangé la télécommande ?
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : interrogative · impérative · déclarative
    - réponse : interrogative
@@ -381,36 +401,60 @@ Pour tous les items :
    - indice : Compte les verbes conjugués, un par un.
    - explication : Le verbe « sortir » est à l’infinitif : il ne compte pas. Seul « ferme » est conjugué : la phrase est simple, même avec une virgule.
 3. énoncé : Il pleut, nous restons à la maison.
+   - sujet : Il pleut, nous restons à la maison.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : juxtaposition · coordination · subordination
    - réponse : juxtaposition
    - indice : Y a-t-il un mot entre les deux propositions ?
    - explication : Rien que la virgule entre « Il pleut » et « nous restons à la maison » : les propositions sont juxtaposées.
 4. énoncé : J’ai faim, mais le repas n’est pas prêt.
+   - sujet : J’ai faim, mais le repas tarde.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : coordination · juxtaposition · subordination
    - réponse : coordination
    - indice : Regarde le mot après la virgule.
    - explication : Il y a une virgule, mais aussi le mot « mais », qui relie les deux propositions : c’est une coordination. La juxtaposition, c’est une virgule seule.
 5. énoncé : Je mets mon manteau parce qu’il fait froid.
+   - sujet : Je mets mon manteau parce qu’il gèle.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : subordination · coordination · juxtaposition
    - réponse : subordination
    - indice : Quel mot relie les deux propositions ? Est-il dans la liste de la coordination ?
    - explication : Les mots « parce que » (ici « parce qu’ ») relient les propositions : c’est une subordination. Le mot « car » dirait aussi la cause, mais avec « car », ce serait une coordination.
 6. énoncé : Le chien aboie quand le facteur passe.
+   - sujet : Le chien aboie quand le facteur passe.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : subordination · juxtaposition · coordination
    - réponse : subordination
    - indice : Quel mot se trouve entre « aboie » et « le facteur » ?
    - explication : Le mot « quand » relie les deux propositions, « Le chien aboie » et « le facteur passe » : c’est une subordination.
 7. énoncé : Tu viens avec nous ou tu restes ici ?
+   - sujet : Tu viens avec nous ou tu restes ici ?
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : coordination · subordination · juxtaposition
    - réponse : coordination
    - indice : Quel petit mot se trouve entre « avec nous » et « tu restes » ?
    - explication : Le mot « ou » relie les deux propositions, « Tu viens avec nous » et « tu restes ici » : c’est une coordination, comme avec et, mais, donc, car.
 8. énoncé : Le réveil sonne ; je saute du lit.
+   - sujet : Le réveil sonne ; je saute du lit.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : juxtaposition · subordination · coordination
    - réponse : juxtaposition

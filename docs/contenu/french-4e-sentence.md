@@ -182,12 +182,20 @@ Pour tous les items :
    - indice : Enlève tout, de « que » jusqu’à « réparé ».
    - explication : Sans la relative, il reste la principale : « Le vélo roule bien. » La phrase est juste, mais on ne sait plus de quel vélo on parle.
 5. énoncé : « Je sais que tu dis vrai. » Cette subordonnée est-elle une relative ou une conjonctive ?
+   - sujet : Je sais que tu dis vrai.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Je sais que tu dis vrai. Cette subordonnée est-elle une relative ou une conjonctive ?
    - choix : une relative · une conjonctive
    - réponse : une conjonctive
    - indice : « Que » suit-il un nom, ou un verbe ?
    - explication : « Que » suit le verbe « sais » et ne remplace aucun nom : c’est une conjonctive, qui complète le verbe. Je sais quoi ? Que tu dis vrai.
 6. énoncé : « L’histoire que tu racontes est vraie. » Cette subordonnée est-elle une relative ou une conjonctive ?
+   - sujet : L’histoire que tu racontes est vraie.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : L’histoire que tu racontes est vraie. Cette subordonnée est-elle une relative ou une conjonctive ?
    - choix : une relative · une conjonctive
    - réponse : une relative
@@ -357,18 +365,30 @@ Pour tous les items :
   - Ni point d’interrogation, ni sujet inversé, ni « est-ce que ».
 
 1. énoncé : « Je me demande si le car est arrivé. » Totale ou partielle ?
+   - sujet : Je me demande si le car est arrivé.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Je me demande si le car est arrivé. Totale ou partielle ?
    - choix : totale · partielle
    - réponse : totale
    - indice : Peut-on répondre par oui ou par non ?
    - explication : Le car est-il arrivé ? On répond oui ou non : la question est totale. Elle commence par « si ».
 2. énoncé : « Dis-moi pourquoi tu ris. » Totale ou partielle ?
+   - sujet : Dis-moi pourquoi tu ris.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Dis-moi pourquoi tu ris. Totale ou partielle ?
    - choix : totale · partielle
    - réponse : partielle
    - indice : Peut-on répondre par oui ou par non ?
    - explication : Pourquoi ris-tu ? On ne répond pas par oui ou non, mais par une raison : la question est partielle, et porte sur la cause.
 3. énoncé : « Il ne sait pas quand le cours commence. » Totale ou partielle ?
+   - sujet : Il ne sait pas quand le cours commence.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Il ne sait pas quand le cours commence. Totale ou partielle ?
    - choix : partielle · totale
    - réponse : partielle
@@ -431,12 +451,20 @@ Pour tous les items :
   - Le temps du passif est celui du verbe être : est abattu, présent ; a été abattu, passé composé.
 
 1. énoncé : « Le match est arbitré par une jeune femme. » Quelle voix ?
+   - sujet : Le match est arbitré par Léa.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Le match est arbitré par une jeune femme. Quelle voix ?
    - choix : active · passive
    - réponse : passive
    - indice : Le match fait-il l’action, ou la subit-il ?
    - explication : Le match ne fait rien, il est arbitré : voix passive, avec être et le participe « arbitré ». « Par une jeune femme » dit qui arbitre.
 2. énoncé : « Les élèves préparent une exposition. » Quelle voix ?
+   - sujet : Les élèves préparent une exposition.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche.
    - lu : Les élèves préparent une exposition. Quelle voix ?
    - choix : passive · active
    - réponse : active

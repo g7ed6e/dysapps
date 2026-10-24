@@ -45,6 +45,9 @@
       "answer": "au VIIe siècle",
       "hint": "Dans le rappel, 622 est-il entre 601 et 700 ?",
       "explanation": "L’an 622 est entre l’an 601 et l’an 700 : c’est le VIIe siècle. Le 6 du début ne donne pas le siècle.",
+      "gesture": "placer",
+      "shows": "622 : l’Hégire",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -175,6 +178,9 @@
       "answer": "au XIe siècle",
       "hint": "Dans le rappel, 1095 est-il entre 1001 et 1100 ?",
       "explanation": "L’an 1095 est entre l’an 1001 et l’an 1100 : c’est le XIe siècle. Le 10 du début ne donne pas le siècle.",
+      "gesture": "placer",
+      "shows": "1095 : l’appel à la croisade",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

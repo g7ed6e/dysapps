@@ -11,6 +11,7 @@ import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
 import { useSettings } from '../../../core/SettingsContext';
 import { texteGrand } from '../../../core/settings';
+import type { Lang } from '../../../core/speech';
 import type { ScreenProps } from '../../exercises/registry';
 import type { ExerciseItem } from '../../exercises/types';
 import { EMPTY_RANGEMENT, binOf, cancel, complete, drop, lastIn, rangementResults, sortSlots, take, type Rangement } from '../../world/continu/rangement';
@@ -19,6 +20,9 @@ import { ConsigneIcon, IconLabel, PlaceAid, PlaceCarnet, aidOf, placeSceneOf, sl
 
 /** Le sujet d'un objet à ranger (« Le chien »), ou ce que montre le panier à placer (« l'aide aux personnes âgées »). */
 const subjectOf = (it: ExerciseItem): string => String(itemGesture(it) === 'placer' ? it.shows : (it.subject ?? it.key));
+
+/** Le trou d'une fiche (« Il va mang… à midi. ») se dit « blanc », « blank » en anglais (référent dys, GD-26). */
+export const spokenFiche = (text: string, lang: Lang = 'fr'): string => text.replace(/\s*…\s*/g, lang === 'en' ? ' blank ' : ' blanc ').trim();
 
 /** Ce que la fiche à ranger montre sous son nom (« ailes, poils », GD-26) ; rien à l'Enclos ni sur un panier à placer. */
 const showsOf = (it: ExerciseItem): string => (itemGesture(it) === 'ranger' && typeof it.shows === 'string' ? it.shows : '');
@@ -51,12 +55,15 @@ export function sortAnswer(items: readonly ExerciseItem[], s: Rangement) {
  * toucher de nouveau, ou Échap, le repose ; toucher un panier y range l'objet tenu. Un objet rangé se reprend jusqu'à
  * « Valider », qui attend que tout soit rangé.
  */
-export function SortScreen({ items, answered, onAnswer, exerciseId, level }: ScreenProps) {
+export function SortScreen({ items, answered, onAnswer, exerciseId, level, lang = 'fr' }: ScreenProps) {
   const { layout, show, simple, place, lowScreen } = useQuestion();
   const { speak, settings } = useSettings();
   // Au plus grand texte sur un écran bas, en « Vue simple » : « Écouter les sujets » passe dans la bande de « Valider »,
   // comme les cloches du Phare ; la règle va sous la liste.
   const compact = simple && lowScreen && texteGrand(settings);
+  // En « Vue simple » sur un écran bas, la carte de la règle passe sous les caisses et les fiches : à l'ouverture, on voit
+  // ce qu'il faut ranger avant « Valider » (référent dys, PR 2 de GD-26).
+  const aidBelow = simple && lowScreen;
   useStopOnLeave();
   const gesture = itemGesture(items[0]);
   const words = WORDS[gesture === 'régler' ? 'enclos' : (gesture ?? 'enclos')];
@@ -141,7 +148,7 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
     const next = take(state, it.key);
     setState(next);
     if (next.held === it.key) {
-      speak(subjectOf(it));
+      speak(spokenFiche(subjectOf(it), lang), undefined, lang);
       setStatus(`Tu tiens : ${subjectOf(it)}.`);
     } else setStatus(`Reposé : ${subjectOf(it)}.`);
   };
@@ -167,8 +174,9 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
       setStatus(`Touche d’abord ${gesture === 'ranger' ? 'une' : 'un'} ${words.thing}, puis ${gesture === 'ranger' ? 'sa' : 'son'} ${words.bin.toLowerCase()}.`);
       return;
     }
-    setState(drop(state, bin.id));
-    setStatus(`${subjectOf(held)} : rangé dans ${bin.label}.`);
+    const next = drop(state, bin.id);
+    setState(next);
+    setStatus(`${subjectOf(held)} : rangé dans ${bin.label}.${hand && complete(next, keys) ? ' Tout est rangé, valide.' : ''}`);
     focusNext.current = true;
   };
   const validate = () => {
@@ -177,8 +185,9 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
   };
   // Après « Valider », la voix dit chaque sujet avec son verbe accordé (« Les chiens mangent ») ; une fiche, son nom et
   // ce qu'elle montre.
-  const heard = frenchTypography(
-    items.map((it) => (gesture ? [subjectOf(it), showsOf(it)].filter(Boolean).join(' : ') : answered ? agreedSentence(it) : subjectOf(it))).join(', '),
+  const heard = spokenFiche(
+    frenchTypography(items.map((it) => (gesture ? [subjectOf(it), showsOf(it)].filter(Boolean).join(' : ') : answered ? agreedSentence(it) : subjectOf(it))).join(', ')),
+    lang,
   );
   const listen = `Écouter ${gesture === 'placer' ? 'le panier' : `les ${words.things.toLowerCase()}`}`;
   // Sa place vient de scenetteLayout (en bas à droite) ; la feuille de style la reprend.
@@ -236,6 +245,8 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
           </li>
         );
       })}
+      {/* Tout est rangé (GD-26) : la bulle vide dit la suite, à la place des fiches (consultant UX UI, PR 2). */}
+      {hand && done && !answered && <li className="world-hand-fini">{gesture === 'placer' ? 'Le panier est posé, valide.' : 'Tout est rangé, valide.'}</li>}
     </ul>
   );
   const binList = (
@@ -285,14 +296,14 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
             <ConsigneIcon />
             {/* Le panier à placer se lit avec la question : pas de voix à part. */}
             {hand ? (
-              gesture === 'ranger' && <SpeakButton text={heard} label={listen} compact />
+              gesture === 'ranger' && <SpeakButton text={heard} label={listen} lang={lang} compact />
             ) : layout.low ? (
               <span className="world-icon">
-                <SpeakButton text={heard} label={listen} compact />
+                <SpeakButton text={heard} label={listen} lang={lang} compact />
                 <IconLabel>{words.things}</IconLabel>
               </span>
             ) : (
-              <SpeakButton text={heard} label={listen} />
+              <SpeakButton text={heard} label={listen} lang={lang} />
             )}
             {!answered && !validateBox && !simple && (
               <button type="button" className="button primary validate-button" disabled={!done} onClick={validate}>
@@ -302,7 +313,7 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
           </div>
           {hand && subjectList}
           {simple && rule}
-          {aid && !hand && <PlaceAid aid={aid} layout={layout} simple={simple} />}
+          {aid && !hand && !aidBelow && <PlaceAid aid={aid} layout={layout} simple={simple} />}
         </div>
       )}
       {aid && hand && layout.aid && (
@@ -329,14 +340,14 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
           {binList}
         </>
       )}
-      {compact && aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
+      {aidBelow && aid && <PlaceAid aid={aid} layout={layout} simple={simple} />}
       <p className="visually-hidden" role="status">
         {status}
       </p>
       {simple && (!answered || compact) && (
         <div className="world-simple-validate">
           {/* L'icône seule, 48 px, son nom toujours dit : la bande garde la hauteur d'un bouton. */}
-          {compact && <SpeakButton text={heard} label={listen} compact />}
+          {compact && <SpeakButton text={heard} label={listen} lang={lang} compact />}
           {!answered && (
             <button type="button" className="button primary validate-button" disabled={!done} onClick={validate}>
               <Icon name="check" /> Valider

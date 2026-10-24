@@ -9,6 +9,7 @@
     {
       "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-0",
       "prompt": "Le glaçon sorti du congélateur devient de l’eau liquide : c’est la …",
+      "subject": "Un glaçon devient liquide",
       "spoken": "Le glaçon sorti du congélateur devient de l’eau liquide : c’est la  (mot manquant) ",
       "choices": [
         "solidification",
@@ -18,6 +19,9 @@
       "answer": "fusion",
       "hint": "Il était solide, il devient liquide.",
       "explanation": "Un solide qui devient liquide, c’est la fusion : la glace fond. La solidification, c’est l’inverse.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -35,6 +39,7 @@
     {
       "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-1",
       "prompt": "Le jus de fruit, mis au congélateur, devient solide : c’est la …",
+      "subject": "Un jus devient solide",
       "spoken": "Le jus de fruit, mis au congélateur, devient solide : c’est la  (mot manquant) ",
       "choices": [
         "fusion",
@@ -44,6 +49,9 @@
       "answer": "solidification",
       "hint": "Il était liquide, il devient solide.",
       "explanation": "Un liquide qui devient solide, c’est la solidification. La fusion, c’est l’inverse.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -141,6 +149,7 @@
     {
       "key": "physics-chemistry-6e-matter-energy-states-of-matter-1-5",
       "prompt": "Sur le miroir de la salle de bains, la vapeur d’eau redevient liquide : c’est la …",
+      "subject": "La vapeur devient liquide",
       "spoken": "Sur le miroir de la salle de bains, la vapeur d’eau redevient liquide : c’est la  (mot manquant) ",
       "choices": [
         "liquéfaction",
@@ -150,6 +159,9 @@
       "answer": "liquéfaction",
       "hint": "Elle était gaz, elle devient liquide.",
       "explanation": "Un gaz qui devient liquide, c’est la liquéfaction : la buée se forme.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

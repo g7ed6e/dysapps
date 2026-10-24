@@ -9,6 +9,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-0",
       "prompt": "« Tu ranges ta chambre. »",
+      "subject": "Tu ranges ta chambre.",
       "spoken": "« Tu ranges ta chambre. »",
       "choices": [
         "indicatif",
@@ -17,6 +18,9 @@
       "answer": "indicatif",
       "hint": "Y a-t-il un sujet écrit devant le verbe ?",
       "explanation": "Le sujet « tu » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -32,6 +36,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-1",
       "prompt": "« Range ta chambre ! »",
+      "subject": "Range ta chambre !",
       "spoken": "« Range ta chambre ! »",
       "choices": [
         "indicatif",
@@ -40,6 +45,9 @@
       "answer": "impératif",
       "hint": "Y a-t-il un sujet écrit devant le verbe ?",
       "explanation": "Pas de sujet écrit, et un ordre : c’est l’impératif présent, avec tu.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -55,6 +63,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-2",
       "prompt": "« Nous partons tôt. »",
+      "subject": "Nous partons tôt.",
       "spoken": "« Nous partons tôt. »",
       "choices": [
         "indicatif",
@@ -63,6 +72,9 @@
       "answer": "indicatif",
       "hint": "Y a-t-il un sujet écrit devant le verbe ?",
       "explanation": "Le sujet « nous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -78,6 +90,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-3",
       "prompt": "« Partons tôt ! »",
+      "subject": "Partons tôt !",
       "spoken": "« Partons tôt ! »",
       "choices": [
         "indicatif",
@@ -86,6 +99,9 @@
       "answer": "impératif",
       "hint": "Y a-t-il un sujet écrit devant le verbe ?",
       "explanation": "Pas de sujet écrit : on se donne un ordre à nous-mêmes. C’est l’impératif présent, avec nous.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -101,6 +117,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-4",
       "prompt": "« Écoutez bien la consigne. »",
+      "subject": "Écoutez bien la consigne.",
       "spoken": "« Écoutez bien la consigne. »",
       "choices": [
         "indicatif",
@@ -109,6 +126,9 @@
       "answer": "impératif",
       "hint": "Qui écoute ? Le sujet est-il écrit ?",
       "explanation": "Pas de sujet écrit : c’est un conseil donné à vous. C’est l’impératif présent.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -124,6 +144,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-5",
       "prompt": "« Vous écoutez la radio. »",
+      "subject": "Vous écoutez la radio.",
       "spoken": "« Vous écoutez la radio. »",
       "choices": [
         "indicatif",
@@ -132,6 +153,9 @@
       "answer": "indicatif",
       "hint": "Y a-t-il un sujet écrit devant le verbe ?",
       "explanation": "Le sujet « vous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -147,6 +171,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-6",
       "prompt": "« Va au tableau, Léo. »",
+      "subject": "Va au tableau, Léo.",
       "spoken": "« Va au tableau, Léo. »",
       "choices": [
         "indicatif",
@@ -155,6 +180,9 @@
       "answer": "impératif",
       "hint": "Léo est-il le sujet, ou celui à qui on parle ?",
       "explanation": "On parle à Léo, sans sujet écrit : c’est un ordre, l’impératif présent. « Léo » n’est pas le sujet, c’est celui qu’on appelle.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -170,6 +198,7 @@
     {
       "key": "french-5e-conjugation-tense-recognition-2-7",
       "prompt": "« Léo va au tableau. »",
+      "subject": "Léo va au tableau.",
       "spoken": "« Léo va au tableau. »",
       "choices": [
         "indicatif",
@@ -178,6 +207,9 @@
       "answer": "indicatif",
       "hint": "Qui va au tableau ? Le sujet est-il écrit ?",
       "explanation": "Le sujet « Léo » est écrit devant le verbe : on dit ce qui se passe, c’est l’indicatif présent.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -43,7 +43,7 @@ import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelP
 import { placePoseWords } from './constructionParts';
 import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_GRAND_WIDE_ROUND, RANGE_PER_LONG_LOW_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { DialScreen } from './DialScreen';
@@ -289,30 +289,24 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       return;
     }
     if (offer) return;
-    // Au plus grand texte, un carnet qui ne montre pas trois lignes de son rappel (référent dys, PR 1 de GD-26) : « Vue
-    // simple », où le rappel est entier.
+    // Une figure sans liste (les rangées de jetons des Quais) qui déborde du carnet : sa légende est sous le chevron,
+    // coupée (consultant UX UI) ; « Vue simple », une fois. Sur tablette, un rappel en lignes défile sous son chevron : le
+    // carnet est assez large pour en montrer trois lignes (PR 2 de GD-26). Sur un téléphone, une règle coupée ouvre
+    // « Vue simple », une fois, où elle se lit entière (choix du mainteneur, 24 octobre 2026).
     const carnet = root.querySelector<HTMLElement>('.world-carnet');
-    if (bulle && grandTexte && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && !autoSimple.current) {
-      // La hauteur d'une ligne du rappel : celle de son premier point (« normal » se mesure sur lui, jamais un nombre fixe).
-      const first = carnet.querySelector<HTMLElement>('li') ?? carnet;
-      const lh = parseFloat(getComputedStyle(first).lineHeight);
-      const line = Number.isFinite(lh) ? lh : parseFloat(getComputedStyle(first).fontSize) * 1.5;
-      // Les lignes du rappel qu'on voit sous son titre : du haut de la première au bas du carnet.
-      const shown = (carnet.getBoundingClientRect().bottom - first.getBoundingClientRect().top) / line;
-      // Une figure sans liste (les rangées de jetons des Quais) qui déborde : sa légende est sous le chevron, coupée
-      // (consultant UX UI, deuxième passe) ; « Vue simple » aussi.
-      if (shown < 3 || first === carnet) {
-        autoSimple.current = true;
-        openSimple();
-        return;
-      }
+    if (bulle && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && (lowScreen || !carnet.querySelector('li')) && !autoSimple.current) {
+      autoSimple.current = true;
+      openSimple();
+      return;
     }
     // Une bulle plus haute que sa place (35 % de l'écran, GD-26) : une phrase coupée par son bas mène à « Vue simple ».
     if (!column || !overflows(column)) return;
     // Une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran bas, après l'avoir
     // essayée en pleine largeur) : la consigne y est entière, et c'est le panneau qui défile (« Valider » reste dans sa
     // bande, en bas). Revenu à la scène, l'élève garde son choix et les crans d'avant jusqu'à la fin de la visite.
-    const opensSimple = grandTexte || !layout.low;
+    // Dans la bulle (GD-26), sur un téléphone aussi : « Vue simple » ouverte d'emblée plutôt que son offre seule, une
+    // bulle sans fiche ni caisse (relecture UX UI de la PR 2).
+    const opensSimple = grandTexte || !layout.low || bulle;
     const triedFullWidth = !layout.low || !intro || widen >= WIDEN_FULL;
     if (opensSimple && !autoSimple.current && !column.classList.contains('has-sheet') && triedFullWidth) {
       autoSimple.current = true;
@@ -325,7 +319,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (intro) setWiden(widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, bulle]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, bulle, lowScreen]);
   // La barre du haut change de bouton à la bascule (« Scène », « Vue simple ») : le focus, resté sur le bouton parti,
   // passe à celui qui le remplace.
   useEffect(() => {
@@ -486,14 +480,20 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     },
     [run, smallBells],
   );
-  // Le geste « ranger » : quatre sujets par manche, trois sur un écran bas, deux au plus grand texte sur un écran bas
-  // (relecture de L4 : la manche tient au-dessus de « Valider ») ; fixé de même au premier découpage.
-  const sortCut = useRef<{ key: string; perRound: number } | null>(null);
+  // Le geste « ranger » : trois objets par manche (GD-26), deux au plus grand texte, un au plus grand texte sur un écran
+  // bas (relecture de L4 : la manche tient au-dessus de « Valider ») ; fixé de même au premier découpage.
+  // Sur un écran bas, des fiches en phrases vont une par manche (`longPerRound`), fixé de même.
+  const sortCut = useRef<{ key: string; perRound: number; longPerRound?: number } | null>(null);
   const sortsPerRound = useCallback(
-    (seed: string): number => {
+    (seed: string): { perRound: number; longPerRound?: number } => {
       const key = `${run}:${seed}`;
-      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: lowScreen ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : RANGE_PER_ROUND };
-      return sortCut.current.perRound;
+      if (sortCut.current?.key !== key)
+        sortCut.current = {
+          key,
+          perRound: lowScreen ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : grandTexte ? RANGE_PER_GRAND_WIDE_ROUND : RANGE_PER_ROUND,
+          longPerRound: lowScreen ? RANGE_PER_LONG_LOW_ROUND : undefined,
+        };
+      return sortCut.current;
     },
     [run, lowScreen, grandTexte],
   );
@@ -522,7 +522,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
             title={consigneOpen ? 'Replier la consigne' : 'Lire la suite de la consigne'}
             onClick={() => setConsigneOpen((open) => !open)}
           >
-            <Icon name="book" />
+            {/* Dans la bulle, le chevron du dépli : le livre y est celui de l'aide (GD-26 ; consultant UX UI, PR 2). */}
+            <Icon name={bulle ? (consigneOpen ? 'chevronDown' : 'chevronRight') : 'book'} />
             <span className="world-consigne-more-word">{consigneOpen ? 'Replier' : 'Lire la suite'}</span>
           </button>
         )}
@@ -616,8 +617,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       screens: marks
         ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
         : ranges
-          ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed))
-          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed)),
+          ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed).perRound)
+          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed).perRound, sortsPerRound(seed).longPerRound),
       Screen: marks ? BellScreen : ranges ? SortScreen : GestureScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },

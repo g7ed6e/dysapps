@@ -15,7 +15,7 @@
 // réussie laisse une trace sans figure, posée avec le haut. Rien à lire dans la 3D. Code pur (placeArt.ts).
 import { FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
+import type { AddPiece, DialShown, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { hangingLantern, lowRock, mangroveTree, rootArch } from './monteeSurroundings';
 import { COLORS_5E } from './plan5e';
 import { tuft } from './surroundingsKit';
@@ -626,6 +626,44 @@ function zeroRepainted(b: FacetBuilder, c: Vec3): void {
   b.append(z);
 }
 
+/**
+ * L'échelle graduée du geste « régler » (GD-26, Plus et moins) : dressée entre Kéo et la
+ * fontainière, au-devant du plancher (avis du directeur artistique : au moins 40 % de la hauteur), un échelon par nombre de −10 à 10 (`step` entre deux) ; seuls le zéro (crème, large) et les dizaines
+ * (bronze) se distinguent, sans rien d'écrit. `back` : son recul derrière le milieu de la scène (négatif : en avant) ; `foot` : la hauteur du
+ * premier échelon au-dessus du plancher ; `half` : la demi-largeur entre ses montants.
+ */
+const LADDER = { back: -1.15, foot: -0.35, step: 0.21, half: 0.55, bucket: 1.3 } as const;
+
+/**
+ * Le réglage de la Montée : l'échelle, la cheville d'ocre au départ, et le godet posé sur l'échelon réglé (sa forme
+ * et sa place le disent, jamais sa couleur seule). `c` : le centre du lieu à son sol.
+ */
+function ladderFacets(c: Vec3, { count, min, max, start }: DialShown): Facets {
+  const b = new FacetBuilder();
+  const L = LADDER;
+  const F = SCENE_FLOOR;
+  // Le plancher : au-dessus du sol le plus haut sous lui, comme la scène le pose.
+  let top = -Infinity;
+  for (const dx of [-F.half, 0, F.half]) for (const dz of [-F.depth / 2, 0, F.depth / 2]) top = Math.max(top, groundOf(c, SCENE_SPOT.dx + dx, SCENE_SPOT.dz + dz).y);
+  const floorY = top + F.rise;
+  const x = c.x + SCENE_SPOT.dx;
+  const z = c.z + SCENE_SPOT.dz - L.back;
+  const g = groundOf(c, SCENE_SPOT.dx, SCENE_SPOT.dz - L.back).y;
+  const rungY = (n: number) => floorY + L.foot + (n - min) * L.step;
+  const head = rungY(max) + 0.3;
+  // Les deux montants de fer, plantés dans le sol : sombres, ils détachent l'échelle du bois du chantier derrière.
+  for (const side of [-1, 1]) b.box({ x: x + side * L.half, y: g + SINK, z }, [0.14, head - g - SINK, 0.14], C.iron);
+  for (let n = min; n <= max; n++) {
+    const mark = n === 0 ? { w: 1.5, h: 0.12, color: C.zero } : n % 10 === 0 ? { w: 1.2, h: 0.1, color: C.bronze } : { w: 2 * L.half, h: 0.06, color: C.plank };
+    b.box({ x, y: rungY(n) - mark.h / 2, z }, [mark.w, mark.h, 0.08], mark.color);
+  }
+  // La cheville d'ocre, à gauche de l'échelon de départ : d'où part le bond.
+  b.box({ x: x - L.half - 0.2, y: rungY(start) - 0.07, z: z + 0.04 }, [0.34, 0.14, 0.16], C.lantern);
+  // Le godet, devant l'échelle, posé sur l'échelon réglé.
+  bucket(b, { x, y: rungY(count) + 0.03, z: z + 0.36 }, L.bucket);
+  return b.build();
+}
+
 export const MONTEE: PlaceArt = {
   role: 'La fontainière',
   model,
@@ -664,6 +702,7 @@ export const MONTEE: PlaceArt = {
   },
   // Les cinq missions en R : le plancher seul, rien de l'item ; les godets portent les réponses.
   rest() {},
+  dial: ladderFacets,
   traces: {
     thermometer: { at: MONTEE_TRACE_SPOTS.thermometer, lift: 1, draw: zeroRepainted },
     adding: { at: MONTEE_TRACE_SPOTS.adding, lift: 4, draw: bucketChain },

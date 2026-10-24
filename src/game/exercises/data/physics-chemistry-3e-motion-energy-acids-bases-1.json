@@ -9,6 +9,7 @@
     {
       "key": "physics-chemistry-3e-motion-energy-acids-bases-1-0",
       "prompt": "Le jus de citron a un pH de 2 : il est …",
+      "subject": "Le jus de citron, pH 2",
       "spoken": "Le jus de citron a un pé-ache de 2, il est (mot manquant).",
       "choices": [
         "acide",
@@ -18,6 +19,9 @@
       "answer": "acide",
       "hint": "2 est-il plus petit ou plus grand que 7 ?",
       "explanation": "Le pH 2 est plus petit que 7 : le jus de citron est acide.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -37,6 +41,7 @@
     {
       "key": "physics-chemistry-3e-motion-energy-acids-bases-1-1",
       "prompt": "L’eau pure a un pH de 7 : elle est …",
+      "subject": "L’eau pure, pH 7",
       "spoken": "L’eau pure a un pé-ache de 7, elle est (mot manquant).",
       "choices": [
         "acide",
@@ -46,6 +51,9 @@
       "answer": "neutre",
       "hint": "Relis la ligne « pH égal à 7 » du rappel.",
       "explanation": "Un pH égal à 7, c’est une solution neutre, ni acide ni basique.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -65,6 +73,7 @@
     {
       "key": "physics-chemistry-3e-motion-energy-acids-bases-1-2",
       "prompt": "L’eau savonneuse a un pH de 10 : elle est …",
+      "subject": "L’eau savonneuse, pH 10",
       "spoken": "L’eau savonneuse a un pé-ache de 10, elle est (mot manquant).",
       "choices": [
         "acide",
@@ -74,6 +83,9 @@
       "answer": "basique",
       "hint": "10 est-il plus petit ou plus grand que 7 ?",
       "explanation": "Le pH 10 est plus grand que 7 : l’eau savonneuse est basique.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

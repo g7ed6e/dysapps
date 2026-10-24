@@ -162,7 +162,7 @@
       "explanation": "Le département aide les personnes âgées et les personnes en difficulté. La commune s’occupe de l’école, la région des trains régionaux.",
       "gesture": "placer",
       "shows": "l’aide aux personnes âgées",
-      "shortInstruction": "Pose le panier devant sa porte.",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

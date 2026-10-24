@@ -1615,6 +1615,28 @@
 .world-question .in-world:not(.low) .world-question-prompt > .aid.world-question-aid.world-carnet {
   min-height: 0;
 }
+/* Le titre du rappel ouvre sa première ligne (« Classer le vivant : On classe… ») au lieu de prendre la sienne : une
+   ligne de règle de plus dans le carnet (piste 1 du consultant UX UI, PR 2 de GD-26). */
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) figcaption {
+  display: inline;
+  margin: 0;
+}
+/* Les deux-points collés au titre (espace insécable) : jamais seuls en tête de ligne. Un lexique d'anglais, dont chaque
+   ligne porte son bouton Écouter, garde son titre sur sa ligne. */
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) figcaption::after {
+  content: '\00a0: ';
+}
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) ul {
+  display: inline;
+  padding: 0;
+}
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) li:first-child {
+  display: inline;
+}
+.world-question .world-carnet .rule-card:not(:has(.rule-line-listen)) li:not(:first-child) {
+  display: list-item;
+  margin-left: 1.2rem;
+}
 .world-question .world-carnet > * + * {
   margin-top: 0.5rem;
 }
@@ -3225,6 +3247,13 @@
   grid-column: 1;
   grid-row: 1;
 }
+/* « Tout est rangé, valide. » : à la hauteur d'une fiche, la bulle ne change pas de taille. */
+.world-question .world-answers.world-hand .world-hand-fini {
+  display: flex;
+  align-items: center;
+  min-height: 56px;
+  font-weight: 700;
+}
 .world-question .world-answers.world-hand .world-answer {
   position: relative;
   flex-shrink: 0;
@@ -3293,4 +3322,35 @@
   flex-direction: row;
   flex-wrap: wrap;
   overflow-y: auto;
+}
+
+/* Une caisse à ranger au nom de deux mots (« une transformation chimique », GD-26, PR 2) passe sur deux lignes plutôt
+   que d'ouvrir « Vue simple » : l'étiquette a la hauteur de deux lignes ; au-delà, elle compte comme coupée. */
+.world-question .world-sort-bin .world-answer-label {
+  white-space: normal;
+  text-align: center;
+  line-height: 1.1;
+}
+
+/* La droite graduée dans le carnet (la Montée, GD-26, PR 2) : sur la page du carnet, comme une carte de règle (posée
+   nue sur la scène, ses nombres se perdaient dans le décor) ; le carnet la rétrécit à ~300 px, ses nombres gardent 18 px
+   à l'écran au moins (référent dys), en unités de son dessin de 320 de large. */
+.world-question .world-carnet .number-line {
+  margin: 0;
+  padding: 0.4rem 0.6rem 0.2rem;
+  border: var(--border-width) dashed var(--ink);
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--sand) 20%, var(--surface));
+}
+.world-question .world-carnet .number-line text {
+  font-size: 21px;
+}
+
+/* En « Vue simple » sur un écran bas, la règle passe sous les caisses et les fiches (référent dys, PR 2 de GD-26) :
+   après elles dans l'ordre affiché aussi, les listes ayant leur propre rang (order: 2). */
+.world-question .in-world.simple .world-sort > .world-question-aid {
+  order: 3;
+}
+.world-question .in-world.simple .world-sort > .world-simple-validate {
+  order: 4;
 }

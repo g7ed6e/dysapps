@@ -14,6 +14,7 @@
     {
       "key": "leur-pretes",
       "prompt": "Je … ai prêté mes feutres.",
+      "subject": "Je … ai prêté mes feutres.",
       "spoken": "Je  (mot manquant)  ai prêté mes feutres.",
       "choices": [
         "leur",
@@ -23,6 +24,9 @@
       "answer": "leur",
       "hint": "Devant un verbe, « leur » veut dire « à eux ».",
       "explanation": "« Je leur ai prêté » = j’ai prêté à eux : « leur » est devant le verbe, il ne prend jamais de s.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -39,6 +43,7 @@
     {
       "key": "leurs-chiens",
       "prompt": "Les voisins promènent … chiens.",
+      "subject": "Les voisins promènent … chiens.",
       "spoken": "Les voisins promènent  (mot manquant)  chiens.",
       "choices": [
         "leur",
@@ -48,6 +53,9 @@
       "answer": "leurs",
       "hint": "Devant un nom : un chien, ou plusieurs ?",
       "explanation": "« chiens » est au pluriel : on écrit « leurs », avec un s.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -64,6 +72,7 @@
     {
       "key": "leur-maison",
       "prompt": "Mes cousins ont vendu … maison.",
+      "subject": "Mes cousins ont vendu … maison.",
       "spoken": "Mes cousins ont vendu  (mot manquant)  maison.",
       "choices": [
         "leur",
@@ -73,6 +82,9 @@
       "answer": "leur",
       "hint": "Devant un nom : une maison, ou plusieurs ?",
       "explanation": "Ils ont une seule maison : « leur maison », au singulier, sans s. Les cousins sont plusieurs, mais c’est le nom qui commande.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
