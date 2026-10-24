@@ -1660,6 +1660,65 @@
   padding: 4px 0.6rem var(--panneau-bas);
   scroll-padding-bottom: 62px;
 }
+/* La bulle de l'habitant (GD-26) : la même ligne repliée en tête (le rôle, le début de la consigne, sa voix, « Lire la
+   suite »), puis la phrase de l'item ; la scène prend le reste de l'écran. */
+.world-question .quiz.in-world.scenette.bulle {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  column-gap: 0.5rem;
+  row-gap: 6px;
+  padding: 6px 0.75rem;
+}
+/* Le rôle séparé de la consigne par un cadre, comme au plus grand texte (« Le boulanger » collé à « Lis la phrase »). */
+.world-question .in-world.bulle .world-consigne-fold .world-scenette-role {
+  display: inline-block;
+  margin-right: 0.25em;
+  padding: 0 0.2em;
+  border: var(--border-width, 2px) solid currentColor;
+  border-radius: 6px;
+  line-height: 1.2;
+}
+/* L'indice à droite de la phrase, son icône seule (son nom dit) : la bulle garde la hauteur de la consigne et de la
+   phrase. */
+.world-question .in-world.bulle .world-question-prompt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.5rem;
+  align-items: start;
+}
+.world-question .in-world.bulle .world-question-prompt > * {
+  grid-column: 1 / -1;
+}
+.world-question .in-world.bulle .world-question-prompt > .question-head {
+  grid-column: 1;
+}
+.world-question .in-world.bulle .world-question-prompt > .world-question-actions {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+}
+.world-question .in-world.bulle .world-hint-word {
+  display: none;
+}
+.world-question .in-world.bulle .world-place,
+.world-question .in-world.bulle .world-question-prompt,
+.world-question .in-world.bulle .world-question-prompt > .question-head {
+  margin: 0;
+  padding: 0;
+}
+/* Sur un écran bas (un téléphone couché), « Lire la suite » n'est que son icône (son nom dit), la bulle plus serrée : elle
+   tient en deux lignes, la consigne repliée et la phrase. */
+@media (max-height: 499px) {
+  .world-question .quiz.in-world.scenette.bulle {
+    padding-block: 4px;
+    row-gap: 4px;
+  }
+  .world-question .in-world.bulle .world-consigne-more-word {
+    display: none;
+  }
+}
 .world-question .quiz.in-world.simple-bas > *,
 .world-question .in-world.simple-bas .world-question-prompt,
 .world-question .in-world.simple-bas .world-answers,

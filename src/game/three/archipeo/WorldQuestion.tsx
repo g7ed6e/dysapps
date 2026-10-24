@@ -42,7 +42,7 @@ import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
 import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { placePoseWords } from './constructionParts';
-import { WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
+import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
 import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
@@ -232,7 +232,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // Les cloches portent des mots (la Chasse au son, les Rimes-échelle) ou un nombre (l'Abattage syllabique).
     // Le geste « ranger » : les sujets sont des mots, et leurs étiquettes se mesurent comme celles des cloches.
     const words = (place === 'phare' && mission !== 'syllables') || (place === 'filets' && mission === 'word-classes');
-    return scenetteLayout({ count, widen, small: place === 'phare', words, column: place !== 'phare' && !grandTexte, grand: grandTexte, aid: hasAid, wideRow }, size.w || 1, size.h || 1, base);
+    return scenetteLayout({ count, widen, small: place === 'phare', words, grand: grandTexte, aid: hasAid, wideRow }, size.w || 1, size.h || 1, base);
   }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
   const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
@@ -302,7 +302,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     setSheetWide(false);
     setWiden((n) => Math.min(n, WIDEN_SCENE));
   }, [inColumn, layout.low]);
-  const intro = layout.low && !introDone && !finished && !offer && !simple;
+  // La bulle de l'habitant (GD-26) : dans une scénette, la consigne repliée en une ligne et la phrase de l'item, en haut ;
+  // la scène prend l'écran. Ni « Commencer » ni phrase d'accueil : la consigne se lit dans la bulle.
+  const bulle = !plain && !simple && !finished && hasScenette(place) && !inColumn;
+  const intro = !bulle && layout.low && !introDone && !finished && !offer && !simple;
   // La phrase de l'habitant, à la première rencontre : au premier item sur tablette ; sur un écran bas, avec
   // « Commencer » seulement (consultant UX UI) ; jamais dans la ligne repliée. Comptée comme vue une fois affichée.
   const greeting = scenette.greeting && greetItem === itemKey && (!layout.low || intro) ? scenette.greeting : null;
@@ -312,13 +315,15 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // La « Vue simple » serrée des écrans bas (la consigne repliée en une ligne, « Scène » et la pause dans la ligne
   // d'en-tête) : sur un écran bas, et au plus grand texte aussi sur tablette, où la consigne entière poussait la phrase
   // sous le pli (en C, mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a ; en R, les réponses, lot L7).
-  const foldedSimple = layout.low || grandTexte;
+  // Un écran bas garde la ligne repliée en « Vue simple » même quand la scénette y prend la disposition de la tablette
+  // (la bulle, GD-26).
+  const foldedSimple = layout.low || grandTexte || (size.h > 0 && size.h < ANSWER_LAYOUT.low);
   const simpleLow = simple && foldedSimple && !finished;
   // La colonne revenue à « Scène » prend la forme serrée de « Vue simple » (relecture UX UI de L8, piste A) : le rôle quitte
   // la ligne, la consigne se replie en une ligne, la voix de la phrase prend la place des étapes, la barre du haut (son
   // icône seule) se tient à côté de la pause, à droite de la colonne : la colonne monte jusqu'en haut.
   const keptScene = sceneChosen && layout.low && inColumn && !simple && !finished;
-  const tight = simpleLow || keptScene;
+  const tight = simpleLow || keptScene || bulle;
   // « Vue simple » ouverte d'elle-même (au plus grand texte, ou en C sur un écran bas) : une seule fois par visite, tant
   // que la question reste montée ; revenu à « Scène », l'élève garde son choix.
   const autoSimple = useRef(false);
@@ -332,7 +337,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // Sur tablette, seule une scénette se mesure : ses mots de réponse (le panneau prend la hauteur de son texte).
   useLayoutEffect(() => {
     // Rien ne se mesure avant que la page ait sa taille (la place des réponses en dépend), ni sur l'écran habituel.
-    if (!size.w || plain || simple || finished || answersOut) return;
+    // Ni avant que l'item soit connu : la place de la règle (à côté de la scène) en dépend, et la règle encore dans le
+    // panneau le ferait déborder.
+    if (!size.w || !item || plain || simple || finished || answersOut) return;
     const root = box.current;
     if (!root) return;
     // Revenu à « Scène », la phrase entière et le haut de la première réponse se voient à l'ouverture de l'item (0 px sous
@@ -358,7 +365,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       }
     }
     if (wordsCut(root.querySelectorAll<HTMLElement>('.world-answer-label'))) {
-      if (!wideRow && layout.panel.left + layout.panel.width < Math.min(...layout.slots.map((sl) => sl.hit.left))) {
+      if (!wideRow && (bulle || layout.panel.left + layout.panel.width < Math.min(...layout.slots.map((sl) => sl.hit.left)))) {
         setWideRow(true);
         return;
       }
@@ -370,7 +377,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       // (directeur artistique, deuxième passe de L6a), plutôt que des réponses sorties de la colonne. Au plus grand texte
       // aussi, sur tablette : la phrase et les réponses à l'ouverture plutôt que l'offre de « Vue simple » (lot L7,
       // deuxième passe : les Vitraux des phrases, le Coffre à mots, les Marais salants).
-      if ((inColumn || (grandTexte && !layout.low)) && !autoSimple.current) {
+      if ((inColumn || bulle || (grandTexte && !layout.low)) && !autoSimple.current) {
         autoSimple.current = true;
         openSimple();
         return;
@@ -405,7 +412,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (intro) setWiden(widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, inColumn, sceneChosen, keptScene, itemKey]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, inColumn, sceneChosen, keptScene, itemKey, bulle]);
   // L'item gardé en « Vue simple » passé, la scène revient (avant l'affichage : pas d'image de l'item suivant en liste).
   useLayoutEffect(() => {
     if (!sceneHeld || sceneHeld === itemKey || !itemKey) return;
@@ -793,7 +800,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       className:
         simple && !finished
           ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
-          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}${keptScene ? ' scene-gardee simple-bas' : ''}${hasAid ? ' avec-rappel' : ''}`,
+          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}${keptScene ? ' scene-gardee simple-bas' : ''}${hasAid ? ' avec-rappel' : ''}${bulle && !keptScene ? ' bulle simple-bas' : ''}`,
     };
   }, [
     exerciseId,
@@ -830,6 +837,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     greeting,
     poseWords,
     hasAid,
+    bulle,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,

@@ -522,8 +522,8 @@ export const SCENETTE_LAYOUT = {
    */
   rowEdge: 16,
   panelRight: 0.74,
-  /** « Vue simple » et la pause, en haut à droite : la place gardée, en pixels. */
-  topRight: 250,
+  /** « Vue simple » et la pause, en haut à droite : la place gardée, en pixels (la bulle s'arrête avant eux). */
+  topRight: 310,
   /** Au plus grand texte, le panneau commence sous cette barre, en pixels sous le bord (son bouton y est plus haut). */
   grandTop: 84,
   /**
@@ -531,6 +531,10 @@ export const SCENETTE_LAYOUT = {
    * descend à 37 % environ avec le rôle, la consigne et le son (retour du directeur artistique).
    */
   stage: { top: 0.37, bottom: 0.66 },
+  /** La hauteur de la bulle de l'habitant au plus, en part de la hauteur de l'écran (GD-26 : 35 %). */
+  bubble: 0.35,
+  /** La largeur du rappel, à gauche de la scène sous la bulle, en part de la largeur (GD-26). */
+  aidShare: 0.3,
   row: { top: 0.66, bottom: 0.9 },
   low: { left: 0.4, top: 0.16, bottom: 0.62, rowTop: 0.64, rowBottom: 0.88 },
   /**
@@ -678,7 +682,7 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   // Aucune réponse dans la scène (`count` 0 : elles restent dans la colonne, Calculer avec des fractions, GD-20, point 8,
   // lot L2) : ni rangée ni « Valider » ; la colonne descend jusqu'en bas, la scène prend la place de la rangée.
   if (needs.count === 0) return withoutRow(width, height, base, needs);
-  if (base.low || needs.column) {
+  if (needs.column) {
     // B : la scène à droite de la colonne ; la rangée à droite aussi si les mots y tiennent, sinon sur toute la largeur
     // (comme au lot 4), la colonne s'arrêtant alors au-dessus d'elle.
     const lh = base.low ? L.labelLow : L.label;
@@ -710,7 +714,7 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   // A : la consigne en haut, la scène au milieu, la rangée en bas, « Valider » en bas à droite, sous la rangée ou à
   // côté d'elle si l'écran est trop court.
   const edge = S.edge * width;
-  const lh = L.label;
+  const lh = base.low ? L.labelLow : L.label;
   const validate = { left: width - edge - S.validate.width, right: width - edge, top: height - L.edgeLow - S.validate.height, bottom: height - L.edgeLow };
   // La rangée s'arrête au-dessus de « Valider » ; sur un écran trop court pour cela, elle s'arrête à sa gauche.
   const above = Math.min(S.row.bottom * height, validate.top - S.validate.gap);
@@ -718,19 +722,24 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   const rowBottom = roomy ? above : S.row.bottom * height;
   // La rangée prend toute la largeur, à 16 px des bords : les mots des cloches, leur image devant, y tiennent.
   const rowRight = roomy ? width - S.rowEdge : validate.left - S.validate.gap;
-  const { slots, objectHeight } = rowSlots(n, S.rowEdge, rowRight, S.row.top * height, rowBottom, lh, share);
-  const top = S.edge * height + (needs.grand ? S.grandTop : 0);
+  // Un mot coupé dans son étiquette (une réponse en phrase, aux Ondes) : les étiquettes s'élargissent d'abord.
+  const { slots, objectHeight } = rowSlots(n, S.rowEdge, rowRight, S.row.top * height, rowBottom, lh, share, needs.wideRow ? S.wideLabel : L.maxWidth);
+  const top = (base.low ? L.edgeLow : S.edge * height) + (needs.grand ? S.grandTop : 0);
   const panelWidth = needs.grand ? width - 2 * edge : Math.max(0, Math.min(S.panelRight * width, width - S.topRight) - edge);
   const highest = Math.min(...slots.map((s) => s.hit.top));
-  const stage = { left: edge, top: S.stage.top * height, right: width - edge, bottom: Math.min(S.stage.bottom * height, highest - L.gap) };
+  // La bulle de l'habitant ne prend jamais plus de 35 % de la hauteur (GD-26) : au-delà, « Vue simple » s'ouvre.
+  const bubbleBottom = Math.min(top + S.bubble * height, highest - L.gap);
+  // Le rappel (la règle, l'aide de calcul) reste affiché pendant l'action, à gauche sous la bulle ; la scène à sa droite.
+  const labelsTop = Math.min(...slots.map((s) => s.label.top));
+  const aid = needs.aid ? { left: edge, top: bubbleBottom + L.gap, right: edge + S.aidShare * width, bottom: labelsTop - L.gap } : null;
+  const stage = { left: aid ? aid.right + edge : edge, top: S.stage.top * height, right: width - edge, bottom: Math.min(S.stage.bottom * height, highest - L.gap) };
   return {
     low: false,
     slots,
     objectHeight,
-    // Le panneau prend la hauteur de son texte (H 3-26 d'ordinaire) ; un très grand texte ou le résultat le font
-    // descendre sur la scène, jamais sur la rangée.
-    panel: { left: edge, top, width: panelWidth, maxHeight: Math.max(0, highest - L.gap - top) },
-    aid: null,
+    // La bulle prend la hauteur de son texte (la consigne repliée en une ligne, la phrase de l'item).
+    panel: { left: edge, top, width: panelWidth, maxHeight: Math.max(0, bubbleBottom - top) },
+    aid,
     view: stage,
     scenette: { stage, validate },
   };
