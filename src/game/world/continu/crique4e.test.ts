@@ -22,6 +22,7 @@ import {
   NEF_4E,
   NEF_4E_DEPARTURE,
   NEF_4E_TEMPS,
+  PIECES_BRONZE,
   RAFIOT_FUNNEL,
   RAFIOT_HULL_COLORS,
   SKY_GATE_4E,
@@ -43,6 +44,7 @@ import { LISIERE_SITE } from './lisiere';
 import { levelWorld } from './levelWorld';
 import { nefModelFacets, type NefFlight } from './nef';
 import { C4E } from './place4eKit';
+import { COLORS_3E } from './plan3e';
 import { criqueWalkwayFacets } from './paths4e';
 import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, DEPARTURE_4E, PATH_EDGES_4E, PATH_NODES_4E, PLACES_4E, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import { ESCALE, PORT_WORST, portFacets, type PortState } from './port';
@@ -416,8 +418,18 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     expect(empty.triangles).toBeLessThan(full.triangles);
     // Rien d'autre ne change : seules les pièces partent (le même nombre de triangles que le dessin des six pièces).
     const b = new FacetBuilder();
-    for (const id of ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const) rafiotPiece(b, id, 0, 0, 0, { bronze: 0x9c8452, bronzeTop: 0xb39a64 });
+    for (const id of ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const) rafiotPiece(b, id, 0, 0, 0, PIECES_BRONZE);
     expect(full.triangles - empty.triangles).toBe(b.build().triangles);
+  });
+
+  it('un seul bronze : les pièces du Rafiot sont du bronze du 3e (#A77B3F, dessus #B98C4C), plus jamais #9C8452 (restes du 3e, piste 5)', () => {
+    expect(PIECES_BRONZE).toEqual({ bronze: 0xa77b3f, bronzeTop: 0xb98c4c });
+    expect(PIECES_BRONZE.bronze).toBe(COLORS_3E.bronze);
+    const seen = colorsOf(criqueDecorFacets());
+    expect(seen.has(key(PIECES_BRONZE.bronze))).toBe(true);
+    expect(seen.has(key(PIECES_BRONZE.bronzeTop))).toBe(true);
+    expect(seen.has(key(0x9c8452))).toBe(false);
+    expect(seen.has(key(0xb59c66))).toBe(false);
   });
 
   it('les Aiguilles au sud, sur la mer, sous 60 triangles, hors de la première image, dans l’image au demi-tour', () => {

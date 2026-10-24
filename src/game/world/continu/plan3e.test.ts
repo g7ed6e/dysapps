@@ -254,7 +254,8 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
     expect(departure.decor()).toBe(departure.decor());
     expect(departure.decor()!.triangles).toBe(parvisDecorFacets().triangles);
     expect(departure.offMap!().triangles).toBe(zeppelinFacets().triangles);
-    expect(zeppelinFacets().triangles).toBeLessThan(600);
+    // Avec le balcon de la gondole (restes du 3e, piste 3 A) : une soixantaine de triangles de plus.
+    expect(zeppelinFacets().triangles).toBeLessThan(700);
   });
 
   it('le zeppelin se voit de profil : la queue au nord-nord-ouest (330° environ), loin des rives ; le ventre au ras des nuages, ses côtes, sa gondole et ses deux hélices (proposition des Prairies, § 7)', () => {

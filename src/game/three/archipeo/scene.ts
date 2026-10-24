@@ -16,7 +16,7 @@ import { createEquipierModels } from './equipierModels';
 import { guideOf } from '../../world/continu/equipage';
 import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
-import { nefArrivingParts, nefAtBerth, nefModelFacets, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
+import { blendPose, nefArrivingParts, nefAtBerth, nefModelFacets, nefSheetPose, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
 import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, fitArrivalBack, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
@@ -108,7 +108,7 @@ import { placedAmenagement } from './amenagements';
 import { amenagementById, remiseFrame, remisePosed, showsAmenagements, type WorldBox } from '../../world/continu/amenagements';
 import { placedCaisse } from '../../world/continu/caisse';
 import { REMISE_DROP, REMISE_TIMING } from '../../world/continu/remise';
-import { createRemiseRun, createSignsTracker, type RemiseEvents, type SignOnScreen } from './remiseRun';
+import { createRemiseRun, createSignsTracker, type RemiseEvents, type SignOnScreen, type SignSpot } from './remiseRun';
 import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 import { assignSpots, wildlifeGroups6e, type CritterPose } from '../../world/continu/wildlife';
 import { allCritterForms, wildlifeGroups5e } from '../../world/continu/wildlife5e';
@@ -326,8 +326,11 @@ export interface OpenWorld {
   remiseStart(): void;
   /** L'état final de la remise, tout de suite : tout est posé (un toucher qui saute, une sortie). */
   remiseFinish(): void;
-  /** Les lieux dont l'habitant a une pastille (trois au plus), ou aucun. */
-  setSigns(places: readonly PlaceId[]): void;
+  /**
+   * Les lieux dont l'habitant a une pastille (trois au plus), ou aucun ; et `'nef'`, la pastille de la Nef sur laquelle
+   * on peut poser (GD-25), au-dessus d'elle, là où se pose sa marque.
+   */
+  setSigns(places: readonly SignSpot[]): void;
   /**
    * Les Détours trouvés (leur sente tracée, dans le monde et sur la Carte) et les cairns rallumés (GD-20, déplacement
    * libre, lot 2), dans le maillage des lieux : refait seulement s'ils changent.
@@ -1789,11 +1792,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   // La caméra posée à la main (`view`, les captures seulement).
   let manualView: CameraPose | null = null;
+  /**
+   * La vue de la fiche de la Nef (au 3e, `NefSite.sheetView` : l'aéronef de trois quarts avant, restes du 3e, piste 1 B) :
+   * sa pose, faite une fois, et la part où en est la caméra (0 : derrière Kéo ; 1 : toute la vue), qui monte comme la
+   * vue d'un Détour et redescend à la fermeture de la fiche, d'un coup avec « Réduire les animations ».
+   */
+  const nefSheet = nefSite.sheetView ? nefSheetPose(nefSite, nefSite.sheetView, { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 }) : null;
+  let nefSheetView = 0;
   const follow = () => {
     if (manualView) return applyPose(manualView);
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());
     lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
+    if (nefSheet && nefSheetView > 0) blendPose(pose, nefSheet, detourRise(nefSheetView));
     applyPose(pose);
   };
   follow();
@@ -1863,11 +1874,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), undefined, arrivalBack > 0 ? arrivalShape : viewShape());
     lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
+    // La vue de la fiche de la Nef : le décalage se calcule sur la vue d'arrivée, celle que la caméra rejoint.
+    if (nefSheet && nefSheetWanted()) blendPose(pose, nefSheet, 1);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
     const p = subject && screenOf(pose, subject, viewW, viewH);
     setShift(p ? { x: Math.round(p.x - (frameRect.left + frameRect.width / 2)), y: Math.round(p.y - (frameRect.top + frameRect.height / 2)) } : { x: 0, y: 0 });
     follow();
   };
+  /** La vue de la fiche de la Nef est-elle voulue : sa fiche ouverte, Kéo assez près de son poste, rien d'autre en cours. */
+  const nefSheetWanted = (): boolean => !!nefSite.sheetView && framedNef && !!frameRect && !asked && !remise && !mapView && Math.hypot(here.x - nefSite.berth.x, here.z - nefSite.berth.z) <= nefSite.sheetView.near;
   const setFrame = (free: typeof frameRect, place?: PlaceId | 'nef') => {
     frameRect = free;
     framedNef = place === 'nef';
@@ -2403,6 +2418,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // et où l'aménagement se pose (au Phare, au pied de la tour), comme un cadenas au-dessus de son pont (./remiseRun.ts).
   const signsTracker = createSignsTracker({
     anchorOf: (place) => {
+      // La Nef : là où se pose sa marque (`nefMark`, relu à chaque image, sa hauteur venant avec le modèle).
+      if (place === 'nef') return nefMark;
       // Au-dessus de l'habitant près de sa porte (à sa taille dans le monde), sinon de sa place dans la scénette,
       // là où se joue la remise ; autant au-dessus de sa tête que dans la scénette.
       const w = worldHabitantAt(place, ground);
@@ -2411,12 +2428,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },
     place: (anchor, sign) => {
-      projected.copy(anchor).project(camera);
+      const nef = sign.place === 'nef';
+      projected.copy(nef ? nefMark : anchor).project(camera);
       const x = sx(projected);
       const y = sy(projected);
       sign.x = x;
       sign.y = y;
-      sign.shown = projected.z < 1 && distance(here, placeById(sign.place).center) < FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN;
+      sign.shown = projected.z < 1 && distance(here, nef ? nefSite.berth : placeById(sign.place as PlaceId).center) < FOG.far && x > LOCK_LEFT && x < viewW - LOCK_MARGIN && y > LOCK_MARGIN && y < viewH - LOCK_MARGIN;
     },
     onSigns: options.onSigns,
   });
@@ -4449,6 +4467,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     arrivalBack = lookUpStep(arrivalBack, arrivalNow || quayArrival ? 1 : 0, dt, reduceMotion);
     if (back > 0 && !atExit()) back = reduceMotion ? 0 : Math.max(0, back - dt / EXIT_VIEW.down);
     if (back === 0) exit = null;
+    if (nefSheet) nefSheetView = detourViewStep(nefSheetView, nefSheetWanted() ? 1 : 0, dt, reduceMotion);
     follow();
     updateRings();
     if (freeMark.visible) fitFreeMark();

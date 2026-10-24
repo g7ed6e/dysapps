@@ -6,6 +6,7 @@
 // du voilier (les parties d'un os chacune) vient de la vue, qui le charge ; ici, sa place, ce qui s'en montre, le banc,
 // le départ et ce qu'on touche. Code pur.
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
+import type { CameraPose } from './camera';
 import type { Vec2 } from './geometry';
 import { PORT, PORT_PAVING } from './plan6e';
 
@@ -364,6 +365,72 @@ export interface NefSite {
   /** Au-delà de cette distance à la caméra, la Nef n'est plus qu'un point : le départ finit comme si elle était sortie (au 6e, jamais). */
   pointBeyond: number;
   flight(u: number, out: NefFlight): NefFlight;
+  /**
+   * La vue de sa fiche (au 3e, l'aéronef et ses parures : restes du 3e, piste 1 B) : la caméra quitte Kéo et montre la
+   * Nef de trois quarts avant. Absente : la caméra reste derrière Kéo et garde la Nef dans la part libre de l'écran.
+   */
+  sheetView?: NefSheetView;
+}
+
+/**
+ * La vue de la fiche d'une Nef : l'angle, vu de dessus, entre la proue et la caméra (0 : de face, jamais), du côté `side`
+ * (+1 : le côté +x du repère de la Nef ; −1 : l'autre) ; la distance au poste, la hauteur de la caméra et du point
+ * regardé au-dessus de la coque sur son ber ; et `near` : Kéo plus loin du poste que cela, la caméra ne traverse pas le
+ * niveau pour une fiche, elle reste derrière lui.
+ */
+export interface NefSheetView {
+  angle: number;
+  side: 1 | -1;
+  distance: number;
+  height: number;
+  aim: number;
+  near: number;
+}
+
+/**
+ * La place et le point regardé de la vue de la fiche (`site.sheetView`), remplis dans `out` (son champ ne change pas) :
+ * la Nef de trois quarts avant, un peu d'en haut.
+ */
+export function nefSheetPose(site: NefSite, view: NefSheetView, out: CameraPose): CameraPose {
+  // La direction de la caméra dans le repère de la Nef (la proue vers −z), puis dans le monde (comme `placeFacets`).
+  const lx = view.side * Math.sin(view.angle);
+  const lz = -Math.cos(view.angle);
+  const c = Math.cos(site.berth.yaw),
+    s = Math.sin(site.berth.yaw);
+  const dx = lx * c + lz * s;
+  const dz = -lx * s + lz * c;
+  out.position.x = site.berth.x + dx * view.distance;
+  out.position.y = site.lift.ber + view.height;
+  out.position.z = site.berth.z + dz * view.distance;
+  out.target.x = site.berth.x;
+  out.target.y = site.lift.ber + view.aim;
+  out.target.z = site.berth.z;
+  return out;
+}
+
+/** La place et le point regardé de `pose` menés vers ceux de `to`, de la part `k` (0 : rien ; 1 : tout), sur place. */
+export function blendPose(pose: CameraPose, to: CameraPose, k: number): void {
+  if (k <= 0) return;
+  const u = Math.min(1, k);
+  for (const key of ['position', 'target'] as const) {
+    const a = pose[key],
+      b = to[key];
+    a.x += (b.x - a.x) * u;
+    a.y += (b.y - a.y) * u;
+    a.z += (b.z - a.z) * u;
+  }
+}
+
+/**
+ * L'angle, vu de dessus, entre la proue d'une Nef à son poste et la direction de la caméra `pose` (0 : la caméra devant
+ * la proue, de face ; π/2 : de flanc ; π : de dos). Pour les tests.
+ */
+export function nefViewAngle(site: NefSite, pose: CameraPose): number {
+  const bowX = -Math.sin(site.berth.yaw),
+    bowZ = -Math.cos(site.berth.yaw);
+  const vx = pose.position.x - site.berth.x,
+    vz = pose.position.z - site.berth.z;
+  return Math.acos(Math.max(-1, Math.min(1, (bowX * vx + bowZ * vz) / (Math.hypot(vx, vz) || 1))));
 }
 
 let banc: Facets | null = null;

@@ -16,6 +16,7 @@ import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { BUOY_TOUCH, NEF_BAND, buoyAt, type NefFlight, type NefLook, type NefSite } from './nef';
 import { C4E, brickCourse, brickCourseHeights } from './place4eKit';
+import { COLORS_3E } from './plan3e';
 import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVING, CRIQUE_QUAY_SPOT, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import type { PortSite } from './port';
 import { SHADOW_DIR_4E } from './sky';
@@ -184,7 +185,7 @@ export function digueFacets(): Facets {
  * Les couleurs du Rafiot (intention, § 5) : la coque de fer rouillé sombre (jamais presque noire), sa ligne de flottaison
  * plus sombre, le liston et le pont de bois, la cabine de bois et son toit, ses fenêtres en aplats sombres (sans vitre
  * lumineuse), la cheminée et sa bande de fer bruni, la fumée courte, plus sombre que le panache ; le bronze de ses
- * pièces, un dessus plus clair qui accroche le soleil.
+ * pièces est celui du 3e (`PIECES_BRONZE`).
  */
 /** La fumée du Rafiot, sans ombre comme le panache (sinon, éclairée, elle se lisait comme des pierres en l'air). */
 export const RAFIOT_SMOKE_COLORS = { smoke: 0xb3aca5, smokeShade: 0xa7a099 } as const;
@@ -205,8 +206,6 @@ const RAFIOT_COLORS = {
   window: 0x4e423a,
   funnel: 0x8e6a5a,
   ...RAFIOT_SMOKE_COLORS,
-  bronze: 0x9c8452,
-  bronzeTop: 0xb59c66,
 } as const;
 
 /**
@@ -253,6 +252,14 @@ export interface BronzeColors {
   bronze: number;
   bronzeTop: number;
 }
+
+/**
+ * Le bronze des six pièces, le même sur le pont du Rafiot du 4e et, rendues, au Fanal du 3e (./ferrailleurs3e.ts) :
+ * celui des ferrures du 3e (`COLORS_3E.bronze`, #A77B3F) et son dessus au soleil (#B98C4C). Un seul métal aux deux
+ * endroits (restes du 3e, piste 5 ; choix du mainteneur du 23 octobre 2026 : le Rafiot portait #9C8452). La tête de
+ * baleine de l'aéronef garde son bronze chaud : c'est une parure, pas une pièce.
+ */
+export const PIECES_BRONZE: BronzeColors = { bronze: COLORS_3E.bronze, bronzeTop: 0xb98c4c };
 
 /**
  * Une pièce de bronze du Rafiot, son pied en (`x`, `y`, `z`), à l'échelle `s` ; ses faces debout (l'anneau, le gong, les
@@ -315,7 +322,7 @@ const RAFIOT_PIECE_AT: Readonly<Record<RafiotPiece, readonly [number, number]>> 
  * regardent les flancs (on voit le Rafiot de flanc). Elles ne changent pas avec les lieux du 4e.
  */
 function bronzes(b: FacetBuilder): void {
-  for (const id of RAFIOT_PIECES) rafiotPiece(b, id, RAFIOT_PIECE_AT[id][0], RAFIOT_DECK, RAFIOT_PIECE_AT[id][1], RAFIOT_COLORS);
+  for (const id of RAFIOT_PIECES) rafiotPiece(b, id, RAFIOT_PIECE_AT[id][0], RAFIOT_DECK, RAFIOT_PIECE_AT[id][1], PIECES_BRONZE);
 }
 
 /**

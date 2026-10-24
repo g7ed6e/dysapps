@@ -3,12 +3,12 @@ import { useSettings } from '../core/SettingsContext';
 import { useTextes } from '../universes';
 import { BLOCKS, blockCount, type BiomeId, type BlockId } from './biomes';
 import { useBlocland } from './BloclandContext';
-import { canLaunch, nextFillable, planCellAt, planStatus, type LaunchResult, type PlanStatus } from './engine';
+import { canLaunch, nextFillable, planCellAt, planStatus, type GameState, type LaunchResult, type PlanStatus } from './engine';
 import { playDone, playNope, sonDePose } from './sound';
 import { habillageDuMonde } from './skin';
 import { voyageId } from './world/archipelago';
 import { VEHICLE_STAGES, kitReady, savedCellAt, shownCellOf, stageAt, stageWords, type VehicleStage } from './world/vehicle';
-import { planOrigin } from './world/plans';
+import { planCells, planOrigin } from './world/plans';
 import { METAMORPHOSIS_MS } from './world/metamorphosis';
 import { moinsDAnimations } from '../core/motion';
 import { renduDuMonde } from './rendering';
@@ -65,6 +65,27 @@ export interface KitInstead {
   ready?: string;
 }
 
+/**
+ * Le chantier de la Nef ouvert sur ce port : son étape, quand l'étape d'avant est partie et que celle-ci ne l'est pas
+ * encore ; sinon `null`.
+ */
+function vehicleStageOpen(state: GameState, island: BiomeId): VehicleStage | null {
+  const here = stageAt(island);
+  const previousDone = here ? here.stage === 1 || state.world.links.includes(voyageId(VEHICLE_STAGES[here.stage - 2].to)) : false;
+  return here && previousDone && !state.world.links.includes(voyageId(here.to)) ? here : null;
+}
+
+/**
+ * Le bloc que « Poser » poserait d'abord sur la Nef de ce port (la première case pas posée dont l'inventaire a le bloc),
+ * ou `null` : « Poser » n'est pas actif. La pastille de la Nef du monde ouvert le montre (GD-25).
+ */
+export function vehiclePoseBlock(state: GameState, island: BiomeId): BlockId | null {
+  const stage = vehicleStageOpen(state, island);
+  if (!stage) return null;
+  const done = new Set(state.world.parts[stage.id] ?? []);
+  return planCells(stage).find((c) => !done.has(c.key) && (state.stock[c.block] ?? 0) > 0)?.block ?? null;
+}
+
 export function useVehicleBuilder(island: BiomeId, instead?: KitInstead): VehicleBuilder {
   const { state, fillPlan } = useBlocland();
   const { settings, speak } = useSettings();
@@ -73,9 +94,7 @@ export function useVehicleBuilder(island: BiomeId, instead?: KitInstead): Vehicl
   const [burst, setBurst] = useState<Burst>({ seq: 0, cell: { ile: island, local: { x: 0, y: 0, z: 0 } }, color: '#fff' });
   useEffect(() => setNotice(null), [island]);
 
-  const here = stageAt(island);
-  const previousDone = here ? here.stage === 1 || state.world.links.includes(voyageId(VEHICLE_STAGES[here.stage - 2].to)) : false;
-  const stage = here && previousDone && !state.world.links.includes(voyageId(here.to)) ? here : null;
+  const stage = vehicleStageOpen(state, island);
   const status = stage ? planStatus(state, stage) : null;
   const kit = stage ? (instead?.kit ?? kitReady(stage, state.progress)) : false;
   const launch = stage ? canLaunch(state, stage, kit) : null;

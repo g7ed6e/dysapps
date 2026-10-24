@@ -6,16 +6,14 @@
 // apparaissent rangées sur un râtelier de bois au pied du Fanal, côté Rampe ; Grappin se tient à côté, en pion, graphite
 // et prune ; au nord, à l'horizon, leur port répond d'une seule lumière fixe. Ce fichier dessine les pièces, le râtelier,
 // Grappin et le port ; le Fanal les montre à sa restauration (./fanal3e.ts, `restoration`), la gondole les porte avant
-// (./parvis3e.ts, `zeppelinPiecesFacets`). Le bronze n'est qu'aux pièces rendues (relecture des Prairies, (b) 4). Code pur.
-import { RAFIOT_PIECE_HEIGHT, rafiotPiece, type BronzeColors, type RafiotPiece } from './crique4e';
+// (./parvis3e.ts, `zeppelinPiecesFacets`). Le bronze n'est qu'aux pièces rendues (relecture des Prairies, (b) 4) :
+// celui de `PIECES_BRONZE`, le même qu'au pont du Rafiot. Code pur.
+import { PIECES_BRONZE, RAFIOT_PIECE_HEIGHT, rafiotPiece, type RafiotPiece } from './crique4e';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { C3E } from './place3eKit';
 import { COLORS_3E } from './plan3e';
 import { rock } from './surroundingsKit';
-
-/** Le bronze des pièces : ses flancs, au ton du bronze du 3e, et ses dessus au soleil. */
-const BRONZE: BronzeColors = { bronze: C3E.bronze, bronzeTop: 0xb98c4c };
 
 /**
  * Les six pièces du Rafiot (`RAFIOT_PIECES`), dans l'ordre où elles se rangent sur le râtelier, de gauche à droite vues
@@ -32,7 +30,7 @@ export const PIECE_HEIGHT_3E: Readonly<Record<Piece3e, number>> = RAFIOT_PIECE_H
 
 /** Une pièce du Rafiot, son bas en (`x`, `y`, `z`), à l'échelle `s`, sa face vers +z (l'anneau, le gong, les boules du régulateur). */
 export function piece3e(b: FacetBuilder, id: Piece3e, x: number, y: number, z: number, s = 1): void {
-  drawPosed(b, { x, y, z, yaw: Math.PI / 2 }, (l) => rafiotPiece(l, id, 0, 0, 0, BRONZE, s));
+  drawPosed(b, { x, y, z, yaw: Math.PI / 2 }, (l) => rafiotPiece(l, id, 0, 0, 0, PIECES_BRONZE, s));
 }
 
 /**

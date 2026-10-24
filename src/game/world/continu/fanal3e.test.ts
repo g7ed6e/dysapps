@@ -15,6 +15,8 @@ import { posedTraces, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
 import { FANAL, FANAL_LAYOUT, FANAL_TOWER_3E } from './fanal3e';
 import { PORT_LAMP_OFF_3E } from './ferrailleurs3e';
+import { ZEPPELIN_3E } from './plan3e';
+import { zeppelinBalcony3e, zeppelinFacets } from './parvis3e';
 import { distance, distanceToPolyline, linearRgb } from './geometry';
 import { hasHabitantModel } from './habitants';
 import { hasScenette, planFor } from './levelPlan';
@@ -330,6 +332,47 @@ describe('La fin des Ferrailleurs, au Fanal restauré', () => {
         expect(after.positions[i + 1]).toBeLessThan(7);
         expect(landDistance3e({ x: after.positions[i], z: after.positions[i + 2] })).toBeLessThan(0);
       }
+  });
+
+  /** Les sommets de la veste prune de Grappin à moins de `r` de `at` (le port des Ferrailleurs a aussi des coques prune, au loin). */
+  const pruneNear = (f: Facets, at: { x: number; z: number }, r: number) => {
+    const [pr, pg, pb] = linearRgb(COLORS_3E.prune);
+    let n = 0;
+    for (let i = 0; i < f.colors.length; i += 3)
+      if (Math.abs(f.colors[i] - pr) < 1e-4 && Math.abs(f.colors[i + 1] - pg) < 1e-4 && Math.abs(f.colors[i + 2] - pb) < 1e-4 && distance({ x: f.positions[i], z: f.positions[i + 2] }, at) < r) n++;
+    return n;
+  };
+  const rackGrappin = { x: PLACE.center.x + FANAL_LAYOUT.ret.grappinAt.x, z: PLACE.center.z + FANAL_LAYOUT.ret.grappinAt.z };
+
+  it('avant la fin : Grappin se tient sur le balcon au bout de la gondole, immobile ; pas au râtelier (restes du 3e, piste 3 A)', () => {
+    const balcony = zeppelinBalcony3e();
+    for (const t of [0, FANAL_LAYOUT.ret.grappin - 0.01]) {
+      const f = art.draw(c, t);
+      expect(pruneNear(f, balcony, 1.5)).toBeGreaterThan(0);
+      expect(pruneNear(f, rackGrappin, 3)).toBe(0);
+    }
+    // Le même dessin à chaque image d'avant : il ne bouge pas.
+    expect(Array.from(art.draw(c, 0).positions)).toEqual(Array.from(art.draw(c, 0).positions));
+    // Au bout de la gondole, devant son nez (côté mât : au bout de la queue, l'hélice le cachait depuis les rives des
+    // Prairies) : entre le mât et le milieu de l'enveloppe, sous elle, au-dessus des nuages.
+    const { rock, tail } = ZEPPELIN_3E;
+    const mid = { x: (rock.x + tail.x) / 2, z: (rock.z + tail.z) / 2 };
+    expect(distance(balcony, rock)).toBeLessThan(distance(mid, rock));
+    expect(distance(balcony, rock)).toBeGreaterThan(5);
+    expect(balcony.y).toBeGreaterThan(0.5);
+    // Le balcon tient dans le zeppelin : son plancher sous les pieds de Grappin.
+    const z = zeppelinFacets();
+    let floor = false;
+    for (let i = 0; i < z.positions.length; i += 3) if (distance({ x: z.positions[i], z: z.positions[i + 2] }, balcony) < 1 && Math.abs(z.positions[i + 1] - balcony.y) < 0.02) floor = true;
+    expect(floor).toBe(true);
+  });
+
+  it('jouée : Grappin a quitté le balcon, il est au râtelier', () => {
+    for (const t of [FANAL_LAYOUT.ret.grappin, Infinity]) {
+      const f = art.draw(c, t);
+      expect(pruneNear(f, zeppelinBalcony3e(), 3)).toBe(0);
+      expect(pruneNear(f, rackGrappin, 1.5)).toBeGreaterThan(0);
+    }
   });
 
   it('une seule fois, en moins de 4 secondes, une pièce après l’autre ; rien sur le chemin du Fanal', () => {
