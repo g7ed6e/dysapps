@@ -2,7 +2,7 @@
 // question (la place de la scène, « Vue simple », la consigne, l'item à montrer), la scène d'un item, la place d'une
 // réponse posée sur la scène, la règle et la figure d'un item, les icônes d'action d'un écran bas et la voix coupée
 // entre deux items.
-import { createContext, useContext, useEffect, type CSSProperties } from 'react';
+import { createContext, useContext, useEffect, type CSSProperties, type ReactNode } from 'react';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
@@ -11,7 +11,7 @@ import { langAttr, type Lang } from '../../../core/speech';
 import type { ExerciseItem } from '../../exercises/types';
 import { Aid } from '../../exercises/Aid';
 import type { AidData } from '../../exercises/maths';
-import type { AnswerSlot, QuestionLayout, SortLook } from '../../world/continu/questionScene';
+import type { AnswerSlot, QuestionLayout, ScreenBox, SortLook } from '../../world/continu/questionScene';
 import type { PlaceId } from '../../world/continu/levelPlan';
 import type { ScenetteLayout } from '../../world/continu/scenette';
 import { isItemScene, type ItemScene } from '../../world/continu/questions';
@@ -142,6 +142,24 @@ export function PlaceAid({ aid, layout, simple, lang }: { aid: AidData; layout: 
   return (
     <div className={`aid world-question-aid${box ? ' beside' : ''}`} style={style}>
       <Aid aid={aid} lang={lang} />
+    </div>
+  );
+}
+
+/**
+ * Le carnet de la bulle (GD-26) : à gauche de la scène, sous la bulle, le document de l'item, sa figure et sa règle,
+ * toujours ouverts pendant l'action ; il défile seul s'il est plus haut que sa place.
+ */
+export function PlaceCarnet({ box, children }: { box: ScreenBox; children: ReactNode }) {
+  const style: CSSProperties = {
+    left: `${Math.round(box.left)}px`,
+    top: `${Math.round(box.top)}px`,
+    width: `${Math.round(box.right - box.left)}px`,
+    maxHeight: `${Math.round(box.bottom - box.top)}px`,
+  };
+  return (
+    <div className="aid world-question-aid world-carnet beside" style={style}>
+      {children}
     </div>
   );
 }

@@ -1671,6 +1671,13 @@
   row-gap: 6px;
   padding: 6px 0.75rem;
 }
+/* Le carnet (GD-26) : sa hauteur est celle de sa place, il défile seul au-delà. */
+.world-question .in-world:not(.low) .world-question-prompt > .aid.world-question-aid.world-carnet {
+  min-height: 0;
+}
+.world-question .world-carnet > * + * {
+  margin-top: 0.5rem;
+}
 /* Le rôle séparé de la consigne par un cadre, comme au plus grand texte (« Le boulanger » collé à « Lis la phrase »). */
 .world-question .in-world.bulle .world-consigne-fold .world-scenette-role {
   display: inline-block;
@@ -1712,8 +1719,8 @@
    tient en deux lignes, la consigne repliée et la phrase. */
 @media (max-height: 499px) {
   .world-question .quiz.in-world.scenette.bulle {
-    padding-block: 4px;
-    row-gap: 4px;
+    padding-block: 3px;
+    row-gap: 2px;
   }
   .world-question .in-world.bulle .world-consigne-more-word {
     display: none;

@@ -495,30 +495,30 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.
-  if (place === 'engine' || place === 'shipyard') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  if (place === 'engine' || place === 'shipyard') return items.map((it) => ({ ...it, placeScene: REST }));
   // Le rivage nord (GD-20, point 8, lot L7) : les items de référence tels quels. En C (les réponses dans la colonne) : à
   // la Vigie, Étages du sens et Les temps du récit ; aux Archives, Facettes (une mission, un geste : C entier, contenu et
   // référent dys). En R, les réponses portées par l'objet du lieu, le lieu au repos : les Vitraux des phrases, et la phrase
   // affichée et dite de l'écran de référence pour les autres (`northItem`).
   if (place === 'lookout' || place === 'archives' || place === 'printworks') {
     const column = missionIs(exerciseId, 'comprehension') || missionIs(exerciseId, 'tense-values') || missionIs(exerciseId, 'word-forms');
-    return items.map((it) => (column ? { ...it, placeScene: COLUMN } : { ...it, ...northItem(exerciseId, it), placeScene: REST }));
+    return items.map((it) => (column ? { ...it, placeScene: REST } : { ...it, ...northItem(exerciseId, it), placeScene: REST }));
   }
   // La Mangrove (lot L8a) : de même, ses quatre missions en C, avec leurs items de référence.
-  if (place === 'mangrove') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  if (place === 'mangrove') return items.map((it) => ({ ...it, placeScene: REST }));
   // Les Ruines (lot L8b) : de même.
-  if (place === 'ruins') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  if (place === 'ruins') return items.map((it) => ({ ...it, placeScene: REST }));
   // L'Observatoire (lot L8c) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
-  if (place === 'observatory') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  if (place === 'observatory') return items.map((it) => ({ ...it, placeScene: REST }));
   // La Halle (lot L8d) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
-  if (place === 'commons') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  if (place === 'commons') return items.map((it) => ({ ...it, placeScene: REST }));
   // Le large (lot L9) : les items de référence tels quels. En C, les documents (Signs, Famous people) et l'histoire
   // (Story time) ; en R, les phrases à trou, les nombres et l'écoute, portés par les bouées des Balises et les malles de la
   // Gare maritime (deux malles pour Have ou has, au niveau 1 : l'item a deux choix). Ears garde son écoute : le mot dit à
   // l'ouverture, sans phrase écrite (`listenOnly`) ; Story time, l'histoire écrite après la réponse (`listenFirst`).
   if (place === 'beacons' || place === 'ferry') {
     if (missionIs(exerciseId, 'story')) return items.map((it) => ({ ...it, listenFirst: true as const, placeScene: COLUMN }));
-    if (LARGE_COLUMN.some((m) => missionIs(exerciseId, m))) return items.map((it) => ({ ...it, placeScene: COLUMN }));
+    if (LARGE_COLUMN.some((m) => missionIs(exerciseId, m))) return items.map((it) => ({ ...it, placeScene: REST_MARK }));
     if (missionIs(exerciseId, 'first-listening'))
       return items.map((it) => ({ ...it, listenOnly: true as const, spoken: String(it.word ?? ''), speakOnOpen: true, placeScene: REST_MARK }));
     return items.map((it) => ({ ...it, placeScene: REST_MARK }));

@@ -48,7 +48,7 @@ import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, mi
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { SortScreen } from './SortScreen';
-import { ConsigneIcon, IconLabel, PlaceAid, PlaceDocument, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
+import { ConsigneIcon, IconLabel, PlaceAid, PlaceCarnet, PlaceDocument, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
 import { WorldDone } from './WorldDone';
 import { belowFold, filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
 
@@ -232,8 +232,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // Les cloches portent des mots (la Chasse au son, les Rimes-échelle) ou un nombre (l'Abattage syllabique).
     // Le geste « ranger » : les sujets sont des mots, et leurs étiquettes se mesurent comme celles des cloches.
     const words = (place === 'phare' && mission !== 'syllables') || (place === 'filets' && mission === 'word-classes');
-    return scenetteLayout({ count, widen, small: place === 'phare', words, grand: grandTexte, aid: hasAid, wideRow }, size.w || 1, size.h || 1, base);
-  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow]);
+    // « Valider » n'a sa place que pour marquer les cloches ou ranger ; ailleurs, un toucher répond.
+    const validate = place === 'phare' || (picked !== undefined && rangeGesture(place, picked.id) !== null);
+    return scenetteLayout({ count, widen, small: place === 'phare', words, grand: grandTexte, aid: hasAid, wideRow, validate }, size.w || 1, size.h || 1, base);
+  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow, picked]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
   const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
   const [finished, setFinished] = useState(false);
@@ -1102,6 +1104,10 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
   const drawn = scene !== null && sceneDrawsFigure(scene);
   const figure = scene && (simple || (scene.kind !== 'sas' && scene.kind !== 'echelle' && scene.kind !== 'jauge')) ? figureOf(item) : null;
   const aid = scene?.kind === 'lockPair' && !simple ? null : aidOf(item);
+  // Dans la bulle (GD-26), la question seule en tête ; son document, la figure et la règle dans le carnet, à gauche de la
+  // scène, toujours ouvert pendant l'action.
+  const inBubble = !simple && scene !== null && !answersInColumn(scene);
+  const docInCarnet = Boolean(question) && inBubble;
   // Calculer avec des fractions : les réponses dans la colonne, en liste, aucun objet ne les porte dans la scène.
   const inColumn = scene !== null && answersInColumn(scene);
   // L'Abattage syllabique au Phare : le mot est l'objet appris, écrit sans syllabes en couleurs (elles donneraient la
@@ -1129,9 +1135,9 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
       right: answered && rightIndex >= 0 && !inColumn ? [rightIndex] : [],
       picked: inColumn ? [] : picked,
       count: inColumn ? 0 : choices.length,
-      aid: Boolean(aid) && !drawn,
+      aid: (Boolean(aid) && !drawn) || docInCarnet || (Boolean(figure) && inBubble),
     });
-  }, [show, itemKeyOf, scene, answered, shownAnswered, rightIndex, choices.length, aid, triedKey, inColumn, drawn]);
+  }, [show, itemKeyOf, scene, answered, shownAnswered, rightIndex, choices.length, aid, triedKey, inColumn, drawn, docInCarnet, figure, inBubble]);
   // Les dictées (le Coffre à mots, l'Oreille du mineur) : le mot ou sa phrase dits à l'ouverture de l'item, comme sur
   // leur écran de référence, si la lecture automatique est choisie.
   // Une lecture par item : la voix, la phrase et le réglage du moment, lus sans relancer la lecture quand ils changent.
@@ -1192,7 +1198,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
     <div className="question world-place">
       {pinnedVoice}
       <div className={`world-question-prompt${filled ? ' filled' : ''}`}>
-        {question && inColumn ? (
+        {question && (inColumn || docInCarnet) ? (
           // En C, la question seule en tête (épinglée en haut du panneau quand il défile) ; son document après les
           // réponses.
           <div className="question-head">
@@ -1301,12 +1307,26 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
           </p>
         )}
         {/* La figure après la phrase et l'indice : la prochaine action reste dans le panneau sans défiler (tablette). */}
-        {figure && (
-          <div className="calcul-figure world-question-figure">
-            <Aid aid={figure} />
-          </div>
+        {inBubble && layout.aid && (docInCarnet || figure || aid) ? (
+          <PlaceCarnet box={layout.aid}>
+            {docInCarnet && <PlaceDocument text={prompt} spoken={spoken} lang={lang} />}
+            {figure && (
+              <div className="calcul-figure world-question-figure">
+                <Aid aid={figure} />
+              </div>
+            )}
+            {aid && <Aid aid={aid} lang={lang} />}
+          </PlaceCarnet>
+        ) : (
+          <>
+            {figure && (
+              <div className="calcul-figure world-question-figure">
+                <Aid aid={figure} />
+              </div>
+            )}
+            {aid && <PlaceAid aid={aid} layout={layout} simple={simple} lang={lang} />}
+          </>
         )}
-        {aid && <PlaceAid aid={aid} layout={layout} simple={simple} lang={lang} />}
       </div>
       {!inColumn && answersBlock}
     </div>
