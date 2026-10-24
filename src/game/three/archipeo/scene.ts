@@ -112,6 +112,8 @@ import { createRemiseRun, createSignsTracker, type RemiseEvents, type SignOnScre
 import { nearestPlace, screenRect, touchedObject, type ObjectTarget } from '../../world/continu/toucher';
 import { assignSpots, wildlifeGroups6e, type CritterPose } from '../../world/continu/wildlife';
 import { allCritterForms, wildlifeGroups5e } from '../../world/continu/wildlife5e';
+import { createResolution } from './resolution';
+import { createTextureUploads } from './textureUploads';
 
 /** Ce que la page donne à la scène. */
 export interface OpenWorldOptions {
@@ -509,8 +511,9 @@ const SCENE_TURN = { clearance: 1, keoHead: 1.3, habitantHead: 1.5 } as const;
 const SEE_THROUGH = { radius: 1.3, open: 0.32, keep: 1.4, soft: 0.35, holes: 0.82, steep: 0.7, above: 2.5 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
- * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
- * le monde en grille (../loop.ts).
+ * pixels est plafonné à 2, descend d'un cran jusqu'à 1,5 si l'appareil reste sous 50 images par seconde
+ * (./resolution.ts), puis est ramené à 1 s'il peine vraiment (des images de plus de 45 ms, trente de suite), comme le
+ * monde en grille (../loop.ts).
  */
 const SLOW_FRAME_MS = 45;
 const SLOW_FRAMES = 30;
@@ -1228,21 +1231,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Un modèle prêt après l'entrée de la remise de son lieu (« Livrer » touché aussitôt arrivé) prend la place du pion : rien
   // de la remise ne dépend du pion ; dans une mission, ce qui pend de la main de l'habitant s'y règle, le pion reste.
   // Les textures de l'habitant et de l'équipier, préparées pendant la marche, attendent que Kéo s'arrête pour partir à la
-  // carte graphique, une par image (`stepUploads`), la caméra posée (`UPLOAD_STILL_MS`) : envoyée aussitôt, une texture faisait l'image la plus longue de la
-  // marche, aux quatre niveaux (mesure iPad du 24 octobre 2026). Une scénette ouverte avant leur départ les envoie à son
-  // premier dessin, comme Three.js le fait de lui-même. Une texture libérée en attente quitte la file.
-  const uploads = new Set<THREE.Texture>();
-  const forgetUpload = (e: { target: THREE.Texture }) => void uploads.delete(e.target);
-  const prepareLater = (t: THREE.Texture) => {
-    uploads.add(t);
-    t.addEventListener('dispose', forgetUpload);
-  };
-  const stepUploads = () => {
-    const next = uploads.values().next();
-    if (next.done) return;
-    uploads.delete(next.value);
-    next.value.removeEventListener('dispose', forgetUpload);
-    renderer.initTexture(next.value);
+  // carte graphique (`UPLOAD_STILL_MS`, la caméra posée) : envoyée aussitôt, une texture faisait l'image la plus longue de
+  // la marche, aux quatre niveaux (mesure iPad du 24 octobre 2026). Elles partent en bandes, une par image
+  // (./textureUploads.ts) : envoyée d'un bloc, elle faisait encore une image de 124 à 298 ms à l'arrêt (remesure du même
+  // jour). Une texture qu'on va dessiner avant la fin est finie d'un coup (`finishShown`, au dessin de son maillage) ;
+  // une texture libérée en attente quitte la file.
+  const uploads = createTextureUploads(renderer);
+  const prepareLater = (t: THREE.Texture) => uploads.add(t);
+  const finishShown = (_r: unknown, _s: unknown, _c: unknown, _g: unknown, material: THREE.Material) => {
+    const map = (material as THREE.MeshLambertMaterial).map;
+    if (map) uploads.finish(map);
   };
   const habitants = createHabitantModels(
     scene,
@@ -1258,6 +1256,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const worldHabitants = createWorldHabitantModels(scene, PLACES.map((p) => p.id), ground, (t) => renderer.initTexture(t));
   // L'équipier qui guide le lieu (GD-23, lot 1, ./equipierModels.ts) : préparé avec l'habitant, montré dans la scénette.
   const equipiers = createEquipierModels(scene, prepareLater);
+  habitants.mesh.onBeforeRender = finishShown;
+  equipiers.mesh.onBeforeRender = finishShown;
   const prefetchGuide = (place: PlaceId) => {
     const g = guideOf(place);
     if (g) equipiers.prefetch(g);
@@ -4371,6 +4371,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let frame = 0;
   let last = performance.now();
   let slowFrames = 0;
+  // La finesse qui descend d'un cran quand l'appareil peine longtemps (./resolution.ts).
+  const resolution = createResolution(renderer.getPixelRatio(), last);
   let movedAt = 0;
   const loop = () => {
     frame = requestAnimationFrame(loop);
@@ -4383,6 +4385,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (now - last > SLOW_FRAME_MS && renderer.getPixelRatio() > 1) {
       if (++slowFrames > SLOW_FRAMES) renderer.setPixelRatio(1);
     } else slowFrames = 0;
+    const finer = resolution.frame(now - last, now);
+    if (finer !== null && finer < renderer.getPixelRatio()) renderer.setPixelRatio(finer);
     const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     last = now;
     const t = now / 1000;
@@ -4504,7 +4508,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
     if (moving) movedAt = now;
-    else if (now - movedAt > UPLOAD_STILL_MS) stepUploads();
+    else if (now - movedAt > UPLOAD_STILL_MS) uploads.step();
     stepDetour(now, moving, dt);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
