@@ -160,6 +160,24 @@
   color: var(--text);
   text-align: center;
 }
+/* « Relier le Bastion » : un bouton secondaire (fond et bord de bouton, pas ceux d'une bulle), à 48 px au moins, posé
+   comme la bulle ; il ouvre la fiche de la terre. Son texte, plafonné à 24 px comme le mot sous l'icône d'un bouton du
+   monde, passe à la ligne entre deux mots, jamais au milieu d'un mot (au plus grand texte, en 390 × 844, « Bastion » se
+   coupait entre les colonnes). */
+.world-stage .open-world-go .button.open-world-go-link {
+  min-height: 48px;
+  min-width: 0;
+  max-width: min(var(--open-world-bulle, 90vw), 24rem);
+  padding: 0.3rem 1rem;
+  border-color: var(--ink);
+  background: var(--button-bg);
+  color: var(--secondary-text);
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: keep-all;
+  hyphens: manual;
+  font-size: min(1rem, 24px);
+}
 .world-stage[data-go-cote='oui'] .open-world-go-reason {
   left: auto;
   right: 0;

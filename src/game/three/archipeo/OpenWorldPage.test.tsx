@@ -429,16 +429,22 @@ describe('La bulle au-dessus de « Y aller » : rien, ou l’action (choix du ma
     expect(screen.queryByText(/Aucune mission/)).toBeNull();
   });
 
-  test('plus rien à jouer, une terre fermée qu’on peut relier : la bulle dit l’action, l’icône du pont et le nom de la terre', async () => {
+  test('plus rien à jouer, une terre fermée qu’on peut relier : un bouton dit l’action, l’icône du pont et le nom de la terre, et ouvre sa fiche', async () => {
     const { progress, world } = toutConstruit();
     const islands = landById('large').places.map((id) => placeById(id).island);
     const open = Object.fromEntries(Object.entries(progress).filter(([k]) => !islands.some((i) => k.startsWith(`${i}-`))));
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress: open, world: { ...world, links: [] } }));
     renderPage();
     await screen.findByRole('button', { name: /Carte/ });
-    const bubble = await screen.findByText('Relier le Large', { selector: '.open-world-go-reason' });
-    expect(bubble.querySelector('svg')).not.toBeNull();
+    const link = await screen.findByRole('button', { name: 'Relier le Large' });
+    expect(link).toHaveClass('open-world-go-reason');
+    expect(link).not.toHaveClass('primary');
+    expect(link.querySelector('svg')).not.toBeNull();
     expect(screen.queryByText(/Aucune mission/)).toBeNull();
+    // Le toucher ouvre la fiche de la terre, la même qu'un de ses lieux touché, son « Relier » en tête.
+    await userEvent.setup().click(link);
+    const sheet = await screen.findByRole('dialog', { name: 'Le Large' });
+    expect(within(sheet).getByRole('button', { name: /Relier/ })).toHaveFocus();
   });
 });
 

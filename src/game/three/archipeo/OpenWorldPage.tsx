@@ -1408,7 +1408,16 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                   relecture des Fabriques). Elle revient ensuite. Jamais sur un Détour, où il n'y a jamais de mission (retouche 1 des Coteaux : au Replat, tout fini,
                   elle venait après le nom). */}
               {!walking && !relightHere && !saidOn && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOn && detourHere === null && (revisionHere || landToLink) && <p className="open-world-go-reason">{revisionHere ? frenchTypography(REVISION_PHRASES.reminder) : landToLink && <><Icon name="ouvrage" /> {linkActionLabel(landToLink)}</>}</p>}
+              {/* « Relier le Bastion » est un vrai bouton, secondaire, qui ouvre la fiche de la terre (celle qu'ouvre le
+                  toucher d'un de ses lieux) : avec son allure de bouton, un toucher qui ne répondait pas cassait « un
+                  contrôle répond toujours » (consultant UX UI et référent dys, relecture des restes du 4e). */}
+              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOn && detourHere === null && (revisionHere ? (
+                <p className="open-world-go-reason">{frenchTypography(REVISION_PHRASES.reminder)}</p>
+              ) : landToLink && (
+                <button type="button" className="button open-world-go-reason open-world-go-link" onClick={() => openClosed(landToLink)}>
+                  <Icon name="ouvrage" /> {linkActionLabel(landToLink)}
+                </button>
+              ))}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute
