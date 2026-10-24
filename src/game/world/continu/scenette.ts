@@ -566,10 +566,11 @@ export const SCENETTE_LAYOUT = {
    */
   lowAidInset: 28,
   /**
-   * « Valider » en bas à droite : la place gardée, en pixels (le bouton peut être plus large en grand texte), et
-   * l'écart au-dessus de lui, plus large que celui des réponses (retour UX UI).
+   * « Valider » en bas à droite : la place gardée, en pixels, et l'écart au-dessus de lui, plus large que celui des
+   * réponses (retour UX UI). Au plus grand texte, le bouton s'élargit (« Valider » en OpenDyslexic à 28 px en prend
+   * près de 300) : la place gardée aussi, sinon la dernière caisse d'un téléphone couché passait dessous (GD-26, PR 2).
    */
-  validate: { width: 176, height: 60, gap: 20 },
+  validate: { width: 176, grandWidth: 310, height: 60, gap: 20 },
   /** Les cloches, d'un tiers plus petites que la place au-dessus de leur mot : la poutre descend sous Kéo et l'habitant. */
   objectShare: 2 / 3,
   /** La largeur d'une étiquette au plus quand la rangée passe sous la colonne pour un mot coupé (`wideRow`), en pixels. */
@@ -737,7 +738,8 @@ export function scenetteLayout(needs: ScenetteNeeds, width: number, height: numb
   // côté d'elle si l'écran est trop court.
   const edge = S.edge * width;
   const lh = base.low ? L.labelLow : L.label;
-  const validate = needs.validate === false ? null : { left: width - edge - S.validate.width, right: width - edge, top: height - L.edgeLow - S.validate.height, bottom: height - L.edgeLow };
+  const validateWidth = needs.grand ? S.validate.grandWidth : S.validate.width;
+  const validate = needs.validate === false ? null : { left: width - edge - validateWidth, right: width - edge, top: height - L.edgeLow - S.validate.height, bottom: height - L.edgeLow };
   // La rangée s'arrête au-dessus de « Valider » ; sur un écran trop court pour cela, elle s'arrête à sa gauche.
   const above = validate ? Math.min(S.row.bottom * height, validate.top - S.validate.gap) : S.row.bottom * height;
   const roomy = !validate || above - S.row.top * height >= 2 * lh + L.lift;

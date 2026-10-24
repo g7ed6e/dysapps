@@ -43,7 +43,7 @@ import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelP
 import { placePoseWords } from './constructionParts';
 import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_GRAND_WIDE_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_GRAND_WIDE_ROUND, RANGE_PER_LONG_LOW_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { DialScreen } from './DialScreen';
@@ -609,7 +609,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
         ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
         : ranges
           ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed))
-          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed)),
+          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed), lowScreen ? RANGE_PER_LONG_LOW_ROUND : undefined),
       Screen: marks ? BellScreen : ranges ? SortScreen : GestureScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
@@ -627,6 +627,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     bubbleLine,
     bellsPerRound,
     sortsPerRound,
+    lowScreen,
     bellTarget,
     grandTexte,
     plain,

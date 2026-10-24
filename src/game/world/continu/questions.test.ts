@@ -1675,6 +1675,13 @@ describe('Les gestes des items (GD-26)', () => {
     expect(gestureScreens([t1, a, t2, b, c], 2)).toEqual([[t1], [a, b], [c], [t2]]);
     expect(gestureScreens([t1, t2], 3)).toEqual([[t1], [t2]]);
   });
+  it('sur un écran bas, des fiches en phrases se rangent une par manche, des mots par trois', () => {
+    const words = ['a', 'b', 'c'].map((k) => ({ ...fiche(k, ['x']), subject: 'la baleine' }));
+    const sentences = ['a', 'b', 'c'].map((k) => ({ ...fiche(k, ['x']), subject: 'Je viens pour chant… avec toi.' }));
+    expect(gestureScreens(words, 3, 1)).toEqual([words]);
+    expect(gestureScreens(sentences, 3, 1)).toEqual(sentences.map((f) => [f]));
+    expect(gestureScreens(sentences, 3)).toEqual([sentences]);
+  });
   it('écrit les fiches de la Mangrove et les paniers du Hameau dans le contenu, la réponse parmi les choix', async () => {
     const vivant = await loadExercise('life-earth-sciences-6e-living-world-living-groups-1');
     const solidarite = await loadExercise('civics-5e-equality-solidarity-solidarity-1');
