@@ -182,7 +182,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // graduations passeraient sous 8 px l'une de l'autre.
     const column = item?.scene.kind === 'jauge' && lowScreen;
     return scenetteLayout({ count, widen, small: place === 'phare', words, grand: grandTexte, aid: hasAid, wideRow, validate, column }, size.w || 1, size.h || 1, base);
-  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow, picked, item?.scene.kind, item?.gesture]);
+  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow, picked, item?.scene.kind, item?.gesture, lowScreen]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
   const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
   const [finished, setFinished] = useState(false);
@@ -665,6 +665,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     poseWords,
     hasAid,
     bulle,
+    simpleLow,
+    shortCut,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,
