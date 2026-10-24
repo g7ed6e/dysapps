@@ -23,8 +23,8 @@ import { drawPosed, type FacetBuilder } from './facets';
 import { FANAL_LAYOUT } from './fanal3e';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
-import { capOf, once, sceneRight, sceneRise, sheet, type P3 } from './place4eKit';
+import { C3E, SINK_3E, bench3e, dryTufts3e, habitant3e, pathLantern3e, postLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, sheet, type P3 } from './place4eKit';
 import { PLACES_3E } from './plan3e';
 
 /** Les couleurs propres à la Rampe : le creux d'une fente, un brun d'ombre (jamais presque noir) ; la corde ; la veste de la charretière. */
@@ -331,14 +331,6 @@ function footpath(l: FacetBuilder): void {
   }
 }
 
-/** Le banc de pierre, à planche de bois. */
-function bench(l: FacetBuilder): void {
-  const { x, z } = BENCH;
-  const y = groundAt(x, z);
-  for (const s of [-1, 1]) l.box({ x: x + s * 0.55, y: y - 0.1, z }, [0.26, 0.55, 0.38], C3E.graniteShade, C3E.granite);
-  l.box({ x, y: y + 0.42, z }, [1.5, 0.1, 0.44], C3E.woodShade, C3E.wood);
-}
-
 function model(add: AddPiece): void {
   const corps = { stage: 0 as Stage, row: 0 };
   const haut = { stage: 1 as Stage, row: 0 };
@@ -369,7 +361,7 @@ function model(add: AddPiece): void {
     (b) =>
       posed(b, (l) => {
         sledDown(l);
-        DRY.forEach((d) => dryTuft3e(l, d.x, groundAt(d.x, d.z), d.z, d.s));
+        dryTufts3e(l, DRY, groundAt);
       }),
     abords,
   );
@@ -395,9 +387,8 @@ function model(add: AddPiece): void {
     posed(b, (l) => {
       footpath(l);
       sledUp(l);
-      bench(l);
-      const p = PATH_LANTERN;
-      postLantern3e(l, p.x, groundAt(p.x, p.z), p.z, p.h, true);
+      bench3e(l, BENCH, groundAt);
+      pathLantern3e(l, PATH_LANTERN, groundAt);
     }),
   );
 }
@@ -467,17 +458,8 @@ const TRACES = {
 /** Le cap de départ de la scénette : au nord-ouest, vers la rampe de trois quarts et le Fanal, jamais vers le pic. */
 const SCENE_START = capOf(340);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers la charretière). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : sur l'herbe à l'ouest de la porte, au sud de la rampe. */
 const SCENE_SPOT = { dx: -4.2, dz: 2.6, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et de la charretière au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe du creux. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, SITE.ground(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** L'établi des poulies : sa hauteur à l'échelle 1 ; une poulie choisie se soulève d'un cran. */
 const PULLEYS = { height: 0.62, lift: 0.3, pulley: 0.42 } as const;
@@ -493,17 +475,8 @@ export const RAMPE: PlaceArt = {
   role: 'La charretière',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (4 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et la charretière de part et d'autre de son milieu ; son sol, l'herbe du creux.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: SITE.ground, top: 3.2, pitch: 4 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x6a5444);
   },

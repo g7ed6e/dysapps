@@ -30,6 +30,12 @@ describe('la Nef du monde continu (GD-21)', () => {
     expect(nefTouched(PORT.toWorld(PORT_PAVING.quay.x1, 0))).toBe(false);
   });
 
+  it('ouvre sa fiche quand on touche la bouée du ber vide (voyage entre niveaux)', () => {
+    const l = PORT.toLocal(nefBerthWorld());
+    expect(nefTouched(PORT.toWorld(l.x - 2.1, l.z))).toBe(true);
+    expect(nefTouched(PORT.toWorld(l.x - 4, l.z))).toBe(false);
+  });
+
   it('a son banc au-delà de la passe, sur l’eau, plus haut que la terre la plus haute', () => {
     const westOfPass = Math.min(...PASS.map((p) => p.x));
     let top = -Infinity;

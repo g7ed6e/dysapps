@@ -18,8 +18,8 @@ import type { Stage } from './construction';
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, habitant3e, lantern3e, postLantern3e, site3e, wallSpan3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, quadOut, sceneRight, sceneRise } from './place4eKit';
+import { C3E, benchSized3e, habitant3e, lantern3e, pathLantern3e, postLantern3e, scene3e, site3e, wallSpan3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, quadOut } from './place4eKit';
 
 /**
  * Les couleurs propres à l'Abri, en plus des matières des Passeurs (`C3E`) : le blanc cassé de l'abri à persiennes et
@@ -392,14 +392,6 @@ function enclosure(b: FacetBuilder, h: number, broken = false): void {
   }
 }
 
-/** Le banc de la météorologue, au sud-ouest, face aux instruments (les abords). */
-function bench(b: FacetBuilder): void {
-  const B = BENCH;
-  const g = planeY(B.x, B.z);
-  for (const s of [-1, 1]) b.box({ x: B.x + s * (B.len / 2 - 0.15), y: g - 0.1, z: B.z }, [0.18, B.h + 0.1, B.w - 0.08], C3E.graniteShade, C3E.granite);
-  b.box({ x: B.x, y: g + B.h, z: B.z }, [B.len, 0.1, B.w], C3E.woodShade, C3E.wood);
-}
-
 function model(add: AddPiece): void {
   const corps1 = { stage: 0 as Stage, row: 0 };
   const corps2 = { stage: 0 as Stage, row: 0.5 };
@@ -452,9 +444,8 @@ function model(add: AddPiece): void {
   // ---- Les abords : le muret bas refait ; le banc ; la lanterne du chemin.
   add(2, 0, (b) => {
     enclosure(b, WALL.h);
-    bench(b);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    benchSized3e(b, BENCH, planeY);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -554,21 +545,12 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 5) : au nord-nord-ouest, vers l'abri et le pic. */
 const SCENE_START = capOf(342);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers la météorologue). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : devant l'abri, la table de relevés à droite. */
 const SCENE_SPOT = {
   dx: 1.2,
   dz: 2.4,
   half: [2.4, 1.2] as [number, number],
 } as const;
-
-/** L'écart de Kéo et de la météorologue au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe du jardin d'instruments. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La planche des gobelets : sa hauteur à l'échelle 1 ; un gobelet choisi se soulève d'un cran. */
 const PLANK = { height: 0.55, lift: 0.3, cup: 0.22 } as const;
@@ -582,30 +564,8 @@ export const ABRI: PlaceArt = {
   role: 'La météorologue',
   model,
   traceStage: 0,
-  sceneSpot: {
-    dx: SCENE_SPOT.dx,
-    dz: SCENE_SPOT.dz,
-    half: SCENE_SPOT.half,
-    fine: true,
-  },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: {
-      dx: -SCENE_RIGHT.x * SCENE_HALF,
-      dz: -SCENE_RIGHT.z * SCENE_HALF,
-      scale: 0.6,
-      yaw: Math.PI - 0.4 + SCENE_START,
-    },
-    habitant: {
-      dx: SCENE_RIGHT.x * SCENE_HALF,
-      dz: SCENE_RIGHT.z * SCENE_HALF,
-    },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et la météorologue de part et d'autre de son milieu ; son sol, l'herbe du jardin d'instruments.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 2.9, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat);
   },

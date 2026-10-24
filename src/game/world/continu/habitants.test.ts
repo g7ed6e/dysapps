@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { compacterGlb } from '../../../../scripts/rendu/compacterGlb.mjs';
 import { lireGlbTexture } from '../characters/imported/glb';
 import type { Facets } from './facets';
-import { forgetHabitant, forgetHabitants, HABITANT_FILE, HABITANT_HALVES, HABITANT_HEIGHT, HABITANT_TRIANGLES, habitantBox, habitantModelName, registerHabitant } from './habitants';
+import { forgetHabitant, forgetHabitants, HABITANT_FILE, HABITANT_HALVES, HABITANT_HEIGHT, HABITANT_TRIANGLES, habitantBox, habitantHeight, habitantModelName, registerHabitant } from './habitants';
 import { PLACES, type PlaceId } from './plan6e';
 import { habitantHand, scenetteDecor, scenetteHabitant, scenetteKeo, scenetteSetting } from './scenette';
 
@@ -53,7 +53,7 @@ describe('Les seize fichiers', () => {
       let [low, high] = [Infinity, -Infinity];
       for (let i = 1; i < p.length; i += 3) [low, high] = [Math.min(low, p[i]), Math.max(high, p[i])];
       expect(low, id).toBeCloseTo(0, 5);
-      expect(high, id).toBeCloseTo(HABITANT_HEIGHT, 4);
+      expect(high, id).toBeCloseTo(habitantHeight(id), 4);
       const box = habitantBox(model);
       const half = HABITANT_HALVES[id];
       // La boîte couvre le modèle, au centième près, sans le déborder de plus.

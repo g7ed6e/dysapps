@@ -25,7 +25,7 @@ function show(posed: readonly string[], stock: Record<string, number>, achieved:
       <ProgressProvider>
         <BloclandProvider>
           <MemoryRouter>
-            <NefParuresSheet look={look} feux={feux.kit} missing={feux.missing} onMap={onMap} onClose={() => {}} />
+            <NefParuresSheet look={look} feux={feux.kit} missing={feux.missing} onMap={onMap} here="3e" onReturn={() => {}} onClose={() => {}} />
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>

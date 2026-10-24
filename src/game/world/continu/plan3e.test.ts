@@ -5,19 +5,20 @@
 import { describe, expect, it } from 'vitest';
 import { HABITANT_TRIANGLES_3E } from './habitants';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { ARCHES_TRIANGLES_3E, OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e } from './budget';
+import { ARCHES_TRIANGLES_3E, OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e, worldHabitantsCost } from './budget';
 import { BRIDGE, bridgeFacets, bridgeFloor, bridgeParts, bridgeSite } from './bridges';
 import { boundsOf } from './facets';
 import { distance, linearRgb, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
 import { levelWorld } from './levelWorld';
-import { planFor } from './levelPlan';
+import { hasScenette, planFor } from './levelPlan';
+import { placeArt } from './northShore';
 import { modelOfPlace } from './places';
 import { FANAL_TOWER_3E } from './fanal3e';
 import { CUT_CLEARANCE_3E, NETWORK_3E, pathRibbons3e } from './paths3e';
 import { NEF_3E, PARVIS_SITE, PARVIS_VIEW, nef3eFlight, parvisDecorFacets, zeppelinFacets, zeppelinPiecesFacets } from './parvis3e';
 import { veilFacets } from './veil';
-import { COLORS_3E, DEPARTURE_3E, LINKS_3E, PARVIS, PARVIS_PAD, PATH_EDGES_3E, PEAK_3E, SMALL_ARCHES_3E, TERRAIN_3E, ZEPPELIN_3E, parvisFloor } from './plan3e';
+import { BUILT_PLACES_3E, COLORS_3E, DEPARTURE_3E, LINKS_3E, PARVIS, PARVIS_PAD, PATH_EDGES_3E, PATH_NODES_3E, PEAK_3E, SMALL_ARCHES_3E, TERRAIN_3E, ZEPPELIN_3E, isBuiltPlace3e, parvisFloor } from './plan3e';
 import { SKY_OF } from './sky';
 import { SEA_TEXTURE_3E, WATER_TONES_3E, seaPixels3e } from './sea';
 import { FLORA_3E_COLORS, buildHeightField3e, groundOn3e, heightAt3e, landDistance3e, mapOverlay3e, shoreRimFacets, smallArchFacets, smallArchFloor, walkBlocked3e } from './terrain3e';
@@ -106,6 +107,27 @@ describe('Le plan du 3e', () => {
       if (!passages.has(i)) expect(lands.get(a), `${a}–${b}`).toBe(lands.get(b));
     });
     for (const p of PLAN.places) expect(NETWORK_3E.findRoute(NETWORK_3E.atNode(DEPARTURE_3E.node), NETWORK_3E.atNode(p.door)).length, p.id).toBeGreaterThan(1);
+  });
+
+  it('chaque lieu du 3e est construit : dans `BUILT_PLACES_3E`, avec sa scénette, son dessin et une trace par mission, et un chemin mène à sa porte depuis le Parvis', () => {
+    expect(new Set(PLAN.places.map((p) => p.id))).toEqual(new Set(Object.keys(BUILT_PLACES_3E)));
+    for (const p of PLAN.places) {
+      expect(isBuiltPlace3e(p.id), p.id).toBe(true);
+      if (!isBuiltPlace3e(p.id)) continue;
+      const missions = [...BUILT_PLACES_3E[p.id]];
+      expect(hasScenette(p.id), p.id).toBe(true);
+      expect(p.scenes, p.id).toEqual(missions);
+      const art = placeArt(p.id);
+      expect(art, p.id).not.toBeNull();
+      expect(new Set(Object.keys(art!.traces)), p.id).toEqual(new Set(missions));
+      expect(art!.sceneSpot.fine, p.id).toBe(true);
+      expect(art!.site.rise, p.id).toBeGreaterThanOrEqual(0);
+      // Sa porte est un nœud du réseau, au bout d'au moins une liaison, et le plus court trajet y mène depuis le Parvis.
+      expect(PATH_NODES_3E.some((n) => n.id === p.door), p.id).toBe(true);
+      expect(PATH_EDGES_3E.some(([a, b]) => a === p.door || b === p.door), p.id).toBe(true);
+      const route = NETWORK_3E.findRoute(NETWORK_3E.atNode(DEPARTURE_3E.node), NETWORK_3E.atNode(p.door));
+      expect(distance(route[route.length - 1], node(p.door)), p.id).toBeLessThan(1e-6);
+    }
   });
 });
 
@@ -276,8 +298,8 @@ describe('Le pic, les arêtes et la mer de nuages', () => {
     expect(bronze).toBeGreaterThan(0);
   });
 
-  it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#E4EAF1, retouche 1)', () => {
-    expect(COLORS_3E.cloud).toBe(0xe4eaf1);
+  it('la neige n’est jamais plus blanche que les nuages, de la teinte choisie (#DDE5EF, un cran bleu-gris aux restes du 3e)', () => {
+    expect(COLORS_3E.cloud).toBe(0xdde5ef);
     expect('cloudBright' in COLORS_3E).toBe(false);
     expect(luminance(linearRgb(COLORS_3E.snow))).toBeLessThanOrEqual(luminance(linearRgb(COLORS_3E.cloud)));
   });
@@ -330,8 +352,16 @@ describe('Le budget du 3e', () => {
     const total = (list: { triangles: number; calls: number }[]) => list.reduce((s, p) => ({ triangles: s.triangles + p.triangles, calls: s.calls + p.calls }), { triangles: 0, calls: 0 });
     const env = OPEN_WORLD_BUDGETS['3e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
-    for (const cost of [total(openWorldCost3e('monde')), total(openWorldCost3e('scenette')), total(openWorldCost3e('depart')), mapCost3e()]) {
-      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles + CIRQUE_ADDED_3E + HABITANTS_ADDED_3E);
+    // Hors scénette et au départ, les habitants près de leur porte en plus (choix du mainteneur, 23 octobre 2026 : en
+    // modèle 3D, aux quatre niveaux ; `worldHabitantsCost`) ; ni dans la scénette, ni sur la Carte.
+    const habitants = worldHabitantsCost('3e').triangles;
+    for (const [cost, added] of [
+      [total(openWorldCost3e('monde')), habitants],
+      [total(openWorldCost3e('scenette')), 0],
+      [total(openWorldCost3e('depart')), habitants],
+      [mapCost3e(), 0],
+    ] as const) {
+      expect(cost.triangles).toBeLessThanOrEqual(LOT1_CEILING.triangles + CIRQUE_ADDED_3E + HABITANTS_ADDED_3E + added);
       expect(cost.calls).toBeLessThanOrEqual(LOT1_CEILING.calls);
     }
   });

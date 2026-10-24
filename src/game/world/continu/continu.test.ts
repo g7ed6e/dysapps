@@ -554,8 +554,8 @@ describe('Le budget du monde continu', () => {
 
   it('tient dans l’enveloppe relevée par le mainteneur (111 500 triangles et 22 appels, l’équipier de la scénette, 21 octobre 2026)', () => {
     expect(OPEN_WORLD_BUDGETS['6e']).toEqual({ triangles: 111_500, calls: 22 });
-    // Le 5e a la sienne (choix du mainteneur, 20 octobre 2026, « Relever seulement »).
-    expect(OPEN_WORLD_BUDGETS['5e']).toEqual({ triangles: 118_000, calls: 22 });
+    // Le 5e a la sienne (choix du mainteneur, 20 octobre 2026, « Relever seulement » ; relevée le 23 octobre 2026 pour les habitants près de leur porte, « 1 500 triangles »).
+    expect(OPEN_WORLD_BUDGETS['5e']).toEqual({ triangles: 128_000, calls: 22 });
     // Sans les aménagements, dont la vue trace les dessins : le tout se compte dans three/archipeo/amenagements.test.ts.
     const cost = openWorldCost(0);
     const triangles = cost.reduce((s, c) => s + c.triangles, 0);

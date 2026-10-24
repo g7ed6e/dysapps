@@ -20,8 +20,8 @@ import type { Stage } from './construction';
 import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, armLantern3e, dryTuft3e, habitant3e, postLantern3e, site3e, wallSpan3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { C3E, armLantern3e, benchSized3e, dryTuft3e, habitant3e, pathLantern3e, scene3e, site3e, wallSpan3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld } from './place4eKit';
 
 /**
  * Les couleurs propres au Jardin, en plus des matières des Passeurs (`C3E`) : la terre des carrés ; trois verts des
@@ -263,14 +263,6 @@ function breach(b: FacetBuilder): void {
     b.box({ x, y: wallBase() + 0.5 + 0.14, z: WALL.z, yaw }, [0.6, 0.32, 0.42], C3E.graniteShade, C3E.granite);
 }
 
-/** Le banc du greffeur (les abords). */
-function bench(b: FacetBuilder): void {
-  const B = BENCH;
-  const g = planeY(B.x, B.z);
-  for (const s of [-1, 1]) b.box({ x: B.x + s * (B.len / 2 - 0.15), y: g - 0.1, z: B.z }, [0.18, B.h + 0.1, B.w - 0.08], C3E.graniteShade, C3E.granite);
-  b.box({ x: B.x, y: g + B.h, z: B.z }, [B.len, 0.1, B.w], C3E.woodShade, C3E.wood);
-}
-
 /** Les dalles de pierre claire du chemin (les abords). */
 function flags(b: FacetBuilder): void {
   for (const [k, f] of FLAGS.entries()) b.box({ x: f.x, y: planeY(f.x, f.z) - 0.1, z: f.z, yaw: 0.2 * (k - 1) }, [0.8, 0.16, 0.6], C3E.stoneShade, C3E.stone);
@@ -320,10 +312,9 @@ function model(add: AddPiece): void {
   // ---- Les abords : la fontaine pleine ; le banc ; le chemin de pierre claire ; la lanterne du chemin.
   add(2, 0, (b) => {
     fountainInside(b, true);
-    bench(b);
+    benchSized3e(b, BENCH, planeY);
     flags(b);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -388,17 +379,8 @@ const TRACES = {
 /** Le cap de départ de la scénette (proposition, § 6) : au nord, vers le mur des espaliers et le pic. */
 const SCENE_START = capOf(0);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers le greffeur). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : entre les deux carrés du sud, la fontaine devant. */
 const SCENE_SPOT = { dx: 0, dz: 4.8, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et du greffeur au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe du jardin. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La margelle des pots : sa hauteur à l'échelle 1 ; un pot choisi se soulève d'un cran. */
 const LEDGE = { height: 0.5, lift: 0.3, pot: 0.24 } as const;
@@ -412,17 +394,8 @@ export const JARDIN: PlaceArt = {
   role: 'Le greffeur',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 2.9, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et le greffeur de part et d'autre de son milieu ; son sol, l'herbe du jardin.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 2.9, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x9a948a);
   },

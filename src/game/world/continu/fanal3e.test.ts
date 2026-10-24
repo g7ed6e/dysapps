@@ -275,6 +275,8 @@ describe('« Y aller » au Fanal', () => {
       const back = fitArrivalBack(feet, lift, doorViewOf('fanal'), top, view.back, view.maxBack!, W, H, ground);
       expect(back).toBeGreaterThanOrEqual(view.back);
       expect(back).toBeLessThan(view.maxBack!);
+      // Sur la tablette : la caméra ne recule pas, le cadrage de la tablette reste celui de la vue d'arrivée.
+      if (W === 1024) expect(back).toBe(view.back);
       const pose = followPose(feet, lift, undefined, doorViewOf('fanal'), 1, undefined, { height: 0, back });
       lookUp(pose, top, feet, 1, H, ground);
       const s = (p: { x: number; y: number; z: number }) => screenOf(pose, p, W, H);

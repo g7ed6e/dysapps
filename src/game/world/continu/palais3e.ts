@@ -23,8 +23,8 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { armLantern3e, C3E, dryTuft3e, fallenPan3e, habitant3e, postLantern3e, SINK_3E, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { C3E, SINK_3E, armLantern3e, dryTufts3e, fallenPan3e, habitant3e, postLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once } from './place4eKit';
 
 /**
  * Les couleurs propres au Palais, en plus des matières des Passeurs (`C3E`) : le creux d'une fenêtre vide ou d'une porte
@@ -350,7 +350,7 @@ function model(add: AddPiece): void {
         rafters(l);
         fallenPan(l);
         roof(l, BODY.x0, BODY.wing);
-        for (const d of DRY) dryTuft3e(l, d.x, groundAt(d.x, d.z), d.z, d.s);
+        dryTufts3e(l, DRY, groundAt);
       }),
     corps2,
   );
@@ -497,9 +497,6 @@ const TRACES = {
  */
 const SCENE_START = capOf(250);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers le majordome). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /**
  * Le milieu de la scène, depuis le centre du lieu : sur l'herbe devant l'aile gauche, à gauche de l'escalier (la caméra,
  * à l'est-nord-est de la scène, reste devant le palais, jamais dans ses murs).
@@ -508,12 +505,6 @@ const SCENE_SPOT = (() => {
   const p = local(-6.2, 7.6);
   return { dx: p.x, dz: p.z, half: [2.4, 1.2] as [number, number] } as const;
 })();
-
-/** L'écart de Kéo et du majordome au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe de la Prairie. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** Le plateau des tasses : sa hauteur à l'échelle 1 ; une tasse choisie se soulève d'un cran. */
 const TABLE = { height: 0.62, lift: 0.28, cup: 0.2 } as const;
@@ -528,17 +519,8 @@ export const PALAIS: PlaceArt = {
   role: 'Le majordome',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et le majordome de part et d'autre de son milieu ; son sol, l'herbe de la Prairie.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x8a8a86);
   },

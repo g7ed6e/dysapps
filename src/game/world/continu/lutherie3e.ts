@@ -22,8 +22,8 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { armLantern3e, C3E, dryTuft3e, fallenPan3e, habitant3e, postLantern3e, SINK_3E, site3e } from './place3eKit';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise, sheet } from './place4eKit';
+import { C3E, SINK_3E, armLantern3e, dryTufts3e, fallenPan3e, habitant3e, pathLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, inWorld, once, sheet } from './place4eKit';
 
 /**
  * Les couleurs propres à la Lutherie, en plus des matières des Passeurs (`C3E`) : le vernis des instruments, chaud, et
@@ -421,7 +421,7 @@ function model(add: AddPiece): void {
       posed(b, (l) => {
         const y = groundAt(5.6, 3.6);
         l.box({ x: 5.6, y: y - 0.05, z: 3.6, yaw: 0.5 }, [GALLERY.post, GALLERY.post, GALLERY.edgeY], C3E.woodShade, C3E.wood);
-        for (const d of DRY) dryTuft3e(l, d.x, groundAt(d.x, d.z), d.z, d.s);
+        dryTufts3e(l, DRY, groundAt);
       }),
     abords,
   );
@@ -455,8 +455,7 @@ function model(add: AddPiece): void {
       gallery(l);
       for (const s of BENCHES) benchSeat(l, s.x);
       alley(l);
-      const p = PATH_LANTERN;
-      postLantern3e(l, p.x, groundAt(p.x, p.z), p.z, p.h, true);
+      pathLantern3e(l, PATH_LANTERN, groundAt);
     }),
   );
 }
@@ -562,20 +561,11 @@ const TRACES = {
  */
 const SCENE_START = capOf(290);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers l'accordeur). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : sur l'herbe, au nord de l'atelier, devant son pignon. */
 const SCENE_SPOT = (() => {
   const p = local(9.4, -3.0);
   return { dx: p.x, dz: p.z, half: [2.4, 1.2] as [number, number] } as const;
 })();
-
-/** L'écart de Kéo et de l'accordeur au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe de la Prairie. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** L'établi des chevilles : sa hauteur à l'échelle 1 ; une cheville choisie se soulève d'un cran. */
 const PEGS = { height: 0.62, lift: 0.28, peg: 0.26 } as const;
@@ -590,17 +580,8 @@ export const LUTHERIE: PlaceArt = {
   role: 'L’accordeur',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et l'accordeur de part et d'autre de son milieu ; son sol, l'herbe de la Prairie.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x7a6a5a);
   },

@@ -27,6 +27,7 @@ import { frenchTypography } from '../../../components/math/RichText';
 import { useProgress } from '../../../core/ProgressContext';
 import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
+import { isSpeechAvailable } from '../../../core/speech';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
 import { getIle, type BiomeId, type IleId } from '../../biomes';
@@ -34,10 +35,10 @@ import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders'
 import { todayISO } from '../../engine';
 import { exercisesOf, questProgress } from '../../exercises';
 import { mesuresDemandees, meterShown } from '../../rendering';
-import { playDetourWind, playWhaleBlow, playWoodTap } from '../../sound';
+import { playArrival, playBurner, playDetourWind, playReactor, playSail, playWhaleBlow, playWoodTap } from '../../sound';
 import { detourById, type DetourId } from '../../world/continu/detours';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
-import { payableBlocks } from '../../world/archipelago';
+import { getArchipelago, payableBlocks, type ArchipelagoId } from '../../world/archipelago';
 import { firstBefore, isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
 import type { PartShape } from '../../world/continu/construction';
 import { LOOK_UP } from '../../world/continu/camera';
@@ -52,7 +53,7 @@ import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
-import { constructionState, placeConstruction, posedShapes, restoredLine } from './constructionParts';
+import { constructionState, fanalRestored, placeConstruction, posedShapes, restoredLine } from './constructionParts';
 import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
@@ -68,12 +69,14 @@ import { portState } from './portState';
 import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
+import { measureTour, type TourDeMesure } from './measureTour';
 import { WorldRevision } from './WorldRevision';
 import { revisionPlanOf, type RevisionPlan } from './revisionOf';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { HabitantSigns, placeSigns } from './HabitantSigns';
 import { Remise } from './Remise';
 import { commandLines, entraideLineOf, entraideListLine, entraideRemiseOf, entraideSuggestion, habitantLineOf, habitantSigns, hasOpenWorldErrands, readyCommande, remiseOf, suggestedAction, type HabitantGo, type RemiseRequest, type SuggestedAction } from './remiseOf';
+import { LevelPicker } from './LevelPicker';
 import './openWorld.css';
 
 declare global {
@@ -82,6 +85,8 @@ declare global {
     __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride' | 'view' | 'playFinal'> & {
       /** La dernière partie d'un lieu, posée de nouveau sous les yeux (la pose, puis la lueur de la Montée : les captures). */
       poseAgain(place: PlaceId): boolean;
+      /** Le tour de la mesure automatique dans ce niveau (`?mesures=auto`, ./measureTour.ts). */
+      tour: TourDeMesure;
     };
   }
 }
@@ -97,6 +102,21 @@ const named = new Set<PlaceId | 'port'>();
 /** Le mot du geste chez l'habitant : « Livrer », « Donner », « Apporter » (ceux de l'univers). */
 const gestureWord = (kind: SuggestedAction['kind'] | undefined, textes: ReturnType<typeof useTextes>): string =>
   kind === 'donner' ? (textes.quetes?.donner ?? 'Donner') : kind === 'apporter' ? (textes.quetes?.apporter ?? 'Apporter') : (textes.commandes?.livrer ?? 'Livrer');
+
+/**
+ * Ce que la page d'un niveau reçoit d'un voyage entre niveaux (piste A, choix du mainteneur du 23 octobre 2026) : la
+ * première arrivée par la Nef (`arrivee`), ou un retour par le fondu (`fondu`).
+ */
+type VoyageState = { voyage: 'arrivee' | 'fondu' };
+
+/** Le fondu du voyage entre niveaux : une demi-seconde en tout (index.md, « Le passage »). */
+const LEVEL_FADE_MS = 500;
+
+/** Le voile du fondu se lève au plus tard après ce délai, même si le monde du niveau n'est pas encore prêt. */
+const FADE_SAFETY_MS = 4000;
+
+/** Le son du départ attend la fin de la voix, au plus ce délai. */
+const SOUND_AFTER_VOICE_MS = 2500;
 
 /** Le titre d'une mission d'une île, pour la dire. */
 const missionTitle = (island: string, mission: string) => getIle(island)?.exercises.find((x) => x.id === mission)?.title ?? '';
@@ -117,7 +137,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const habitantsShown = sixth || plan.places.some((p) => hasWorldHabitant(p.id));
   const errands = useMemo(() => hasOpenWorldErrands(plan), [plan]);
   const { biomeId } = useParams();
-  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch } = useBlocland();
+  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch, moveTo, batisseur } = useBlocland();
   const textes = useTextes();
   // Les noms du lieu de départ du niveau : l'Escale au 6e, la Lisière au 5e ; ses bâtiments gardent leur nom.
   const departNames = useMemo(() => (textes.depart ? { ...textes.depart, nom: textes.depart.noms?.[level as '5e'] ?? textes.depart.nom } : undefined), [textes.depart, level]);
@@ -188,6 +208,13 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni départ ; sa fiche pose ses trois
   // parures (GD-25), les feux arrivant avec deux lieux restaurés.
   const nefResting = nefAtRest(level);
+  // Les pièces du Rafiot rendues au Fanal du 3e (la fin des Ferrailleurs, jouée au Fanal restauré) : au 4e, le pont du
+  // Rafiot est vide (consultant d'Archipéo, relecture de la PR du 3e). La scène le lit à sa création.
+  const piecesReturnedNow = useMemo(() => level === '4e' && fanalRestored(state.world.parts), [level, state.world.parts]);
+  const piecesReturned = useRef(piecesReturnedNow);
+  useEffect(() => {
+    piecesReturned.current = piecesReturnedNow;
+  }, [piecesReturnedNow]);
   const nefLookNow = useMemo(() => (nefResting ? 3 : nefLookOf(state, sail.kit, nefStage)), [nefResting, state, sail.kit, nefStage]);
   const feux = useMemo(() => paruresFeux(state.progress, achieved), [state.progress, achieved]);
   const paruresNow = useMemo(() => (nefResting ? paruresLook(state.world.parts, state.progress, achieved) : 0), [nefResting, state.world.parts, state.progress, achieved]);
@@ -256,6 +283,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const [arrival] = useState(() => ({
     spot: portFromParam(params.get('porte')),
     assembled: Boolean((location.state as { assemble?: string } | null)?.assemble),
+    // Le voyage entre niveaux (piste A) : la première arrivée par la Nef (`arrivee`, le carillon une fois), ou un retour
+    // (`fondu` : le voile couvre la page dès qu'elle monte, et se lève quand le monde est prêt).
+    voyage: (location.state as VoyageState | null)?.voyage ?? null,
   }));
   const lieuParam = placeFromParam(plan, params.get('lieu'), params.get(PARAM_ILE));
   const missionParam = params.get('mission');
@@ -268,6 +298,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const [atQuai, setAtQuai] = useState(start === 'quai');
   // La Nef part (GD-21) : la scène seule, comme pendant une question, jusqu'à l'arrivée en 5e.
   const [departing, setDeparting] = useState(false);
+  // Le fondu du voyage entre niveaux : il couvre la page qui part, puis celle qui arrive, jusqu'à ce que son monde soit prêt.
+  const [fondu, setFondu] = useState(arrival.voyage === 'fondu' && !reduceMotion);
   const [finalPlaying, setFinalPlaying] = useState(false);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
   // revient) ; pour un lieu d'une terre fermée, la fiche de sa terre ; jamais en même temps qu'un panneau de l'Escale.
@@ -442,6 +474,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     const w = createOpenWorld(el, {
       plan,
       start,
+      piecesReturned: piecesReturned.current,
       reduceMotion,
       meter: { show: meterShown(), expose: import.meta.env.DEV || mesuresDemandees() },
       onDepart: () => {
@@ -540,6 +573,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           const parts = now?.built[place] ?? [];
           return now !== null && parts.length > 0 && w.setPlaces(now, { place, parts: parts.slice(-1) });
         },
+        tour: measureTour(plan),
       };
     return () => {
       w.dispose();
@@ -957,16 +991,76 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       setDeparting(true);
       // L'annonce du départ (référent dys, retouche du lot 4) : courte, dans la zone du lecteur d'écran, et dite par la
       // voix avec la lecture automatique.
-      if (settings.autoRead) speak(NEF_LEAVES);
+      // Le son du véhicule (la voile, le brûleur, le réacteur), après la voix, jamais en même temps qu'elle ; une fois,
+      // même si la fin de la voix ne vient pas (sans synthèse, ou sur certains Android : expert frontend).
+      let played = false;
+      const sound = () => {
+        if (played) return;
+        played = true;
+        if (settings.sounds) (stage.stage === 1 ? playSail : stage.stage === 2 ? playBurner : playReactor)();
+      };
+      if (settings.autoRead && isSpeechAvailable()) {
+        speak(NEF_LEAVES, sound);
+        window.setTimeout(sound, SOUND_AFTER_VOICE_MS);
+      } else sound();
       w.departNef(() => {
         const r = launch(stage, sail.kit);
         setDeparting(false);
         if (!r.ok) return;
         launchVoyage(stage.reward.xp);
-        navigate(`/adventure/${r.to}`, { replace: true });
+        navigate(`/adventure/${r.to}`, { replace: true, state: { voyage: 'arrivee' } satisfies VoyageState });
       });
     },
-    [launch, launchVoyage, navigate, sail.kit, settings.autoRead, speak],
+    [launch, launchVoyage, navigate, sail.kit, settings.autoRead, settings.sounds, speak],
+  );
+  // Quand le monde est prêt, après un voyage entre niveaux : à la première arrivée par la Nef, le carillon, une fois ;
+  // après un retour, le nom du niveau, dans la zone du lecteur d'écran et à la voix (référent dys). Puis l'adresse
+  // oublie le voyage : un rechargement ne le rejoue pas (expert frontend).
+  const [levelSaid, setLevelSaid] = useState('');
+  const voyageDone = useRef(false);
+  useEffect(() => {
+    if (!ready || voyageDone.current || !arrival.voyage) return;
+    voyageDone.current = true;
+    if (arrival.voyage === 'arrivee') {
+      if (settings.sounds) playArrival();
+    } else {
+      const words = frenchTypography(`Les ${textes.archipels[level]}.`);
+      setLevelSaid(words);
+      if (settings.autoRead) speak(words);
+    }
+    navigate({ pathname: location.pathname, search: location.search }, { replace: true, state: null });
+  }, [ready, arrival.voyage, settings.sounds, settings.autoRead, speak, textes.archipels, level, navigate, location.pathname, location.search]);
+  // Le retour d'un fondu : le voile se lève quand le monde est prêt, ou après quelques secondes au plus, pour ne jamais
+  // laisser l'élève devant un voile qui prend les touchers (consultant UX UI).
+  useEffect(() => {
+    if (ready) setFondu(false);
+  }, [ready]);
+  useEffect(() => {
+    if (!fondu) return;
+    const lift = window.setTimeout(() => setFondu(false), FADE_SAFETY_MS);
+    return () => window.clearTimeout(lift);
+  }, [fondu]);
+  // Un bouton de la rangée « Revenir » de la fiche de la Nef (piste A) : la fiche se ferme, le voile couvre la page en
+  // un quart de seconde, puis Kéo passe au port de ce niveau et la page de ce niveau monte, Kéo au quai de son lieu de
+  // départ ; d'un coup avec « Réduire les animations ». Rien d'autre ne change dans la sauvegarde que la place de Kéo.
+  const leaving = useRef<number | null>(null);
+  useEffect(() => () => {
+    if (leaving.current !== null) window.clearTimeout(leaving.current);
+  }, []);
+  const goLevel = useCallback(
+    (to: ArchipelagoId) => {
+      if (leaving.current !== null) return;
+      setPanel(null);
+      const go = () => {
+        leaving.current = null;
+        moveTo(getArchipelago(to).port);
+        navigate('/adventure', { replace: true, state: { voyage: 'fondu' } satisfies VoyageState });
+      };
+      if (reduceMotion) return go();
+      setFondu(true);
+      leaving.current = window.setTimeout(go, LEVEL_FADE_MS / 2);
+    },
+    [moveTo, navigate, reduceMotion],
   );
   // Les aménagements posés de chaque lieu (GD-20, point 4, lot L0) : les petites constructions livrées, la même sauvegarde.
   const amenagements = useMemo(() => posedAmenagements(state.world.parts), [state.world.parts]);
@@ -1089,6 +1183,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
             (au Détour de l'Épave, « L'Étalon » s'écrivait sous « L'Épave » : consultants d'Archipéo et UX UI). */}
         <div className="world-stage" data-scene data-said={saidOn ? (said?.detour ? 'detour' : 'oui') : undefined} ref={stageRef}>
           <div ref={host} className="open-world-canvas" />
+          <div className={`open-world-fondu${fondu ? ' on' : ''}`} aria-hidden="true" />
+          <p className="visually-hidden" role="status">
+            {levelSaid}
+          </p>
           {!ready && <Loading className="world-loading" text="Chargement du monde…" />}
           {/* La marque se retire une fois Kéo arrivé au lieu suggéré (relecture du lot L1) : la bulle porte le geste. */}
           {markWord && !playing && !mapOpen && !sheetOpen && (
@@ -1142,6 +1240,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               question ou une remise. */}
           {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={errands ? openCommands : undefined} resumeFrom={portResume} resumeAt={placeResume} />}
           {!playing && !sheetOpen && <SettingsButton />}
+          {/* Le niveau où l'on est, un seul bouton qui déplie les autres niveaux atteints (./LevelPicker.tsx, choix du mainteneur
+              du 23 octobre 2026), à gauche de Réglages, la colonne de droite étant celle de la caméra ; le même fondu que la
+              rangée de la fiche de la Nef. Ni pendant une question, un panneau ou la Carte, ni en mode bâtisseur, dont la
+              barre a déjà ses niveaux. */}
+          {!playing && !mapOpen && !sheetOpen && !batisseur && <LevelPicker here={level} links={state.world.links} onGo={goLevel} />}
           {commandsOpen && !playing && (
             <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
               <CommandsSheet lines={commandLines(plan, state, assemblyAt)} entraide={entraideListLine(plan, vu, (p) => !isClosed(p), assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />
@@ -1160,6 +1263,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                     setPanel(null);
                     setMapOpen(true);
                   }}
+                  here={level}
+                  onReturn={goLevel}
                   onClose={closePanel}
                 />
               ) : panel === 'nef' ? (
@@ -1172,10 +1277,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                     setPanel(null);
                     setMapOpen(true);
                   }}
+                  onReturn={goLevel}
                   onClose={closePanel}
                 />
               ) : (
-                <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={nefLookNow === 4 ? undefined : () => setPanel('nef')} onClose={closePanel} />
+                <PortPanels panel={panel} names={departNames!} onGo={goPort} onNef={() => setPanel('nef')} onClose={closePanel} />
               )}
             </div>
           )}

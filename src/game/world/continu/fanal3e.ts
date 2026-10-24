@@ -26,8 +26,8 @@ import { PIECES_3E, ferrailleursPort3e, grappin3e, rack3e } from './ferrailleurs
 import type { Vec3 } from './geometry';
 import { zeppelinPiecesFacets } from './parvis3e';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, dryTuft3e, habitant3e, postLantern3e, site3e } from './place3eKit';
-import { capOf, groundPlane4e, once, sceneRight, sceneRise } from './place4eKit';
+import { C3E, SINK_3E, bench3e, dryTuft3e, dryTufts3e, habitant3e, pathLantern3e, postLantern3e, scene3e, site3e } from './place3eKit';
+import { capOf, groundPlane4e, once } from './place4eKit';
 
 /**
  * Les couleurs propres au Fanal, en plus des matières des Passeurs (`C3E`) : l'or blanc de la lumière, à la seule
@@ -400,14 +400,6 @@ function alley(b: FacetBuilder): void {
   }
 }
 
-/** Le banc de pierre, à planche de bois. */
-function bench(b: FacetBuilder): void {
-  const { x, z } = BENCH;
-  const y = planeY(x, z);
-  for (const s of [-1, 1]) b.box({ x: x + s * 0.55, y: y - 0.1, z }, [0.26, 0.55, 0.38], C3E.graniteShade, C3E.granite);
-  b.box({ x, y: y + 0.42, z }, [1.5, 0.1, 0.44], C3E.woodShade, C3E.wood);
-}
-
 function model(add: AddPiece): void {
   const socleRow = { stage: 0 as Stage, row: 0 };
   const towerRow = { stage: 0 as Stage, row: 1 / 3 };
@@ -452,7 +444,7 @@ function model(add: AddPiece): void {
     haut,
   );
   // Les abords effacent l'herbe sèche.
-  add('ruine', 0, (b) => DRY.forEach((d) => dryTuft3e(b, d.x, planeY(d.x, d.z), d.z, d.s)), abords);
+  add('ruine', 0, (b) => dryTufts3e(b, DRY, planeY), abords);
 
   // ---- Le socle : la fente refermée, l'escalier entier.
   add(0, 0, (b) => {
@@ -472,9 +464,8 @@ function model(add: AddPiece): void {
   // ---- Les abords : le seuil dallé, le banc, la lanterne du chemin.
   add(2, 0, (b) => {
     alley(b);
-    bench(b);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    bench3e(b, BENCH, planeY);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -569,17 +560,8 @@ const TRACES = {
  */
 const SCENE_START = capOf(10);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers l'opticienne). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : sur l'herbe devant la porte des salles, à l'ouest de la porte du lieu. */
 const SCENE_SPOT = { dx: -4.6, dz: 7.0, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et de l'opticienne au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : l'herbe grise du creux. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** La banquette des verres : sa hauteur à l'échelle 1 ; un verre choisi se soulève d'un cran. */
 const PRISMS = { height: 0.5, lift: 0.3, glass: 0.32 } as const;
@@ -636,22 +618,8 @@ export const FANAL: PlaceArt = {
   role: 'L’opticienne',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: {
-      dx: -SCENE_RIGHT.x * SCENE_HALF,
-      dz: -SCENE_RIGHT.z * SCENE_HALF,
-      scale: 0.6,
-      yaw: Math.PI - 0.4 + SCENE_START,
-    },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (4 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et l'opticienne de part et d'autre de son milieu ; son sol, l'herbe grise du creux.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 4 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x7a6450);
   },

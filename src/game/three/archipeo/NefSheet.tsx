@@ -15,7 +15,7 @@ import { EarnLink, useEarnWhere } from '../../PlanSection';
 import { useParuresBuilder } from '../../useParuresBuilder';
 import { useVehicleBuilder } from '../../useVehicleBuilder';
 import { BlockIcon } from '../../Voxel';
-import { voyageId, type ArchipelagoId } from '../../world/archipelago';
+import { ARCHIPELAGOS, reachedArchipelagos, voyageId, type ArchipelagoId } from '../../world/archipelago';
 import { nefLook, type NefLook } from '../../world/continu/nef';
 import { NEF_COMPLETE, NEF_PARURES_PLAN, PARURE_NAMES, paruresOpenCells, type ParuresLook } from '../../world/nefParures';
 import { planCells } from '../../world/plans';
@@ -98,6 +98,52 @@ export const nefReadyLabel = (to: string): string => `Prête. Direction : les ${
 /** L'annonce du départ, au lecteur d'écran et à la voix (référent dys, retouche du lot 4). */
 export const NEF_LEAVES = `${cap(VEHICLE_NAME)} part.`;
 
+/**
+ * Les niveaux où la Nef peut mener l'élève depuis `here` (le voyage entre niveaux, piste A « La fiche et la bouée »,
+ * choix du mainteneur du 23 octobre 2026) : les archipels déjà atteints, dans l'ordre, sauf celui où il se trouve.
+ */
+const nefReturns = (links: string[], here: ArchipelagoId): ArchipelagoId[] =>
+  reachedArchipelagos(links)
+    .map((a) => a.classe)
+    .filter((a) => a !== here);
+
+/** Le mot d'un bouton de retour : « Revenir en 5e » vers un niveau d'avant, « Aller en 4e » vers un niveau d'après. */
+function nefReturnWord(to: ArchipelagoId, here: ArchipelagoId): string {
+  const index = (a: ArchipelagoId) => ARCHIPELAGOS.findIndex((x) => x.classe === a);
+  return `${index(to) < index(here) ? 'Revenir' : 'Aller'} en ${to}`;
+}
+
+/**
+ * La rangée « Revenir » de la fiche de la Nef : un bouton secondaire par niveau déjà atteint, sous l'action principale,
+ * qu'il ne remplace jamais (consultant UX UI) ; le nom du niveau est dans le nom du bouton, lu au lecteur d'écran et à
+ * la voix au toucher. Un toucher lance le fondu, puis Kéo arrive au quai du lieu de départ de ce niveau. Même rangée
+ * aux quatre niveaux, Nef présente, partie ou au repos.
+ */
+function NefReturns({ here, onReturn, focus = false }: { here: ArchipelagoId; onReturn(to: ArchipelagoId): void; focus?: boolean }) {
+  const { state } = useBlocland();
+  const textes = useTextes();
+  const levels = nefReturns(state.world.links, here);
+  // Sans action principale (la Nef partie, au repos, ou rien à poser), le focus va au premier bouton de la rangée, la
+  // seule action de la fiche (consultant UX UI).
+  const first = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (focus) first.current?.focus();
+  }, [focus]);
+  if (levels.length === 0) return null;
+  return (
+    <ul className="nef-returns" aria-label="Voyager avec la Nef">
+      {levels.map((to, i) => (
+        <li key={to}>
+          {/* L'icône du trajet, pas celle de la Nef : « Partir » garde la sienne (consultant UX UI). */}
+          <button ref={i === 0 ? first : undefined} type="button" className="button" aria-label={`${nefReturnWord(to, here)} : les ${textes.archipels[to]}`} onClick={() => onReturn(to)}>
+            <Icon name="route" /> {nefReturnWord(to, here)}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 interface Props {
   /** La forme qui se construit au lieu de départ du niveau (`nefStageOf`). */
   stage: VehicleStage;
@@ -109,10 +155,12 @@ interface Props {
   onDepart(stage: VehicleStage): void;
   /** « Carte » : la fiche se ferme, la Carte s'ouvre (les lieux à achever). */
   onMap(): void;
+  /** Un bouton de la rangée « Revenir » : le fondu, puis le quai de ce niveau (`NefReturns`). */
+  onReturn(to: ArchipelagoId): void;
   onClose(): void;
 }
 
-export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClose }: Props) {
+export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onReturn, onClose }: Props) {
   useOpenPanel(onClose);
   const { state } = useBlocland();
   const textes = useTextes();
@@ -135,6 +183,7 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
         <p className="world-fiche-phrase">
           <Syllabified text={frenchTypography(phrase)} />
         </p>
+        <NefReturns here={building.from} onReturn={onReturn} focus />
       </MissionSheet>
     );
   }
@@ -212,9 +261,11 @@ export function NefSheet({ stage: building, kit, missing, onDepart, onMap, onClo
           )
         )}
       </div>
+      {/* L'avis sous le bouton qu'il commente, puis la rangée (consultant UX UI). */}
       <p className="build-status" role="status" aria-live="polite">
         {ship.notice ? frenchTypography(ship.notice) : ''}
       </p>
+      <NefReturns here={building.from} onReturn={onReturn} focus={!ready && !waiting && !ship.canFill} />
     </MissionSheet>
   );
 }
@@ -228,6 +279,9 @@ interface ParuresProps {
   missing: number;
   /** « Carte » : la fiche se ferme, la Carte s'ouvre (les lieux à achever). */
   onMap(): void;
+  /** Le niveau de la Nef au repos (le 3e) et la rangée « Revenir » (`NefReturns`). */
+  here: ArchipelagoId;
+  onReturn(to: ArchipelagoId): void;
   onClose(): void;
 }
 
@@ -238,7 +292,7 @@ interface ParuresProps {
  * « Carte » tant que les feux attendent des lieux. Toutes posées : « La Nef est complète. », sans bouton. Jamais
  * « Partir », aucune phrase d'échec ; « la Nef », jamais « l'aéronef ».
  */
-export function NefParuresSheet({ look, feux, missing, onMap, onClose }: ParuresProps) {
+export function NefParuresSheet({ look, feux, missing, onMap, here, onReturn, onClose }: ParuresProps) {
   useOpenPanel(onClose);
   const { state } = useBlocland();
   const parures = useParuresBuilder(feux);
@@ -251,9 +305,12 @@ export function NefParuresSheet({ look, feux, missing, onMap, onClose }: Parures
   }, [waiting]);
   const titre = NEF_TITLE;
   const status = (
-    <p className="build-status" role="status" aria-live="polite">
-      {parures.notice ? frenchTypography(parures.notice) : ''}
-    </p>
+    <>
+      <p className="build-status" role="status" aria-live="polite">
+        {parures.notice ? frenchTypography(parures.notice) : ''}
+      </p>
+      <NefReturns here={here} onReturn={onReturn} focus={complete || (look === 2 && feux)} />
+    </>
   );
   if (complete || (look === 2 && feux)) {
     return (

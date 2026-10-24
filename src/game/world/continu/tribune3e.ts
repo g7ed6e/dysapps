@@ -18,9 +18,9 @@ import type { Stage } from './construction';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
-import { C3E, SINK_3E, dryTuft3e, habitant3e, lantern3e, onCircle, postLantern3e, site3e } from './place3eKit';
+import { C3E, SINK_3E, dryTufts3e, habitant3e, lantern3e, onCircle, pathLantern3e, postLantern3e, scene3e, site3e } from './place3eKit';
 import { COLORS_3E } from './plan3e';
-import { capOf, groundPlane4e, inWorld, once, sceneRight, sceneRise } from './place4eKit';
+import { capOf, groundPlane4e, inWorld, once } from './place4eKit';
 
 /**
  * Les couleurs propres à la Tribune, en plus des matières des Passeurs (`C3E`) : l'herbe du talus derrière les gradins
@@ -318,7 +318,7 @@ function model(add: AddPiece): void {
       const at = boardAt();
       drawPosed(b, { x: at.x + 0.3, y: at.y + 0.05, z: at.z + 0.3, yaw: at.yaw + 0.4, pitch: -Math.PI / 2 + 0.05 }, (l) => board(l, false));
       basket(b);
-      for (const d of DRY) dryTuft3e(b, d.x, planeY(d.x, d.z), d.z, d.s);
+      dryTufts3e(b, DRY, planeY);
     },
     abords,
   );
@@ -340,8 +340,7 @@ function model(add: AddPiece): void {
   add(2, 0, (b) => {
     drawPosed(b, boardAt(), (l) => board(l, true));
     for (let row = 0; row < ROWS.count; row++) for (let seg = 0; seg < ROWS.segments; seg++) bench(b, row, seg);
-    const p = PATH_LANTERN;
-    postLantern3e(b, p.x, planeY(p.x, p.z), p.z, p.h, true);
+    pathLantern3e(b, PATH_LANTERN, planeY);
   });
 }
 
@@ -402,17 +401,8 @@ const TRACES = {
  */
 const SCENE_START = capOf(15);
 
-/** Le sens de la droite de l'écran au départ de la scénette (de Kéo vers la conseillère). */
-const SCENE_RIGHT = sceneRight(SCENE_START);
-
 /** Le milieu de la scène, depuis le centre du lieu : au sud de l'estrade, du côté ouvert de l'arène, la cloche à droite. */
 const SCENE_SPOT = { dx: 0.2, dz: 5.4, half: [2.4, 1.2] as [number, number] } as const;
-
-/** L'écart de Kéo et de la conseillère au milieu de la scène. */
-const SCENE_HALF = 2.0;
-
-/** La hauteur du sol de la scène au-dessus de son point : le sol de l'arène. */
-const sceneRiseOf = once(() => sceneRise(SITE.ground, SCENE_SPOT, planeY(SCENE_SPOT.dx, SCENE_SPOT.dz)));
 
 /** Le rebord de pierre des galets : sa hauteur à l'échelle 1 ; un galet choisi se soulève d'un cran. */
 const LEDGE = { height: 0.45, lift: 0.3, pebble: 0.16 } as const;
@@ -426,17 +416,8 @@ export const TRIBUNE: PlaceArt = {
   role: 'La conseillère',
   model,
   traceStage: 0,
-  sceneSpot: { dx: SCENE_SPOT.dx, dz: SCENE_SPOT.dz, half: SCENE_SPOT.half, fine: true },
-  site: {
-    get rise() {
-      return sceneRiseOf();
-    },
-    keo: { dx: -SCENE_RIGHT.x * SCENE_HALF, dz: -SCENE_RIGHT.z * SCENE_HALF, scale: 0.6, yaw: Math.PI - 0.4 + SCENE_START },
-    habitant: { dx: SCENE_RIGHT.x * SCENE_HALF, dz: SCENE_RIGHT.z * SCENE_HALF },
-    subject: { halfWidth: 3.0, bottom: -0.5, top: 3.2, depth: 0.3 },
-    pitch: (10 * Math.PI) / 180,
-    start: SCENE_START,
-  },
+  // La scénette : Kéo et la conseillère de part et d'autre de son milieu ; son sol, celui de l'arène.
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 10 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x7a6a5a);
   },
