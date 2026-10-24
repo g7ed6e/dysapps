@@ -15,7 +15,6 @@
 // transition) se joue ici aussi, sur l'écran habituel (`plain` : l'écran de la grille, sur un panneau uni), avec le même
 // bilan et le même retour au lieu.
 import { Fragment, type ComponentType, useCallback, useEffect, useEffectEvent, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
 import { useHoldCelebrations } from '../../../components/Celebrations';
 import { Icon } from '../../../components/Icon';
 import { Loading } from '../../../components/Loading';
@@ -42,73 +41,16 @@ import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
 import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelPlan';
 import { placePoseWords } from './constructionParts';
-import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, WIDEN_SCENE, questionLayout } from '../../world/continu/questionScene';
+import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, answersInColumn, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { SortScreen } from './SortScreen';
 import { ConsigneIcon, IconLabel, PlaceAid, PlaceCarnet, PlaceDocument, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
 import { WorldDone } from './WorldDone';
-import { belowFold, filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
+import { filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
 
-/**
- * Ce que le repère « Suite plus bas » garde au bas d'un panneau qui défile, en pixels : sa hauteur, lue dans la feuille
- * de style (openWorld.css, `--repere-haut`, la seule source), 0 sans repère.
- */
-export function foldReserve(panel: Element): number {
-  const repere = panel.querySelector(':scope > .world-repere');
-  return repere ? parseFloat(getComputedStyle(repere).getPropertyValue('--repere-haut')) || 0 : 0;
-}
-/**
- * En C, après une réponse, où poser le défilement du panneau (`scrollTop`) : assez bas pour voir « Suivant » (le bas de
- * la correction), jamais au point de cacher le haut des réponses sous ce qui est épinglé (la ligne de la consigne, et la
- * phrase quand elle l'est). Le panneau, ses réponses et « Suivant » lus à l'écran.
- */
-export function afterAnswer(panel: HTMLElement, answers: Element, next: Element): number {
-  const { keepOf, showNext } = scrollMarks(panel, next);
-  return Math.max(0, Math.min(keepOf(answers), showNext));
-}
-/**
- * Où lire le panneau défilé : `keepOf(el)` pose le haut de `el` juste sous ce qui reste épinglé (la ligne de la consigne,
- * la voix de la phrase quand elle y passe, et la phrase quand elle l'est), `showNext` est le moins qu'il faut descendre
- * pour voir « Suivant » entier au-dessus du repère « Suite plus bas ».
- */
-function scrollMarks(panel: HTMLElement, next: Element): { keepOf(el: Element): number; showNext: number } {
-  const top = panel.getBoundingClientRect().top + panel.clientTop;
-  const inside = (y: number) => y - top + panel.scrollTop;
-  let pinned = 0;
-  for (const el of panel.querySelectorAll(':scope > .world-consigne-line, :scope > .consigne, :scope > .world-phrase-voice, .question-head'))
-    if (getComputedStyle(el).position === 'sticky') pinned = Math.max(pinned, el.getBoundingClientRect().bottom - top);
-  return {
-    keepOf: (el) => inside(el.getBoundingClientRect().top) - pinned - 4,
-    showNext: inside(next.getBoundingClientRect().bottom) - (panel.clientHeight - foldReserve(panel)),
-  };
-}
-/**
- * Le résultat d'abord (la colonne revenue à « Scène », « Vue simple » au plus grand texte, L8) : la réponse choisie juste
- * sous ce qui reste épinglé, puis « Bravo ! », quand « Suivant » se voit encore entier ; sinon le résultat juste sous ce
- * qui reste épinglé ; et s'il est plus haut que la place, son haut (« Bravo ! ») d'abord. Jamais un bout de réponse coupé
- * au-dessus du résultat.
- */
-export function onResult(panel: HTMLElement, chosen: Element | null, sheet: Element, next: Element): number {
-  const { keepOf, showNext } = scrollMarks(panel, next);
-  for (const el of chosen ? [chosen, sheet] : [sheet]) {
-    const at = keepOf(el);
-    if (at >= showNext) return Math.max(0, at);
-  }
-  return Math.max(0, keepOf(sheet));
-}
-/**
- * En C, la ligne de la consigne et la phrase épinglées ne prennent jamais plus que cette part du panneau : au-delà, seule
- * la ligne reste épinglée, la voix de la phrase y passe (règle du directeur artistique, relecture de L6a).
- */
-export const PIN_MAX = 0.5;
-/**
- * Revenu à « Scène » en C sur un écran bas, ce qui doit se voir du haut de la première réponse avec la phrase, en pixels :
- * son cadre, qui dit qu'elle commence là (bonnes-pratiques.md, « Les écrans qui défilent »).
- */
-const SCENE_FIRST_ANSWER = 12;
 
 /** Le nombre de réponses tant que l'écran ne l'a pas dit. */
 const DEFAULT_COUNT = 3;
@@ -205,10 +147,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   }, []);
 
   const [item, setItem] = useState<ItemShown | null>(null);
+  // Un écran bas (un téléphone couché) : la scénette y prend la bulle comme sur tablette (GD-26), mais « Vue simple »
+  // garde sa ligne repliée, et les manches y sont plus courtes.
+  const lowScreen = (size.h || 1) < ANSWER_LAYOUT.low;
   const [labels, setLabels] = useState<LabelOnScreen[]>([]);
   const count = item?.count ?? DEFAULT_COUNT;
-  // Les réponses dans la colonne (Calculer avec des fractions, GD-20, point 8, lot L2) : la scène fait le décor.
-  const inColumn = item ? answersInColumn(item.scene) : false;
   const hasAid = item?.aid ?? false;
   // Sur un écran bas, la colonne s'élargit d'un cran quand la phrase n'y tient pas (un grand texte, une phrase longue
   // des Quais) : 38, 46, puis 54 % ; au-delà, la phrase passe en pleine largeur au-dessus des objets ; si elle n'y tient
@@ -234,8 +177,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     const words = (place === 'phare' && mission !== 'syllables') || (place === 'filets' && mission === 'word-classes');
     // « Valider » n'a sa place que pour marquer les cloches ou ranger ; ailleurs, un toucher répond.
     const validate = place === 'phare' || (picked !== undefined && rangeGesture(place, picked.id) !== null);
-    return scenetteLayout({ count, widen, small: place === 'phare', words, grand: grandTexte, aid: hasAid, wideRow, validate }, size.w || 1, size.h || 1, base);
-  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow, picked]);
+    // Au téléphone couché, la jauge des Marais salants garde la colonne à gauche (la disposition B) : sous la bulle, ses
+    // graduations passeraient sous 8 px l'une de l'autre.
+    const column = item?.scene.kind === 'jauge' && lowScreen;
+    return scenetteLayout({ count, widen, small: place === 'phare', words, grand: grandTexte, aid: hasAid, wideRow, validate, column }, size.w || 1, size.h || 1, base);
+  }, [count, hasAid, place, mission, size, widen, grandTexte, wideRow, picked, item?.scene.kind]);
   // La rangée des réponses à droite de la colonne (les Quais sur un écran bas) : le résultat reste dans la colonne.
   const rowBeside = layout.low && layout.slots.length > 0 && Math.min(...layout.slots.map((sl) => sl.hit.left)) >= layout.panel.left + layout.panel.width;
   const [finished, setFinished] = useState(false);
@@ -256,8 +202,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // suite » la déplie) : la rangée et « Valider » restent visibles dès l'ouverture (référent dys, GD-20, point 8) ; dépliée,
   // elle se replie à l'item suivant (la clé de l'item, pas sa scène : aux Quais, tous les items ont la même).
   const [consigneOpen, setConsigneOpen] = useState(false);
-  // En C, la place de la voix de la phrase dans ce qui reste épinglé (`PlaceChoiceScreen` y pose son bouton).
-  const [phraseVoice, setPhraseVoice] = useState<HTMLElement | null>(null);
   const itemKey = item ? item.key || JSON.stringify(item.scene) : '';
   const lastItem = useRef('');
   useEffect(() => {
@@ -278,35 +222,15 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const objectsOut = answersOut || (layout.low && offer);
   // Sur un écran bas, la consigne s'affiche en entier une fois, au premier item, puis devient une icône.
   const [introDone, setIntroDone] = useState(false);
-  // En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8) : la scène reprend sa place, à droite
-  // de la colonne, qui ne passe plus en pleine largeur (au plus sa dernière part, 54 %), ni son résultat, et défile. Sans cela, la colonne
-  // élargie d'avant restait sur toute la largeur, et la scène, coincée dans une bande au bord droit, montrait le ciel.
-  // Gardé jusqu'à la fin de la visite (une visite monte le composant, OpenWorldPage : il repart à faux), comme le choix
-  // de « Scène ».
-  const [sceneChosen, setSceneChosen] = useState(false);
-  // L'item dont la phrase, même dans la colonne serrée, passe sous le pli (surtout au plus grand texte) : il reste en
-  // « Vue simple », sans « Scène » ; l'item suivant revient à la scène (relecture UX UI de L8, piste B).
-  const [sceneHeld, setSceneHeld] = useState('');
-  // L'item dont le pli est déjà mesuré (une fois par item), et le focus à reposer après la bascule de la barre.
-  const measuredItem = useRef('');
+  // Le focus à reposer après la bascule de la barre (« Scène », « Vue simple »).
   const refocus = useRef(false);
-  const holdPending = useRef(false);
-  // L'item dont la phrase a cessé d'être épinglée à la réponse, son résultat ne tenant pas sous elle (directeur
-  // artistique, L8), et l'item dont c'est déjà décidé (une fois par item).
-  const releasedPin = useRef('');
-  const pinChecked = useRef('');
   const backToScene = useCallback(() => {
     setSimple(false);
     refocus.current = true;
-    if (!inColumn || !layout.low) return;
-    setSceneChosen(true);
-    setIntroDone(true);
-    setSheetWide(false);
-    setWiden((n) => Math.min(n, WIDEN_SCENE));
-  }, [inColumn, layout.low]);
+  }, []);
   // La bulle de l'habitant (GD-26) : dans une scénette, la consigne repliée en une ligne et la phrase de l'item, en haut ;
   // la scène prend l'écran. Ni « Commencer » ni phrase d'accueil : la consigne se lit dans la bulle.
-  const bulle = !plain && !simple && !finished && hasScenette(place) && !inColumn;
+  const bulle = !plain && !simple && !finished && hasScenette(place);
   const intro = !bulle && layout.low && !introDone && !finished && !offer && !simple;
   // La phrase de l'habitant, à la première rencontre : au premier item sur tablette ; sur un écran bas, avec
   // « Commencer » seulement (consultant UX UI) ; jamais dans la ligne repliée. Comptée comme vue une fois affichée.
@@ -316,17 +240,12 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   }, [greeting, place]);
   // La « Vue simple » serrée des écrans bas (la consigne repliée en une ligne, « Scène » et la pause dans la ligne
   // d'en-tête) : sur un écran bas, et au plus grand texte aussi sur tablette, où la consigne entière poussait la phrase
-  // sous le pli (en C, mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a ; en R, les réponses, lot L7).
-  // Un écran bas garde la ligne repliée en « Vue simple » même quand la scénette y prend la disposition de la tablette
-  // (la bulle, GD-26).
-  const foldedSimple = layout.low || grandTexte || (size.h > 0 && size.h < ANSWER_LAYOUT.low);
+  // sous le pli (mesure de 1024 × 768 au plus grand texte, deuxième passe de L6a ; les réponses, lot L7). Dans une
+  // scénette, la bulle (GD-26) a la même ligne repliée.
+  const foldedSimple = lowScreen || grandTexte;
   const simpleLow = simple && foldedSimple && !finished;
-  // La colonne revenue à « Scène » prend la forme serrée de « Vue simple » (relecture UX UI de L8, piste A) : le rôle quitte
-  // la ligne, la consigne se replie en une ligne, la voix de la phrase prend la place des étapes, la barre du haut (son
-  // icône seule) se tient à côté de la pause, à droite de la colonne : la colonne monte jusqu'en haut.
-  const keptScene = sceneChosen && layout.low && inColumn && !simple && !finished;
-  const tight = simpleLow || keptScene || bulle;
-  // « Vue simple » ouverte d'elle-même (au plus grand texte, ou en C sur un écran bas) : une seule fois par visite, tant
+  const tight = simpleLow || bulle;
+  // « Vue simple » ouverte d'elle-même (une bulle trop haute, une étiquette coupée) : une seule fois par visite, tant
   // que la question reste montée ; revenu à « Scène », l'élève garde son choix.
   const autoSimple = useRef(false);
   const startItems = useCallback(() => {
@@ -344,28 +263,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (!size.w || !item || plain || simple || finished || answersOut) return;
     const root = box.current;
     if (!root) return;
-    // Revenu à « Scène », la phrase entière et le haut de la première réponse se voient à l'ouverture de l'item (0 px sous
-    // le pli, le repère compté), ou l'item reste en « Vue simple » (piste B).
-    // Une fois par item, avant toute réponse (avis code de L8) : ni le résultat ni un redimensionnement ne ramènent la
-    // colonne en haut ou en « Vue simple » pendant que l'élève lit.
     const column = root.querySelector<HTMLElement>('.quiz.in-world');
-    if (keptScene && itemKey && measuredItem.current !== itemKey && column && !column.classList.contains('has-sheet')) {
-      const head = column.querySelector('.question-head');
-      if (head) {
-        measuredItem.current = itemKey;
-        column.scrollTop = 0;
-        const first = column.querySelector('.world-answers .world-answer');
-        const firstTop = first ? [{ getBoundingClientRect: () => ({ bottom: first.getBoundingClientRect().top + SCENE_FIRST_ANSWER }) }] : [];
-        if (belowFold(column, [head, ...firstTop], foldReserve(column)) > 0) {
-          // « Scène » quitte la barre : s'il avait le focus, il passe à « Lire la suite », jamais au corps de la page.
-          if (document.activeElement === document.body || document.activeElement?.matches('.world-question-simple')) refocus.current = true;
-          holdPending.current = true;
-          setSceneHeld(itemKey);
-          openSimple();
-          return;
-        }
-      }
-    }
     if (wordsCut(root.querySelectorAll<HTMLElement>('.world-answer-label'))) {
       if (!wideRow && (bulle || layout.panel.left + layout.panel.width < Math.min(...layout.slots.map((sl) => sl.hit.left)))) {
         setWideRow(true);
@@ -375,31 +273,25 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
         setBare(true);
         return;
       }
-      // En C sur un écran bas, la scène ne porte rien de la réponse : « Vue simple » d'office, une fois par visite
-      // (directeur artistique, deuxième passe de L6a), plutôt que des réponses sorties de la colonne. Au plus grand texte
+      // Dans la bulle (GD-26), une étiquette coupée ouvre « Vue simple » d'office, une fois par visite ; au plus grand texte
       // aussi, sur tablette : la phrase et les réponses à l'ouverture plutôt que l'offre de « Vue simple » (lot L7,
       // deuxième passe : les Vitraux des phrases, le Coffre à mots, les Marais salants).
-      if ((inColumn || bulle || (grandTexte && !layout.low)) && !autoSimple.current) {
+      if ((bulle || (grandTexte && !layout.low)) && !autoSimple.current) {
         autoSimple.current = true;
         openSimple();
         return;
       }
       setAnswersOut(true);
-      setWiden(sceneChosen ? WIDEN_SCENE : WIDEN_OFFER);
+      setWiden(WIDEN_OFFER);
       return;
     }
-    // Sur tablette en texte normal, seule une question en R se mesure : une phrase coupée par le bas du panneau (la rangée
-    // des objets le borne) mène à « Vue simple » (lot L7, les Vitraux des phrases).
-    if (offer || (!layout.low && !grandTexte && inColumn)) return;
-    // En C (lot L6a), la colonne défile : seules la phrase et les réponses doivent s'y voir sans défiler (0 px sous le
-    // pli) ; le document, le rappel, l'indice et la correction peuvent passer dessous, signalés.
-    if (!column || !(inColumn ? belowFold(column, column.querySelectorAll('.question-head, .world-answers .world-answer'), foldReserve(column)) > 0 : overflows(column))) return;
-    // Au plus grand texte, une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran
-    // bas, après l'avoir essayée en pleine largeur) : la consigne y est entière, et c'est le panneau qui défile (sur un
-    // téléphone, la question n'y tient pas sans défiler ; « Valider » reste dans sa bande, en bas). En C sur un écran
-    // bas, de même à toute taille de texte, dès que la phrase ou une réponse passe sous le pli (directeur artistique,
-    // deuxième passe de L6a). Revenu à la scène, l'élève garde son choix et les crans d'avant jusqu'à la fin de la visite.
-    const opensSimple = grandTexte || (inColumn && layout.low) || (!layout.low && !inColumn);
+    if (offer) return;
+    // Une bulle plus haute que sa place (35 % de l'écran, GD-26) : une phrase coupée par son bas mène à « Vue simple ».
+    if (!column || !overflows(column)) return;
+    // Une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran bas, après l'avoir
+    // essayée en pleine largeur) : la consigne y est entière, et c'est le panneau qui défile (« Valider » reste dans sa
+    // bande, en bas). Revenu à la scène, l'élève garde son choix et les crans d'avant jusqu'à la fin de la visite.
+    const opensSimple = grandTexte || !layout.low;
     const triedFullWidth = !layout.low || !intro || widen >= WIDEN_FULL;
     if (opensSimple && !autoSimple.current && !column.classList.contains('has-sheet') && triedFullWidth) {
       autoSimple.current = true;
@@ -407,32 +299,16 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       return;
     }
     if (!layout.low) return;
-    // Revenu à « Scène » en C : ni la colonne ni le résultat ne passent plus en pleine largeur ; la colonne défile.
-    if (sceneChosen) return;
     // Dans une scénette, la consigne lue en entier au premier item prend d'abord toute la largeur (aux Quais, elle est
     // longue) ; « Commencer » rend la colonne à la scène. Ailleurs, ou si elle ne tient toujours pas : « Vue simple ».
     if (intro) setWiden(widen < WIDEN_FULL ? WIDEN_FULL : WIDEN_OFFER);
     else if (column.classList.contains('has-sheet')) setSheetWide(true);
     else setWiden((n) => Math.min(WIDEN_OFFER, n + 1));
-  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, inColumn, sceneChosen, keptScene, itemKey, bulle]);
-  // L'item gardé en « Vue simple » passé, la scène revient (avant l'affichage : pas d'image de l'item suivant en liste).
-  useLayoutEffect(() => {
-    if (!sceneHeld || sceneHeld === itemKey || !itemKey) return;
-    // Le focus à reposer ne vaut que pour l'item gardé : rien de tardif sur l'item suivant (avis code de L8).
-    refocus.current = false;
-    holdPending.current = false;
-    setSceneHeld('');
-    setSimple(false);
-  }, [sceneHeld, itemKey]);
+  }, [layout, intro, finished, offer, widen, item, sheetWide, answersOut, size.w, plain, simple, bare, grandTexte, openSimple, wideRow, bulle]);
   // La barre du haut change de bouton à la bascule (« Scène », « Vue simple ») : le focus, resté sur le bouton parti,
-  // passe à celui qui le remplace, ou à « Lire la suite » quand l'item reste en « Vue simple » sans « Scène ».
+  // passe à celui qui le remplace.
   useEffect(() => {
     if (!refocus.current) return;
-    // L'item gardé en « Vue simple » : attendre son rendu (la barre n'y a plus « Scène »).
-    if (holdPending.current) {
-      if (!simple || sceneHeld !== itemKey) return;
-      holdPending.current = false;
-    }
     const active = document.activeElement;
     if (active && active !== document.body && active.isConnected) {
       refocus.current = false;
@@ -443,24 +319,22 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (!next) return;
     refocus.current = false;
     next.focus({ preventScroll: true });
-  }, [simple, sceneHeld, keptScene, itemKey]);
+  }, [simple, itemKey]);
   // Chaque item de « Vue simple » s'ouvre en haut du panneau, sa phrase d'abord, même si l'élève avait descendu jusqu'aux
   // réponses de l'item d'avant (relecture de L2, au plus grand texte sur téléphone).
   useEffect(() => {
-    if ((!simple && !inColumn) || !itemKey) return;
+    if (!simple || !itemKey) return;
     const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
     if (panel) panel.scrollTop = 0;
-  }, [simple, inColumn, itemKey]);
+  }, [simple, itemKey]);
   // Le panneau de « Vue simple » défile : il s'ouvre en haut (le rôle, la consigne), et `data-suite` dit qu'il reste
   // de quoi lire plus bas (une ombre au-dessus de « Valider ») ou plus haut. `data-repere` montre un chevron sur un trait
   // pointillé (« Suite plus bas ») tant qu'il reste quoi que ce soit sous le bord, une réponse, une figure ou l'indice
   // (relecture du lot L5, consultant UX UI : l'indice coupé net ne se signalait pas) : sans « Valider » (les paniers,
   // les leviers, les caisses, les sacs), au bas du panneau ; avec lui, à droite dans sa bande. Il part une fois en bas
   // du panneau, et se rallume quand une consigne se déplie ou qu'une figure s'ajoute.
-  // En C (lot L6a), la colonne de la scène défile de même : le même repère, la même ombre.
-  const scrolls = simple || inColumn;
   useEffect(() => {
-    if (!scrolls || finished) return;
+    if (!simple || finished) return;
     const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
     if (!panel) return;
     panel.scrollTop = 0;
@@ -495,81 +369,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       delete panel.dataset.suite;
       delete panel.dataset.repere;
     };
-  }, [scrolls, simple, finished, loaded]);
-  // En C (lot L6a), la ligne de la consigne (repliée, ou la consigne entière sur tablette) et la phrase restent épinglées
-  // en haut du panneau quand il défile vers le document (un seul défilement, celui du panneau) : la phrase se tient sous
-  // la ligne, à sa hauteur mesurée (`--pin-ligne`), refaite quand elle change (la consigne s'efface après la réponse).
-  useLayoutEffect(() => {
-    if (!inColumn || finished) return;
-    const panel = box.current?.querySelector<HTMLElement>('.quiz.in-world');
-    if (!panel) return;
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const line = panel.querySelector<HTMLElement>(':scope > .world-consigne-line') ?? panel.querySelector<HTMLElement>(':scope > .consigne');
-      const head = panel.querySelector<HTMLElement>('.question-head');
-      const lineOf = () => (line && !panel.classList.contains('consigne-ouverte') && getComputedStyle(line).position === 'sticky' ? line.offsetHeight : 0);
-      // Une phrase épinglée qui prendrait plus de la moitié du panneau ne laisserait rien voir défiler dessous (au plus
-      // grand texte sur un téléphone couché, jusqu'à plus que le panneau) : elle défile alors avec le reste. La ligne n'a
-      // pas la même hauteur dans les deux cas (les étapes y passent quand la phrase est épinglée, la voix de la phrase
-      // sinon) : la part se mesure dans la forme « phrase » elle-même, sans quoi l'épinglage oscillait d'une forme à
-      // l'autre autour de 0,5 et restait sur la dernière (mesure des plis de L6a, 844 × 390 au plus grand texte).
-      panel.dataset.epingle = 'phrase';
-      const phraseLine = lineOf();
-      const tooTall = (head && phraseLine + head.offsetHeight > panel.clientHeight * PIN_MAX) || releasedPin.current === itemKey;
-      if (tooTall) panel.dataset.epingle = 'ligne';
-      panel.style.setProperty('--pin-ligne', `${tooTall ? lineOf() : phraseLine}px`);
-    };
-    const observer = new ResizeObserver(() => {
-      if (!frame) frame = requestAnimationFrame(update);
-    });
-    observer.observe(panel);
-    for (const el of panel.querySelectorAll(':scope > .world-consigne-line, :scope > .consigne, .question-head')) observer.observe(el);
-    update();
-    // Après une réponse, la correction s'insère juste sous les réponses (openWorld.css) et « Suivant » prend le focus,
-    // qui fait défiler le panneau jusqu'à lui : le panneau se repose pour que la réponse touchée et la bonne réponse
-    // restent visibles (www/pedagogie/principes.md, relecture de L6a), la correction dessous, aussi loin qu'elle tient.
-    let settle = 0;
-    const onFocus = (e: FocusEvent) => {
-      if (!(e.target instanceof HTMLElement) || !e.target.matches('.next-button')) return;
-      const button = e.target;
-      cancelAnimationFrame(settle);
-      settle = requestAnimationFrame(() => {
-        // Une fois par item, à la réponse : si le résultat ne tient pas sous la ligne et la phrase épinglées, « Suivant »
-        // entier au-dessus du pli, la phrase rejoint le défilement (sa voix passe dans la ligne, « Phrase ») ; elle reste
-        // à un geste vers le haut (directeur artistique, L8).
-        const sheet = panel.querySelector<HTMLElement>('.result-sheet');
-        const head = panel.querySelector<HTMLElement>('.question-head');
-        if (sheet && head && itemKey && pinChecked.current !== itemKey && panel.dataset.epingle === 'phrase') {
-          pinChecked.current = itemKey;
-          const pinned = (parseFloat(panel.style.getPropertyValue('--pin-ligne')) || 0) + head.offsetHeight;
-          const room = panel.clientHeight - foldReserve(panel);
-          if (pinned + sheet.offsetHeight > room) {
-            releasedPin.current = itemKey;
-            update();
-          }
-        }
-        // Revenue à « Scène », la colonne est étroite, et au plus grand texte sur un écran bas le résultat est haut : le
-        // résultat entier (« Bravo », « Suivant ») passe avant les réponses, que la phrase complétée remplace (référent dys,
-        // L8).
-        const sheetFirst = panel.classList.contains('scene-gardee') || (panel.classList.contains('simple-bas') && document.documentElement.dataset.texte === 'grand');
-        const answers = panel.querySelector('.world-answers');
-        // La réponse que l'élève a choisie, juste ou fausse (directeur artistique, L8 : après une erreur, la sienne, barrée,
-        // jamais la bonne à sa place).
-        if (sheetFirst && sheet) panel.scrollTop = onResult(panel, panel.querySelector('.world-answers .world-answer[data-choisie]'), sheet, button);
-        else if (answers) panel.scrollTop = afterAnswer(panel, answers, button);
-      });
-    };
-    panel.addEventListener('focusin', onFocus);
-    return () => {
-      observer.disconnect();
-      panel.removeEventListener('focusin', onFocus);
-      if (frame) cancelAnimationFrame(frame);
-      cancelAnimationFrame(settle);
-      panel.style.removeProperty('--pin-ligne');
-      delete panel.dataset.epingle;
-    };
-  }, [inColumn, finished, simple, consigneOpen, itemKey]);
+  }, [simple, finished, loaded]);
   useEffect(() => {
     if (plain || !size.w || !size.h || !item || finished) return;
     const shown = world.question({ place, mission, layout, item, answersOut: objectsOut });
@@ -635,14 +435,14 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     [revision, completeRevision],
   );
   const Done = revision?.Done ?? WorldDone;
-  const context = useMemo(() => ({ place, layout, show, instruction, simple, phraseVoice }), [place, layout, show, instruction, simple, phraseVoice]);
+  const context = useMemo(() => ({ place, layout, show, instruction, simple, lowScreen }), [place, layout, show, instruction, simple, lowScreen]);
 
   const exerciseId = ready?.def.id;
   const readyLevel = ready?.level ?? 1;
   const bellTarget = String(ready?.def.target ?? '');
   // Au plus grand texte sur un écran bas, des manches de quatre cloches (relecture de L3 : la manche tient au-dessus de
   // « Valider ») ; le nombre se fixe au premier découpage d'une partie : une rotation ne refait pas les manches en cours.
-  const smallBells = grandTexte && layout.low;
+  const smallBells = grandTexte && lowScreen;
   const roundCut = useRef<{ key: string; perRound: number } | null>(null);
   const bellsPerRound = useCallback(
     (seed: string): number => {
@@ -658,10 +458,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const sortsPerRound = useCallback(
     (seed: string): number => {
       const key = `${run}:${seed}`;
-      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: layout.low ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : RANGE_PER_ROUND };
+      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: lowScreen ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : RANGE_PER_ROUND };
       return sortCut.current.perRound;
     },
-    [run, layout.low, grandTexte],
+    [run, lowScreen, grandTexte],
   );
   const stage = useMemo<RunnerStage | null>(() => {
     if (!exerciseId) return null;
@@ -690,12 +490,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
             <span className="world-consigne-more-word">{consigneOpen ? 'Replier' : 'Lire la suite'}</span>
           </button>
         )}
-        {inColumn && (
-          // En C, la place de la voix de la phrase, épinglée avec la ligne de la consigne : elle ne se montre que quand la
-          // phrase, trop haute, défile avec le reste (`data-epingle="ligne"`, openWorld.css).
-          <span className="world-phrase-voice" ref={setPhraseVoice} />
-        )}
-        {(simple || inColumn) && (
+        {simple && (
           // Le repère de défilement (data-repere, plus haut) : un chevron vers le bas sur un trait pointillé, au bas du
           // panneau, tant que des réponses restent plus bas ; sa place est toujours tenue (rien ne bouge quand il part).
           <div className="world-repere" role="img" aria-label="Suite plus bas">
@@ -724,23 +519,17 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // Au plus grand texte sur un écran bas, la cible des cloches prend la ligne de la consigne repliée, sous le rôle :
     // toujours affichée, avant les mots, sans ligne de plus (relecture de L3) ; la consigne reste dite, et dépliée, la
     // cible après elle.
-    const target = marks && grandTexte ? bellTarget : '';
+    const target = marks && grandTexte && simpleLow ? bellTarget : '';
     // À l'Enclos, au plus grand texte sur un écran bas, la ligne de règle prend la ligne de la consigne repliée, avant
     // elle ; la consigne reste dite, et dépliée, après la règle. La manche passe alors sous « Valider » et le panneau
     // défile (dérogation du 16 octobre 2026, choix du mainteneur : ce seul réglage, l'Enclos seulement).
-    const rule = ranges && grandTexte && tight ? placeRuleLine(place, exerciseId, readyLevel) : null;
+    const rule = ranges && grandTexte && simpleLow ? placeRuleLine(place, exerciseId, readyLevel) : null;
     const head: ReactNode = tight ? (
         <div className="world-scenette-head world-consigne-line">
           <p className="world-consigne-fold" id="consigne-ligne">
-            {/* En C, le rôle de l'habitant quitte la ligne : la place va à la phrase et aux réponses (relecture de L6a,
-                consultant UX UI, piste 1). */}
-            {!inColumn && (
-              <>
-                <strong className="world-scenette-role">
-                  <RoleName role={scenette.role} />
-                </strong>{' '}
-              </>
-            )}
+            <strong className="world-scenette-role">
+              <RoleName role={scenette.role} />
+            </strong>{' '}
             {rule && (
               <>
                 <span className="world-consigne-regle">{frenchTypography(rule)}</span>{' '}
@@ -801,8 +590,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       pose: poseWords,
       className:
         simple && !finished
-          ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}${inColumn ? ' mode-c' : ''}`
-          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${inColumn ? ' reponses-colonne mode-c' : ''}${keptScene ? ' scene-gardee simple-bas' : ''}${hasAid ? ' avec-rappel' : ''}${bulle && !keptScene ? ' bulle simple-bas' : ''}`,
+          ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}`
+          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${hasAid ? ' avec-rappel' : ''}${bulle ? ' bulle simple-bas' : ''}`,
     };
   }, [
     exerciseId,
@@ -832,8 +621,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     foldedSimple,
     consigneOpen,
     rowBeside,
-    inColumn,
-    keptScene,
     tight,
     readyLevel,
     greeting,
@@ -906,7 +693,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       alive = false;
     };
     // Refaite aussi quand « Vue simple » s'ouvre d'office (le rôle passe alors sur sa ligne) : sinon la consigne entière.
-  }, [stage, consigneOpen, size.w, settings, simple, layout.low, foldedSimple, keptScene]);
+  }, [stage, consigneOpen, size.w, settings, simple, layout.low, foldedSimple, bulle]);
 
   const style = {
     '--question-left': `${layout.panel.left}px`,
@@ -949,8 +736,6 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
                 setIntroDone(false);
                 setWiden(0);
                 setSheetWide(false);
-                setSceneHeld('');
-                measuredItem.current = '';
                 setAnswersOut(false);
                 setBare(false);
                 setWideRow(false);
@@ -966,12 +751,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       {/* Un seul « Vue simple » : celui du panneau quand le repli est proposé. */}
       {ready && stage && !plain && !finished && !offer && !simple && (
         <button type="button" className="button world-question-simple" onClick={openSimple}>
-          {/* Revenu à « Scène » en C sur un écran bas, son icône seule (son nom dit), à côté de la pause. */}
           <Icon name="liste" /> <span className="world-question-simple-word">Vue simple</span>
         </button>
       )}
       {/* En « Vue simple » d'une scénette, à la même place : le retour à la scène, les cloches choisies gardées. */}
-      {ready && stage && !plain && !finished && simple && sceneHeld !== itemKey && (
+      {ready && stage && !plain && !finished && simple && (
         <button type="button" className="button world-question-simple" onClick={backToScene}>
           <Icon name="mountain" /> <span className="world-question-simple-word">Scène</span>
         </button>
@@ -1073,7 +857,7 @@ export function PlaceText({ text }: { text: string }) {
  * demande, une réponse par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
  */
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
-  const { layout, show, simple, phraseVoice } = useQuestion();
+  const { layout, show, simple } = useQuestion();
   useStopOnLeave();
   const { settings, speak } = useSettings();
   const item = items[0];
@@ -1106,10 +890,11 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
   const aid = scene?.kind === 'lockPair' && !simple ? null : aidOf(item);
   // Dans la bulle (GD-26), la question seule en tête ; son document, la figure et la règle dans le carnet, à gauche de la
   // scène, toujours ouvert pendant l'action.
-  const inBubble = !simple && scene !== null && !answersInColumn(scene);
+  const inBubble = !simple && scene !== null;
   const docInCarnet = Boolean(question) && inBubble;
-  // Calculer avec des fractions : les réponses dans la colonne, en liste, aucun objet ne les porte dans la scène.
-  const inColumn = scene !== null && answersInColumn(scene);
+  // Story time en « Vue simple » : la question en tête, les réponses, puis l'histoire à écouter (elle ne s'écrit qu'après
+  // la réponse), dans cet ordre.
+  const listenAside = simple && listenFirst && Boolean(question);
   // L'Abattage syllabique au Phare : le mot est l'objet appris, écrit sans syllabes en couleurs (elles donneraient la
   // réponse) ; les trois cloches portent les nombres de l'item.
   const word = scene?.kind === 'cloches';
@@ -1120,7 +905,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
   const tried = choices.flatMap((c, i) => (c !== answer && (ruledOut?.includes(c) || (answered && chosen === c)) ? [i] : []));
   const triedKey = tried.join(',');
   const itemKeyOf = String(item?.key ?? '');
-  // Le C neutre (lot L6a) : l'objet témoin ne réagit qu'après une bonne réponse (jamais à une correction) ; la scène ne
+  // Le décor neutre (lot L6a) : l'objet témoin ne réagit qu'après une bonne réponse (jamais à une correction) ; la scène ne
   // l'apprend qu'alors.
   const right = Boolean(answered?.results.length) && Boolean(answered?.results.every((r) => r.correct));
   // De même pour l'objet de la bonne réponse marqué en R (lot L9 : la bouée reçoit son voyant, la malle se ferme).
@@ -1132,12 +917,12 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
       key: itemKeyOf,
       scene,
       answered: shownAnswered,
-      right: answered && rightIndex >= 0 && !inColumn ? [rightIndex] : [],
-      picked: inColumn ? [] : picked,
-      count: inColumn ? 0 : choices.length,
+      right: answered && rightIndex >= 0 ? [rightIndex] : [],
+      picked,
+      count: choices.length,
       aid: (Boolean(aid) && !drawn) || docInCarnet || (Boolean(figure) && inBubble),
     });
-  }, [show, itemKeyOf, scene, answered, shownAnswered, rightIndex, choices.length, aid, triedKey, inColumn, drawn, docInCarnet, figure, inBubble]);
+  }, [show, itemKeyOf, scene, answered, shownAnswered, rightIndex, choices.length, aid, triedKey, drawn, docInCarnet, figure, inBubble]);
   // Les dictées (le Coffre à mots, l'Oreille du mineur) : le mot ou sa phrase dits à l'ouverture de l'item, comme sur
   // leur écran de référence, si la lecture automatique est choisie.
   // Une lecture par item : la voix, la phrase et le réglage du moment, lus sans relancer la lecture quand ils changent.
@@ -1152,10 +937,8 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
   const filled = gap !== null && rightIndex >= 0;
   const whole = gap ? `${gap.before}${answer}${gap.after}` : prompt;
 
-  // Les réponses : posées sur la scène, sous la colonne ; en C (la Turbine, Calculer avec des fractions), juste après la
-  // phrase et la ligne de calcul, avant l'indice, le document, la figure et le rappel, dans la scène comme dans « Vue
-  // simple » (la règle du C, lot L6a : la phrase et les réponses jamais sous le pli). Ailleurs, en « Vue simple », après
-  // la question.
+  // Les réponses : posées sur la rangée, sous la scène (GD-26) ; en « Vue simple », après la question (Story time : avant
+  // l'histoire à écouter).
   // Deux rives : ses trois réponses sur une seule rangée, la plus longue (« Elles sont égales ») passant à la ligne dans
   // son étiquette plutôt que sous les deux fractions (GD-20, point 8, lot L3, au plus grand texte sur téléphone).
   const answersBlock = (
@@ -1164,7 +947,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
         const slot = layout.slots[i] ?? layout.slots[0];
         // En « Vue simple », ou quand elles restent dans la colonne, les réponses sont une liste qui passe à la ligne :
         // rien n'est posé sur la scène.
-        const styles = simple || inColumn || !slot ? { hit: undefined, label: undefined } : slotStyles(slot);
+        const styles = simple || !slot ? { hit: undefined, label: undefined } : slotStyles(slot);
         const isAnswer = answered && choice === answer;
         // Au deuxième essai, la réponse déjà tentée reste barrée.
         const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
@@ -1187,18 +970,11 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
     </div>
   );
 
-  // En C, la voix de la phrase posée aussi dans ce qui reste épinglé : elle ne s'y montre que quand la phrase, trop haute
-  // pour l'être, défile avec le reste (openWorld.css) ; son mot, « Phrase », la distingue de la voix de la consigne.
-  const pinnedVoice =
-    inColumn && phraseVoice
-      ? createPortal(question ? <SpeakButton text={frenchTypography(question)} label="Phrase" /> : <SpeakButton text={filled ? whole : spoken} label="Phrase" shown={whole} lang={lang} />, phraseVoice)
-      : null;
 
   return (
     <div className="question world-place">
-      {pinnedVoice}
       <div className={`world-question-prompt${filled ? ' filled' : ''}`}>
-        {question && (inColumn || docInCarnet) ? (
+        {question && (listenAside || docInCarnet) ? (
           // En C, la question seule en tête (épinglée en haut du panneau quand il défile) ; son document après les
           // réponses.
           <div className="question-head">
@@ -1257,11 +1033,9 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
             <RichText text={referenceLine} />
           </p>
         )}
-        {inColumn && answersBlock}
-        {/* Le document d'un C, toujours ouvert, juste après les réponses : avec l'indice, la correction et le rappel, seul à
-            pouvoir passer sous le pli. */}
-        {question && inColumn && (!listenFirst || written) && <PlaceDocument text={prompt} spoken={spoken} lang={lang} label={listenFirst ? 'Écouter' : undefined} />}
-        {question && inColumn && listenFirst && !written && (
+        {listenAside && answersBlock}
+        {listenAside && written && <PlaceDocument text={prompt} spoken={spoken} lang={lang} label="Écouter" />}
+        {listenAside && !written && (
           // Story time avant la réponse : l'histoire s'écoute, elle ne s'écrit pas encore (StoryScreen).
           <div className="notice world-document recit">
             <p className="recit-listen">
@@ -1309,7 +1083,16 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
         {/* La figure après la phrase et l'indice : la prochaine action reste dans le panneau sans défiler (tablette). */}
         {inBubble && layout.aid && (docInCarnet || figure || aid) ? (
           <PlaceCarnet box={layout.aid}>
-            {docInCarnet && <PlaceDocument text={prompt} spoken={spoken} lang={lang} />}
+            {docInCarnet && (!listenFirst || written) && <PlaceDocument text={prompt} spoken={spoken} lang={lang} label={listenFirst ? 'Écouter' : undefined} />}
+            {docInCarnet && listenFirst && !written && (
+              // Story time avant la réponse : l'histoire s'écoute, elle ne s'écrit pas encore (StoryScreen).
+              <div className="notice world-document recit">
+                <p className="recit-listen">
+                  <Icon name="speaker" /> {lang === 'en' ? 'Écoute l’histoire en anglais.' : 'Écoute l’histoire.'}
+                </p>
+                <SpeakButton text={spoken} label="Écouter" lang={lang} />
+              </div>
+            )}
             {figure && (
               <div className="calcul-figure world-question-figure">
                 <Aid aid={figure} />
@@ -1328,7 +1111,7 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
           </>
         )}
       </div>
-      {!inColumn && answersBlock}
+      {!listenAside && answersBlock}
     </div>
   );
 }

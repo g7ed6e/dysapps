@@ -446,11 +446,6 @@ const PANEL_LOW_SHARES = [0.38, 0.46, 0.54] as const;
  */
 export const WIDEN_FULL = PANEL_LOW_SHARES.length;
 export const WIDEN_OFFER = WIDEN_FULL + 1;
-/**
- * Le cran le plus large où la scène garde sa place à droite de la colonne (54 %) : en C sur un écran bas, revenu de
- * « Vue simple » à « Scène », la colonne n'en passe plus (GD-20, point 8, L8).
- */
-export const WIDEN_SCENE = WIDEN_FULL - 1;
 
 /**
  * La place d'une question sur un écran de `width` × `height` pixels.

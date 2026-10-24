@@ -213,11 +213,36 @@ describe('La place de la scénette à l’écran', () => {
     }
   });
 
-  it('B, sur un écran bas : la colonne à gauche, la scène à droite, la rangée en bas, « Valider » dans la colonne', () => {
+  it('la bulle (GD-26), sur un écran bas : sous « Vue simple » et la pause, sur toute la largeur, 40 % de la hauteur au plus ; le carnet à gauche jusqu’en bas, la rangée à sa droite', () => {
+    for (const [w, h] of screens.filter(([, h]) => h < ANSWER_LAYOUT.low))
+      for (const aid of [false, true]) {
+        const l = scenetteLayout({ count: 4, aid, validate: false }, w, h, questionLayout({ count: 4, aid }, w, h));
+        const at = `${w}×${h}${aid ? ', carnet' : ''}`;
+        expect(l.panel.top, at).toBe(SCENETTE_LAYOUT.lowTop);
+        expect(l.panel.left + l.panel.width, at).toBeCloseTo(w - ANSWER_LAYOUT.edgeLow, 6);
+        expect(l.panel.maxHeight, at).toBeLessThanOrEqual(SCENETTE_LAYOUT.bubbleLow * h + 1e-6);
+        expect(l.scenette.validate, at).toBeNull();
+        const panel = { left: l.panel.left, right: l.panel.left + l.panel.width, top: l.panel.top, bottom: l.panel.top + l.panel.maxHeight };
+        for (const s of l.slots) {
+          expect(overlap(panel, s.label), at).toBe(false);
+          expect(s.label.bottom - s.label.top).toBeGreaterThanOrEqual(48);
+          if (l.aid) expect(s.label.left, at).toBeGreaterThanOrEqual(l.aid.right);
+        }
+        if (!aid) {
+          expect(l.aid).toBeNull();
+          continue;
+        }
+        expect(l.aid!.top, at).toBeGreaterThanOrEqual(panel.bottom);
+        expect(l.aid!.bottom, at).toBeCloseTo(h - ANSWER_LAYOUT.edgeLow, 6);
+        expect(l.scenette.stage.left, at).toBeGreaterThanOrEqual(l.aid!.right);
+      }
+  });
+
+  it('B, en colonne sur un écran bas : la colonne à gauche, la scène à droite, la rangée en bas, « Valider » dans la colonne', () => {
     for (const [w, h] of screens.filter(([, h]) => h < ANSWER_LAYOUT.low))
       for (const count of [3, 6])
         for (const widen of [0, 1, 2]) {
-          const l = layoutOf(count, w, h, widen);
+          const l = scenetteLayout({ count, widen, column: true }, w, h, questionLayout({ count, bells: true, widen }, w, h));
           const at = `${w}×${h}, ${count}, cran ${widen}`;
           const stage = l.scenette!.stage;
           expect(l.low).toBe(true);
@@ -894,7 +919,8 @@ describe('Les Marais salants (GD-20, point 8, lot L5)', () => {
       for (const grand of [false, true])
         for (const widen of [0, 1, 2]) {
           const base = questionLayout({ count: 4, widen }, w, h);
-          const stage = scenetteLayout({ count: 4, widen, column: !grand, grand }, w, h, base).scenette!.stage;
+          // Au téléphone couché, la jauge garde la colonne à gauche (GD-26) : la scène prend toute la hauteur à droite.
+          const stage = scenetteLayout({ count: 4, widen, column: h < ANSWER_LAYOUT.low, grand }, w, h, base).scenette!.stage;
           const { pose } = scenettePose('saltworks', stage, w, h);
           const x = o.x + JAUGE.post,
             z = o.z + JAUGE.z + 0.2;

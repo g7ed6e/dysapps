@@ -48,10 +48,9 @@ export type ItemScene =
   | { kind: 'lockPair'; a: [number, number]; b: [number, number] }
   /**
    * Le sas au repos : la scène ne montre rien de l'item (les missions des Écluses jouées avec leurs items de référence,
-   * où l'opération posée, l'aide et le schéma restent exacts dans le panneau). `column` : les réponses restent dans la
-   * colonne, la scène fait le décor (Calculer avec des fractions, toute la mission, GD-20, point 8, lot L2).
+   * où l'opération posée, l'aide et le schéma restent exacts dans la bulle et le carnet).
    */
-  | { kind: 'lockIdle'; column: boolean }
+  | { kind: 'lockIdle' }
   /**
    * Le bassin des Marais salants au repos (GD-20, point 8, lot L5) : la scène ne montre rien de l'item (les missions
    * jouées avec leurs items de référence ; la figure, le tableau et la règle restent dans le panneau).
@@ -63,10 +62,9 @@ export type ItemScene =
    */
   | { kind: 'jauge'; start: number; d: number; n: number }
   /**
-   * Le C, scène de décor neutre (GD-20, point 8, lot L6a) : la scène ne montre rien de l'item, les réponses restent dans
-   * la colonne (la phrase, les réponses, le document, le rappel), aucun objet ne les porte ; le décor du lieu et son
-   * objet témoin, qui réagit après une bonne réponse (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, le Chantier
-   * naval, et les lieux qui suivent.
+   * Le décor neutre (GD-20, point 8, lot L6a) : la scène ne montre rien de l'item, aucun objet ne porte les réponses
+   * (leurs étiquettes sur la rangée, GD-26) ; le décor du lieu et son objet témoin, qui réagit après une bonne réponse
+   * (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, le Chantier naval, et les lieux qui suivent.
    */
   | { kind: 'column' }
   /**
@@ -94,6 +92,7 @@ export function isItemScene(v: unknown): v is ItemScene {
     case 'cloches':
     case 'enclos':
     case 'saline':
+    case 'lockIdle':
     case 'column':
     case 'rest':
     case 'restMark':
@@ -107,8 +106,6 @@ export function isItemScene(v: unknown): v is ItemScene {
       return 'n' in v && isCount(v.n) && 'd' in v && isCount(v.d) && v.d > 0;
     case 'lockPair':
       return 'a' in v && isPart(v.a) && 'b' in v && isPart(v.b);
-    case 'lockIdle':
-      return 'column' in v && typeof v.column === 'boolean';
     case 'quai':
       return 'op' in v && (v.op === 'moitie' || v.op === 'double' || v.op === 'calcul') && 'before' in v && isCount(v.before) && 'after' in v && isCount(v.after);
     default:
@@ -357,18 +354,13 @@ function jaugeOf(item: QuestionItem): Extract<ItemScene, { kind: 'jauge' }> | nu
 export const SALINE: ItemScene = { kind: 'saline' };
 
 /** Le sas au repos : la scène des missions des Écluses qui gardent leur item de référence. */
-export const LOCK_IDLE: ItemScene = { kind: 'lockIdle', column: false };
-/** Le sas au repos, les réponses dans la colonne (Calculer avec des fractions). */
-export const LOCK_COLUMN: ItemScene = { kind: 'lockIdle', column: true };
-
-/** Le C neutre : la scène fait le décor, les réponses restent dans la colonne (la Turbine, lot L6a). */
-export const COLUMN: ItemScene = { kind: 'column' };
+export const LOCK_IDLE: ItemScene = { kind: 'lockIdle' };
 
 /**
- * Les réponses d'une scène restent-elles dans la colonne (aucun objet ne les porte dans la scène) ? Le C neutre, et le
- * sas au repos de Calculer avec des fractions aux Écluses.
+ * Le décor neutre : la scène fait le décor et son objet témoin réagit après une bonne réponse (la Turbine, lot L6a) ; les
+ * réponses sont sur la rangée, sous la scène, sans objet qui les porte (GD-26 : plus de réponses dans la colonne).
  */
-export const answersInColumn = (scene: ItemScene): boolean => scene.kind === 'column' || (scene.kind === 'lockIdle' && scene.column);
+export const COLUMN: ItemScene = { kind: 'column' };
 
 /** La phrase des Quais pour un item de Doubles et moitiés (clé `half-34` ou `dbl-23`) : une idée par phrase, un verbe. */
 export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'quai' }>; prompt: string } | null {
@@ -495,29 +487,29 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // La Turbine (GD-20, point 8, lot L6a) et le Chantier naval (lot L6b) : leurs quatre missions en C, aux deux niveaux,
   // avec leurs items de référence (consigne, phrase, document, rappel) ; la scène fait le décor, les réponses restent dans
   // la colonne.
-  if (place === 'engine' || place === 'shipyard') return items.map((it) => ({ ...it, placeScene: REST }));
+  if (place === 'engine' || place === 'shipyard') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   // Le rivage nord (GD-20, point 8, lot L7) : les items de référence tels quels. En C (les réponses dans la colonne) : à
   // la Vigie, Étages du sens et Les temps du récit ; aux Archives, Facettes (une mission, un geste : C entier, contenu et
   // référent dys). En R, les réponses portées par l'objet du lieu, le lieu au repos : les Vitraux des phrases, et la phrase
   // affichée et dite de l'écran de référence pour les autres (`northItem`).
   if (place === 'lookout' || place === 'archives' || place === 'printworks') {
     const column = missionIs(exerciseId, 'comprehension') || missionIs(exerciseId, 'tense-values') || missionIs(exerciseId, 'word-forms');
-    return items.map((it) => (column ? { ...it, placeScene: REST } : { ...it, ...northItem(exerciseId, it), placeScene: REST }));
+    return items.map((it) => (column ? { ...it, placeScene: COLUMN } : { ...it, ...northItem(exerciseId, it), placeScene: REST }));
   }
   // La Mangrove (lot L8a) : de même, ses quatre missions en C, avec leurs items de référence.
-  if (place === 'mangrove') return items.map((it) => ({ ...it, placeScene: REST }));
+  if (place === 'mangrove') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   // Les Ruines (lot L8b) : de même.
-  if (place === 'ruins') return items.map((it) => ({ ...it, placeScene: REST }));
+  if (place === 'ruins') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   // L'Observatoire (lot L8c) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
-  if (place === 'observatory') return items.map((it) => ({ ...it, placeScene: REST }));
+  if (place === 'observatory') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   // La Halle (lot L8d) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
-  if (place === 'commons') return items.map((it) => ({ ...it, placeScene: REST }));
+  if (place === 'commons') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   // Le large (lot L9) : les items de référence tels quels. En C, les documents (Signs, Famous people) et l'histoire
   // (Story time) ; en R, les phrases à trou, les nombres et l'écoute, portés par les bouées des Balises et les malles de la
   // Gare maritime (deux malles pour Have ou has, au niveau 1 : l'item a deux choix). Ears garde son écoute : le mot dit à
   // l'ouverture, sans phrase écrite (`listenOnly`) ; Story time, l'histoire écrite après la réponse (`listenFirst`).
   if (place === 'beacons' || place === 'ferry') {
-    if (missionIs(exerciseId, 'story')) return items.map((it) => ({ ...it, listenFirst: true as const, placeScene: COLUMN }));
+    if (missionIs(exerciseId, 'story')) return items.map((it) => ({ ...it, listenFirst: true as const, placeScene: REST_MARK }));
     if (LARGE_COLUMN.some((m) => missionIs(exerciseId, m))) return items.map((it) => ({ ...it, placeScene: REST_MARK }));
     if (missionIs(exerciseId, 'first-listening'))
       return items.map((it) => ({ ...it, listenOnly: true as const, spoken: String(it.word ?? ''), speakOnOpen: true, placeScene: REST_MARK }));
@@ -564,7 +556,7 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
     // Les Écluses (GD-20, point 8, lot L2) : toutes leurs missions au même sas, avec les mêmes leviers. Les Nénuphars et
     // Deux rives ont leur gabarit ; Partage du gâteau et Galets en colonnes gardent leur item de référence, le sas au
     // repos ; Calculer avec des fractions aussi, ses réponses dans la colonne (toute la mission).
-    if (missionIs(exerciseId, 'fraction-sums')) return items.map((it) => ({ ...it, placeScene: LOCK_COLUMN }));
+    if (missionIs(exerciseId, 'fraction-sums')) return items.map((it) => ({ ...it, placeScene: LOCK_IDLE }));
     if (missionIs(exerciseId, 'sharing') || missionIs(exerciseId, 'place-value')) return items.map((it) => ({ ...it, placeScene: LOCK_IDLE }));
     if (missionIs(exerciseId, 'equivalence'))
       return items.map((it) => {

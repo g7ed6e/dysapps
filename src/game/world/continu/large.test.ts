@@ -137,12 +137,12 @@ describe('Le large (lot L9)', () => {
 });
 
 describe('Les scènes du large', () => {
-  it('chaque mission jouée au lieu : R pour les réponses à toucher, C pour les documents et l’histoire', () => {
+  it('chaque mission jouée au lieu : R partout : les réponses sur les bouées et les malles, les documents et l’histoire dans le carnet (GD-26)', () => {
     const r = placeItems('ferry', 'english-6e-grammar-have-got-1', items('english-6e-grammar-have-got-1'));
     expect(r[0].placeScene).toEqual(REST_MARK);
     expect((r[0].choices as string[]).length).toBe(2);
-    for (const id of ['english-6e-vocabulary-signs-1', 'english-6e-vocabulary-famous-people-1']) expect(placeItems('beacons', id, items(id))[0].placeScene, id).toEqual(COLUMN);
-    expect(placeItems('ferry', 'english-6e-grammar-story-1', items('english-6e-grammar-story-1'))[0].placeScene).toEqual(COLUMN);
+    for (const id of ['english-6e-vocabulary-signs-1', 'english-6e-vocabulary-famous-people-1']) expect(placeItems('beacons', id, items(id))[0].placeScene, id).toEqual(REST_MARK);
+    expect(placeItems('ferry', 'english-6e-grammar-story-1', items('english-6e-grammar-story-1'))[0].placeScene).toEqual(REST_MARK);
     for (const id of ['english-6e-vocabulary-hello-1', 'english-6e-vocabulary-numbers-1']) expect(placeItems('beacons', id, items(id))[0].placeScene, id).toEqual(REST_MARK);
   });
 

@@ -35,11 +35,11 @@ export function sortAnswer(items: readonly ExerciseItem[], s: Rangement) {
  * « Valider », qui attend que tout soit rangé.
  */
 export function SortScreen({ items, answered, onAnswer, exerciseId, level }: ScreenProps) {
-  const { layout, show, simple, place } = useQuestion();
+  const { layout, show, simple, place, lowScreen } = useQuestion();
   const { speak, settings } = useSettings();
   // Au plus grand texte sur un écran bas, en « Vue simple » : « Écouter les sujets » passe dans la bande de « Valider »,
   // comme les cloches du Phare ; la règle va sous la liste.
-  const compact = simple && layout.low && texteGrand(settings);
+  const compact = simple && lowScreen && texteGrand(settings);
   useStopOnLeave();
   const bins: readonly RangeBin[] = useMemo(() => rangeGesture(place, exerciseId) ?? [], [place, exerciseId]);
   const [state, setState] = useState<Rangement>(EMPTY_RANGEMENT);
