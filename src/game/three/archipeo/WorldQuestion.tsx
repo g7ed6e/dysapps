@@ -292,7 +292,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     const carnet = root.querySelector<HTMLElement>('.world-carnet');
     if (bulle && grandTexte && carnet && carnet.scrollHeight > carnet.clientHeight + 1 && !autoSimple.current) {
       const line = parseFloat(getComputedStyle(carnet).lineHeight) || 32;
-      if (carnet.clientHeight < 4 * line) {
+      // Les lignes du rappel qu'on voit sous son titre : du haut de la première au bas du carnet.
+      const first = carnet.querySelector<HTMLElement>('li') ?? carnet;
+      const shown = (carnet.getBoundingClientRect().bottom - first.getBoundingClientRect().top) / line;
+      if (shown < 3) {
         autoSimple.current = true;
         openSimple();
         return;

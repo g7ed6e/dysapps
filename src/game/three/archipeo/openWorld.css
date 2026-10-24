@@ -3325,3 +3325,26 @@
 .world-question .in-world.bulle.offer .world-consigne-more {
   display: none;
 }
+/* Le nombre de fiches reçues par une caisse (GD-26), à côté de son repère. */
+.world-question .world-sort-compte {
+  min-width: 1.4em;
+  padding: 0 0.3em;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--surface);
+  font-weight: 700;
+  text-align: center;
+}
+/* Les crans sur une ligne, « 4 coups sur 7 » dessous : l'étiquette garde la largeur de sa place. */
+.world-question .world-dial-compte .world-answer-label {
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.1;
+}
+/* Dans la bulle, « Vue simple » proposé : la bulle garde ses lignes (le rôle et la consigne, puis le bouton), jamais la
+   colonne du panneau, où la ligne de la consigne prenait une hauteur nulle au téléphone ; elle défile si elle dépasse. */
+.world-question .quiz.in-world.scenette.bulle.offer {
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: auto;
+}

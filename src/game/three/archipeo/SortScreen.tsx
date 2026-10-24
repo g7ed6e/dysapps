@@ -154,6 +154,14 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
       focusNext.current = true;
       return;
     }
+    // Rangée, la fiche a quitté la bulle pour sa caisse (GD-26) : la caisse touchée sans rien tenir rend la dernière posée,
+    // qui se reprend jusqu'à « Valider ».
+    const last = !held && hand ? [...items].reverse().find((it) => binOf(state, it.key) === bin.id) : undefined;
+    if (last) {
+      setState(take(state, last.key));
+      setStatus(`Tu reprends : ${subjectOf(last)}.`);
+      return;
+    }
     if (!held) {
       setStatus(`Touche d’abord ${gesture === 'ranger' ? 'une' : 'un'} ${words.thing}, puis ${gesture === 'ranger' ? 'sa' : 'son'} ${words.bin.toLowerCase()}.`);
       return;
@@ -188,6 +196,8 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
       {items.map((it, i) => {
         const bin = binOf(state, it.key);
         const isHeld = state.held === it.key;
+        // Dans la bulle, une fiche rangée la quitte pour sa caisse, jusqu'à la correction, où toutes reviennent dites.
+        if (hand && bin && !answered) return null;
         const verdict = answered ? (bin === it.answer ? 'right' : 'wrong') : '';
         const styles = hand ? { hit: undefined, label: undefined } : at(slots.objects[i]);
         return (
@@ -247,6 +257,8 @@ export function SortScreen({ items, answered, onAnswer, exerciseId, level }: Scr
                 {/* L'icône de panier au-dessus de l'étiquette, comme « tenu » : le mot garde toute sa largeur. */}
                 <span className="word-note world-sort-tenu" aria-hidden="true">
                   <Icon name={gesture === 'placer' ? 'door-open' : 'panier'} className="world-sort-panier" />
+                  {/* Ce que la caisse a reçu (GD-26) : une fiche par trait, le panier posé devant sa porte. */}
+                  {hand && inside > 0 && (gesture === 'placer' ? <Icon name="panier" className="world-sort-panier" /> : <span className="world-sort-compte">{inside}</span>)}
                 </span>
               </span>
             </button>
