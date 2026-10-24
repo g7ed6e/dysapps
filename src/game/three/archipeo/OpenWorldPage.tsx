@@ -70,12 +70,14 @@ import { portState } from './portState';
 import { createOpenWorld, type BridgeLayEvents, type LockOnScreen, type MapSpotOnScreen, type OpenWorld } from './scene';
 import { usePlaceAddress, usePoseGuard } from './usePlaceReturn';
 import { WorldQuestion } from './WorldQuestion';
+import { measureTour, type TourDeMesure } from './measureTour';
 import { WorldRevision } from './WorldRevision';
 import { revisionPlanOf, type RevisionPlan } from './revisionOf';
 import { CommandsSheet, HabitantLine } from './HabitantLine';
 import { HabitantSigns, placeSigns } from './HabitantSigns';
 import { Remise } from './Remise';
 import { commandLines, entraideLineOf, entraideListLine, entraideRemiseOf, entraideSuggestion, habitantLineOf, habitantSigns, hasOpenWorldErrands, readyCommande, remiseOf, suggestedAction, type HabitantGo, type RemiseRequest, type SuggestedAction } from './remiseOf';
+import { LevelPicker } from './LevelPicker';
 import './openWorld.css';
 
 declare global {
@@ -84,6 +86,8 @@ declare global {
     __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride' | 'view' | 'playFinal'> & {
       /** La dernière partie d'un lieu, posée de nouveau sous les yeux (la pose, puis la lueur de la Montée : les captures). */
       poseAgain(place: PlaceId): boolean;
+      /** Le tour de la mesure automatique dans ce niveau (`?mesures=auto`, ./measureTour.ts). */
+      tour: TourDeMesure;
     };
   }
 }
@@ -134,7 +138,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const habitantsShown = sixth || plan.places.some((p) => hasWorldHabitant(p.id));
   const errands = useMemo(() => hasOpenWorldErrands(plan), [plan]);
   const { biomeId } = useParams();
-  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch, moveTo } = useBlocland();
+  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch, moveTo, batisseur } = useBlocland();
   const textes = useTextes();
   // Les noms du lieu de départ du niveau : l'Escale au 6e, la Lisière au 5e ; ses bâtiments gardent leur nom.
   const departNames = useMemo(() => (textes.depart ? { ...textes.depart, nom: textes.depart.noms?.[level as '5e'] ?? textes.depart.nom } : undefined), [textes.depart, level]);
@@ -581,6 +585,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           const parts = now?.built[place] ?? [];
           return now !== null && parts.length > 0 && w.setPlaces(now, { place, parts: parts.slice(-1) });
         },
+        tour: measureTour(plan),
       };
     return () => {
       w.dispose();
@@ -1249,6 +1254,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               question ou une remise. */}
           {!playing && !sheetOpen && <WorldShortcuts a={level} requestsOpen={commandsOpen} onRequests={errands ? openCommands : undefined} resumeFrom={portResume} resumeAt={placeResume} />}
           {!playing && !sheetOpen && <SettingsButton />}
+          {/* Le niveau où l'on est, un seul bouton qui déplie les autres niveaux atteints (./LevelPicker.tsx, choix du mainteneur
+              du 23 octobre 2026), à gauche de Réglages, la colonne de droite étant celle de la caméra ; le même fondu que la
+              rangée de la fiche de la Nef. Ni pendant une question, un panneau ou la Carte, ni en mode bâtisseur, dont la
+              barre a déjà ses niveaux. */}
+          {!playing && !mapOpen && !sheetOpen && !batisseur && <LevelPicker here={level} links={state.world.links} onGo={goLevel} />}
           {commandsOpen && !playing && (
             <div ref={panelRef} className="open-world-panel open-world-panel-commandes">
               <CommandsSheet lines={commandLines(plan, state, assemblyAt)} entraide={entraideListLine(plan, vu, (p) => !isClosed(p), assemblyAt)} suggested={suggestedId} onGo={goHabitant} onClose={closeCommands} />

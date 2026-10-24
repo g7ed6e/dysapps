@@ -2,7 +2,7 @@
 // le haut, puis les abords), une seule lanterne allumée dans la ruine, sa scénette, ses abords, son plafond de 1 600
 // triangles et le budget du 5e avec eux et le Creux. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, WORLD_HABITANTS_MAX_5E, mapCost5e, openWorldCost5e } from './budget';
+import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e, worldHabitantsCost } from './budget';
 import { WHOLE, posedTraces, rowPosed, traceStagePosed, type PartShape, type Stage } from './construction';
 import { creuxTriangles } from './creux5e';
 import { failleTriangles } from './faille5e';
@@ -340,21 +340,22 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
   });
 
   // Le plafond scénette ouverte et la réserve des lots suivants : ./plan5e.test.ts (« Le budget du 5e »).
-  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu par lieu fini depuis, les Détours, le pied des palétuviers et, hors de la Carte, les habitants de plus au plus, sans appel de plus', () => {
+  it('hors scénette, au départ et sur la Carte : le lot 5, un lieu par lieu fini depuis, les Détours, le pied des palétuviers et, hors de la Carte, les habitants de plus au plus, leur appel compris', () => {
     // Les lieux finis depuis le lot 5 : les Radeaux (lot 6), la Croisée (lot 7), les Instants (lot 8), les Fumerolles (lot
     // 9), l'Étuve (lot 10), les Terrasses (lot 11), l'Auberge (lot 12), le Donjon (lot 13a), l'Oracle (lot 13b), le
     // Sémaphore (lot 14) ; et la Faille (lot 11), comptée comme le Creux.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => id !== 'montee' && id !== 'hameau').length;
-    // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Garder au 5e ») : hors scénette et au
-    // départ seulement, jamais sur la Carte.
+    // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Garder au 5e », en modèle 3D depuis le
+    // 23 octobre : un maillage à part, un appel) : hors scénette et au départ seulement, jamais sur la Carte.
+    const habitants = worldHabitantsCost('5e');
     const views = [
-      [sum(openWorldCost5e('monde')), LOT5_5E.world, WORLD_HABITANTS_MAX_5E],
-      [sum(openWorldCost5e('depart')), LOT5_5E.departure, WORLD_HABITANTS_MAX_5E],
-      [mapCost5e(), LOT5_5E.map, 0],
+      [sum(openWorldCost5e('monde')), LOT5_5E.world, habitants],
+      [sum(openWorldCost5e('depart')), LOT5_5E.departure, habitants],
+      [mapCost5e(), LOT5_5E.map, { triangles: 0, calls: 0 }],
     ] as const;
-    for (const [now, before, habitants] of views) {
-      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FAILLE_MAX + HUTTE_MAX + FOREST_FEET_5E + FOREST_REWORK_MAX_5E + habitants);
-      expect(now.calls).toBeLessThanOrEqual(before.calls);
+    for (const [now, before, added] of views) {
+      expect(now.triangles).toBeLessThanOrEqual(before.triangles + since * PLACE_TRIANGLES_MAX_5E + CREUX_MAX + FAILLE_MAX + HUTTE_MAX + FOREST_FEET_5E + FOREST_REWORK_MAX_5E + added.triangles);
+      expect(now.calls).toBeLessThanOrEqual(before.calls + added.calls);
     }
   });
 });

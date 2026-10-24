@@ -7,7 +7,7 @@ import { resolve } from 'node:path';
 import * as THREE from 'three';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { loadHabitant } from '../../importedCharacters';
-import { forgetHabitants, HABITANT_HEIGHT, loadedHabitant } from '../../world/continu/habitants';
+import { forgetHabitants, habitantHeight, loadedHabitant } from '../../world/continu/habitants';
 import { scenetteDecor, scenetteSetting } from '../../world/continu/scenette';
 import { createHabitantModels } from './habitantModels';
 
@@ -98,7 +98,7 @@ describe('Les modèles dans la vue', () => {
     expect(h.mesh.position.toArray()).toEqual([3, 1, -2]);
     const box = new THREE.Box3().setFromObject(h.mesh);
     expect(box.min.y).toBeCloseTo(1, 4);
-    expect(box.max.y).toBeCloseTo(1 + HABITANT_HEIGHT, 3);
+    expect(box.max.y).toBeCloseTo(1 + habitantHeight('phare'), 3);
     const material = h.mesh.material as THREE.MeshLambertMaterial;
     expect(material).toBeInstanceOf(THREE.MeshLambertMaterial);
     expect(material.flatShading).toBe(true);

@@ -128,21 +128,23 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,glb}'],
         // Les écrans de lancement (un par appareil) ne servent qu'au démarrage de l'appli installée sur iPhone et iPad :
         // les précharger ferait télécharger 1 Mo d'images à tous les élèves. Les soixante-deux habitants des scénettes du monde
-        // ouvert (`habitant-*.glb`, seize au 6e, quatorze au 5e, seize au 4e et seize au 3e, 37 Mo, src/game/importedCharacters.ts) non plus : ils se gardent à la demande
-        // (`runtimeCaching`), hors ligne seuls les lieux déjà vus ont leur modèle, les autres leur pion. Les deux équipiers
+        // ouvert (`habitant-*.glb`, seize au 6e, quatorze au 5e, seize au 4e et seize au 3e, 37 Mo, src/game/importedCharacters.ts) non plus,
+        // ni leur version de loin, près de leur porte (`habitant-loin-*.glb`, 3 Mo) : ils se gardent à la demande
+        // (`runtimeCaching`), hors ligne seuls les lieux déjà vus ont leur modèle, les autres leur pion ; seuls les niveaux
+        // déjà ouverts ont leurs habitants près de leur porte. Les deux équipiers
         // qui guident les scénettes (`equipier-*.glb`, 0,9 Mo, GD-23) de même : hors ligne, Kéo seul tant qu'ils n'ont pas été vus.
         globIgnores: ['splash/**', 'assets/habitant-*.glb', 'assets/equipier-*.glb'],
         // Un habitant chargé une fois (son lieu approché) reste servi du cache, sans réseau ; le nom de son fichier change
-        // à chaque nouvelle version, l'ancien sort par le nombre (les soixante-quatre, habitants et équipiers, et la marge d'une version) ou par l'âge ;
+        // à chaque nouvelle version, l'ancien sort par le nombre (les cent vingt-six, habitants de près et de loin et équipiers, et la marge d'une version) ou par l'âge ;
         // sur une tablette au quota serré, le cache se vide plutôt que d'échouer (`purgeOnQuotaError`) : les modèles reviennent
-        // du réseau, et hors ligne les pions les remplacent.
+        // du réseau, et hors ligne les pions les remplacent (personne près des portes).
         runtimeCaching: [
           {
             urlPattern: /\/assets\/(?:habitant|equipier)-[\w-]+\.glb$/,
             handler: 'CacheFirst',
             options: {
               cacheName: 'dysapps-habitants-3d',
-              expiration: { maxEntries: 128, maxAgeSeconds: 90 * 24 * 60 * 60, purgeOnQuotaError: true },
+              expiration: { maxEntries: 256, maxAgeSeconds: 90 * 24 * 60 * 60, purgeOnQuotaError: true },
               cacheableResponse: { statuses: [200] },
             },
           },

@@ -82,6 +82,15 @@ Relire chaque planche de contrôle (une rangée par bâtiment) : la dalle partie
 
 Le prompt des suivants (avis du directeur artistique, 10 octobre 2026) : le bâtiment seul sur un socle bas et serré, sans rien de posé devant (la cour vient du code), murs lisses et toit de deux grands pans sans motif, une ligne horizontale franche sous l'avant-toit (là où se coupe l'étape 1), une grande ouverture sombre sans lueur peinte, une signature épaisse (cheminée, four, lanterne, dôme).
 
+## La version de loin d'un habitant
+
+Hors de sa scénette, chaque habitant se tient près de sa porte, aux quatre niveaux (choix du mainteneur, 23 octobre 2026, « 1 500 triangles » ; `src/game/world/continu/worldHabitants.ts`). Sa version de loin, `habitant-loin.glb`, va à côté de `habitant.glb` dans `<niveau>-habitant-<lieu>/` :
+
+1. `python3.11 scripts/rendu/modeles/habitant_loin.py -- <dossier>/habitant.glb /tmp/loin.glb 1500 256` : coque épaissie (Solidify, contre les trous des coques minces), remaillage en voxels, réduction à 1 500 triangles, nouvelle carte UV, texture de 256 reprise du modèle de près au point le plus proche de sa surface.
+2. `python3.11 -I scripts/rendu/modeles/compacter.py /tmp/loin.glb <dossier>/habitant-loin.glb quant=1` : sommets quantifiés, image en JPEG (environ 50 Ko le fichier).
+
+Le jeu réunit leurs images sur une texture de 1 024 et leurs sommets en un seul maillage (`src/game/three/archipeo/worldHabitantModels.ts`) ; `worldHabitants.test.ts` relit chaque fichier (triangles, place sur le sol, hors du chemin).
+
 ## Un modèle modelé à la main (la Nef)
 
 Quand la réduction d'un brut TRELLIS perd ce qui fait le concept (la lanterne, la cabine, les couleurs), modeler à la main en `bpy` (choix du mainteneur pour la Nef, 11 octobre 2026) : `python3.11 scripts/rendu/modeles/nef.py -- <voilier|dirigeable|aeronef> <sortie.glb>`, briques dans `nef_formes.py` (boîte, cylindre, loft, plaque, coque, lanterne ; une couleur par pièce, donnée telle qu'on la voit à l'écran). Le brut sert de **gabarit** : superposer sa silhouette au modèle et relever ses proportions par tranches ; TRELLIS écrase les hauteurs, les reprendre du concept. Chaque partie (`partie(...)`) est un os du .glb, pour que la mue l'anime ; le fichier est écrit dans le repère de la Nef, en cases (`PLACE`). Contrôle : `rendre_controle.py -- soleil <glb>… <png>`, qui montre les couleurs comme le jeu.

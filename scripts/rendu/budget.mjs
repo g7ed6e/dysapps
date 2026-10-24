@@ -103,7 +103,7 @@ try {
   // aménagements posés (GD-20, point 4), dont la vue trace les dessins, y entrent par leurs triangles.
   const sixieme = !demandes || demandes.includes('6e');
   const amenagements = sixieme ? amenagementsCost().triangles : 0;
-  const mondeOuvert = sixieme ? { niveau: '6e', postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGETS['6e'] } : null;
+  const mondeOuvert = sixieme ? { niveau: '6e', postes: ouvert.openWorldCost(amenagements), carte: ouvert.mapCost(amenagements), enveloppe: ouvert.OPEN_WORLD_BUDGETS['6e'], horsScenette: ouvert.openWorldCost(amenagements, 'monde') } : null;
   // Le monde ouvert du 5e (GD-22, lot 2 : toute l'île en grandes masses), sous son enveloppe (`OPEN_WORLD_BUDGETS`, 20
   // octobre 2026 : chaque niveau a la sienne).
   const cinquieme = !demandes || demandes.includes('5e');
@@ -168,7 +168,8 @@ try {
         const ht = h.reduce((s, p) => s + p.triangles, 0);
         const hc = h.reduce((s, p) => s + p.calls, 0);
         const pose = h.find((p) => p.poste === 'pose');
-        console.log(`Hors scénette (la pose ou la caisse qui roule à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}.`);
+        const habitants = h.find((p) => p.poste === 'habitants');
+        console.log(`Hors scénette (la pose ou la caisse qui roule, et les habitants près de leur porte, à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}${habitants ? ` (habitants : ${n(habitants.triangles)} triangles, ${habitants.calls} appel)` : ''}.`);
       }
       if (monde.depart) {
         const d = monde.depart;
