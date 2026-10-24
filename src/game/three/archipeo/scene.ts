@@ -18,7 +18,7 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { blendPose, nefArrivingParts, nefAtBerth, nefModelFacets, nefSheetPose, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
-import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, fitArrivalBack, followPose, followStep, holdStep, keepFeetAbove, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
+import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, fitArrivalBack, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
 import { dalleFacets } from '../../world/continu/dalle4e';
@@ -244,11 +244,6 @@ export interface OpenWorld {
    * fiche), sans bouger (un décalage de l'image).
    */
   frame(free: { left: number; top: number; width: number; height: number } | null, place?: PlaceId | 'nef'): void;
-  /**
-   * La hauteur, en pixels depuis le bas de la vue, de la rangée du bas (« Y aller ») et de son écart : au 4e, les pieds de
-   * Kéo restent au-dessus (`keepFeetAbove`) ; ailleurs, sans effet.
-   */
-  footRoom(px: number): void;
   /**
    * La scénette d'assemblage, au retour d'une question réussie : les pièces de l'établi se joignent en un bloc, que la
    * grue pose sur le râtelier ; un toucher la passe, d'un coup avec « Réduire les animations ». `onAssembled` dit sa fin.
@@ -1747,20 +1742,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     return true;
   };
-  // Au 4e et au 3e (`LevelPlan.guardFeet`), la place de la rangée du bas que les pieds de Kéo ne passent jamais
-  // (`footRoom`), en pixels ; 0 ailleurs.
-  let feetRoom = 0;
-  const guardFeet = plan.guardFeet === true;
   // Le recul d'arrivée devant un lieu haut qui s'ajuste (`maxBack`) : le haut du lieu entier avec Kéo au-dessus de la
-  // rangée du bas ; refait à l'arrivée, quand la rangée change (la phrase « Aucune mission ») et quand l'écran change.
+  // rangée du bas ; refait à l'arrivée et quand l'écran change.
   // `nearLantern` le lit à chaque image : il n'est refait que si le lieu, son haut bâti, la rangée ou l'écran ont changé.
-  const arrivalFit = { place: null as PlaceId | null, top: 0, room: -1, w: 0, h: 0, shape: COMMON_DETOUR_VIEW };
+  const arrivalFit = { place: null as PlaceId | null, top: 0, w: 0, h: 0, shape: COMMON_DETOUR_VIEW };
   function fittedArrival(a: (typeof arrivals)[number]): DetourView {
     if (a.maxBack <= a.view.back) return a.view;
-    const room = guardFeet ? feetRoom : 0;
     const F = arrivalFit;
-    if (F.place !== a.id || F.top !== lanternTop.y || F.room !== room || F.w !== viewW || F.h !== viewH) {
-      Object.assign(F, { place: a.id, top: lanternTop.y, room, w: viewW, h: viewH, shape: { height: 0, back: fitArrivalBack(focus, lift, yaw, lanternTop, a.view.back, a.maxBack, room, viewW, viewH, ground) } });
+    if (F.place !== a.id || F.top !== lanternTop.y || F.w !== viewW || F.h !== viewH) {
+      Object.assign(F, { place: a.id, top: lanternTop.y, w: viewW, h: viewH, shape: { height: 0, back: fitArrivalBack(focus, lift, yaw, lanternTop, a.view.back, a.maxBack, viewW, viewH, ground) } });
     }
     return F.shape;
   }
@@ -1814,7 +1804,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), fifth ? hold : undefined, arrivalBack > 0 ? arrivalShape : viewShape());
     lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
-    if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     if (nefSheet && nefSheetView > 0) blendPose(pose, nefSheet, detourRise(nefSheetView));
     applyPose(pose);
   };
@@ -1885,7 +1874,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     followPose(focus, lift, pose, yaw, arrivalBack > 0 ? arrivalBack : viewRise(), undefined, arrivalBack > 0 ? arrivalShape : viewShape());
     lookUp(pose, lanternTop, keoFeet, look, viewH, ground);
     if (exit) exitView(pose, exit.keep, keoFeet, back, exit.view);
-    if (guardFeet) keepFeetAbove(pose, keoFeet, feetRoom, viewH);
     // La vue de la fiche de la Nef : le décalage se calcule sur la vue d'arrivée, celle que la caméra rejoint.
     if (nefSheet && nefSheetWanted()) blendPose(pose, nefSheet, 1);
     const subject = framedNef ? nefFramed : framed && subjectOf(framed);
@@ -4548,14 +4536,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       mapDirty = true;
     },
     frame: setFrame,
-    footRoom: (px) => {
-      if (!guardFeet || px === feetRoom) return;
-      feetRoom = px;
-      // Comme `frame` : pendant une question, une remise ou sur la Carte, la caméra garde son cadrage.
-      if (asked || remise || mapView) return;
-      fitArrival();
-      follow();
-    },
     assemble: startAssembly,
     setMark: (place) => {
       if (place === markPlace) return;

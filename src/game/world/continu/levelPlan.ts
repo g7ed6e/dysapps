@@ -85,11 +85,6 @@ export interface LevelPlan {
    * (`MapLabel.keepNames`, retouches 2 et 3 des Coteaux) ; au 6e et au 5e, pas de Carte serrée.
    */
   readonly keoFirstMap?: true;
-  /**
-   * Les pieds de Kéo jamais sous la rangée du bas de l'écran (au 4e et au 3e : la caméra qui suit Kéo, `footRoom` de la
-   * scène). Rien : la caméra du 6e et du 5e.
-   */
-  readonly guardFeet?: true;
 }
 
 /** Le plan du 6e, tiré de ./plan6e.ts tel quel. */
@@ -138,7 +133,6 @@ const PLAN_4E: LevelPlan = {
   firstPlace: 'forge',
   shutPort: true,
   snugMap: true,
-  guardFeet: true,
 };
 
 /**
@@ -162,7 +156,6 @@ const PLAN_3E: LevelPlan = {
   shutPort: true,
   snugMap: true,
   keoFirstMap: true,
-  guardFeet: true,
 };
 
 /** Les plans enregistrés, par niveau. */

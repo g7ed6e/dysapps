@@ -10,7 +10,7 @@ import { phraseDeLaPose } from '../../poseWords';
 import { partiesDe } from '../parts';
 import { plansFor } from '../plans';
 import { PLACE_RUIN_TRIANGLES_MAX_3E, PLACE_TRIANGLES_MAX_3E } from './budget';
-import { fitArrivalBack, followPose, keepFeetAbove, lookUp, occlusionLift, screenOf } from './camera';
+import { LOOK_UP, fitArrivalBack, followPose, lookUp, occlusionLift, screenOf } from './camera';
 import { posedTraces, type PartShape, type Stage } from './construction';
 import type { Facets } from './facets';
 import { FANAL, FANAL_LAYOUT, FANAL_TOWER_3E } from './fanal3e';
@@ -266,23 +266,21 @@ describe('« Y aller » au Fanal', () => {
         expect(foot.y - s({ ...feet, y: feet.y + 2.4 }).y).toBeGreaterThanOrEqual(H > 500 ? 70 : 40);
       });
 
-  for (const [W, H, room] of [
-    [844, 390, 80],
-    [844, 390, 150],
-    [1024, 768, 80],
-    [1024, 768, 140],
+  for (const [W, H] of [
+    [844, 390],
+    [1024, 768],
   ])
-    it(`restauré, en ${W} × ${H}, la rangée du bas de ${room} px (avec la phrase « Aucune mission » au-dessus de « Y aller » à ${room > 100 ? 'oui' : 'non'}), comme la scène le cadre : la lanterne entière, Kéo entier au-dessus de la rangée (relecture du directeur artistique avant la PR)`, () => {
+    it(`restauré, en ${W} × ${H}, comme la scène le cadre : la lanterne entière, Kéo entier au-dessus de « Y aller » (relecture du directeur artistique avant la PR)`, () => {
+      const room = LOOK_UP.footRoom;
       const top = world(view.look.x, topOf(shown(5)), view.look.z);
       const lift = occlusionLift(feet, ground, 0);
-      const back = fitArrivalBack(feet, lift, doorViewOf('fanal'), top, view.back, view.maxBack!, room, W, H, ground);
+      const back = fitArrivalBack(feet, lift, doorViewOf('fanal'), top, view.back, view.maxBack!, W, H, ground);
       expect(back).toBeGreaterThanOrEqual(view.back);
       expect(back).toBeLessThan(view.maxBack!);
-      // Sur la tablette, la rangée basse : la caméra ne recule pas, le cadrage de la tablette reste celui de la vue d'arrivée.
-      if (W === 1024 && room === 80) expect(back).toBe(view.back);
+      // Sur la tablette : la caméra ne recule pas, le cadrage de la tablette reste celui de la vue d'arrivée.
+      if (W === 1024) expect(back).toBe(view.back);
       const pose = followPose(feet, lift, undefined, doorViewOf('fanal'), 1, undefined, { height: 0, back });
       lookUp(pose, top, feet, 1, H, ground);
-      keepFeetAbove(pose, feet, room, H);
       const s = (p: { x: number; y: number; z: number }) => screenOf(pose, p, W, H);
       expect(s(top).y, 'pointe du toit').toBeGreaterThanOrEqual(8);
       for (const sx of [-1, 1]) expect(s(world(sx * FANAL_LAYOUT.gallery.r, FANAL_LAYOUT.base() + FANAL_TOWER_3E.y1, FANAL_TOWER_3E.z)).y, `galerie ${sx}`).toBeGreaterThan(8);
