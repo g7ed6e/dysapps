@@ -785,7 +785,8 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
     shader.uniforms.heightFog = { value: new THREE.Vector3(light.fogFrom, light.fogTo, light.fogTop) };
     shader.uniforms.lanternColor = { value: lantern };
     if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <lights_fragment_end>')) console.warn('heightLit : #include <lights_fragment_end> introuvable, la lumière reste à plat');
-    // La lanterne et les couleurs peu voilées, reconnues par sommet comme la lampe (`unshadedLamp`), après elle.
+    // La lanterne et les couleurs peu voilées, reconnues par sommet comme la lampe, après elle : `m` doit sortir de
+    // `unshadedLamp`, qui déclare `vUnlit` et le remet à zéro (`before`).
     shader.vertexShader = shader.vertexShader
       .replace('#include <common>', '#include <common>\nflat varying float vHeight;\nvarying float vThinFogK;\nuniform vec3 lanternColor;')
       .replace(

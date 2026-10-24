@@ -9,6 +9,7 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
 import { linkedLands } from '../../world/continu/lands';
 import { placeRecord, planFor } from '../../world/continu/levelPlan';
 import { riftMistFacets } from '../../world/continu/mist5e';
+import { WHOLE } from '../../world/continu/construction';
 import { PORT_WORST } from '../../world/continu/port';
 import { questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout } from '../../world/continu/scenette';
@@ -191,6 +192,24 @@ describe('La scène du 5e', () => {
     // La lampe du 6e et la lanterne du 5e, puis le morceau de Three.js, une seule fois.
     expect(shader.fragmentShader.split('#include <opaque_fragment>')).toHaveLength(2);
     expect(Object.keys(shader.uniforms)).toEqual(expect.arrayContaining(['heightLow', 'heightHigh', 'heightSunLow', 'heightTintLow', 'heightFog', 'lanternColor', 'lampColor']));
+  });
+
+  it('chaque triangle du matériau du monde est d’une seule couleur : les couleurs à part s’y reconnaissent par sommet', () => {
+    // La vue reconnaît la lampe, la lanterne et les couleurs peu voilées dans le shader des sommets (mesure iPad du
+    // 24 octobre 2026) : un triangle à deux couleurs y prendrait un dégradé. Tout construit, la Nef chargée si elle l'est.
+    world.setPlaces({ built: placeRecord(PLAN, () => [WHOLE]), traces: placeRecord(PLAN, () => []), amenagements: placeRecord(PLAN, () => []) });
+    let triangles = 0;
+    scene.traverse((o) => {
+      if (!(o instanceof THREE.Mesh) || !(o.material instanceof THREE.MeshLambertMaterial) || o.material.customProgramCacheKey() !== 'archipeo-hauteur') return;
+      const c = o.geometry.getAttribute('color');
+      if (!c) return;
+      const end = Math.min(c.count, o.geometry.drawRange.count);
+      for (let v = 0; v + 2 < end; v += 3) {
+        triangles++;
+        for (const k of [1, 2]) for (const i of [0, 1, 2]) expect(Math.abs(c.getComponent(v + k, i) - c.getComponent(v, i))).toBeLessThan(1e-6);
+      }
+    });
+    expect(triangles).toBeGreaterThan(10_000);
   });
 
   it('tout le décor prend le brouillard ; deux exceptions : le ciel, le lointain lui-même, et la silhouette de Kéo', () => {
