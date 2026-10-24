@@ -218,17 +218,24 @@ const JOIN_TOLERANCE = 1e-4;
 /**
  * Réunit les morceaux d'un ruban (`run` : de, à, en bois) qui se touchent, de même nature, et dont le point commun est
  * sur la droite qui joint leurs bouts (`height`, la hauteur du sol à une distance du premier nœud) : le ruban réuni passe
- * par les mêmes points, la même image et la même hauteur sous les pieds (`pathTopAt` lit les mêmes bouts de morceau
- * réunis : la hauteur entre eux est la même droite).
+ * par les mêmes points, la même image et la même hauteur sous les pieds (`pathTopAt`, qui relit les pas d'origine, y
+ * trouve la même droite à `JOIN_TOLERANCE` près).
  */
 export function joinRun(run: readonly (readonly [number, number, boolean])[], height: (d: number) => number): [number, number, boolean][] {
   const out: [number, number, boolean][] = [];
+  // Chaque hauteur lue une fois : un long ruban droit revérifie tous ses points intérieurs à chaque morceau ajouté.
+  const heights = new Map<number, number>();
+  const heightAt = (d: number) => {
+    let y = heights.get(d);
+    if (y === undefined) heights.set(d, (y = height(d)));
+    return y;
+  };
   // Les points intérieurs du dernier morceau réuni : tous restent sur sa droite, jamais une dérive de proche en proche.
   let inside: number[] = [];
   const onLine = (a: number, c: number, points: readonly number[]) => {
-    const ya = height(a);
-    const yc = height(c);
-    return points.every((d) => Math.abs(height(d) - (ya + ((yc - ya) * (d - a)) / (c - a))) < JOIN_TOLERANCE);
+    const ya = heightAt(a);
+    const yc = heightAt(c);
+    return points.every((d) => Math.abs(heightAt(d) - (ya + ((yc - ya) * (d - a)) / (c - a))) < JOIN_TOLERANCE);
   };
   for (const [s0, s1, deck] of run) {
     const last = out.at(-1);
