@@ -291,7 +291,10 @@ function glazing(b: FacetBuilder): void {
 
 // ---------- Les bacs, la paillasse, la citerne ----------
 
-/** Un bac de bois plein de terre noire, à `at`, à `y` (son pied). */
+/**
+ * Un bac de bois plein de terre noire, à `at`, à `y` (son pied) : un cadre de bois clair, pour que la terre sombre s'en
+ * détache (restes du monde ouvert du 4e, point 1).
+ */
 function bac(b: FacetBuilder, at: Vec2, y: number, len: number, depth: number, h: number, wood: number, earth: number): void {
   b.box({ x: at.x, y: y - 0.1, z: at.z }, [len, h + 0.1, depth], wood, earth);
 }
@@ -353,7 +356,7 @@ function model(add: AddPiece): void {
     socle(b);
     doorLantern(b);
     cistern(b);
-    for (const at of BACS_OUT.at) bac(b, at, planeY(at.x, at.z), BACS_OUT.len, BACS_OUT.depth, BACS_OUT.h, C4E.woodShade, C4E.earth);
+    for (const at of BACS_OUT.at) bac(b, at, planeY(at.x, at.z), BACS_OUT.len, BACS_OUT.depth, BACS_OUT.h, C4E.wood, C4E.earth);
   });
 
   // ---- La ruine ----
@@ -369,7 +372,7 @@ function model(add: AddPiece): void {
       const B = BACS_IN;
       for (const k of [0, 3]) {
         const at = B.at[k];
-        bac(b, at, base(), B.len, B.depth, B.h - 0.15, C4E.woodShade, C4E.earth);
+        bac(b, at, base(), B.len, B.depth, B.h - 0.15, C4E.wood, C4E.earth);
         tufts(b, at, base() + B.h - 0.15, B.len, [0], 2, 0.3, 0.12, C.dry);
       }
       // Renversés sur leur long côté, leur ouverture vers l'allée du milieu ; la terre coulée devant.
@@ -426,7 +429,7 @@ function model(add: AddPiece): void {
     doorFrame(b, C4E.iron);
     const B = BACS_IN;
     for (const at of B.at) {
-      bac(b, at, base(), B.len, B.depth, B.h, C4E.newShade, C4E.earth);
+      bac(b, at, base(), B.len, B.depth, B.h, C4E.newWood, C4E.earth);
       tufts(b, at, base() + B.h, B.len, [-0.25, 0.25], 4, 0.28, 0.09, C.sprout);
     }
     paillasse(b, true);

@@ -130,8 +130,9 @@ const DOOR_VIEW = capOf(0);
 
 /**
  * La vue d'arrivée : le regard levé jusqu'au haut bâti, au-dessus de l'axe de la tour, la caméra un peu reculée ; au
- * téléphone couché, ou sous la phrase « Aucune mission », reculée davantage, jusqu'à 3,2 fois, pour que la lanterne
- * tienne entière avec Kéo au-dessus de « Y aller ».
+ * téléphone couché, ou sous une phrase au-dessus de « Y aller » (le rappel des révisions), reculée davantage, jusqu'à
+ * 3,2 fois, pour que la lanterne tienne entière avec Kéo au-dessus de « Y aller ». Le Fanal restauré, plus rien à faire,
+ * n'a plus de phrase (« Rien, ou l'action », 24 octobre 2026) : la vue ne recule plus pour elle.
  */
 const ARRIVAL = { look: { x: 0, z: FANAL_TOWER_3E.z }, back: 1.6, maxBack: 3.2 } as const;
 

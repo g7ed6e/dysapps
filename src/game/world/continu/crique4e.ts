@@ -12,10 +12,10 @@
 // déposées sur l'aire (la toile pliée, les cordes lovées, le gouvernail démonté), part quand sa sœur touche l'aire. Son
 // obstacle : les îles du ciel, au nord-est, immobiles ; il passe entre deux d'entre elles. Tout va dans le maillage des
 // lieux : aucun appel de plus. Code pur.
-import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
+import { FacetBuilder, drawPosed, mergeFacets, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { BUOY_TOUCH, NEF_BAND, buoyAt, type NefFlight, type NefLook, type NefSite } from './nef';
-import { C4E, brickCourse, brickCourseHeights } from './place4eKit';
+import { C4E, brickCourse, brickCourseHeights, once } from './place4eKit';
 import { COLORS_3E } from './plan3e';
 import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVING, CRIQUE_QUAY_SPOT, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import type { PortSite } from './port';
@@ -79,7 +79,7 @@ export const CRIQUE_SITE: PortSite = {
     habitants: { z: 14.5, xs: [6, 16, 30] },
     boats: [[CRIQUE_PAVING.quay.x1 + 2.4, 22]],
   },
-  masonry: { courseHeights: (top) => brickCourseHeights(top), course: brickCourse, stone: COLORS_4E.stoneSun },
+  masonry: { courseHeights: (top) => brickCourseHeights(top), course: brickCourse, stone: COLORS_4E.stoneSun, backQuoinsToFoot: 6, schoolPlinthRise: 0.3 },
 };
 
 /**
@@ -92,13 +92,13 @@ export const CRIQUE_VIEW = { yaw: 0.7 } as const;
  * Le haut que le regard levé cadre au quai de la Crique (retouche 1 du lot 1 : fiche, § 1 et § 5, « vue du quai, la
  * Forge et le volcan ») : le rebord du cratère, un peu au-dessus (`above`, le pied du panache). La caméra qui suit Kéo
  * plonge trop pour qu'on voie le cône à plus de 300 unités ; levée, elle garde Kéo au-dessus de « Y aller », le
- * fourneau au milieu de l'image, le cône au fond, à gauche du milieu.
+ * fourneau au milieu de l'image, le cône au fond, à gauche du milieu. Pris au premier usage, jamais à l'import.
  */
-export const CRIQUE_LOOK = (() => {
+export const criqueLook = once((): Vec3 => {
   const { crater, craterRadius } = VOLCANO_4E;
   const above = 4;
   return { x: crater.x, y: heightAt4e({ x: crater.x + craterRadius, z: crater.z }) + above, z: crater.z };
-})();
+});
 
 /**
  * Le bout de la caméra qui suit Kéo au 4e (expert frontend, retouche 1 du lot 1 : explicite, plus celui du 5e pris sans
@@ -125,10 +125,47 @@ const DIGUE_COLORS = { top: COLORS_4E.stone, bevel: COLORS_4E.stone, side: COLOR
 const DIGUE_PROFILE = { foot: 2.2, shoulder: 0.5, crown: 0.36, bottom: -1.8, bevel: 0.25 } as const;
 
 /**
+ * Les gros blocs de pierre brute posés en saillie sur chaque bloc de la digue (restes du monde ouvert du 4e, point 5b : de
+ * loin, chaque bloc se lisait comme une longue planche basse, la ligne comme un ruban en tirets ; retouche 1, point 7,
+ * directeur artistique : trois petits pavés se lisaient comme des caisses qu'on charge, donc un endroit où l'on marche) :
+ * le bloc qui le porte, sa taille (le long du bloc, en haut, en travers : 2,2 à 2,6 sur 1,6 à 1,9), de combien il dépasse
+ * son dessus (0,8 à 1,1 : plus haut que le quai, on ne croit plus y marcher), son lacet (0,3 à 0,8, tous différents) et son
+ * tangage (0,15 à 0,3), et son décalage tour à tour vers le large (positif) et vers l'abri (négatif). Chacun est un tronc de
+ * pyramide à quatre pans, le dessus à `DIGUE_ROCK_TOP` de la base : une tête de roche, jamais une boîte.
+ */
+export const DIGUE_ROCKS = [
+  { block: 0, size: [2.4, 1.6, 1.7] as P3, above: 0.85, yaw: 0.35, pitch: 0.2, out: 0.5 },
+  { block: 1, size: [2.2, 1.6, 1.9] as P3, above: 1.05, yaw: 0.7, pitch: -0.25, out: -0.4 },
+  { block: 2, size: [2.6, 1.7, 1.6] as P3, above: 0.9, yaw: 0.5, pitch: 0.15, out: 0.5 },
+  { block: 3, size: [2.3, 1.6, 1.8] as P3, above: 1.1, yaw: 0.8, pitch: -0.3, out: -0.4 },
+  { block: 4, size: [2.5, 1.6, 1.75] as P3, above: 0.8, yaw: 0.3, pitch: 0.22, out: 0.5 },
+  { block: 5, size: [2.2, 1.7, 1.65] as P3, above: 1.0, yaw: 0.6, pitch: -0.18, out: -0.4 },
+] as const;
+
+/** Le dessus d'un bloc en saillie, en part de sa base (retouche 1 des restes, point 7). */
+export const DIGUE_ROCK_TOP = 0.55;
+
+/**
+ * Un tronc de pyramide à quatre pans, posé sur sa base (y = 0 du repère), centré : `size` en x, y, z à la base, le dessus
+ * réduit à `top` ; sans dessous (il est posé), dix triangles comme un pavé ouvert.
+ */
+function rockHead(b: FacetBuilder, size: P3, top: number, side: number, crown: number): void {
+  const [sx, sy, sz] = size;
+  const lo = (x: number, z: number): P3 => [(x * sx) / 2, 0, (z * sz) / 2];
+  const hi = (x: number, z: number): P3 => [(x * sx * top) / 2, sy, (z * sz * top) / 2];
+  b.quad(hi(-1, -1), hi(-1, 1), hi(1, 1), hi(1, -1), crown);
+  b.quad(lo(-1, 1), lo(1, 1), hi(1, 1), hi(-1, 1), side);
+  b.quad(lo(1, -1), lo(-1, -1), hi(-1, -1), hi(1, -1), side);
+  b.quad(lo(1, 1), lo(1, -1), hi(1, -1), hi(1, 1), side);
+  b.quad(lo(-1, -1), lo(-1, 1), hi(-1, 1), hi(-1, -1), side);
+}
+
+/**
  * La digue de la Crique (intention, § 2 ; retouche 1 du directeur artistique) : un bras bas de pierre grise dans l'eau,
  * six blocs séparés en ligne brisée (un par coude de `CRIQUE_DIGUE`), chacun son haut, l'eau visible entre eux, en
  * grandes facettes : le dessus plat, un biseau de chaque côté, des flancs qui s'évasent jusque sous l'eau ; ni parapet
- * ni rail. Le vide entre deux blocs se mesure au bord intérieur du dessus, là où le coude le resserre.
+ * ni rail ; chaque bloc porte un gros bloc de pierre brute en saillie (`DIGUE_ROCKS`). Le vide entre deux blocs se
+ * mesure au bord intérieur du dessus, là où le coude le resserre.
  */
 export function digueFacets(): Facets {
   const b = new FacetBuilder();
@@ -175,6 +212,16 @@ export function digueFacets(): Facets {
       ] as const)
         if (flip) b.triangle(s[p], s[w], s[q], DIGUE_COLORS.side);
         else b.triangle(s[p], s[q], s[w], DIGUE_COLORS.side);
+    // Le bloc en saillie, vers le milieu du bloc, un peu vers le large (à gauche du sens de la digue, l'anse à droite) ou
+    // vers l'abri ; ses flancs à l'ombre, son dessus dans la pierre grise, jamais la pierre claire.
+    const rock = DIGUE_ROCKS.find((k) => k.block === i);
+    if (rock) {
+      const mx = (ax + cx) / 2 - r.x * rock.out,
+        mz = (az + cz) / 2 - r.z * rock.out;
+      drawPosed(b, { x: mx, y: y + rock.above - rock.size[1], z: mz, yaw: Math.atan2(-u.z, u.x) + rock.yaw, pitch: rock.pitch }, (l) =>
+        rockHead(l, rock.size, DIGUE_ROCK_TOP, DIGUE_COLORS.side, DIGUE_COLORS.top),
+      );
+    }
   }
   return placeFacets(b.build(), { x: CRIQUE.origin.x, y: 0, z: CRIQUE.origin.z, yaw: CRIQUE.yaw });
 }
@@ -665,25 +712,53 @@ function skyIsland(b: FacetBuilder, v: SkyIsland, turn: number): void {
   }
 }
 
-/** Les îles du ciel, faites une fois (elles ne changent pas : la même chose avant, pendant et après le départ). */
-let skyIslands: Facets | null = null;
-export const skyIslandsFacets = (): Facets => {
-  if (skyIslands) return skyIslands;
+/**
+ * Les îles du ciel d'un écran en portrait (Règle commune du port en portrait, choix du mainteneur du 24 octobre 2026 ;
+ * consultant UX UI, pistes v2, § 2) : la caméra garde sa hauteur de vue, la largeur vue est donc bien plus étroite (au
+ * quart de tour depuis le quai, environ 28° en 390 × 844 au lieu de 70° en paysage) ; deux îles de `SKY_ISLANDS_4E`
+ * passaient sous la colonne de boutons de gauche et une sortait du cadre. Plus basses dans l'image, elles passeraient
+ * derrière le Bastion, qui tient le milieu de cette vue (le Gabarit, sa grue, la Loge : leurs toits à 7 % du haut de
+ * l'écran) : il ne reste du ciel libre, entre les colonnes de boutons et sous la ligne des 50 px, qu'un coin de chaque
+ * côté du Bastion, d'environ 2,5° chacun. D'où deux îles, plus petites, une dans chaque coin, qui sont la porte : entières,
+ * hors des boutons, jamais derrière un toit, en 800 × 1280 comme en 390 × 844, leur haut à 50 px au moins du bord du
+ * haut, leur pointe au-dessus de la mer qu'on voit encore (en deçà du bout de la brume). La caméra ne bouge pas ; en
+ * paysage, rien ne change. Le départ passe entre elles, au-dessus du Bastion (`SKY_ROUTES`). Retouche 1 des restes,
+ * point 9 (directeur artistique) : leur cône de dessous épaissi (`depth` 5 → 7,5 : une île de roche qui flotte, plus
+ * une plaque) ; celle de droite, qui passait sous la pastille de niveau en 390 × 844, descend sous elle (son haut à 78 px
+ * au moins du bord du haut : `top` 15 → 7,2 ; à 12, la valeur de départ, il n'était qu'à 65 px). Si bas, son dessus est
+ * sous l'œil de la caméra (vers 8,5) : pour que sa pointe reste à 0,6 au-dessus de l'eau, son cône s'arrête à 6,6.
+ */
+export const SKY_ISLANDS_4E_PORTRAIT: readonly SkyIsland[] = [
+  { x: 290, z: -69, top: 14, r: 5.5, depth: 7.5, sides: 8, gate: -1 },
+  { x: 372, z: -48, top: 7.2, r: 5.5, depth: 6.6, sides: 8, gate: 1 },
+];
+
+/** Les îles du ciel de chaque liste, faites une fois (elles ne changent pas : la même chose avant, pendant et après le départ). */
+const skyFacets = new Map<readonly SkyIsland[], Facets>();
+const skyIslandsOf = (list: readonly SkyIsland[]): Facets => {
+  let f = skyFacets.get(list);
+  if (f) return f;
   const b = new FacetBuilder();
-  SKY_ISLANDS_4E.forEach((v, i) => skyIsland(b, v, i * 0.7));
-  return (skyIslands = b.build());
+  list.forEach((v, i) => skyIsland(b, v, i * 0.7));
+  skyFacets.set(list, (f = b.build()));
+  return f;
 };
+export const skyIslandsFacets = (): Facets => skyIslandsOf(SKY_ISLANDS_4E);
+/** Les îles du ciel d'un écran en portrait, faites une fois. */
+export const skyIslandsPortraitFacets = (): Facets => skyIslandsOf(SKY_ISLANDS_4E_PORTRAIT);
 
-/** Une île du ciel touchée (un point du sol, de l'eau ou d'une île) : une zone large, jamais un détail à viser, comme le mur du 5e. */
-export function skyIslandTouched(p: Vec2): boolean {
-  return SKY_ISLANDS_4E.some((v) => Math.hypot(p.x - v.x, p.z - v.z) <= v.r + 10);
-}
+/** Une île du ciel d'une liste touchée (un point du sol, de l'eau ou d'une île) : une zone large, jamais un détail à viser, comme le mur du 5e. */
+const touchedIn = (list: readonly SkyIsland[], p: Vec2): boolean => list.some((v) => Math.hypot(p.x - v.x, p.z - v.z) <= v.r + 10);
+export const skyIslandTouched = (p: Vec2): boolean => touchedIn(SKY_ISLANDS_4E, p);
 
-/** Le passage entre les deux îles de la porte : son milieu, à mi-hauteur de leurs cônes. */
-export const SKY_GATE_4E: Vec3 = (() => {
-  const [a, c] = SKY_ISLANDS_4E.filter((v) => v.gate);
+/** Le passage entre les deux îles de la porte d'une liste : son milieu, à mi-hauteur de leurs cônes. */
+function gateOf(list: readonly SkyIsland[]): Vec3 {
+  const [a, c] = list.filter((v) => v.gate);
   return { x: (a.x + c.x) / 2, y: (a.top - a.depth / 2 + c.top - c.depth / 2) / 2, z: (a.z + c.z) / 2 };
-})();
+}
+export const SKY_GATE_4E: Vec3 = gateOf(SKY_ISLANDS_4E);
+/** La porte des îles du ciel d'un écran en portrait. */
+export const SKY_GATE_4E_PORTRAIT: Vec3 = gateOf(SKY_ISLANDS_4E_PORTRAIT);
 
 // ---------- Le départ ----------
 
@@ -691,49 +766,64 @@ export const SKY_GATE_4E: Vec3 = (() => {
  * Le départ (intention, § 4) : l'aéronef monte droit au-dessus de l'aire de `rise` en tournant (il prend le cap de sa
  * route), puis file vers le nord-est, passe entre les deux îles de la porte (qui ne bougent pas : pas de brèche), et
  * continue de `beyond` au-delà en montant encore de `climb`. Huit secondes au plus, qu'un toucher termine ; il ne finit
- * pas avant d'avoir passé la ligne des îles (`obstacleDone`). Lent au départ, puis de plus en plus vite (`ease`).
+ * pas avant d'avoir passé la ligne des îles (`obstacleDone`). Lent au départ, puis de plus en plus vite (`ease`). En
+ * portrait, la porte est plus basse : il monte de même, puis descend vers elle par-dessus le Bastion.
  */
 export const NEF_4E_DEPARTURE = { seconds: 8, rise: 18, beyond: 70, climb: 8, ease: 1.6, outOfView: 0.5, pointBeyond: 180 } as const;
 
-/** Le chemin du départ, dans le monde : du poste, droit en haut, jusqu'à la porte, puis au-delà. */
-const ROUTE: readonly P3[] = (() => {
+/** Un chemin du départ : ses points, ses tronçons, sa longueur, la part du temps de la porte, son cap. */
+interface SkyRoute {
+  points: readonly P3[];
+  legs: readonly number[];
+  length: number;
+  /** La part du temps du départ où l'aéronef passe la ligne des îles (la porte). */
+  gateAt: number;
+  /** Le cap de la route, de la montée à la porte (la proue du modèle regarde vers −z : un cap la tourne vers (−sin, −cos)). */
+  heading: number;
+}
+
+/** Le chemin du départ, dans le monde : du poste, droit en haut, jusqu'à la porte `g`, puis au-delà. */
+function routeTo(g: Vec3): SkyRoute {
   const D = NEF_4E_DEPARTURE;
-  const g = SKY_GATE_4E;
   const dx = g.x - BERTH.x,
     dz = g.z - BERTH.z;
   const l = Math.hypot(dx, dz);
-  return [
+  const points: P3[] = [
     [BERTH.x, LIFT.ber, BERTH.z],
     [BERTH.x, LIFT.ber + D.rise, BERTH.z],
     [g.x, g.y, g.z],
     [g.x + (dx / l) * D.beyond, g.y + D.climb, g.z + (dz / l) * D.beyond],
   ];
-})();
-const LEGS = ROUTE.slice(1).map((p, i) => Math.hypot(p[0] - ROUTE[i][0], p[1] - ROUTE[i][1], p[2] - ROUTE[i][2]));
-const ROUTE_LENGTH = LEGS.reduce((s, l) => s + l, 0);
+  const legs = points.slice(1).map((p, i) => Math.hypot(p[0] - points[i][0], p[1] - points[i][1], p[2] - points[i][2]));
+  const length = legs.reduce((s, n) => s + n, 0);
+  return {
+    points,
+    legs,
+    length,
+    gateAt: ((legs[0] + legs[1]) / length) ** (1 / D.ease),
+    heading: Math.atan2(-(points[2][0] - points[1][0]), -(points[2][2] - points[1][2])),
+  };
+}
 
-/** La part du temps du départ où l'aéronef passe la ligne des îles (la porte). */
-const GATE_AT = ((LEGS[0] + LEGS[1]) / ROUTE_LENGTH) ** (1 / NEF_4E_DEPARTURE.ease);
+/** Les deux chemins du départ : en paysage, et en portrait (vers la porte, plus basse). */
+const SKY_ROUTES = { wide: routeTo(SKY_GATE_4E), tall: routeTo(SKY_GATE_4E_PORTRAIT) } as const;
 
-/** Le cap de la route, de la montée à la porte (la proue du modèle regarde vers −z : un cap la tourne vers (−sin, −cos)). */
-const HEADING = Math.atan2(-(ROUTE[2][0] - ROUTE[1][0]), -(ROUTE[2][2] - ROUTE[1][2]));
-
-/** Où est la Nef au départ, à la fraction `u` (0 à 1) du temps (rempli dans `out`, rien n'est créé). */
-export function nef4eFlight(u: number, out: NefFlight): NefFlight {
+/** Où est la Nef au départ, à la fraction `u` (0 à 1) du temps, sur le chemin `r` (rempli dans `out`, rien n'est créé). */
+function flightOn(r: SkyRoute, u: number, out: NefFlight): NefFlight {
   const t = Math.min(1, Math.max(0, u));
-  let rest = t ** NEF_4E_DEPARTURE.ease * ROUTE_LENGTH;
-  const climbed = Math.min(1, rest / LEGS[0]);
+  let rest = t ** NEF_4E_DEPARTURE.ease * r.length;
+  const climbed = Math.min(1, rest / r.legs[0]);
   let i = 0;
-  while (i < LEGS.length - 1 && rest > LEGS[i]) rest -= LEGS[i++];
-  const a = ROUTE[i];
-  const b = ROUTE[i + 1];
-  const f = LEGS[i] > 0 ? Math.min(1, rest / LEGS[i]) : 1;
+  while (i < r.legs.length - 1 && rest > r.legs[i]) rest -= r.legs[i++];
+  const a = r.points[i];
+  const b = r.points[i + 1];
+  const f = r.legs[i] > 0 ? Math.min(1, rest / r.legs[i]) : 1;
   out.x = a[0] + (b[0] - a[0]) * f;
   out.y = a[1] + (b[1] - a[1]) * f;
   out.z = a[2] + (b[2] - a[2]) * f;
   // Il tourne pendant qu'il monte, du cap de l'aire à celui de sa route.
   const w = climbed * climbed * (3 - 2 * climbed);
-  const turn = Math.atan2(Math.sin(HEADING - BERTH.yaw), Math.cos(HEADING - BERTH.yaw));
+  const turn = Math.atan2(Math.sin(r.heading - BERTH.yaw), Math.cos(r.heading - BERTH.yaw));
   out.yaw = BERTH.yaw + turn * w;
   out.shiftX = 0;
   out.shiftZ = 0;
@@ -744,6 +834,9 @@ export function nef4eFlight(u: number, out: NefFlight): NefFlight {
 /** La bouée du 4e dans le monde, et la marge d'un toucher sur elle (une cible large). */
 const BUOY_WORLD = CRIQUE.toWorld(DEPOSIT_SPOTS.buoy.x, DEPOSIT_SPOTS.buoy.z);
 
+/** Où est la Nef au départ, à la fraction `u` (0 à 1) du temps (rempli dans `out`, rien n'est créé). */
+export const nef4eFlight = (u: number, out: NefFlight): NefFlight => flightOn(SKY_ROUTES.wide, u, out);
+
 /** Un toucher sur l'aéronef : sur son aire, ou sur la bouée (après le départ, elle ouvre la rangée « Revenir »). */
 function nef4eTouched(p: Vec2): boolean {
   return Math.hypot(p.x - BERTH.x, p.z - BERTH.z) <= CRIQUE_PAD.radius || Math.hypot(p.x - BUOY_WORLD.x, p.z - BUOY_WORLD.z) <= BUOY_TOUCH;
@@ -753,6 +846,7 @@ function nef4eTouched(p: Vec2): boolean {
  * L'aéronef du 4e (lot 4) : sur son aire, ses pièces déposées et, après le départ, la bouée (`ber`) ; les îles du ciel,
  * son obstacle, les mêmes avant et après le départ (`obstacle`, `after` : elles ne changent pas), jamais sur la Carte
  * (`offMap` : sans nom, elles s'y lisaient comme des îles en mer, des lieux où aller) ; le départ entre deux d'entre elles.
+ * En portrait (`portrait`), les îles resserrées et leur départ.
  */
 export const NEF_4E: NefSite = {
   form: 3,
@@ -769,12 +863,19 @@ export const NEF_4E: NefSite = {
   touched: nef4eTouched,
   seconds: NEF_4E_DEPARTURE.seconds,
   outOfView: NEF_4E_DEPARTURE.outOfView,
-  obstacleDone: GATE_AT,
+  obstacleDone: SKY_ROUTES.wide.gateAt,
   pointBeyond: NEF_4E_DEPARTURE.pointBeyond,
   flight: nef4eFlight,
+  portrait: {
+    obstacle: skyIslandsPortraitFacets,
+    after: skyIslandsPortraitFacets,
+    obstacleTouched: (p) => touchedIn(SKY_ISLANDS_4E_PORTRAIT, p),
+    obstacleDone: SKY_ROUTES.tall.gateAt,
+    flight: (u, out) => flightOn(SKY_ROUTES.tall, u, out),
+  },
 };
 
 /** Ce que coûtent les pièces déposées au plus (ou la bouée), et les îles du ciel (le modèle se compte à part : la vue le charge). */
 export function nef4eSiteTriangles(): { ber: number; islands: number } {
-  return { ber: Math.max(...([0, 1, 2, 3, 4] as const).map((look) => depositOnce(look).triangles)), islands: skyIslandsFacets().triangles };
+  return { ber: Math.max(...([0, 1, 2, 3, 4] as const).map((look) => depositOnce(look).triangles)), islands: Math.max(skyIslandsFacets().triangles, skyIslandsPortraitFacets().triangles) };
 }

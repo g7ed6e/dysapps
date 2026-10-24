@@ -129,7 +129,8 @@ describe('Le Recoin, le Détour du Bastion', () => {
   it('le figuier sort du trou d’homme et couvre l’angle, en deux masses vert olive sec', () => {
     const f = recoinFacets(false, ground);
     const leaf = points(f, 0x8a8a4c);
-    expect(leaf.length).toBe(2 * 6 * 3);
+    // La grande masse sur huit côtés, la petite sur six (restes du monde ouvert du 4e, point 3).
+    expect(leaf.length).toBe((8 + 6) * 3);
     const top = Math.max(...leaf.map((p) => p.y));
     const wallTop = Math.max(...points(f, 0x8f8b88).map((p) => p.y));
     expect(top - wallTop).toBeGreaterThan(2);

@@ -32,7 +32,7 @@ import { lacFacets } from '../../world/continu/lac3e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
-import { clampMap, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
+import { clampMap, mapFarPlane, mapLabelSide, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { BRIDGE_TOUCH, bridgeDeck, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeLockRange, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, colGalleryOf, colRoofOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { creuxFacets } from '../../world/continu/creux5e';
@@ -563,6 +563,7 @@ const FOLLOW_FAR_OF: Readonly<Record<OpenWorldLevel, number>> = { '6e': FOLLOW_F
  * tournée à moins de tant de son cap (en radians).
  */
 const QUAY_LOOK_TURN = 0.6;
+/** Le bout de la caméra de la Carte, au moins (`mapFarPlane` le recule avec la vue). */
 const MAP_FAR = 2000;
 /** Le rayon du dôme du ciel : en deçà du bout de la caméra qui suit Kéo (`FOLLOW_FAR`) ; dessiné sans profondeur, tout le reste passe devant. */
 const SKY_RADIUS = 450;
@@ -578,8 +579,7 @@ const IDLE_DELAY_MS = 40;
  * monte et va se coucher sur le râtelier, en arc bas (sous le toit de la halle, que la caméra voit de haut) ; d'un coup avec « Réduire les animations ».
  */
 const ASSEMBLY = { join: 0.6, carry: 1.3, arc: 0.7 } as const;
-/** Sur la Carte, un lieu ne se montre qu'à tant de pixels des bords gauche et droit, et du haut (son nom au-dessus). */
-const MAP_LABEL_SIDE = 100;
+/** Sur la Carte, un lieu ne se montre qu'à tant de pixels du haut (son nom au-dessus) ; des côtés : `mapLabelSide`. */
 const MAP_LABEL_TOP = 64;
 /**
  * Les images, au plus, où la Carte qui s'ouvre attend que ses étiquettes choisissent sa vue de départ avant de se
@@ -934,7 +934,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Lisière et le dirigeable au 5e.
   const departure = world.departure;
   const site = departure.port;
-  const nefSite = departure.nef;
+  // En portrait, l'obstacle de la Nef et son départ pour un écran plus haut que large, s'il en a (au 4e, les îles du ciel
+  // resserrées : Règle commune du port en portrait), pris quand l'écran tourne (`fitNefSite`).
+  const nefWide = departure.nef;
+  const nefTall = nefWide.portrait ? { ...nefWide, ...nefWide.portrait } : nefWide;
+  let nefSite = host.clientHeight > host.clientWidth ? nefTall : nefWide;
   const siteRooflines = portRooflines(site);
   const { atNode, findRoute, pathNode, snapToNetwork, startOf } = net;
   const LIGHT = world.light;
@@ -1026,7 +1030,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   seaTexture.magFilter = THREE.LinearFilter;
   seaTexture.minFilter = THREE.LinearFilter;
   seaTexture.needsUpdate = true;
-  const seaSize = 2000;
+  // Assez grand pour la Carte la plus reculée (au téléphone en portrait, au plus grand texte, son haut voyait le ciel au-delà
+  // d'un plan de 2 000 : retouche 2 des restes du monde ouvert du 4e) ; le suivi n'en voit jamais le bord (`followFar`).
+  const seaSize = 8000;
   const seaGeometry = keep(new THREE.PlaneGeometry(seaSize, seaSize).rotateX(-Math.PI / 2));
   // Les coordonnées de l'image suivent x et z du monde : le carré de l'image au milieu, son bord étiré au-delà.
   const uv = seaGeometry.getAttribute('uv') as THREE.BufferAttribute;
@@ -1502,9 +1508,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!f) nefBers.set(look, (f = nefSite.ber(look)));
     return f;
   };
-  const nefBanc = nefSite.obstacle();
+  let nefBanc = nefSite.obstacle();
   const nefStays = nefSite.stays();
-  const nefAfter = nefSite.after();
+  let nefAfter = nefSite.after();
+  /** L'obstacle de la Nef de l'écran (portrait ou paysage), jamais pendant son départ : les lieux se refont avec lui. */
+  const fitNefSite = () => {
+    const now = viewH > viewW ? nefTall : nefWide;
+    if (now === nefSite || nefTrip) return;
+    nefSite = now;
+    nefBanc = now.obstacle();
+    nefAfter = now.after();
+    placesKey = '';
+    placeVisibility();
+  };
   const siteDecor = departure.decor(options.piecesReturned);
   // Le décor hors de la Carte (au 3e, le zeppelin), dans le même maillage.
   const offMapDecor = departure.offMap?.() ?? null;
@@ -2920,6 +2936,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const aspect = () => viewW / viewH;
   const showMap = () => {
     if (!mapView) return;
+    // Le bout de la caméra suit la vue : jamais en deçà de l'île (au téléphone en portrait, elle est loin).
+    const far = Math.max(MAP_FAR, mapFarPlane(plan, mapView));
+    if (camera.far !== far) {
+      camera.far = far;
+      camera.updateProjectionMatrix();
+      fog.near = Math.max(MAP_FOG, far);
+      fog.far = fog.near + 1;
+    }
     applyPose(mapPose(mapView, mapCamera));
     mapDirty = true;
   };
@@ -2946,8 +2970,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   );
   const placeMapPoint = (id: PlaceId) => mapPoints.get(id) ?? marks.get(id);
   const mapMark = (id: MapSpotOnScreen['id']) => (id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : id === 'port' ? portPoint : (bridgePoints.get(id) ?? placeMapPoint(id as PlaceId)));
-  // Le nom d'un lieu, centré au-dessus de lui, reste entier à l'écran : assez loin des bords gauche et droit.
-  const mapShown = (x: number, y: number) => x > MAP_LABEL_SIDE && x < viewW - MAP_LABEL_SIDE && y > MAP_LABEL_TOP && y < viewH - LOCK_MARGIN;
+  // Un lieu assez loin des bords gauche et droit (une part de la largeur, `mapLabelSide` : au téléphone en portrait, 100 px
+  // ne laissaient que 190 px sur 390), et du haut.
+  const mapShown = (x: number, y: number) => x > mapLabelSide(viewW) && x < viewW - mapLabelSide(viewW) && y > MAP_LABEL_TOP && y < viewH - LOCK_MARGIN;
   // Les coins de ce que les étiquettes laissent à découvert, au niveau de l'eau, faits une fois (les trois radeaux).
   const clearCorners = new Map<string, THREE.Vector3[]>(
     PLACES.flatMap((p) => {
@@ -4232,6 +4257,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     bancMesh.position.set(0, 0, 0);
     nefLookNow = 4;
     placeVisibility();
+    fitNefSite();
     trip.done();
   };
   const stepNefTrip = (t: number) => {
@@ -4338,6 +4364,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     camera.updateProjectionMatrix();
     viewW = w;
     viewH = h;
+    fitNefSite();
     fitArrival();
     // La taille a changé : le décalage se repose sur la nouvelle taille (la page redonne la place d'une question).
     appliedShift.x = Number.NaN;

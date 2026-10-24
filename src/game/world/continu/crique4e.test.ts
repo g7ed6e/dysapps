@@ -7,17 +7,18 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { NEF_SISTERS, nefParts } from '../nefModels';
 import { loadNefFromDisk } from '../nefModels.fromDisk.testing';
 import { PORT_BUDGET } from './budget';
-import { followPose, lookUp, screenOf, type CameraPose } from './camera';
+import { FOLLOW, followPose, lookUp, screenOf, type CameraPose } from './camera';
 import {
   AIGUILLES_4E,
   AIGUILLES_AT,
   AIGUILLES_COLORS,
-  CRIQUE_LOOK,
   CRIQUE_PAVING_COLOR,
   CRIQUE_SITE,
   CRIQUE_VIEW,
   DEPOSIT_SISTERS,
   DEPOSIT_SPOTS,
+  DIGUE_ROCKS,
+  DIGUE_ROCK_TOP,
   FOLLOW_FAR_4E,
   NEF_4E,
   NEF_4E_DEPARTURE,
@@ -26,9 +27,12 @@ import {
   RAFIOT_FUNNEL,
   RAFIOT_HULL_COLORS,
   SKY_GATE_4E,
+  SKY_GATE_4E_PORTRAIT,
   SKY_ISLANDS_4E,
+  SKY_ISLANDS_4E_PORTRAIT,
   SKY_ISLAND_COLORS,
   aiguillesFacets,
+  criqueLook,
   criqueDecorFacets,
   digueFacets,
   envelopeShown,
@@ -37,6 +41,7 @@ import {
   rafiotPiece,
   skyIslandTouched,
   skyIslandsFacets,
+  skyIslandsPortraitFacets,
 } from './crique4e';
 import { FacetBuilder } from './facets';
 import { distance, distanceToPolyline, linearRgb, type Vec2, type Vec3 } from './geometry';
@@ -79,7 +84,7 @@ const contrast = (a: number, b: number) => (Math.max(lum(a), lum(b)) + 0.05) / (
 const KEO: Vec3 = { x: DEPARTURE_4E.at.x, y: CRIQUE_LEVEL, z: DEPARTURE_4E.at.z };
 function arrival(): CameraPose {
   const pose = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw);
-  lookUp(pose, CRIQUE_LOOK, KEO, 1, 768);
+  lookUp(pose, criqueLook(), KEO, 1, 768);
   return pose;
 }
 const inFrame = (pose: CameraPose, p: Vec3, margin = 0) => {
@@ -156,10 +161,29 @@ describe('La digue', () => {
       expect(t).toBeGreaterThanOrEqual(0.45);
       expect(t).toBeLessThanOrEqual(0.75);
     }
+    // Les blocs à leur haut ; les blocs en saillie (restes du monde ouvert, point 5b ; retouche 1, point 7), un sur chacun,
+    // en troncs de pyramide, dépassent leur dessus de 0,8 à 1,1 : plus haut que le quai, on ne croit plus y marcher.
     let top = -Infinity;
     for (const v of vertices(digueFacets())) top = Math.max(top, v.y);
-    expect(top).toBeCloseTo(Math.max(...CRIQUE_DIGUE.tops));
-    expect(top).toBeLessThan(CRIQUE_LEVEL);
+    expect(top).toBeGreaterThan(Math.max(...CRIQUE_DIGUE.tops) + 0.8);
+    expect(top).toBeLessThan(Math.max(...CRIQUE_DIGUE.tops) + 1.1 + 0.3);
+    expect(DIGUE_ROCKS.map((k) => k.block)).toEqual([0, 1, 2, 3, 4, 5]);
+    expect(DIGUE_ROCK_TOP).toBeCloseTo(0.55);
+    for (const [i, k] of DIGUE_ROCKS.entries()) {
+      expect(k.above).toBeGreaterThanOrEqual(0.8);
+      expect(k.above).toBeLessThanOrEqual(1.1);
+      expect(k.size[0]).toBeGreaterThanOrEqual(2.2);
+      expect(k.size[0]).toBeLessThanOrEqual(2.6);
+      expect(k.size[2]).toBeGreaterThanOrEqual(1.6);
+      expect(k.size[2]).toBeLessThanOrEqual(1.9);
+      expect(k.yaw).toBeGreaterThanOrEqual(0.3);
+      expect(k.yaw).toBeLessThanOrEqual(0.8);
+      expect(Math.abs(k.pitch)).toBeGreaterThanOrEqual(0.15);
+      expect(Math.abs(k.pitch)).toBeLessThanOrEqual(0.3);
+      // Tour à tour vers le large et vers l'abri, pour briser la ligne.
+      expect(Math.sign(k.out)).toBe(i % 2 === 0 ? 1 : -1);
+    }
+    expect(new Set(DIGUE_ROCKS.map((k) => k.yaw)).size).toBe(6);
     const end = points[points.length - 1];
     expect(end.x).toBeGreaterThan(NEF_4E.berth.x + CRIQUE_PAD.radius);
     expect(end.z).toBeGreaterThan(NEF_4E.berth.z);
@@ -172,6 +196,8 @@ describe('La digue', () => {
     for (let k = 0; k < f.positions.length; k += 9) {
       if (f.normals[k + 1] < 0.99) continue;
       const tri = [0, 3, 6].map((o) => ({ x: f.positions[k + o], y: f.positions[k + o + 1], z: f.positions[k + o + 2] }));
+      // Les dessus des blocs seuls, à leur haut (les blocs en saillie, plus haut, n'en sont pas).
+      if (!CRIQUE_DIGUE.tops.some((t) => tri.every((p) => Math.abs(p.y - t) < 1e-4))) continue;
       const block = tops.find((t) => Math.abs(t[0].y - tri[0].y) < 1e-4);
       if (block) block.push(...tri);
       else tops.push(tri);
@@ -369,13 +395,115 @@ describe('Les îles du ciel et le départ', () => {
   });
 });
 
+describe('Les îles du ciel en portrait (Règle commune du port en portrait, 24 octobre 2026)', () => {
+  const quay = DEPARTURE_4E.at;
+  const portrait = NEF_4E.portrait!;
+  /** Les colonnes de boutons du haut, en pixels (captures du 24 octobre 2026) : leur largeur, avec l'air, et leur hauteur. */
+  const COLUMNS = { width: 80, left: 210, right: 280 } as const;
+  /** Le bas de la pastille de niveau « 4e < », plus 12 px d'air, en 390 × 844 (directeur artistique, retouche 1 des restes, point 9). */
+  const PASTILLE_BOTTOM = 78;
+  /** Les sommets de chaque île, à part. */
+  const islandVertices = (v: (typeof SKY_ISLANDS_4E_PORTRAIT)[number]) => [...vertices(skyIslandsPortraitFacets())].filter((p) => Math.hypot(p.x - v.x, p.z - v.z) <= v.r * 1.2);
+
+  it('deux îles, de part et d’autre du Bastion : sur la mer, au-delà du Bastion, loin du panache, en deçà du bout de la caméra ; la Nef les prend en portrait', () => {
+    expect(SKY_ISLANDS_4E_PORTRAIT).toHaveLength(2);
+    expect(portrait.obstacle()).toBe(skyIslandsPortraitFacets());
+    expect(portrait.after()).toBe(skyIslandsPortraitFacets());
+    expect(skyIslandsPortraitFacets().triangles).toBeLessThanOrEqual(CEILINGS.islands);
+    expect(nef4eSiteTriangles().islands).toBe(Math.max(skyIslandsFacets().triangles, skyIslandsPortraitFacets().triangles));
+    const bastion = PLACES_4E.find((p) => p.id === 'gabarit')!.center;
+    for (const v of SKY_ISLANDS_4E_PORTRAIT) {
+      expect(heightAt4e(v)).toBeLessThan(0);
+      expect(distance(v, quay)).toBeGreaterThan(distance(bastion, quay));
+      expect(distance(v, VOLCANO_4E.crater)).toBeGreaterThan(400);
+      expect(distance(v, quay)).toBeGreaterThan(FOG_4E.near);
+      expect(Math.hypot(distance(v, quay) + v.r, v.top)).toBeLessThan(FOLLOW_FAR_4E);
+      expect(2 * v.r).toBeGreaterThan(v.depth);
+      expect(portrait.obstacleTouched(v)).toBe(true);
+      // Une île du ciel flotte : sa pointe toujours au-dessus de l'eau ; son cône épais, une île de roche, pas une plaque
+      // (retouche 1 des restes, point 9).
+      expect(v.top - v.depth).toBeGreaterThanOrEqual(0.5);
+      expect(v.depth).toBeGreaterThanOrEqual(6.5);
+    }
+    const far = SKY_ISLANDS_4E_PORTRAIT.map((v) => distance(v, quay)).sort((a, b) => a - b);
+    for (let i = 1; i < far.length; i++) expect(far[i] - far[i - 1]).toBeGreaterThan(8);
+    expect(portrait.obstacleTouched(NEF_4E.berth)).toBe(false);
+  });
+
+  for (const [W, H] of [
+    [800, 1280],
+    [390, 844],
+  ])
+    it(`en ${W} × ${H}, au quart de tour depuis le quai : chaque île entière, hors des colonnes de boutons, son haut à 50 à 125 px du bord du haut (celle de droite sous la pastille), sa pointe au-dessus de la mer ; aucune dans la première image`, () => {
+      const turned = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw - Math.PI / 2);
+      for (const v of SKY_ISLANDS_4E_PORTRAIT) {
+        const s = islandVertices(v).map((p) => screenOf(turned, p, W, H));
+        const top = Math.min(...s.map((p) => p.y));
+        expect(top, `${v.x}`).toBeGreaterThanOrEqual(50);
+        expect(top, `${v.x}`).toBeLessThanOrEqual(125);
+        // L'île de droite sous la pastille de niveau, jamais dessous (retouche 1 des restes, point 9).
+        if ((v.gate ?? 0) > 0) expect(top, `${v.x}`).toBeGreaterThanOrEqual(PASTILLE_BOTTOM * (H / 844));
+        for (const p of s) {
+          expect(p.x, `${v.x}`).toBeGreaterThan(p.y < COLUMNS.left ? COLUMNS.width : 0);
+          expect(p.x, `${v.x}`).toBeLessThan(p.y < COLUMNS.right ? W - COLUMNS.width : W);
+          expect(p.y, `${v.x}`).toBeLessThan(H);
+        }
+        // Sa pointe au-dessus de la mer qu'on voit encore : au-delà du bout de la brume, la mer a la couleur du ciel.
+        const d = distance(v, turned.position);
+        const sea = { x: turned.position.x + ((v.x - turned.position.x) / d) * FOG_4E.far, y: 0, z: turned.position.z + ((v.z - turned.position.z) / d) * FOG_4E.far };
+        expect(screenOf(turned, { x: v.x, y: v.top - v.depth, z: v.z }, W, H).y).toBeLessThan(screenOf(turned, sea, W, H).y);
+        // Jamais derrière le Bastion : ses toits (le Gabarit et sa grue, la Loge) tiennent, vus de cette caméra, de 4,6° à
+        // gauche à 5,5° à droite de son axe (mesuré sur la capture en 800 × 1280 du 24 octobre 2026).
+        const half = Math.tan(((FOLLOW.fov / 2) * Math.PI) / 180) * (W / H);
+        const xOf = (deg: number) => ((Math.tan((deg * Math.PI) / 180) / half + 1) / 2) * W;
+        expect(Math.max(...s.map((p) => p.x)) < xOf(-4.6) || Math.min(...s.map((p) => p.x)) > xOf(5.5), `${v.x}`).toBe(true);
+      }
+      const first = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw);
+      lookUp(first, criqueLook(), KEO, 1, H);
+      for (const p of vertices(skyIslandsPortraitFacets())) {
+        const s = screenOf(first, p, W, H);
+        const ahead = (p.x - first.position.x) * (first.target.x - first.position.x) + (p.z - first.position.z) * (first.target.z - first.position.z) > 0;
+        expect(ahead && s.x >= 0 && s.x <= W && s.y >= 0 && s.y <= H).toBe(false);
+      }
+    });
+
+  it('le départ monte droit au-dessus de l’aire, puis passe entre les deux îles, plus basses, sans en traverser aucune', () => {
+    const f: NefFlight = { x: 0, y: 0, z: 0, yaw: 0, shiftX: 0, shiftZ: 0, open: 0 };
+    portrait.flight(0, f);
+    expect(distance(f, NEF_4E.berth)).toBeLessThan(0.01);
+    for (let u = 0; u <= 1; u += 0.01) {
+      portrait.flight(u, f);
+      for (const v of SKY_ISLANDS_4E_PORTRAIT) {
+        const inside = Math.hypot(f.x - v.x, f.z - v.z) < v.r * 1.1 + 3 && f.y < v.top + 3 && f.y > v.top - v.depth - 3;
+        expect(inside, `${u} ${v.x}`).toBe(false);
+      }
+    }
+    portrait.flight(portrait.obstacleDone, f);
+    expect(distance(f, SKY_GATE_4E_PORTRAIT)).toBeLessThan(0.5);
+    const gate = SKY_ISLANDS_4E_PORTRAIT.filter((v) => v.gate);
+    const dir = { x: SKY_GATE_4E_PORTRAIT.x - NEF_4E.berth.x, z: SKY_GATE_4E_PORTRAIT.z - NEF_4E.berth.z };
+    const side = (v: Vec2) => Math.sign(dir.x * (v.z - SKY_GATE_4E_PORTRAIT.z) - dir.z * (v.x - SKY_GATE_4E_PORTRAIT.x));
+    expect(gate.map(side).sort()).toEqual([-1, 1]);
+    const others = SKY_ISLANDS_4E_PORTRAIT.filter((v) => !v.gate);
+    for (const g of gate) for (const o of others) expect(distance(g, SKY_GATE_4E_PORTRAIT)).toBeLessThan(distance(o, SKY_GATE_4E_PORTRAIT));
+    for (const g of gate) expect(SKY_GATE_4E_PORTRAIT.y).toBeLessThan(g.top);
+    portrait.flight(1, f);
+    expect(distance(f, NEF_4E.berth)).toBeGreaterThan(distance(SKY_GATE_4E_PORTRAIT, NEF_4E.berth));
+    expect(portrait.obstacleDone).toBeGreaterThan(0.5);
+    expect(portrait.obstacleDone).toBeLessThan(1);
+    // En paysage, rien ne change.
+    expect(NEF_4E.obstacle()).toBe(skyIslandsFacets());
+    expect(NEF_4E.flight).toBe(nef4eFlight);
+  });
+});
+
 describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
   it('le fourneau de la Forge près du milieu, le cratère à gauche du milieu', () => {
     const pose = arrival();
     const forge = PLACES_4E.find((p) => p.id === 'forge')!.center;
     const at = screenOf(pose, { x: forge.x, y: heightAt4e(forge) + 6, z: forge.z }, 1024, 768);
     expect(Math.abs(at.x - 512)).toBeLessThan(120);
-    const crater = screenOf(pose, CRIQUE_LOOK, 1024, 768);
+    const crater = screenOf(pose, criqueLook(), 1024, 768);
     expect(crater.x).toBeLessThan(512 - 60);
     expect(crater.x).toBeGreaterThan(0);
     expect(crater.y).toBeGreaterThan(0);

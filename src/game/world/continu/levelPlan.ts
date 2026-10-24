@@ -72,19 +72,6 @@ export interface LevelPlan {
    * compte comme toute île reliée, comme au 6e et au 5e (leur port est dans la terre de départ).
    */
   readonly shutPort?: true;
-  /**
-   * La Carte serrée (au 4e, consultant UX UI, deuxième relecture du lot 1 ; au 3e de même) : le lieu suggéré posé le tout
-   * premier, contre son point, jamais sur deux lignes ; les étiquettes à un écart des bords ; un trait fin vers un nom loin
-   * de son lieu ; le nom d'une terre fermée avant ceux de ses lieux (`MapLabels`, `snug`). Rien : la Carte du 6e et du 5e.
-   */
-  readonly snugMap?: true;
-  /**
-   * Sur la Carte serrée du 3e (retouche 1 du lot 1 du 3e) : la place de Kéo gardée avant les noms pâles et ceux des
-   * terres, « Toi » sans jamais couvrir une étiquette, le lieu suggéré sur une ligne, les noms pâles après le nom de leur
-   * terre (`layoutMapLabels`, `snug`). Rien : au 4e, la pastille de Kéo garde les lettres de chaque nom à sa façon
-   * (`MapLabel.keepNames`, retouches 2 et 3 des Coteaux) ; au 6e et au 5e, pas de Carte serrée.
-   */
-  readonly keoFirstMap?: true;
 }
 
 /** Le plan du 6e, tiré de ./plan6e.ts tel quel. */
@@ -132,7 +119,6 @@ const PLAN_4E: LevelPlan = {
   upper: [],
   firstPlace: 'forge',
   shutPort: true,
-  snugMap: true,
 };
 
 /**
@@ -154,8 +140,6 @@ const PLAN_3E: LevelPlan = {
   upper: [],
   firstPlace: 'belvedere',
   shutPort: true,
-  snugMap: true,
-  keoFirstMap: true,
 };
 
 /** Les plans enregistrés, par niveau. */

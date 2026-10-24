@@ -54,7 +54,7 @@ import { hasWorldHabitant } from '../../world/continu/worldHabitants';
 import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
-import { ClosedLandSheet, afterLabel, closedLandLabel, linkableLabel } from './ClosedLandSheet';
+import { ClosedLandSheet, afterLabel, closedLandLabel, linkActionLabel, linkableLabel } from './ClosedLandSheet';
 import { constructionState, fanalRestored, placeConstruction, posedShapes, restoredLine } from './constructionParts';
 import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
@@ -276,9 +276,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     [habitantsShown, plan, vu, isClosed, here, revisionDue, suggestedId, textes.quetes?.titre],
   );
   // Kéo chez un habitant qui a des révisions dues (sa pastille s'éteint, Kéo est chez lui) : la bulle dit le rappel de la
-  // ligne de l'habitant plutôt que « Aucune mission à faire ici pour l'instant. » (référent dys et directeur artistique,
-  // relecture des habitants du 5e : l'élève lisait une contradiction). Aux deux niveaux.
+  // ligne de l'habitant (référent dys et directeur artistique, relecture des habitants du 5e). Aux deux niveaux.
   const revisionHere = habitantsShown && here !== null && !isClosed(here) && revisionDue(here);
+  // Plus rien à jouer, une terre fermée qu'on peut relier (le pont suggéré, sinon la première dans l'ordre) : la bulle dit
+  // l'action (« Relier le Bastion »). Rien d'autre, jamais « rien à faire » (« Rien, ou l'action », choix du mainteneur du
+  // 24 octobre 2026, aux quatre niveaux).
+  const landToLink = lands.suggested ?? lands.closed.find((l) => !lands.waiting.includes(l)) ?? null;
 
   // Kéo part de l'endroit de l'Escale de l'adresse (le retour d'une mission de l'école, `?porte=maths`, ou d'une question
   // d'assemblage), sinon devant le lieu de l'adresse (`?lieu=quais`, GD-20, point 8 ; ou une île, `/adventure/<île>`),
@@ -1229,7 +1232,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           </div>
           {/* La Carte : Kéo, chaque lieu à sa place sur l'île, en étiquettes de la page (rien n'est écrit dans la 3D). */}
           {mapOpen && !asking && (
-            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nefFirst ? null : (nextPlace?.id ?? null)} portName={departNames?.nom} upper={plan.upper} landNames={!sixth} onCrowded={reframeMap} snug={plan.snugMap === true} keoFirst={plan.keoFirstMap === true} />
+            <MapLabels places={plan.places} openPlaces={openPlaces} closedLands={lands.closed} states={states} words={textes.etatsDIle} onPick={pickOnMap} placer={mapPlacer} onClosed={openClosed} orderLabel={orderLabel} suggested={lands.suggested} nextPlace={nefFirst ? null : (nextPlace?.id ?? null)} portName={departNames?.nom} upper={plan.upper} onCrowded={reframeMap} />
           )}
           {/* La liste des lieux ouverts : un voile léger sur la Carte, qu'un toucher ferme sans rien choisir (aucun toucher ne
               le traverse : ni la 3D ni une étiquette ne le reçoivent), et le panneau, en bas sur tablette, en colonne à
@@ -1398,14 +1401,23 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
           )}
           {!playing && !mapOpen && !sheetOpen && (
             <div className="open-world-go">
-              {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; « Aucune
-                  mission » seulement quand rien n'attend. Jamais pendant qu'une phrase du monde est écrite (l'état d'un
-                  lieu restauré, un pont rebâti, le nom d'un Détour) : une seule bulle à la fois, la plus récente ; l'autre
-                  dépassait dessous (référent dys et consultant UX UI, relecture des Fabriques). Elle revient ensuite.
-                  Jamais sur un Détour, où il n'y a jamais de mission (retouche 1 des Coteaux : au Replat, tout fini,
-                  elle venait après le nom). */}
+              {/* La phrase de ce que porte la suggestion chez un habitant (sa commande, l'étape d'entraide) ; quand rien
+                  n'attend, le rappel des révisions, ou l'action d'une terre à relier, sinon rien. Jamais pendant qu'une
+                  phrase du monde est écrite (l'état d'un lieu restauré, un pont rebâti, le nom d'un Détour) : une seule
+                  bulle à la fois, la plus récente ; l'autre dépassait dessous (référent dys et consultant UX UI,
+                  relecture des Fabriques). Elle revient ensuite. Jamais sur un Détour, où il n'y a jamais de mission
+                  (retouche 1 des Coteaux : au Replat, tout fini, elle venait après le nom). */}
               {!walking && !relightHere && !saidOn && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
-              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOn && detourHere === null && <p className="open-world-go-reason">{revisionHere ? frenchTypography(REVISION_PHRASES.reminder) : <><span className="open-world-go-long">Aucune mission à faire ici pour l’instant.</span><span className="open-world-go-short" aria-hidden="true">Rien à faire ici.</span></>}</p>}
+              {/* « Relier le Bastion » est un vrai bouton, secondaire, qui ouvre la fiche de la terre (celle qu'ouvre le
+                  toucher d'un de ses lieux) : avec son allure de bouton, un toucher qui ne répondait pas cassait « un
+                  contrôle répond toujours » (consultant UX UI et référent dys, relecture des restes du 4e). */}
+              {!next && !suggestedCmd && !nefFirst && !walking && !relightHere && !saidOn && detourHere === null && (revisionHere ? (
+                <p className="open-world-go-reason">{frenchTypography(REVISION_PHRASES.reminder)}</p>
+              ) : landToLink && (
+                <button type="button" className="button open-world-go-reason open-world-go-link" onClick={() => openClosed(landToLink)}>
+                  <Icon name="ouvrage" /> {linkActionLabel(landToLink)}
+                </button>
+              ))}
               <div className="open-world-go-row">
               {walking ? (
                 // Pendant tout trajet (la marche, la cabine, la marche) : « Passer le trajet », à contraste plein, saute
@@ -1543,7 +1555,7 @@ function placeGoRow(stage: HTMLElement, s: DOMRect, carte: DOMRect | undefined):
 const inStage = (r: DOMRect, s: DOMRect): ScreenRect => ({ left: r.left - s.left, top: r.top - s.top, width: r.width, height: r.height });
 
 /** Pose un attribut d'état de la scène (`''` l'ôte), sans y toucher s'il n'a pas changé. */
-function setStageFlag(stage: HTMLElement, key: 'goCote' | 'goBas' | 'goLeve' | 'goBulle' | 'goCourt', value: string): void {
+function setStageFlag(stage: HTMLElement, key: 'goCote' | 'goBas' | 'goLeve' | 'goBulle', value: string): void {
   if ((stage.dataset[key] ?? '') === value) return;
   if (value) stage.dataset[key] = value;
   else delete stage.dataset[key];
@@ -1596,7 +1608,6 @@ function placeGo(stage: HTMLElement, go: HTMLElement, s: DOMRect, carte: DOMRect
  */
 function placeBubble(stage: HTMLElement, go: HTMLElement, s: DOMRect, goBox: DOMRect, zone: ScreenRect, beside: boolean): void {
   const bubble = go.querySelector<HTMLElement>('.open-world-go-reason');
-  setStageFlag(stage, 'goCourt', '');
   if (!bubble) {
     setStageFlag(stage, 'goBulle', '');
     setStageVar(stage, '--open-world-bulle', null);
@@ -1628,10 +1639,6 @@ function placeBubble(stage: HTMLElement, go: HTMLElement, s: DOMRect, goBox: DOM
   }
   setStageVar(stage, '--open-world-bulle', null);
   setStageFlag(stage, 'goBulle', 'haut');
-  // Toujours trop haute pour laisser Kéo (un téléphone couché, aux espacements et à l'interligne les plus grands) : « Aucune
-  // mission » devient « Rien à faire ici. », sur une ligne (choix du mainteneur, 23 octobre 2026) ; la phrase entière
-  // reste dite aux lecteurs d'écran.
-  if (bubble.querySelector('.open-world-go-short') && overlaps(inStage(bubble.getBoundingClientRect(), s), zone)) setStageFlag(stage, 'goCourt', 'oui');
 }
 
 /** La dernière place posée de chaque cadenas. */

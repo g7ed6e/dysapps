@@ -85,8 +85,8 @@ interface PortColors {
 /**
  * La brique d'un site (au 4e, la Crique ; intention du directeur artistique du 22 octobre 2026, § 1) : les assises de
  * ses grands pans debout (la façade et les flancs de l'école, le mur du fond de la galerie), entre leurs ouvertures, les
- * chaînes d'angle de pierre (trois blocs alternés, en léger relief, sous l'égout de l'école et aux deux bouts de la
- * galerie) et la pierre des arcades de la galerie. Le pas et le joint viennent du site (au 4e, ceux de toute sa brique,
+ * chaînes d'angle de pierre (trois blocs alternés, en léger relief, sous l'égout de l'école, ou jusqu'au pied à son
+ * dos, et aux deux bouts de la galerie) et la pierre des arcades de la galerie. Le pas et le joint viennent du site (au 4e, ceux de toute sa brique,
  * ./place4eKit.ts) : ce fichier ne les connaît pas. Un site sans brique (l'Escale, la Lisière) n'en a rien.
  */
 interface PortMasonry {
@@ -96,6 +96,17 @@ interface PortMasonry {
   course(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, y: number, out: -1 | 1): void;
   /** La pierre des chaînes d'angle et des arcades de la galerie. */
   stone: number;
+  /**
+   * Les blocs des deux chaînes d'angle du dos de l'école (le côté sans porte), du dessous de l'égout jusqu'au pied (au
+   * 4e, six, comme sur la planche : restes du monde ouvert du 4e, point 5a) ; rien : trois sous l'égout, comme la façade.
+   */
+  backQuoinsToFoot?: number;
+  /**
+   * De combien le soubassement de pierre monte au-dessus de la place, aux quatre faces de l'école (au 4e, 0,3 : un
+   * filet de quelques pixels sous la brique ne se lisait pas comme une assise, retouche 1 des restes du monde ouvert du
+   * 4e, point 8) ; rien : le socle seul, au niveau de la place.
+   */
+  schoolPlinthRise?: number;
 }
 
 /**
@@ -323,12 +334,16 @@ const QUOIN = { blocks: 3, height: 0.55, long: 0.9, short: 0.5, out: 0.06, below
  * Une chaîne d'angle de pierre à l'angle (`x`, `z`) d'un mur haut de `wall` posé à `y` : trois blocs empilés jusqu'à
  * `QUOIN.below` sous son haut, en relief de `QUOIN.out` sur ses deux faces ; chacun long sur une face et court sur l'autre,
  * tour à tour. `sx`, `sz` : le sens du mur depuis l'angle (vers l'intérieur), le long de x et de z ; `thick` : sa
- * profondeur en z quand le mur est mince (un bout de la galerie), sinon le bloc court en z.
+ * profondeur en z quand le mur est mince (un bout de la galerie), sinon le bloc court en z ; `toFoot` : la chaîne descend
+ * jusqu'au pied du mur, en autant de blocs plus hauts.
  */
-function quoin(b: FacetBuilder, stone: number, x: number, z: number, y: number, wall: number, sx: -1 | 1, sz: -1 | 1, thick?: number): void {
+function quoin(b: FacetBuilder, stone: number, x: number, z: number, y: number, wall: number, sx: -1 | 1, sz: -1 | 1, thick?: number, toFoot?: number): void {
   const Q = QUOIN;
-  for (let k = 0; k < Q.blocks; k++) {
-    const y0 = y + wall - Q.below - (Q.blocks - k) * Q.height;
+  // Jusqu'au pied : `toFoot` blocs plus hauts, du pied au dessous de l'égout ; sinon trois blocs sous l'égout.
+  const blocks = toFoot ?? Q.blocks;
+  const height = toFoot ? (wall - Q.below) / toFoot : Q.height;
+  for (let k = 0; k < blocks; k++) {
+    const y0 = y + wall - Q.below - (blocks - k) * height;
     const long = k % 2 === 0;
     const ax = long ? Q.long : Q.short;
     // Le bloc, de l'angle (relief compris) vers l'intérieur du mur ; sur un bout mince, toute son épaisseur.
@@ -336,7 +351,7 @@ function quoin(b: FacetBuilder, stone: number, x: number, z: number, y: number, 
       x1 = x + sx * ax;
     const z0 = z - sz * Q.out,
       z1 = z + sz * (thick === undefined ? (long ? Q.short : Q.long) : thick + Q.out);
-    b.box({ x: (x0 + x1) / 2, y: y0, z: (z0 + z1) / 2 }, [Math.abs(x1 - x0), Q.height - 0.04, Math.abs(z1 - z0)], stone);
+    b.box({ x: (x0 + x1) / 2, y: y0, z: (z0 + z1) / 2 }, [Math.abs(x1 - x0), height - 0.04, Math.abs(z1 - z0)], stone);
   }
 }
 
@@ -402,11 +417,11 @@ function schoolMasonry(b: FacetBuilder, site: PortSite, m: PortMasonry, z0: numb
     m.course(b, false, x0, z0, z1, y + h, -1);
     m.course(b, false, x1, z1, z0, y + h, 1);
   }
-  // Les quatre chaînes d'angle.
+  // Les quatre chaînes d'angle ; celles du dos jusqu'au pied, si le site le veut.
   quoin(b, m.stone, x0, z1, y, SCHOOL.wall, 1, -1);
   quoin(b, m.stone, x1, z1, y, SCHOOL.wall, -1, -1);
-  quoin(b, m.stone, x0, z0, y, SCHOOL.wall, 1, 1);
-  quoin(b, m.stone, x1, z0, y, SCHOOL.wall, -1, 1);
+  quoin(b, m.stone, x0, z0, y, SCHOOL.wall, 1, 1, undefined, m.backQuoinsToFoot);
+  quoin(b, m.stone, x1, z0, y, SCHOOL.wall, -1, 1, undefined, m.backQuoinsToFoot);
 }
 
 /** Les huit formes de trophées (consultant d'Archipéo), à répéter dans l'ordre de la liste des succès. */
@@ -519,6 +534,37 @@ function emblem(b: FacetBuilder, C: PortColors, s: PortSubject, x: number, y: nu
  * porte : fermée (son vantail), ouverte (le vantail rabattu, l'intérieur) avec sa lanterne allumée à côté, puis
  * pavoisée (une guirlande de fanions unis au-dessus de l'arche) ; aucun compteur.
  */
+/**
+ * Le soubassement de l'école, monté de `rise` au-dessus de la place : une bande de pierre dans le plan des faces du
+ * socle, sur le dos et les flancs entiers, sur la façade entre les portes (leurs encadrements restent jusqu'au seuil),
+ * son dessus en glacis jusqu'au mur de brique (`z0`, `z1` : le dos et la façade du mur). Les faces et les dessus seuls,
+ * et les bouts contre les portes : jamais le dessous ni l'intérieur, qu'on ne voit pas.
+ */
+function schoolPlinthBand(b: FacetBuilder, site: PortSite, z0: number, z1: number, y: number, rise: number): void {
+  const C = site.colors;
+  const x0 = SCHOOL.x - SCHOOL.width / 2,
+    x1 = SCHOOL.x + SCHOOL.width / 2;
+  const X0 = x0 - 0.2,
+    X1 = x1 + 0.2;
+  const top = y + rise;
+  const p = (x: number, yy: number, z: number): [number, number, number] => [x, yy, z];
+  // Le dos (vers le nord) et les deux flancs, entiers.
+  b.quad(p(X1, y, BACK_Z), p(X0, y, BACK_Z), p(X0, top, BACK_Z), p(X1, top, BACK_Z), C.plinth);
+  b.quad(p(X0, top, BACK_Z), p(X0, top, z0), p(X1, top, z0), p(X1, top, BACK_Z), C.stone);
+  b.quad(p(X0, y, BACK_Z), p(X0, y, FACADE_Z), p(X0, top, FACADE_Z), p(X0, top, BACK_Z), C.plinth);
+  b.quad(p(X0, top, z0), p(X0, top, z1), p(x0, top, z1), p(x0, top, z0), C.stone);
+  b.quad(p(X1, y, FACADE_Z), p(X1, y, BACK_Z), p(X1, top, BACK_Z), p(X1, top, FACADE_Z), C.plinth);
+  b.quad(p(x1, top, z0), p(x1, top, z1), p(X1, top, z1), p(X1, top, z0), C.stone);
+  // La façade, entre les encadrements des portes, et le bout de chaque pan contre l'encadrement.
+  const w = DOOR.width / 2 + 0.3;
+  for (const [a, c] of spans(X0, X1, SCHOOL.doors.map((x) => [x - w, x + w] as const))) {
+    b.quad(p(a, y, FACADE_Z), p(c, y, FACADE_Z), p(c, top, FACADE_Z), p(a, top, FACADE_Z), C.plinth);
+    b.quad(p(a, top, z1), p(a, top, FACADE_Z), p(c, top, FACADE_Z), p(c, top, z1), C.stone);
+    if (a > X0) b.quad(p(a, y, z1), p(a, y, FACADE_Z), p(a, top, FACADE_Z), p(a, top, z1), C.plinth);
+    if (c < X1) b.quad(p(c, y, FACADE_Z), p(c, y, z1), p(c, top, z1), p(c, top, FACADE_Z), C.plinth);
+  }
+}
+
 function school(b: FacetBuilder, site: PortSite, doors: PortState['doors'], degree: RegionDegree): void {
   const C = site.colors;
   const PLINTH = plinthOf(site);
@@ -527,8 +573,10 @@ function school(b: FacetBuilder, site: PortSite, doors: PortState['doors'], degr
   plinth(b, site, x0 - 0.2, x1 + 0.2);
   const depth = FACADE_Z - BACK_Z - 0.2;
   const mid = (BACK_Z + FACADE_Z - 0.2) / 2 + 0.05;
-  if (site.masonry) schoolMasonry(b, site, site.masonry, mid - depth / 2, mid + depth / 2, PLINTH);
-  else b.box({ x: SCHOOL.x, y: PLINTH, z: mid }, [SCHOOL.width, SCHOOL.wall, depth], C.white, C.wall);
+  if (site.masonry) {
+    schoolMasonry(b, site, site.masonry, mid - depth / 2, mid + depth / 2, PLINTH);
+    if (site.masonry.schoolPlinthRise) schoolPlinthBand(b, site, mid - depth / 2, mid + depth / 2, PLINTH, site.masonry.schoolPlinthRise);
+  } else b.box({ x: SCHOOL.x, y: PLINTH, z: mid }, [SCHOOL.width, SCHOOL.wall, depth], C.white, C.wall);
   b.gableRoof({ x: SCHOOL.x, y: PLINTH + SCHOOL.wall, z: (BACK_Z + FACADE_Z) / 2 }, SCHOOL.width + 0.8, FACADE_Z - BACK_Z + 1, 2.6, C.slate, C.white);
   const front = FACADE_Z - 0.2;
   for (const s of PORT_SUBJECTS) {

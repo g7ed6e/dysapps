@@ -26,7 +26,7 @@
 import type { Stage } from './construction';
 import { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
-import { archSpandrel, courses, emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
+import { C4E, archSpandrel, courses, emptyBracket, groundPlane4e, inWorld, lantern, localGround4e, once, quadOut, sheet, wallRun } from './place4eKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E } from './plan4e';
 
@@ -48,6 +48,9 @@ const C = {
   brick: COLORS_4E.brick,
   brickShade: COLORS_4E.brickShade,
   brickJoint: COLORS_4E.brickJoint,
+  // Le mur nord, dans l'ombre à l'arrivée, un cran plus clair (restes du monde ouvert du 4e, point 2) : il se lit comme
+  // de la brique rouge sourde, de la valeur de la face est au soleil ; les autres murs gardent la brique du 4e.
+  brickNorth: 0xa2665f,
   stone: COLORS_4E.stone,
   stoneSun: COLORS_4E.stoneSun,
   stoneShade: COLORS_4E.stoneShade,
@@ -66,6 +69,8 @@ const C = {
   grey: 0x8a8278,
   greyShade: 0x726a62,
   curtain: 0x6e2a2c,
+  // Un cran plus sombre : le dessus du lambrequin et l'embrasse ; le revers du rideau prend sa face (restes du monde
+  // ouvert du 4e, point 2 : vu du nord, c'est le rouge vin qu'on doit voir).
   curtainBack: 0x5a2224,
   cloth: 0xd2c8b4,
   clothShade: 0xb8ae9a,
@@ -135,9 +140,13 @@ const FLIES = { y: 7.7, z: [3.7, 5.6, 7.5], pulley: -4.3 } as const;
 /**
  * Le rideau, posé ouvert en deux pans juste derrière le mur du cadre, dans l'arche, de part et d'autre (retouche 1 du
  * Bastion, point 2 : on les voit de la salle comme des coulisses) : sa largeur repliée, ses plis ; son lambrequin, sous
- * le haut du cintre.
+ * le haut du cintre. Les pans resserrés vers le milieu (restes du monde ouvert du 4e, point 2) : vus du nord, par la
+ * porte des décors, ils se tiennent de part et d'autre (un Π, jamais un T) ; la vue tournée de l'arrivée cache encore le
+ * pan de l'est derrière le pilier de la porte : le lambrequin remonte donc au-dessus du linteau vu de l'arrivée (son bas
+ * à `drop` sous le haut du cintre, au lieu de 0,6 : à 0,6, il passait sous le linteau de 4 pixels en 1024 × 768), et il
+ * ne reste dans l'ouverture qu'un pan, rien en travers.
  */
-const CURTAIN = { gathered: 1.15, folds: 4, depth: 0.16, z: CAGE.z1 - CAGE.wall / 2 - 0.16, valance: 0.5 } as const;
+const CURTAIN = { gathered: 1.5, folds: 4, depth: 0.16, z: CAGE.z1 - CAGE.wall / 2 - 0.16, valance: 0.5, drop: 0.12 } as const;
 
 /**
  * L'appentis du costumier, dehors, contre le mur est : de `x0` à `x1`, de `z0` (ouvert au nord) à `z1` ; son toit de tôle
@@ -218,6 +227,11 @@ const MAP_POINT: Vec3 = {
 /** Un pan de mur de brique de la cage (d'ouest en est si `alongX`, sinon du nord au sud), son dessus en pierre grise. */
 function run(b: FacetBuilder, alongX: boolean, at: number, from: number, to: number, y0: number, top0: number, top1: number, thick: number = CAGE.wall): void {
   wallRun(b, alongX, at, from, to, thick, y0, top0, top1, C.brick, C.stoneSun);
+}
+
+/** Un pan du mur nord de la cage, d'ouest en est, dans sa brique un cran plus claire. */
+function northRun(b: FacetBuilder, from: number, to: number, y0: number, top0: number, top1: number): void {
+  wallRun(b, true, CAGE.z0, from, to, CAGE.wall, y0, top0, top1, C.brickNorth, C.stoneSun);
 }
 
 /** Le haut des murs est et ouest restaurés, du nord au sud : en pente douce du mur nord au mur du cadre. */
@@ -315,7 +329,7 @@ function curtainPanel(b: FacetBuilder, x0: number, s: -1 | 1): void {
       [xa, y1, za],
     ];
     quadOut(b, ...q, [0, 0, 1], C.curtain);
-    quadOut(b, ...q, [0, 0, -1], C.curtainBack);
+    quadOut(b, ...q, [0, 0, -1], C.curtain);
   }
   b.box({ x: x0 + (s * K.gathered) / 2, y: G() + 1.6, z: K.z - K.depth / 2 }, [K.gathered + 0.06, 0.12, K.depth + 0.1], C.curtainBack);
 }
@@ -422,8 +436,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     0,
     (b) => {
       stageFloor(b, C.floor, C.floorJoint, 0.06);
-      run(b, true, K.z0, -DOOR.half - 1.0, -DOOR.half, foot, G() + 2.3, G() + 2.0);
-      run(b, true, K.z0, DOOR.half, DOOR.half + 1.0, foot, G() + 2.1, G() + 2.4);
+      northRun(b, -DOOR.half - 1.0, -DOOR.half, foot, G() + 2.3, G() + 2.0);
+      northRun(b, DOOR.half, DOOR.half + 1.0, foot, G() + 2.1, G() + 2.4);
       run(b, false, K.x1, north, EAST_RUIN.corner, foot, G() + EAST_RUIN.top0, G() + EAST_RUIN.top1);
       rails(b, C.rust);
       b.box({ x: -4.3, y: G() + FLOOR - 0.02, z: 6.2, yaw: 0.35 }, [1.0, 0.46, 0.7], C.rustShade, C.greyShade);
@@ -479,8 +493,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // les rails de fer bruni et le chariot des contrepoids relevé entre eux, plein de ses pains de fonte.
   add(0, 0, (b) => {
     stageFloor(b, C.boards, C.boardsJoint, 0);
-    run(b, true, K.z0, west, -DOOR.half, foot, G() + K.low, G() + K.low);
-    run(b, true, K.z0, DOOR.half, east, foot, G() + K.low, G() + K.low);
+    northRun(b, west, -DOOR.half, foot, G() + K.low, G() + K.low);
+    northRun(b, DOOR.half, east, foot, G() + K.low, G() + K.low);
     run(b, false, K.x1, north, EAST_RUIN.corner, foot, G() + K.low, G() + K.low);
     cageCourses(b, 0, K.low, { north: true });
     courses(b, false, K.x1 + t, north, EAST_RUIN.corner, COURSES.filter((y) => y < K.low).map((y) => G() + y), 1, C.brickJoint);
@@ -490,8 +504,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // ---- Le corps, le milieu : les murs nord et est jusqu'à la galerie ; la galerie de bois sur ses consoles de fer, son
   // garde-corps plein ; ses deux tambours.
   add(0, 0.4, (b) => {
-    run(b, true, K.z0, west, -DOOR.half, G() + K.low, G() + K.mid, G() + K.mid);
-    run(b, true, K.z0, DOOR.half, east, G() + K.low, G() + K.mid, G() + K.mid);
+    northRun(b, west, -DOOR.half, G() + K.low, G() + K.mid, G() + K.mid);
+    northRun(b, DOOR.half, east, G() + K.low, G() + K.mid, G() + K.mid);
     run(b, false, K.x1, north, EAST_RUIN.corner, G() + K.low, G() + K.mid, G() + K.mid);
     cageCourses(b, K.low, K.mid, { north: true });
     courses(b, false, K.x1 + t, north, EAST_RUIN.corner, COURSES.filter((y) => y >= K.low && y < K.mid).map((y) => G() + y), 1, C.brickJoint);
@@ -505,8 +519,8 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
   // arche refermée en haut ; les cintres (trois poutres, une poulie chacune, leurs cordages jusqu'aux tambours) ; le rideau
   // raccroché, posé ouvert en deux pans de part et d'autre de l'arche.
   add(0, 0.8, (b) => {
-    run(b, true, K.z0, west, east, G() + K.mid, G() + K.north, G() + K.north);
-    quadOut(b, [-DOOR.half, G() + K.mid, K.z0 - t], [DOOR.half, G() + K.mid, K.z0 - t], [DOOR.half, G() + K.mid, K.z0 + t], [-DOOR.half, G() + K.mid, K.z0 + t], [0, -1, 0], C.brick);
+    northRun(b, west, east, G() + K.mid, G() + K.north, G() + K.north);
+    quadOut(b, [-DOOR.half, G() + K.mid, K.z0 - t], [DOOR.half, G() + K.mid, K.z0 - t], [DOOR.half, G() + K.mid, K.z0 + t], [-DOOR.half, G() + K.mid, K.z0 + t], [0, -1, 0], C.brickNorth);
     run(b, false, K.x1, north, EAST_RUIN.corner, G() + K.mid, sideTop(north), sideTop(EAST_RUIN.corner));
     run(b, false, K.x1, EAST_RUIN.corner, K.z1 - t, foot, sideTop(EAST_RUIN.corner), sideTop(K.z1 - t));
     run(b, false, K.x0, north, K.z1 - t, foot, sideTop(north), sideTop(K.z1 - t));
@@ -522,12 +536,13 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
     }
     curtainPanel(b, -ARCH.half + 0.05, 1);
     curtainPanel(b, ARCH.half - 0.05, -1);
-    b.box({ x: 0, y: G() + ARCH.crown - 0.1 - CURTAIN.valance, z: CURTAIN.z - 0.04 }, [2 * ARCH.half + 0.6, CURTAIN.valance, 0.1], C.curtain, C.curtainBack);
+    b.box({ x: 0, y: G() + ARCH.crown - CURTAIN.drop, z: CURTAIN.z - 0.04 }, [2 * ARCH.half + 0.6, CURTAIN.valance, 0.1], C.curtain, C.curtainBack);
     cageCourses(b, K.mid, 9, { north: true, south: true, east: north, west: true });
     cageCourses(b, 0, K.mid, { south: true, east: EAST_RUIN.corner, west: true });
   });
   // ---- Le haut : le toit de la cage, un pan bas presque plat de tôle rouge sombre (son faîte à 9,3, sur le mur du
-  // cadre) ; la grande porte des décors, ses deux battants ouverts repliés contre le mur ; la lanterne de la porte.
+  // cadre) ; la grande porte des décors, ses deux battants de bois clair ouverts repliés contre le mur, deux joints de
+  // planches chacun ; la lanterne de la porte.
   add(1, 0, (b) => {
     const [n, s] = [north - 0.05, south + K.over];
     const yAt = (z: number) => G() + K.north + 0.02 + ((K.ridge - K.roof - K.north - 0.02) * (z - n)) / (s - n);
@@ -543,7 +558,14 @@ function model(add: AddPiece, _ground: SiteGround, _door: Vec2): void {
       C.roof,
       C.roofUnder,
     );
-    for (const sgn of [-1, 1]) b.box({ x: sgn * (DOOR.half + 1.05), y: planeY(sgn * 3, K.z0 - 0.4) - 0.05, z: north - 0.06 }, [2.0, DOOR.top - 0.15, 0.1], C.woodShade, C.wood);
+    for (const sgn of [-1, 1]) {
+      const x = sgn * (DOOR.half + 1.05);
+      const y0 = planeY(sgn * 3, K.z0 - 0.4) - 0.05;
+      b.box({ x, y: y0, z: north - 0.06 }, [2.0, DOOR.top - 0.15, 0.1], C4E.newWood, C4E.newShade);
+      // Deux joints de planches par battant, sur sa face au nord : des vantaux, plus un aplat de hangar.
+      const [zf, top] = [north - 0.06 - 0.05 - 0.01, y0 + DOOR.top - 0.15 - 0.1];
+      for (const dx of [-1 / 3, 1 / 3]) quadOut(b, [x + dx - 0.025, y0 + 0.1, zf], [x + dx + 0.025, y0 + 0.1, zf], [x + dx + 0.025, top, zf], [x + dx - 0.025, top, zf], [0, 0, -1], C.woodShade);
+    }
     const L = LANTERN_DOOR;
     b.box({ x: L.x, y: G() + L.y + 0.02, z: L.z + 0.12 }, [0.07, 0.07, 0.3], C.iron);
     lantern(b, { x: L.x, y: G() + L.y, z: L.z }, true);
@@ -743,5 +765,6 @@ export const LOGE_LAYOUT = {
   scene: SCENE_SPOT,
   sceneStart: SCENE_START,
   traceSpots: TRACE_SPOTS,
+  curtain: CURTAIN,
   colors: { curtain: C.curtain, roof: C.roof, bracket: C.rustDull },
 } as const;

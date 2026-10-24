@@ -1,5 +1,8 @@
 // Les étiquettes de la Carte (GD-20, point 3, « vraies terres, vrais ponts ») : un cadenas par pont à rebâtir, plein pour
 // le pont suggéré seul ; les lieux des terres fermées en pastilles pâles, touchables, qui ouvrent la fiche de leur terre.
+// Depuis la piste B (« Noms plafonnés, sans trait », 24 octobre 2026), la même Carte aux quatre niveaux.
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fireEvent, render } from '@testing-library/react';
 import { afterEach, beforeEach, vi } from 'vitest';
 import { bridgeSpot, landById, type LinkedLand, linkedLands, placesOfLands } from '../../world/continu/lands';
@@ -49,17 +52,20 @@ test('sans pont suggéré, aucun cadenas plein', () => {
   expect(renderMap(null).locks.some((l) => l.full)).toBe(false);
 });
 
-test('les lieux des terres fermées : des pastilles pâles, sans cadenas, qui ouvrent la fiche de leur terre', () => {
+test('les lieux des terres fermées : des pastilles pâles d’icône, sans nom écrit ni cadenas, qui ouvrent la fiche de leur terre (piste B)', () => {
   const { pale, onClosed } = renderMap(null);
   expect(pale).toHaveLength(12);
   expect(pale.every((b) => !b.querySelector('.open-world-lock'))).toBe(true);
+  // Leur icône seule : le nom n'est plus écrit, la voix le dit.
+  expect(pale.every((b) => !b.querySelector('.open-world-map-place-name') && b.querySelector('.open-world-map-icon svg'))).toBe(true);
   const ruins = pale.find((b) => b.dataset.lieu === 'ruins')!;
-  expect(ruins).toHaveTextContent('Les Ruines');
+  expect(ruins).not.toHaveTextContent('Les Ruines');
+  expect(ruins.getAttribute('aria-label')).toMatch(/^Les Ruines, /);
   fireEvent.click(ruins);
   expect(onClosed).toHaveBeenCalledWith('couchant');
 });
 
-test('au 5e (GD-22) : un triangle « en haut » dans la dernière ligne du nom de chaque lieu du plateau, et dit ; sur « Toi » quand Kéo y monte', () => {
+test('au 5e (GD-22) : un triangle « en haut » collé au nom de chaque lieu ouvert du plateau, sur l’icône d’un lieu pâle, et dit ; sur « Toi » quand Kéo y monte', () => {
   const plan5 = planFor('5e');
   const placer: { current: ((spots: readonly MapSpotOnScreen[]) => void) | null } = { current: null };
   const { container } = render(
@@ -70,9 +76,10 @@ test('au 5e (GD-22) : un triangle « en haut » dans la dernière ligne du nom d
     const up = el.querySelector('.open-world-map-up');
     expect(Boolean(up), p.id).toBe(plan5.upper.includes(p.id));
     if (!up) continue;
-    // Collé au nom : dans sa dernière ligne, qui ne se coupe pas.
-    const lines = el.querySelectorAll('.open-world-map-line');
-    expect(up.closest('.open-world-map-line')).toBe(lines[lines.length - 1]);
+    // Collé au nom, qui tient sur une ligne et ne se coupe pas ; sur l'icône d'un lieu pâle, qui n'a pas de nom écrit.
+    const name = el.querySelector('.open-world-map-lines');
+    if (name) expect(name.contains(up), p.id).toBe(true);
+    else expect(up.closest('.open-world-map-up-badge'), p.id).not.toBeNull();
     expect(el.getAttribute('aria-label')).toMatch(new RegExp(`${p.name}(, en option)?, en haut`));
   }
   const keo = container.querySelector<HTMLElement>('[data-lieu="keo"]')!;
@@ -108,10 +115,10 @@ test('la pastille de Kéo seule, sans le mot « Toi » à l’écran, garde son 
   }
 });
 
-test('au 5e : le nom de chaque terre fermée sous le cadenas de son passage, et la cabine devant celui des Aiguilles ; rien au 6e', () => {
+test('le nom de chaque terre fermée sous le cadenas de son passage, aux quatre niveaux (piste B), et au 5e la cabine devant celui des Aiguilles', () => {
   const plan5 = planFor('5e');
   const { container, unmount } = render(
-    <MapLabels places={plan5.places} openPlaces={placesOfLands(plan5, ['frondaisons'])} closedLands={linkedLands(plan5)} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={{}} words={words} upper={plan5.upper} landNames />,
+    <MapLabels places={plan5.places} openPlaces={placesOfLands(plan5, ['frondaisons'])} closedLands={linkedLands(plan5)} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={{}} words={words} upper={plan5.upper} />,
   );
   for (const land of linkedLands(plan5)) {
     const name = container.querySelector(`[data-lieu="${bridgeSpot(land)}"] .open-world-map-closed-name`);
@@ -119,8 +126,12 @@ test('au 5e : le nom de chaque terre fermée sous le cadenas de son passage, et 
     expect(Boolean(name!.querySelector('svg')), land).toBe(land === 'aiguilles');
   }
   unmount();
-  const six = render(<MapLabels places={PLAN.places} openPlaces={placesOfLands(PLAN, ['pointe'])} closedLands={LINKED_LANDS} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={{}} words={words} />);
-  expect(six.container.querySelector('.open-world-map-closed-name')).toBeNull();
+  for (const level of ['6e', '4e', '3e'] as const) {
+    const plan = planFor(level);
+    const { container, unmount: done } = render(<MapLabels places={plan.places} openPlaces={placesOfLands(plan, [plan.lands[0].id])} closedLands={linkedLands(plan)} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={{}} words={words} />);
+    for (const land of linkedLands(plan)) expect(container.querySelector(`[data-lieu="${bridgeSpot(land)}"] .open-world-map-closed-name`), `${level} ${land}`).toHaveTextContent(landById(land).name);
+    done();
+  }
 });
 
 test('au 6e, aucun triangle « en haut »', () => {
@@ -133,7 +144,7 @@ test('au 6e, aucun triangle « en haut »', () => {
 test('le prochain lieu suggéré : sa pastille seule porte la marque (double contour) et dit qu’elle est l’étape, au 5e comme au 6e', () => {
   const plan5 = planFor('5e');
   const five = render(
-    <MapLabels places={plan5.places} openPlaces={placesOfLands(plan5, ['frondaisons'])} closedLands={linkedLands(plan5)} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={{}} words={words} upper={plan5.upper} nextPlace="radeaux" landNames />,
+    <MapLabels places={plan5.places} openPlaces={placesOfLands(plan5, ['frondaisons'])} closedLands={linkedLands(plan5)} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={{}} words={words} upper={plan5.upper} nextPlace="radeaux" />,
   );
   expect([...five.container.querySelectorAll<HTMLElement>('.open-world-map-place.suggested')].map((b) => b.dataset.lieu)).toEqual(['radeaux']);
   expect(five.container.querySelector('[data-lieu="radeaux"]')).toHaveAttribute('aria-current', 'step');
@@ -157,43 +168,37 @@ test('un lieu d’option (l’Oracle, l’Auberge) porte le fanion collé à son
   expect(flagged.sort()).toEqual(['auberge', 'oracle']);
   const oracle = container.querySelector<HTMLElement>('[data-lieu="oracle"]')!;
   expect(oracle.getAttribute('aria-label')).toMatch(/^Y aller : L’Oracle, en option/);
-  // Collé au nom : dans le même bloc que son dernier mot, jamais seul.
-  const glue = oracle.querySelector('.open-world-map-option')!.closest('.open-world-map-glue')!;
-  expect(glue).toHaveTextContent('L’Oracle');
+  // Collé au nom, dans son bloc, qui tient sur une ligne : jamais seul.
+  const name = oracle.querySelector('.open-world-map-option')!.closest('.open-world-map-lines')!;
+  expect(name).toHaveTextContent('L’Oracle');
   expect(container.querySelector('[data-lieu="hameau"]')!.getAttribute('aria-label')).not.toMatch(/en option/);
 });
 
-test('au 4e seulement (`snug`), l’icône de l’état de la forme serrée collée au dernier mot du nom, sa place gardée dès la ruine ; au 5e et au 6e, rien ne change (retouche 3 des Coteaux)', () => {
-  const plan4 = planFor('4e');
-  const open = plan4.places.map((p) => p.id);
-  // Un lieu restauré, un en chantier, les autres à explorer.
-  const states4 = { ...Object.fromEntries(open.map((id) => [id, null])), [open[0]]: 'restauree', [open[1]]: 'en-chantier' } as never;
-  const four = render(<MapLabels places={plan4.places} openPlaces={open} closedLands={[]} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states4} words={words} snug />);
-  expect(four.container.querySelector('.open-world-map-places')).toHaveClass('snug');
-  for (const p of plan4.places) {
-    const el = four.container.querySelector<HTMLElement>(`[data-lieu="${p.id}"]`)!;
-    const glued = el.querySelector<HTMLElement>('.open-world-map-state-glued')!;
-    // Dans le bloc du dernier mot, après lui, jamais seul sur sa ligne ; « à explorer » aussi (sa place, invisible).
-    const glue = glued.closest('.open-world-map-glue')!;
-    const lines = el.querySelectorAll('.open-world-map-line');
-    expect(glue.closest('.open-world-map-line'), p.id).toBe(lines[lines.length - 1]);
-    expect(glue.lastElementChild, p.id).toBe(glued);
-    expect(glue.textContent!.trim(), p.id).toBe(p.name.slice(p.name.lastIndexOf(' ') + 1));
-    expect(glued.dataset.etat, p.id).toBe(p.id === open[0] ? 'restauree' : p.id === open[1] ? 'en-chantier' : 'a-explorer');
-    // L'icône d'à côté reste, la même : la forme entière la montre.
-    expect(el.querySelector(':scope > .open-world-map-state')!.getAttribute('data-etat'), p.id).toBe(glued.dataset.etat);
-  }
-  four.unmount();
-  // Au 5e et au 6e : l'étiquette de preview, l'icône de l'état seulement à côté du nom (dessous dans la forme serrée).
-  const plan5 = planFor('5e');
-  for (const [plan, opened] of [
-    [PLAN, placesOfLands(PLAN, ['pointe'])],
-    [plan5, plan5.places.map((p) => p.id)],
-  ] as const) {
-    const { container, unmount } = render(<MapLabels places={plan.places} openPlaces={opened} closedLands={[]} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={Object.fromEntries(opened.map((id) => [id, 'restauree']))} words={words} upper={plan.upper} />);
-    expect(container.querySelector('.open-world-map-places')).not.toHaveClass('snug');
-    expect(container.querySelector('.open-world-map-state-glued')).toBeNull();
-    for (const id of opened) expect(container.querySelector(`[data-lieu="${id}"] .open-world-map-place-name .open-world-map-state`), id).toBeNull();
+test('aux quatre niveaux, le nom sur une ligne puis l’icône de l’état à côté, sa place gardée dès la ruine ; plus de forme serrée ni de trait (piste B)', () => {
+  for (const level of ['6e', '5e', '4e', '3e'] as const) {
+    const plan = planFor(level);
+    const open = plan.places.map((p) => p.id);
+    // Un lieu restauré, un en chantier, les autres à explorer.
+    const states4 = { ...Object.fromEntries(open.map((id) => [id, null])), [open[0]]: 'restauree', [open[1]]: 'en-chantier' } as never;
+    const { container, unmount } = render(<MapLabels places={plan.places} openPlaces={open} closedLands={[]} onPick={() => {}} placer={{ current: null }} onClosed={() => {}} states={states4} words={words} upper={plan.upper} />);
+    expect(container.querySelector('.open-world-map-places'), level).not.toHaveClass('snug');
+    expect(container.querySelector('.open-world-map-leads'), level).toBeNull();
+    expect(container.querySelector('.open-world-map-state-glued, .open-world-map-line'), level).toBeNull();
+    for (const p of plan.places) {
+      const el = container.querySelector<HTMLElement>(`[data-lieu="${p.id}"]`)!;
+      // Le nom entier, d'un bloc.
+      expect(el.querySelector('.open-world-map-lines'), p.id).toHaveTextContent(p.name);
+      expect(el.querySelector('.open-world-map-place-name .open-world-map-state'), p.id).toBeNull();
+      expect(el.querySelector(':scope > .open-world-map-state')!.getAttribute('data-etat'), p.id).toBe(p.id === open[0] ? 'restauree' : p.id === open[1] ? 'en-chantier' : 'a-explorer');
+    }
     unmount();
   }
+});
+
+test('le texte de la Carte plafonné à 24 px, jamais sous 18 px, ses marges en em ; plus de forme serrée (openWorld.css, piste B)', () => {
+  const css = readFileSync(join(process.cwd(), 'src/game/three/archipeo/openWorld.css'), 'utf8');
+  const rule = (selector: string) => css.match(new RegExp(`\\n${selector.replace(/[.[\]()]/g, '\\$&')} \\{([^}]*)\\}`))?.[1] ?? '';
+  expect(rule('.open-world-map-places')).toMatch(/font-size: clamp\(18px, 1rem, 24px\);/);
+  expect(rule('.open-world-map-place')).toMatch(/padding: 0\.3em 0\.9em;/);
+  expect(css).not.toMatch(/data-nom='serre'|data-lignes|open-world-map-leads/);
 });

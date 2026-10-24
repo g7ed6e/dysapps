@@ -22,6 +22,7 @@ import type { Vec2, Vec3 } from './geometry';
 import { CHAPE, chape, courses, EPAULE_COLORS, hexColumn, hexPlate, lantern, SINK, slab, strut } from './epauleKit';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { PATH_NODES_4E, PLACES_4E } from './plan4e';
+import { localGround4e, once } from './place4eKit';
 import { standingHeight } from './terrain';
 import { heightAt4e } from './terrain4e';
 import { SHADOW_DIR_4E } from './sky';
@@ -62,10 +63,11 @@ const C = {
 
 /** Le centre du lieu et le sol sous lui. */
 const CENTER: Vec2 = PLACES_4E.find((p) => p.id === 'orgues')!.center;
-const H0 = standingHeight(heightAt4e(CENTER));
+/** Le sol sous le centre, pris au premier usage, jamais à l'import (./place4eKit.ts). */
+const h0 = once(() => standingHeight(heightAt4e(CENTER)));
 
 /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
-const localGround = (lx: number, lz: number): number => standingHeight(heightAt4e({ x: CENTER.x + lx, z: CENTER.z + lz })) - H0;
+const localGround = localGround4e(CENTER);
 
 // ---------- Le plan ----------
 
@@ -557,7 +559,9 @@ export const ORGUES_LAYOUT = {
   scene: SCENE_SPOT,
   sceneStart: SCENE_START,
   traceSpots: TRACE_SPOTS,
-  heightAtCenter: H0,
+  get heightAtCenter() {
+    return h0();
+  },
   /** Le basalte des colonnes et la pierre grise (ses abords en posent). */
   colors: { column: C.column, columnJoint: C.columnJoint, columnSun: C.columnSun, stone: C.stone, stoneShade: C.stoneShade, stoneSun: C.stoneSun },
 } as const;

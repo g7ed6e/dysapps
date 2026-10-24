@@ -44,8 +44,8 @@ export const C4E = {
   ironTop: 0x6c5e58,
   sheet: 0x7a6e68,
   sheetUnder: 0x6a5e58,
-  earth: 0x5a4e46,
-  earthTop: 0x625448,
+  earth: COLORS_4E.blackEarth,
+  earthTop: COLORS_4E.blackEarthTop,
   canvas: 0xc8b89a,
   canvasShade: 0xa8987c,
   paving: 0xb0a598,
@@ -106,7 +106,8 @@ export function localGround4e(center: Vec2): (lx: number, lz: number) => number 
 /** Le repère d'un lieu du 4e : son centre, le sol de son centre, le sol sous un point du repère, sa porte. */
 export interface Site4e {
   center: Vec2;
-  h0: number;
+  /** Le sol du centre, lu au premier accès. */
+  readonly h0: number;
   /** Le sol du 4e sous un point du repère du lieu, depuis le sol de son centre. */
   ground(lx: number, lz: number): number;
   toLocal(p: Vec2): Vec2;
@@ -117,9 +118,13 @@ export interface Site4e {
 export function site4e(id: PlaceId4e): Site4e {
   const center = PLACES_4E.find((p) => p.id === id)!.center;
   const toLocal = (p: Vec2): Vec2 => ({ x: p.x - center.x, z: p.z - center.z });
+  // Le sol du centre n'est lu qu'au premier usage de `h0`, jamais à l'import (le lieu appelle `site4e` au niveau du module).
+  const h0 = once(() => standingHeight(heightAt4e(center)));
   return {
     center,
-    h0: standingHeight(heightAt4e(center)),
+    get h0() {
+      return h0();
+    },
     ground: localGround4e(center),
     toLocal,
     door: toLocal(PATH_NODES_4E.find((n) => n.id === id)!.at),

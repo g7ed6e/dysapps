@@ -238,13 +238,13 @@ test('une terre à moitié ouverte en cours de session (un lieu relié par la gr
   expect(scene.closed).toEqual(['large', 'levant', 'cretes']);
 });
 
-test('une commande prête porte la suggestion (GD-20, point 4, lot L1) : sa phrase dans la bulle, « Y aller » vers l’habitant, la marque à son lieu, sa pastille pleine ; jamais « Aucune mission » ; arrivé chez lui, sa pastille se retire', async () => {
+test('une commande prête porte la suggestion (GD-20, point 4, lot L1) : sa phrase dans la bulle, « Y aller » vers l’habitant, la marque à son lieu, sa pastille pleine ; une seule bulle ; arrivé chez lui, sa pastille se retire', async () => {
   const potager = COMMANDES.find((c) => c.fixture === 'french-6e-phonology-fixture-1')!;
   localStorage.setItem('dysapps:game', JSON.stringify({ stock: { [potager.block]: potager.count }, world: { links: [], requests: [potager.id] } }));
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   expect(await screen.findByText('Livre 3 blocs de terre au Phare.')).toBeInTheDocument();
-  expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  expect(document.querySelectorAll('.open-world-go-reason')).toHaveLength(1);
   const go = screen.getByRole('button', { name: 'Y aller : Le Phare' });
   expect(go).toHaveClass('primary');
   const w = scene.world!;
@@ -269,9 +269,9 @@ test('la Nef prête porte la suggestion, avant une commande prête (GD-21, « Pr
   await screen.findByRole('button', { name: /Carte/ });
   const w = scene.world!;
   expect(w.setMark).toHaveBeenLastCalledWith('nef');
-  // Une seule suggestion : ni la phrase de la commande, ni sa pastille pleine, ni « Aucune mission ».
+  // Une seule suggestion : ni la phrase de la commande, ni sa pastille pleine, ni aucune bulle.
   expect(screen.queryByText('Livre 3 blocs de terre au Phare.')).toBeNull();
-  expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  expect(document.querySelector('.open-world-go-reason')).toBeNull();
   expect(document.querySelector('.open-world-sign.suggested')).toBeNull();
   // Kéo au quai, devant la Nef : la marque s'y retire, comme celle d'un lieu (directeur artistique, relecture des restes
   // du 5e) ; Kéo parti marcher ailleurs, elle revient, sans les points de la distance (consultant d'Archipéo).
@@ -415,6 +415,39 @@ test('l’étape « mission » de l’entraide porte la prochaine mission dans s
   expect(scene.world!.setMark).toHaveBeenLastCalledWith('quais');
 });
 
+describe('La bulle au-dessus de « Y aller » : rien, ou l’action (choix du mainteneur, 24 octobre 2026)', () => {
+  test('tout construit et relié : aucune bulle au quai, ni devant un lieu restauré ; jamais « Aucune mission »', async () => {
+    const { progress, world } = toutConstruit();
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress, world }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(screen.getByRole('button', { name: /Y aller/ })).toBeDisabled();
+    expect(document.querySelector('.open-world-go-reason')).toBeNull();
+    act(() => scene.options!.onArrive('phare'));
+    await userEvent.setup().keyboard('{Escape}');
+    expect(document.querySelector('.open-world-go-reason')).toBeNull();
+    expect(screen.queryByText(/Aucune mission/)).toBeNull();
+  });
+
+  test('plus rien à jouer, une terre fermée qu’on peut relier : un bouton dit l’action, l’icône du pont et le nom de la terre, et ouvre sa fiche', async () => {
+    const { progress, world } = toutConstruit();
+    const islands = landById('large').places.map((id) => placeById(id).island);
+    const open = Object.fromEntries(Object.entries(progress).filter(([k]) => !islands.some((i) => k.startsWith(`${i}-`))));
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress: open, world: { ...world, links: [] } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    const link = await screen.findByRole('button', { name: 'Relier le Large' });
+    expect(link).toHaveClass('open-world-go-reason');
+    expect(link).not.toHaveClass('primary');
+    expect(link.querySelector('svg')).not.toBeNull();
+    expect(screen.queryByText(/Aucune mission/)).toBeNull();
+    // Le toucher ouvre la fiche de la terre, la même qu'un de ses lieux touché, son « Relier » en tête.
+    await userEvent.setup().click(link);
+    const sheet = await screen.findByRole('dialog', { name: 'Le Large' });
+    expect(within(sheet).getByRole('button', { name: /Relier/ })).toHaveFocus();
+  });
+});
+
 describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
   const due = (ids: string[]) => ids.map((itemId) => ({ itemId, due: '2020-01-01', stage: 0, streak: 0 }));
   function LocationProbe() {
@@ -442,19 +475,18 @@ describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
     await userEvent.setup().click(within(sheet).getByRole('button', { name: /Reprendre/ }));
   }
 
-  test('Kéo chez un habitant qui a des révisions dues, plus rien à jouer : la bulle dit son rappel, jamais « Aucune mission » (relecture des habitants du 5e)', async () => {
+  test('Kéo chez un habitant qui a des révisions dues, plus rien à jouer : la bulle dit son rappel ; ailleurs, aucune bulle (relecture des habitants du 5e ; « Rien, ou l’action »)', async () => {
     const { progress, world } = toutConstruit();
     localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, progress, world: { ...world, links: [] }, spaced: due(['maths-6e-calculation-measures-1:maths-6e-calculation-measures-1-2']) }));
     renderPage();
     await screen.findByRole('button', { name: /Carte/ });
-    // Ailleurs qu'aux Quais : rien à faire ici.
-    expect(await screen.findByText(/Aucune mission/)).toBeInTheDocument();
+    // Ailleurs qu'aux Quais : rien à faire, aucune bulle.
+    expect(document.querySelector('.open-world-go-reason')).toBeNull();
     act(() => scene.options!.onArrive('quais'));
     const sheet = await screen.findByRole('dialog', { name: 'Les Quais' });
     expect(within(sheet).getByRole('group')).toHaveTextContent('On revoit quelques questions ensemble.');
     await userEvent.setup().keyboard('{Escape}');
     expect(await screen.findByText('On revoit quelques questions ensemble.', { selector: '.open-world-go-reason' })).toBeInTheDocument();
-    expect(screen.queryByText(/Aucune mission/)).toBeNull();
   });
 
   test('les questions dues qui se revoient ici : la révision se joue dans la scène des Quais, sans quitter le monde ; un calcul tiré au hasard n’y entre pas', async () => {

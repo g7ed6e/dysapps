@@ -25,7 +25,7 @@ const poly = (points: readonly (readonly [number, number])[]): Vec2[] => points.
 
 /**
  * Les couleurs du 4e (fiche du niveau, § 2 ; vue globale validée, palette chaude du 12 octobre) : la mer bleu nuit, le
- * sable des grèves, la terre rouge des Fabriques et du Bastion, les verts brûlés des Coteaux, la roche brune du volcan,
+ * sable des grèves, la terre rouge des Fabriques et du Bastion, le vert olive des Coteaux, la roche brune du volcan,
  * la croûte de basalte de la coulée (jamais presque noire : ce sont les fentes de lave qui font le sombre), la brique, la
  * terre cuite, le cuivre et le fer rouillé de l'usine, la lave figée (des fentes fines plus rouges qu'orange, une lueur
  * fixe), la fumée claire du panache.
@@ -45,10 +45,24 @@ export const COLORS_4E = {
   soilSun: 0xb46e60,
   /** La même à l'ombre (jamais presque noire). */
   soilShade: 0x986052,
-  /** Les verts brûlés des Coteaux. */
-  burnt: 0x9a8862,
-  burntSun: 0xa6966c,
-  burntShade: 0x80704e,
+  /**
+   * Le vert olive des Coteaux, sec, jamais vif : la seule terre verte du 4e, à côté de la terre rouge des Fabriques
+   * (intention des restes du monde ouvert du 4e, 23 octobre 2026, point 1) ; ses taches au soleil ; ses pentes douces à
+   * l'ombre, et ses talus raides à l'ombre (la terre noire y tomberait presque noire à l'écran). Jamais sur l'Épaule.
+   * `burntSun`, un olive plus jaune et sec, s'écarte de `burnt` pour que ses plaques se voient (retouche 1 des restes,
+   * point 1, directeur artistique).
+   */
+  burnt: 0x6a8046,
+  burntSun: 0x74844c,
+  burntShade: 0x5a6c3c,
+  /** La roche ocre rosé de l'Épaule, au nord de la coulée, à côté de `rockSun` : plus aucun vert (même intention). */
+  shoulder: 0x9a7262,
+  /**
+   * La terre noire du volcan (les bacs, les seuils, la tonnelle, les talus au soleil des Coteaux), et son dessus, plus
+   * froid et plus gris, aussi en taches sur le sol à plat des Coteaux (l'ancien tirait vers le bois) ; `C4E.earth` et `C4E.earthTop` les reprennent.
+   */
+  blackEarth: 0x5a4e46,
+  blackEarthTop: 0x5e544e,
   /** La roche brune du volcan, au soleil et à l'ombre. */
   rock: 0x76544a,
   rockSun: 0x8c6658,
@@ -60,6 +74,11 @@ export const COLORS_4E = {
   basalt: 0x4a4240,
   basaltSun: 0x574d48,
   basaltShade: 0x423a38,
+  /**
+   * Le cône à l'ombre, sur le terrain seulement (même intention : le flanc derrière le Terminus tombait presque noir à
+   * l'écran, il se lit encore comme de la roche) ; `basalt*` restent aux lieux et au pont de basalte.
+   */
+  coneShade: 0x6a625e,
   /** La croûte de basalte de la coulée figée et du sommet, et son ombre. */
   crust: 0x544a46,
   crustShade: 0x48403e,

@@ -24,12 +24,11 @@ import type { FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
 import { C4E, SINK, armLantern, capOf, emptyMount, groundPlane4e, inWorld, lantern, once, postLantern, quadOut, sceneRight, sceneRise, sheet, site4e, wallRun, type P3 } from './place4eKit';
-import { COLORS_4E } from './plan4e';
 
 /**
  * Les couleurs propres aux Roches, en plus des matières des Passeurs (`C4E`, le joint des assises compris) : le fond sombre des
  * cases ; les pierres des casiers, d'un même ton mat (jamais un cristal brillant), et leur dessus ; le talus de terre
- * des Coteaux qui vient contre les murs ; la toile brune de la sacoche (jamais moutarde ni orange).
+ * noire qui vient contre les murs ; la toile brune de la sacoche (jamais moutarde ni orange).
  */
 const C = {
   niche: 0x4e4642,
@@ -39,8 +38,9 @@ const C = {
   // se lise de la porte ; toujours mates, du gris de la pierre des Passeurs.
   cased: 0xb2a99c,
   casedTop: 0xc2baae,
-  talus: COLORS_4E.burnt,
-  talusSun: COLORS_4E.burntSun,
+  // La terre noire du talus, pas l'herbe (restes du monde ouvert du 4e, point 1).
+  talus: C4E.earth,
+  talusSun: C4E.earthTop,
   satchel: 0x7a6450,
   satchelTop: 0x86705c,
   // La géologue, en pion (son modèle 3D prend sa place, ./habitants.ts) : bottes, tablier brun-gris, chemise.
@@ -97,6 +97,12 @@ const POST_Z = ROOM.z1 - 0.15;
  * (retouche 1 : plus près du seuil, elle passait devant Kéo dans la scénette).
  */
 const SEUIL = { x0: 1.6, x1: ROOM.x1, z0: ROOM.z1 + 0.15, z1: ROOM.z1 + 1.1 } as const;
+
+/**
+ * Le seuil de terre noire, dehors, devant le côté ouvert (restes du monde ouvert du 4e, point 1 : le sol de la salle est
+ * dans l'ombre) : à l'ouest du seuil dallé, entre lui et le bout du mur ouest, pour se lire ruine et restauré.
+ */
+const EARTH_SILL = { x0: ROOM.x0 + 0.02, x1: SEUIL.x0, z0: SEUIL.z0, z1: SEUIL.z0 + 0.9 } as const;
 const ALLEE = { from: { x: ROOM.x1, z: 5.2 }, to: { x: 8.4, z: 5.5 }, half: 0.35 } as const;
 const PATH_LANTERN = { x: 7.5, z: 6.25, h: 1.35 } as const;
 
@@ -181,11 +187,16 @@ function talus(b: FacetBuilder, whole: boolean): void {
   quadOut(b, [out, corner, back], [out, far(out, back - TALUS_BACK), back - TALUS_BACK], [out - TALUS_BACK, far(out - TALUS_BACK, back - TALUS_BACK), back - TALUS_BACK], [out - TALUS_BACK, far(out - TALUS_BACK, back), back], [0, 1, 0], C.talus);
 }
 
-/** Le sol de terre battue de la salle, et la console de pierre de l'angle, la lanterne de la géologue posée dessus. */
+/**
+ * Le sol de terre battue de la salle et son seuil de terre noire dehors, et la console de pierre de l'angle, la lanterne
+ * de la géologue posée dessus.
+ */
 function floorAndCorbel(b: FacetBuilder): void {
   const R = ROOM;
   const f = (x: number, z: number): P3 => [x, planeY(x, z) + 0.02, z];
   quadOut(b, f(R.x0, R.z0), f(R.x1, R.z0), f(R.x1, R.z1), f(R.x0, R.z1), [0, 1, 0], C4E.earth);
+  const E = EARTH_SILL;
+  quadOut(b, f(E.x0, E.z0), f(E.x1, E.z0), f(E.x1, E.z1), f(E.x0, E.z1), [0, 1, 0], C4E.earth);
   const K = CORBEL;
   const y = planeY(K.x, K.z) + K.y;
   b.box({ x: K.x, y, z: K.z, yaw: Math.PI / 4 }, [K.size, 0.16, K.size], C4E.stoneShade, C4E.stoneSun);
