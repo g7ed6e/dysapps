@@ -573,9 +573,10 @@ function school(b: FacetBuilder, site: PortSite, doors: PortState['doors'], degr
   plinth(b, site, x0 - 0.2, x1 + 0.2);
   const depth = FACADE_Z - BACK_Z - 0.2;
   const mid = (BACK_Z + FACADE_Z - 0.2) / 2 + 0.05;
-  if (site.masonry) schoolMasonry(b, site, site.masonry, mid - depth / 2, mid + depth / 2, PLINTH);
-  if (site.masonry?.schoolPlinthRise) schoolPlinthBand(b, site, mid - depth / 2, mid + depth / 2, PLINTH, site.masonry.schoolPlinthRise);
-  else b.box({ x: SCHOOL.x, y: PLINTH, z: mid }, [SCHOOL.width, SCHOOL.wall, depth], C.white, C.wall);
+  if (site.masonry) {
+    schoolMasonry(b, site, site.masonry, mid - depth / 2, mid + depth / 2, PLINTH);
+    if (site.masonry.schoolPlinthRise) schoolPlinthBand(b, site, mid - depth / 2, mid + depth / 2, PLINTH, site.masonry.schoolPlinthRise);
+  } else b.box({ x: SCHOOL.x, y: PLINTH, z: mid }, [SCHOOL.width, SCHOOL.wall, depth], C.white, C.wall);
   b.gableRoof({ x: SCHOOL.x, y: PLINTH + SCHOOL.wall, z: (BACK_Z + FACADE_Z) / 2 }, SCHOOL.width + 0.8, FACADE_Z - BACK_Z + 1, 2.6, C.slate, C.white);
   const front = FACADE_Z - 0.2;
   for (const s of PORT_SUBJECTS) {

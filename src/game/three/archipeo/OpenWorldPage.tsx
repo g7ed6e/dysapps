@@ -1405,8 +1405,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                   n'attend, le rappel des révisions, ou l'action d'une terre à relier, sinon rien. Jamais pendant qu'une
                   phrase du monde est écrite (l'état d'un lieu restauré, un pont rebâti, le nom d'un Détour) : une seule
                   bulle à la fois, la plus récente ; l'autre dépassait dessous (référent dys et consultant UX UI,
-                  relecture des Fabriques). Elle revient ensuite. Jamais sur un Détour, où il n'y a jamais de mission (retouche 1 des Coteaux : au Replat, tout fini,
-                  elle venait après le nom). */}
+                  relecture des Fabriques). Elle revient ensuite. Jamais sur un Détour, où il n'y a jamais de mission
+                  (retouche 1 des Coteaux : au Replat, tout fini, elle venait après le nom). */}
               {!walking && !relightHere && !saidOn && suggestedAct && <p className="open-world-go-reason">{frenchTypography(suggestedAct.text)}</p>}
               {/* « Relier le Bastion » est un vrai bouton, secondaire, qui ouvre la fiche de la terre (celle qu'ouvre le
                   toucher d'un de ses lieux) : avec son allure de bouton, un toucher qui ne répondait pas cassait « un
