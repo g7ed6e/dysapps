@@ -126,10 +126,33 @@
   background: #e5ebe3;
   pointer-events: none;
 }
-/* La raison d'un « Y aller » grisé, écrite au-dessus de lui (pas seulement dite aux lecteurs d'écran). */
+/* « Y aller » qui ne tient plus sous les pieds de Kéo (un grand texte, un téléphone) : en bas à droite, loin de lui,
+   sur une ligne (choix du mainteneur, 23 octobre 2026 : la caméra ne bouge pas, la rangée s'écarte). La page mesure et
+   pose `data-go-cote` et, s'il mordrait la colonne de la caméra, `--open-world-go-droite` (placeGo). */
+.world-stage[data-go-cote='oui'] .open-world-go {
+  left: auto;
+  right: var(--open-world-go-droite, calc(0.6rem + env(safe-area-inset-right, 0px)));
+  margin-inline: 0;
+  align-items: flex-end;
+}
+.world-stage[data-go-bas='oui'] .open-world-go {
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+}
+.world-stage[data-go-cote='oui'] .open-world-go .button {
+  white-space: nowrap;
+}
+/* La raison d'un « Y aller » grisé, écrite près de lui (pas seulement dite aux lecteurs d'écran), jamais sur Kéo : à sa
+   droite (`data-go-bulle="cote"`), au-dessus de lui quand il est à droite de Kéo (`dessus`), sinon en haut de l'écran
+   (`haut`). Sa largeur, jusqu'au bord droit : `--open-world-bulle`. Posée hors de la rangée, elle ne la pousse jamais :
+   « Y aller » garde sa place. */
 .open-world-go-reason {
-  max-width: min(90vw, 24rem);
-  margin: 0 auto 0.4rem;
+  position: absolute;
+  bottom: calc(100% + 0.4rem);
+  left: 50%;
+  translate: -50% 0;
+  width: max-content;
+  max-width: min(var(--open-world-bulle, 90vw), 24rem);
+  margin: 0;
   padding: 0.3rem 0.8rem;
   border: var(--border-width, 2px) solid var(--text);
   border-radius: var(--radius-control, 12px);
@@ -137,10 +160,49 @@
   color: var(--text);
   text-align: center;
 }
+.world-stage[data-go-cote='oui'] .open-world-go-reason {
+  left: auto;
+  right: 0;
+  translate: none;
+}
+.world-stage[data-go-bulle='cote'] .open-world-go-reason {
+  bottom: 0;
+  left: calc(100% + 10px);
+  translate: none;
+}
+/* En haut, entre la colonne des accès directs et celle de Réglages et de la caméra (56 px chacune, à 0,6 rem du bord,
+   et un écart de 12 px) ; `fixed` : la scène couvre tout l'écran, rien au-dessus d'elle ne la décale. */
+.world-stage[data-go-bulle='haut'] .open-world-go-reason {
+  position: fixed;
+  top: calc(0.6rem + env(safe-area-inset-top, 0px));
+  bottom: auto;
+  left: calc(0.6rem + 56px + 12px + env(safe-area-inset-left, 0px));
+  right: calc(0.6rem + 56px + 12px + env(safe-area-inset-right, 0px));
+  width: fit-content;
+  max-width: none;
+  margin: 0 auto;
+  translate: none;
+}
 .open-world-go {
   display: flex;
   flex-direction: column;
   align-items: center;
+}
+/* « Rien à faire ici. » à la place de « Aucune mission… » quand même en haut la bulle couvrirait Kéo (`data-go-court`,
+   placeBubble) ; la phrase entière reste aux lecteurs d'écran. */
+.open-world-go-short {
+  display: none;
+}
+.world-stage[data-go-court='oui'] .open-world-go-short {
+  display: inline;
+}
+.world-stage[data-go-court='oui'] .open-world-go-long {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 /* « Y aller » sans mission : délavé, comme un bouton vide du monde (WorldButton), sa raison écrite au-dessus. */
 /* Sur un écran bas (un téléphone couché, au plus grand texte surtout), « Y aller » se tient dans l'espace à droite de
