@@ -502,6 +502,11 @@ const DECK_RAISES = 4;
  */
 const SLOW_FRAME_MS = 45;
 const SLOW_FRAMES = 30;
+/**
+ * Kéo arrêté depuis tant de millisecondes avant qu'une texture d'habitant ou d'équipier parte à la carte graphique : la
+ * caméra a fini de se poser, l'image qui l'envoie ne coupe aucun mouvement.
+ */
+const UPLOAD_STILL_MS = 600;
 /** Les anneaux du terrain se refont quand le point suivi s'est éloigné de tant d'unités de leur centre. */
 const RING_MOVE = 3;
 /**
@@ -731,18 +736,22 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
     if (import.meta.env.DEV && !shader.vertexShader.includes('#include <begin_vertex>')) console.warn('unshadedLamp : #include <begin_vertex> introuvable, les ailes de la pompe restent fixes');
     // Les sommets des ailes tournent autour du moyeu, dans le plan face au sud (x, y du monde : les lieux y sont posés
     // tels quels, sans déplacement de leur maillage).
+    // Les couleurs sans ombre se reconnaissent par sommet (`vUnlit`), pas par pixel : une facette est d'une seule couleur,
+    // le résultat est le même, et le calcul se fait quelques dizaines de milliers de fois par image au lieu de quelques
+    // millions (mesure iPad du 24 octobre 2026).
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 vaneColor;\nuniform vec2 vanePivot;\nuniform float vaneAngle;\nuniform vec3 rotorColor;\nuniform vec3 rotorRim;\nuniform vec2 rotorPivot;\nuniform float rotorAngle;')
+      .replace('#include <common>', '#include <common>\nuniform vec3 vaneColor;\nuniform vec2 vanePivot;\nuniform float vaneAngle;\nuniform vec3 rotorColor;\nuniform vec3 rotorRim;\nuniform vec2 rotorPivot;\nuniform float rotorAngle;\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;\nuniform vec3 paperColor;\nuniform vec3 pathColor;\nvarying float vUnlit;')
+      .replace(
+        '#include <color_vertex>',
+        '#include <color_vertex>\nvUnlit = 0.0;\n#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - paperColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - pathColor ), vec3( 0.004 ) ) ) ) vUnlit = 1.0;\n#endif',
+      )
       .replace(
         '#include <begin_vertex>',
         '#include <begin_vertex>\n#ifdef USE_COLOR\nif ( all( lessThan( abs( color.rgb - vaneColor ), vec3( 0.004 ) ) ) ) {\n\tvec2 vaneD = transformed.xy - vanePivot;\n\tfloat vaneC = cos( vaneAngle ), vaneS = sin( vaneAngle );\n\ttransformed.xy = vanePivot + vec2( vaneC * vaneD.x - vaneS * vaneD.y, vaneS * vaneD.x + vaneC * vaneD.y );\n} else if ( all( lessThan( abs( color.rgb - rotorColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( color.rgb - rotorRim ), vec3( 0.004 ) ) ) ) {\n\tvec2 rotorD = transformed.xy - rotorPivot;\n\tfloat rotorC = cos( rotorAngle ), rotorS = sin( rotorAngle );\n\ttransformed.xy = rotorPivot + vec2( rotorC * rotorD.x - rotorS * rotorD.y, rotorS * rotorD.x + rotorC * rotorD.y );\n}\n#endif',
       );
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nuniform vec3 lampColor;\nuniform vec3 steamColor;\nuniform vec3 steamShade;\nuniform vec3 paperColor;\nuniform vec3 pathColor;')
-      .replace(
-        '#include <opaque_fragment>',
-        'if ( all( lessThan( abs( vColor.rgb - lampColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - steamShade ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - paperColor ), vec3( 0.004 ) ) ) || all( lessThan( abs( vColor.rgb - pathColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n#include <opaque_fragment>',
-      );
+      .replace('#include <common>', '#include <common>\nvarying float vUnlit;')
+      .replace('#include <opaque_fragment>', '#ifdef USE_COLOR\noutgoingLight = mix( outgoingLight, vColor.rgb, vUnlit );\n#endif\n#include <opaque_fragment>');
   };
   return m;
 }
@@ -751,13 +760,14 @@ function unshadedLamp(m: THREE.MeshLambertMaterial, vaneAngle: { value: number }
  * Les couleurs peu voilées (./world/continu/levelWorld.ts, `thinFog` : au 5e, la lumière du Phare au ras de l'horizon,
  * le mur et le panache) : chacune ne garde que sa part du brouillard du lointain (`thinFogK`, lu par le brouillard), et
  * celles qui se dessinent sans ombre (`unlit` : le panache, une fumée et non une roche) gardent leur couleur telle
- * quelle. Une ligne de shader par couleur, une seule comparaison chacune, des constantes (le programme reste celui du 5e).
+ * quelle. Une ligne de shader par couleur, une seule comparaison chacune, des constantes (le programme reste celui du 5e),
+ * dans le shader des sommets : la part du brouillard (`vThinFogK`) et le sans-ombre (`vUnlit`) passent tels quels aux pixels.
  */
 function thinFogLines(list: readonly ThinFog[]): string {
   return list
     .map(({ color, fog, unlit }) => {
       const [r, g, b] = linearRgb(color).map((v) => v.toFixed(5));
-      return `if ( all( lessThan( abs( vColor.rgb - vec3( ${r}, ${g}, ${b} ) ), vec3( 0.004 ) ) ) ) { thinFogK = ${fog.toFixed(2)};${unlit ? ' outgoingLight = vColor.rgb;' : ''} }`;
+      return `if ( all( lessThan( abs( vColor.rgb - vec3( ${r}, ${g}, ${b} ) ), vec3( 0.004 ) ) ) ) { vThinFogK = ${fog.toFixed(2)};${unlit ? ' vUnlit = 1.0;' : ''} }`;
     })
     .join('\n');
 }
@@ -783,19 +793,21 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
     shader.uniforms.heightFog = { value: new THREE.Vector3(light.fogFrom, light.fogTo, light.fogTop) };
     shader.uniforms.lanternColor = { value: lantern };
     if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <lights_fragment_end>')) console.warn('heightLit : #include <lights_fragment_end> introuvable, la lumière reste à plat');
+    // La lanterne et les couleurs peu voilées, reconnues par sommet comme la lampe, après elle : `m` doit sortir de
+    // `unshadedLamp`, qui déclare `vUnlit` et le remet à zéro (`before`).
     shader.vertexShader = shader.vertexShader
-      .replace('#include <common>', '#include <common>\nflat varying float vHeight;')
-      .replace('#include <project_vertex>', '#include <project_vertex>\nvHeight = ( modelMatrix * vec4( transformed, 1.0 ) ).y;');
+      .replace('#include <common>', '#include <common>\nflat varying float vHeight;\nvarying float vThinFogK;\nuniform vec3 lanternColor;')
+      .replace(
+        '#include <project_vertex>',
+        `#include <project_vertex>\nvHeight = ( modelMatrix * vec4( transformed, 1.0 ) ).y;\nvThinFogK = 1.0;\n#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) vUnlit = 1.0;\n${thinFogLines(thin)}\n#endif`,
+      );
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nflat varying float vHeight;\nuniform float heightLow;\nuniform float heightHigh;\nuniform float heightSunLow;\nuniform vec3 heightTintLow;\nuniform vec3 heightFog;\nuniform vec3 lanternColor;')
+      .replace('#include <common>', '#include <common>\nflat varying float vHeight;\nvarying float vThinFogK;\nuniform float heightLow;\nuniform float heightHigh;\nuniform float heightSunLow;\nuniform vec3 heightTintLow;\nuniform vec3 heightFog;')
       .replace(
         '#include <lights_fragment_end>',
         '#include <lights_fragment_end>\nfloat heightLift = smoothstep( heightLow, heightHigh, vHeight );\nreflectedLight.directDiffuse *= mix( heightSunLow, 1.0, heightLift );\nreflectedLight.indirectDiffuse *= mix( heightTintLow, vec3( 1.0 ), heightLift );',
       )
-      .replace(
-        '#include <opaque_fragment>',
-        `float thinFogK = 1.0;\n#ifdef USE_COLOR\nif ( all( lessThan( abs( vColor.rgb - lanternColor ), vec3( 0.004 ) ) ) ) outgoingLight = vColor.rgb;\n${thinFogLines(thin)}\n#endif\n#include <opaque_fragment>`,
-      )
+      .replace('#include <opaque_fragment>', 'float thinFogK = vThinFogK;\n#include <opaque_fragment>')
       .replace(
         '#include <fog_fragment>',
         '#ifdef USE_FOG\nfloat fogFactor = smoothstep( fogNear, fogFar, vFogDepth ) * mix( 1.0, heightFog.z, smoothstep( heightFog.x, heightFog.y, vHeight ) ) * thinFogK;\ngl_FragColor.rgb = mix( gl_FragColor.rgb, fogColor, fogFactor );\n#endif',
@@ -803,7 +815,7 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
   };
   // La clé du programme, une par niveau (`key` : celle du 5e reste « archipeo-hauteur », le 4e a la sienne) : Three.js
   // réutilise le programme compilé de toute matière qui porte la même clé, sans relire `onBeforeCompile`, et chaque
-  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (huit au 5e : huit comparaisons par fragment, à mesurer sur l'iPad) sont
+  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (15 au 5e, 19 au 4e : comparées par sommet depuis la mesure iPad du 24 octobre 2026) sont
   // loin de toute autre couleur du 5e (world/continu/thinFog.test.ts).
   m.customProgramCacheKey = () => key;
   return m;
@@ -1152,9 +1164,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Fait ici, avant tout ce qui l'appelle (`setFrame`, l'entrée et la sortie d'une scénette, `dispose`).
   // Un modèle prêt après l'entrée de la remise de son lieu (« Livrer » touché aussitôt arrivé) prend la place du pion : rien
   // de la remise ne dépend du pion ; dans une mission, ce qui pend de la main de l'habitant s'y règle, le pion reste.
+  // Les textures de l'habitant et de l'équipier, préparées pendant la marche, attendent que Kéo s'arrête pour partir à la
+  // carte graphique, une par image (`stepUploads`), la caméra posée (`UPLOAD_STILL_MS`) : envoyée aussitôt, une texture faisait l'image la plus longue de la
+  // marche, aux quatre niveaux (mesure iPad du 24 octobre 2026). Une scénette ouverte avant leur départ les envoie à son
+  // premier dessin, comme Three.js le fait de lui-même. Une texture libérée en attente quitte la file.
+  const uploads = new Set<THREE.Texture>();
+  const forgetUpload = (e: { target: THREE.Texture }) => void uploads.delete(e.target);
+  const prepareLater = (t: THREE.Texture) => {
+    uploads.add(t);
+    t.addEventListener('dispose', forgetUpload);
+  };
+  const stepUploads = () => {
+    const next = uploads.values().next();
+    if (next.done) return;
+    uploads.delete(next.value);
+    next.value.removeEventListener('dispose', forgetUpload);
+    renderer.initTexture(next.value);
+  };
   const habitants = createHabitantModels(
     scene,
-    (t) => renderer.initTexture(t),
+    prepareLater,
     (place) => {
       if (scenette !== place || remise?.place !== place || asked) return;
       habitants.show(place, scenetteHabitant(place, posed));
@@ -1165,7 +1194,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // quatre niveaux ; ./worldHabitantModels.ts) : leurs versions de loin, un maillage texturé à part, un appel.
   const worldHabitants = createWorldHabitantModels(scene, PLACES.map((p) => p.id), ground, (t) => renderer.initTexture(t));
   // L'équipier qui guide le lieu (GD-23, lot 1, ./equipierModels.ts) : préparé avec l'habitant, montré dans la scénette.
-  const equipiers = createEquipierModels(scene, (t) => renderer.initTexture(t));
+  const equipiers = createEquipierModels(scene, prepareLater);
   const prefetchGuide = (place: PlaceId) => {
     const g = guideOf(place);
     if (g) equipiers.prefetch(g);
@@ -4321,6 +4350,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let frame = 0;
   let last = performance.now();
   let slowFrames = 0;
+  let movedAt = 0;
   const loop = () => {
     frame = requestAnimationFrame(loop);
     const now = performance.now();
@@ -4450,6 +4480,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const turn = Math.atan2(Math.sin(heading - keo.rotation.y), Math.cos(heading - keo.rotation.y));
     keo.rotation.y += reduceMotion ? turn : turn * Math.min(1, dt * 12);
     body.bouger(t, dt, moving, reduceMotion, WALK_CADENCE);
+    if (moving) movedAt = now;
+    else if (now - movedAt > UPLOAD_STILL_MS) stepUploads();
     stepDetour(now, moving, dt);
     // La caméra rattrape Kéo hors de sa zone morte, et monte si le relief le cache ; arrêté près du Phare, elle lève
     // le regard vers la lanterne (jamais pendant la marche).
@@ -4609,6 +4641,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     dispose: () => {
       disposed = true;
+      uploads.clear();
       sceneTurnListeners.clear();
       laying = null;
       pendingLay = null;
