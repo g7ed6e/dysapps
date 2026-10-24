@@ -370,6 +370,11 @@ export interface NefSite {
    * Nef de trois quarts avant. Absente : la caméra reste derrière Kéo et garde la Nef dans la part libre de l'écran.
    */
   sheetView?: NefSheetView;
+  /**
+   * L'obstacle d'un écran plus haut que large, et le départ qui va avec (au 4e, les îles du ciel resserrées : Règle
+   * commune du port en portrait, 24 octobre 2026) ; la vue le prend à la place quand l'écran tourne. Absent : le même.
+   */
+  portrait?: Pick<NefSite, 'obstacle' | 'after' | 'obstacleTouched' | 'obstacleDone' | 'flight'>;
 }
 
 /**

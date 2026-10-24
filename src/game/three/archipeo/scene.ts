@@ -934,7 +934,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Lisière et le dirigeable au 5e.
   const departure = world.departure;
   const site = departure.port;
-  const nefSite = departure.nef;
+  // En portrait, l'obstacle de la Nef et son départ pour un écran plus haut que large, s'il en a (au 4e, les îles du ciel
+  // resserrées : Règle commune du port en portrait), pris quand l'écran tourne (`fitNefSite`).
+  const nefWide = departure.nef;
+  const nefTall = nefWide.portrait ? { ...nefWide, ...nefWide.portrait } : nefWide;
+  let nefSite = host.clientHeight > host.clientWidth ? nefTall : nefWide;
   const siteRooflines = portRooflines(site);
   const { atNode, findRoute, pathNode, snapToNetwork, startOf } = net;
   const LIGHT = world.light;
@@ -1502,9 +1506,19 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!f) nefBers.set(look, (f = nefSite.ber(look)));
     return f;
   };
-  const nefBanc = nefSite.obstacle();
+  let nefBanc = nefSite.obstacle();
   const nefStays = nefSite.stays();
-  const nefAfter = nefSite.after();
+  let nefAfter = nefSite.after();
+  /** L'obstacle de la Nef de l'écran (portrait ou paysage), jamais pendant son départ : les lieux se refont avec lui. */
+  const fitNefSite = () => {
+    const now = viewH > viewW ? nefTall : nefWide;
+    if (now === nefSite || nefTrip) return;
+    nefSite = now;
+    nefBanc = now.obstacle();
+    nefAfter = now.after();
+    placesKey = '';
+    placeVisibility();
+  };
   const siteDecor = departure.decor(options.piecesReturned);
   // Le décor hors de la Carte (au 3e, le zeppelin), dans le même maillage.
   const offMapDecor = departure.offMap?.() ?? null;
@@ -4241,6 +4255,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     bancMesh.position.set(0, 0, 0);
     nefLookNow = 4;
     placeVisibility();
+    fitNefSite();
     trip.done();
   };
   const stepNefTrip = (t: number) => {
@@ -4347,6 +4362,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     camera.updateProjectionMatrix();
     viewW = w;
     viewH = h;
+    fitNefSite();
     fitArrival();
     // La taille a changé : le décalage se repose sur la nouvelle taille (la page redonne la place d'une question).
     appliedShift.x = Number.NaN;
