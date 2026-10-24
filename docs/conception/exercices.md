@@ -112,7 +112,7 @@ Dans tous les cas, la documentation du contenu (archipel, page de l’île, ouvr
 
 ## Règles à respecter dans le contenu
 
-- Consigne unique et courte, lisible à voix haute (pas de symbole non prononçable).
+- Consigne unique et courte, lisible à voix haute (pas de symbole non prononçable). Dans une scénette du monde ouvert, la bulle dit la `consigne courte` (huit mots au plus, GD-26) ; un item peut y avoir un geste (`geste` : ranger, placer ; régler par un générateur) et ce que son objet montre (`scène`) : voir le [README du contenu](../contenu/README.md).
 - Réponse toujours présente dans les choix ; distracteurs plausibles (erreurs réelles), jamais absurdes.
 - Une correction qui explique (`explanation`, `rule`, `why`, `tip`), jamais un simple « faux ».
 - Pas de chronomètre, pas de pénalité ; l’indice est une aide, pas une faute.

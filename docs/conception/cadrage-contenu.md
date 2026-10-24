@@ -20,6 +20,13 @@ Le contenu livré, île par île, est décrit par les pages générées (archipe
 - **Le contenu monte, les règles ne changent pas** : de la 6e à la 3e, les mêmes principes dys ; en 4e et 3e, l’énoncé peut s’allonger mais reste découpé.
 - **Chaque mission cite le programme** (`compétences` dans `docs/contenu/<lieu>.md`, `programme` dans `src/apps/registry.ts`). Chaque mission cite au moins une compétence de la classe de son île ; elle peut consolider une compétence d’une classe d’avant, jamais citer celle d’une classe d’après (« Programmes 2025-2026 », ci-dessous). Une île de 6e ne cite donc que le cycle 3.
 
+### Le savoir dans le lieu (GD-26)
+
+- **Le geste est à l’item** (défaut : toucher), jamais à la mission ; une clé, une réponse, un verdict par item, quel que soit le geste : le décompte, l’adaptation et la répétition espacée ne bougent pas. Une manche de fiches à ranger ne regroupe que l’affichage.
+- **La scène est un champ de l’item de référence** (`scène`), jamais un item de plus ; l’item se comprend seul (Vue simple, Gardien, révision) ; pas de geste quand le mot est la notion.
+- **Régler ne montre pas la réponse** : à la Forge, la valeur ne s’allume qu’à « Valider ». Le texte reste affiché pour les compétences « lire » (anglais, `understanding`, `media`).
+- **Consigne courte** de huit mots au plus dans la bulle ; la consigne entière reste dans « Vue simple ». Le rappel reste ouvert dans le carnet, à gauche de la scène. Témoins construits le 24 octobre 2026 : Mangrove (ranger, `living-groups` N1, items 1 à 3), Hameau (placer, `solidarity` N1 item 6, N2 item 4 ; la répartition commune, département, région ajoutée au rappel de N1), Forge (régler, `powerOfTenReverse`), Ondes (toucher, texte affiché).
+
 ### Maths générées, français et anglais écrits à la main
 
 - **Maths** : chaque mission est un générateur reproductible (`exercises/maths.ts`, `exercises/college.ts`), avec une aide en données toujours affichée. La liste des aides qui fait foi est `AID_COMPONENTS` dans `maths.ts`.
