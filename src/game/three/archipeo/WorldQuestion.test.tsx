@@ -495,10 +495,15 @@ describe('Les Filets complets (GD-20, point 8, lot L4)', () => {
     vi.unstubAllGlobals();
   });
 
-  it.each([
-    ['sorting', 2],
-    ['e-er-ez', 3],
-  ])('%s : la phrase dans le panneau, un panier par réponse, rien dans la scène ne désigne la réponse', async (mission, n) => {
+  // « e-er-ez » se range depuis la PR 2 de GD-26 (directeur du contenu, 24/10) : trois fiches, trois caisses.
+  it('e-er-ez se range : les phrases en fiches, une caisse par terminaison', async () => {
+    vi.mocked(world.question).mockClear();
+    renderPlace('filets', 'e-er-ez');
+    await begin();
+    await vi.waitFor(() => expect(lastRequest()).toMatchObject({ place: 'filets', mission: 'e-er-ez', item: { gesture: 'ranger' } }));
+  });
+
+  it.each([['sorting', 2]])('%s : la phrase dans le panneau, un panier par réponse, rien dans la scène ne désigne la réponse', async (mission, n) => {
     vi.mocked(world.question).mockClear();
     renderPlace('filets', mission);
     await begin();

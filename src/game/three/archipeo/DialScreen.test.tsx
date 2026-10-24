@@ -4,8 +4,10 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { powerOfTenReverse } from '../../exercises/college/powers';
+import { addRelatifs, subRelatifs } from '../../exercises/college/signedNumbers';
 import { EMPTY_RANGEMENT, drop, take } from '../../world/continu/rangement';
 import type { ScenetteLayout } from '../../world/continu/scenette';
+import type { ExerciseItem } from '../../exercises/types';
 import { DialScreen, dialOf } from './DialScreen';
 import { QuestionContext } from './placeScreen';
 import { sortAnswer } from './SortScreen';
@@ -13,12 +15,12 @@ import { sortAnswer } from './SortScreen';
 const item = { ...powerOfTenReverse(() => 0.5), placeScene: { kind: 'column' } };
 const dial = dialOf(item)!;
 
-function play(onAnswer = vi.fn()) {
+function play(onAnswer = vi.fn(), shown: ExerciseItem = item) {
   const layout = { low: false, slots: [], aid: null, scenette: { validate: null } } as unknown as ScenetteLayout;
   render(
     <SettingsProvider>
       <QuestionContext.Provider value={{ place: 'forge' as never, layout, show: () => {}, instruction: '', simple: true, lowScreen: false }}>
-        <DialScreen items={[item]} answered={null} onAnswer={onAnswer} onHelp={() => {}} level={1} exerciseId="maths-4e-powers-powers-1" />
+        <DialScreen items={[shown]} answered={null} onAnswer={onAnswer} onHelp={() => {}} level={1} exerciseId="maths-4e-powers-powers-1" />
       </QuestionContext.Provider>
     </SettingsProvider>,
   );
@@ -46,6 +48,38 @@ it('ne règle pas sous zéro ni au-delà de sept coups', async () => {
   for (let i = 0; i < 8; i++) await user.click(screen.getByRole('button', { name: 'Un coup de plus' }));
   expect(screen.getByRole('status')).toHaveTextContent('7 coups sur 7');
   expect(screen.getByRole('button', { name: 'Un coup de plus' })).toBeDisabled();
+});
+
+it('à la Montée, part du premier nombre, descend sous zéro, et dit les crans depuis le départ sans la valeur', async () => {
+  // rng 0 : a = −9, b = −9, trop loin ; la boucle retire jusqu'à un bond qui reste sur l'échelle.
+  const values = [0.1, 0.9, 0.2, 0.7];
+  let i = 0;
+  const shown: ExerciseItem = { ...addRelatifs(() => values[i++ % values.length]), placeScene: { kind: 'column' } };
+  const d = dialOf(shown)!;
+  expect(d.unit).toBe('cran');
+  expect(d.min).toBe(-10);
+  expect(d.values).toHaveLength(21);
+  const onAnswer = play(vi.fn(), shown);
+  const user = userEvent.setup();
+  expect(screen.getByRole('status')).toHaveTextContent('Au départ');
+  // « Valider » est actif dès le départ : rester sur le premier nombre est une réponse.
+  expect(screen.getByRole('button', { name: /Valider/ })).toBeEnabled();
+  const jump = d.answer - d.start;
+  const name = jump > 0 ? 'Un cran de plus' : 'Un cran de moins';
+  for (let k = 0; k < Math.abs(jump); k++) await user.click(screen.getByRole('button', { name }));
+  expect(screen.getByRole('status')).toHaveTextContent(`${Math.abs(jump)} cran${Math.abs(jump) > 1 ? 's' : ''} vers le ${jump > 0 ? 'haut' : 'bas'}`);
+  expect(screen.getByRole('status')).not.toHaveTextContent(String(shown.answer));
+  await user.click(screen.getByRole('button', { name: /Valider/ }));
+  expect(onAnswer).toHaveBeenCalledWith({ results: [{ key: shown.key, correct: true }], detail: { chosen: shown.answer } });
+});
+
+it('à la Montée, l’aide du lieu ne montre que le départ, jamais le bond ni l’arrivée', () => {
+  for (const gen of [addRelatifs, subRelatifs]) {
+    const x = gen(Math.random);
+    const d = dialOf(x)!;
+    expect(d.aid).toEqual({ kind: 'number-line', props: { min: -10, max: 10, points: [d.start] } });
+    expect(d.values[d.answer + 10]).toBe(x.answer);
+  }
 });
 
 it('dit l’explication de chaque fiche mal rangée, une à une', () => {

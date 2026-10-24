@@ -14,6 +14,7 @@ import { Aid } from '../../exercises/Aid';
 import type { AidData } from '../../exercises/maths';
 import type { AnswerSlot, QuestionLayout, ScreenBox, SortLook } from '../../world/continu/questionScene';
 import type { PlaceId } from '../../world/continu/levelPlan';
+import type { DialShown } from '../../world/continu/placeArt';
 import type { ScenetteLayout } from '../../world/continu/scenette';
 import { isItemScene, type ItemGesture, type ItemScene } from '../../world/continu/questions';
 
@@ -34,8 +35,8 @@ export interface ItemShown {
   gesture?: ItemGesture | null;
   /** La consigne de la bulle propre à l'item (son geste), huit mots au plus. */
   short?: string;
-  /** Le geste « régler » : les crans réglés et leur nombre au plus, que la scène montre sans nombre (la lueur). */
-  dial?: { count: number; max: number };
+  /** Le geste « régler » : le réglage, que la scène montre sans nombre (la flamme de la Forge, le godet de la Montée). */
+  dial?: DialShown;
 }
 
 export interface QuestionContextValue {
@@ -67,8 +68,7 @@ export const sameItem = (a: ItemShown, b: ItemShown) =>
   JSON.stringify(a.sort ?? null) === JSON.stringify(b.sort ?? null) &&
   (a.gesture ?? null) === (b.gesture ?? null) &&
   a.short === b.short &&
-  a.dial?.count === b.dial?.count &&
-  a.dial?.max === b.dial?.max;
+  JSON.stringify(a.dial ?? null) === JSON.stringify(b.dial ?? null);
 
 export function useQuestion(): QuestionContextValue {
   const ctx = useContext(QuestionContext);
@@ -122,7 +122,7 @@ export function useStopOnLeave(): void {
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 
 /** Une aide décrite en données (une carte de règle, une grille de points, une figure), ou `null`. */
-function aidData(aid: unknown): AidData | null {
+export function aidData(aid: unknown): AidData | null {
   if (!isRecord(aid) || typeof aid.kind !== 'string' || !isRecord(aid.props)) return null;
   return { kind: aid.kind, props: aid.props };
 }
