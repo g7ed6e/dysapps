@@ -186,6 +186,9 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
     b.quad(down(rpe), down(rqe), rqe, rpe, rim);
     b.quad(down(lqe), down(lpe), lpe, lqe, rim);
   };
+  // Les morceaux du ruban, puis ceux qui se suivent d'un seul tenant réunis (`joinRun`) : un ruban droit sur un sol plat
+  // ou d'une pente égale garde la même image avec moins de triangles.
+  const run: [number, number, boolean][] = [];
   for (let k = 0; k < n; k++) {
     const d0 = (len * k) / n;
     const d1 = (len * (k + 1)) / n;
@@ -199,9 +202,45 @@ function edgeRibbon(b: FacetBuilder, ground: (x: number, z: number) => number, e
     const spans: [number, number][] = cut ? [[d0, Math.min(d1, cut[0])], [Math.max(d0, cut[1]), d1]] : [[d0, d1]];
     for (const [s0, s1] of spans) {
       if (s1 - s0 < 1e-3) continue;
-      piece(s0, s1, deck ? HALF_WIDTH.deck : HALF_WIDTH.path, deck);
+      run.push([s0, s1, deck]);
     }
   }
+  const height = (d: number) => {
+    const v = point(d);
+    return standingHeight(ground(v.x, v.z));
+  };
+  for (const [s0, s1, deck] of joinRun(run, height)) piece(s0, s1, deck ? HALF_WIDTH.deck : HALF_WIDTH.path, deck);
+}
+
+/** L'écart de hauteur en deçà duquel un point du ruban est sur la droite de ses voisins : bien moins qu'un pixel. */
+const JOIN_TOLERANCE = 1e-4;
+
+/**
+ * Réunit les morceaux d'un ruban (`run` : de, à, en bois) qui se touchent, de même nature, et dont le point commun est
+ * sur la droite qui joint leurs bouts (`height`, la hauteur du sol à une distance du premier nœud) : le ruban réuni passe
+ * par les mêmes points, la même image et la même hauteur sous les pieds (`pathTopAt` lit les mêmes bouts de morceau
+ * réunis : la hauteur entre eux est la même droite).
+ */
+export function joinRun(run: readonly (readonly [number, number, boolean])[], height: (d: number) => number): [number, number, boolean][] {
+  const out: [number, number, boolean][] = [];
+  // Les points intérieurs du dernier morceau réuni : tous restent sur sa droite, jamais une dérive de proche en proche.
+  let inside: number[] = [];
+  const onLine = (a: number, c: number, points: readonly number[]) => {
+    const ya = height(a);
+    const yc = height(c);
+    return points.every((d) => Math.abs(height(d) - (ya + ((yc - ya) * (d - a)) / (c - a))) < JOIN_TOLERANCE);
+  };
+  for (const [s0, s1, deck] of run) {
+    const last = out.at(-1);
+    if (last && last[2] === deck && Math.abs(last[1] - s0) < 1e-9 && onLine(last[0], s1, [...inside, s0])) {
+      last[1] = s1;
+      inside.push(s0);
+      continue;
+    }
+    out.push([s0, s1, deck]);
+    inside = [];
+  }
+  return out;
 }
 
 /** Le sable d'un sentier repeint : sa couleur, et sa hauteur au-dessus du sable du sentier. */
