@@ -4386,7 +4386,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (++slowFrames > SLOW_FRAMES) renderer.setPixelRatio(1);
     } else slowFrames = 0;
     const finer = resolution.frame(now - last, now);
-    if (finer !== null && finer < renderer.getPixelRatio()) renderer.setPixelRatio(finer);
+    if (finer !== null && finer < renderer.getPixelRatio()) {
+      renderer.setPixelRatio(finer);
+      // Le canevas refait s'efface : la Carte, dessinée à la demande, se redessine aussitôt.
+      mapDirty = true;
+    }
     const dt = Math.max(0, Math.min(0.1, (now - last) / 1000));
     last = now;
     const t = now / 1000;
