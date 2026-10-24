@@ -487,14 +487,26 @@ const CAMERA_TURN = { step: Math.PI / 4, seconds: 0.35, rings: Math.PI / 8, dead
 /**
  * La caméra qui tourne aussi pendant une scénette (lot commun des scénettes, choix du mainteneur du 18 octobre 2026 :
  * « caméra libre ») : deux doigts la font tourner autour du point visé de la scène ; les objets des réponses restent
- * sous leurs boutons (ils se reposent au sol sous eux à chaque image du geste), le décor tourne. Hors de la pose
- * prévue, elle garde `clearance` unités devant tout volume (le lieu, le décor de près) et au-dessus du sol, sans
- * s'approcher à moins de `minDistance` du point visé. Quand un volume l'arrêterait à moins de `keep` de sa distance (un
- * lieu haut juste derrière la scène), elle monte d'abord au-dessus, par crans de `climb`, jusqu'à `topElevation`.
+ * sous leurs boutons (ils se reposent au sol sous eux à chaque image du geste), le décor tourne. Elle garde sa distance
+ * et sa hauteur (lot transverse des scénettes, piste A du directeur artistique, 21 octobre 2026 : elle ne monte plus sur
+ * les toits) ; seulement, elle reste `clearance` unités au-dessus du sol. Ce qui passe entre elle et Kéo ou l'habitant
+ * s'estompe (`SEE_THROUGH`).
  */
-const SCENE_TURN = { clearance: 1, minDistance: 4, keoHead: 1.3, habitantHead: 1.5, margin: 0.3, tries: 8, rise: 0.6, keep: 0.7, climb: (8 * Math.PI) / 180, climbs: 5, topElevation: (65 * Math.PI) / 180 } as const;
 /** Les pas où la margelle des réponses à terre se relève au-dessus du sol (un seul suffit sur le plat). */
 const DECK_RAISES = 4;
+const SCENE_TURN = { clearance: 1, keoHead: 1.3, habitantHead: 1.5 } as const;
+/**
+ * La trame des volumes proches (lot transverse des scénettes, piste A) : pendant une scénette, le lieu, sa maquette et le
+ * décor de près qui passent entre la caméra et la tête de Kéo ou de l'habitant se dessinent en trame fine (une part
+ * `holes` de leurs pixels tombe, motif ordonné de 4 × 4) : un toit, une dalle ou un tronc ne cache plus la scène. La
+ * trame suit un cône autour de chaque regard : `radius` unités autour de la tête, plus `open` par unité vers la caméra
+ * (il s'ouvre comme le champ de la vue) ; rien à moins de `keep` de la tête (le sol sous ses pieds, son voisin), et son
+ * bord s'adoucit sur `soft` de son rayon. Le sol, l'eau, Kéo, les habitants et les objets des réponses ne s'estompent
+ * jamais. Sur le terrain (les arbres, les rochers des tuiles), seuls s'estompent les pans plus raides que `steep` (la
+ * part verticale de leur normale) et ce qui passe à plus de `above` unités au-dessus du sol de la scène : jamais le sol
+ * sous la caméra. Quelques lignes de shader, aucun triangle ni appel de plus.
+ */
+const SEE_THROUGH = { radius: 1.3, open: 0.32, keep: 1.4, soft: 0.35, holes: 0.82, steep: 0.7, above: 2.5 } as const;
 /**
  * La finesse du rendu : l'anticrénelage reste (la scène est légère, quelques milliers de triangles) ; le rapport de
  * pixels est plafonné à 2, puis ramené à 1 si l'appareil peine (des images de plus de 45 ms, trente de suite), comme
@@ -822,6 +834,48 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
 }
 
 /**
+ * La trame des volumes proches (`SEE_THROUGH`), ajoutée à un matériau des lieux : ses fragments dans le cône d'un des
+ * deux regards (`see.a`, `see.b` : les têtes de Kéo et de l'habitant, depuis `cameraPosition`) tombent selon un motif
+ * ordonné fixe à l'écran, d'autant plus nombreux que le fragment est loin du bord du cône. `see.on` à 0 hors des
+ * scénettes : rien ne change. Sa propre clé de programme (`key`), à côté de celle du matériau des lieux.
+ */
+function seeThrough(m: THREE.MeshLambertMaterial, see: SeeUniforms, key: string, ground = false): THREE.MeshLambertMaterial {
+  const before = m.onBeforeCompile;
+  m.onBeforeCompile = (shader, renderer) => {
+    before.call(m, shader, renderer);
+    shader.uniforms.seeOn = see.on;
+    shader.uniforms.seeA = see.a;
+    shader.uniforms.seeB = see.b;
+    shader.uniforms.seeFloor = see.floor;
+    if (import.meta.env.DEV && !shader.fragmentShader.includes('#include <clipping_planes_fragment>')) console.warn('seeThrough : #include <clipping_planes_fragment> introuvable, la trame ne se fait pas');
+    shader.vertexShader = shader.vertexShader
+      .replace('#include <common>', '#include <common>\nvarying vec3 vSeeWorld;')
+      .replace('#include <project_vertex>', '#include <project_vertex>\nvSeeWorld = ( modelMatrix * vec4( transformed, 1.0 ) ).xyz;');
+    const S = SEE_THROUGH;
+    shader.fragmentShader = shader.fragmentShader
+      .replace(
+        '#include <common>',
+        `#include <common>\nvarying vec3 vSeeWorld;\nuniform float seeOn;\nuniform vec3 seeA;\nuniform vec3 seeB;\nuniform float seeFloor;\nfloat seeCone( vec3 head ) {\n\tvec3 d = head - cameraPosition;\n\tfloat len = length( d );\n\tvec3 u = d / max( len, 1e-4 );\n\tvec3 p = vSeeWorld - cameraPosition;\n\tfloat s = dot( p, u );\n\tif ( s <= 0.0 || s >= len - ${S.keep.toFixed(2)} ) return 0.0;\n\tfloat r = ${S.radius.toFixed(2)} + ( len - s ) * ${S.open.toFixed(2)};\n\treturn 1.0 - smoothstep( r * ${(1 - S.soft).toFixed(2)}, r, length( p - u * s ) );\n}\nfloat seeBayer2( vec2 a ) { a = floor( a ); return fract( a.x / 2.0 + a.y * a.y * 0.75 ); }`,
+      )
+      .replace(
+        '#include <clipping_planes_fragment>',
+        `#include <clipping_planes_fragment>\nif ( seeOn > 0.5${ground ? ` && ( abs( normalize( cross( dFdx( vSeeWorld ), dFdy( vSeeWorld ) ) ).y ) < ${S.steep.toFixed(2)} || vSeeWorld.y > seeFloor + ${S.above.toFixed(2)} )` : ''} ) {\n\tfloat seeK = max( seeCone( seeA ), seeCone( seeB ) );\n\tif ( seeK > 0.0 && seeBayer2( 0.5 * gl_FragCoord.xy ) * 0.25 + seeBayer2( gl_FragCoord.xy ) < seeK * ${S.holes.toFixed(2)} ) discard;\n}`,
+      );
+  };
+  m.customProgramCacheKey = () => key;
+  return m;
+}
+
+/** Les réglages de la trame que la boucle d'image remplit : allumée ou non, et les deux têtes regardées. */
+interface SeeUniforms {
+  on: { value: number };
+  a: { value: THREE.Vector3 };
+  b: { value: THREE.Vector3 };
+  /** Le sol de la scénette : sur le terrain, seuls s'estompent ce qui se dresse (pentes raides) et ce qui passe au-dessus. */
+  floor: { value: number };
+}
+
+/**
  * Le matériau de l'eau (reprise du lot 3) : l'image de l'eau porte trois champs (le cœur des bras de mer, l'eau claire,
  * le palier du milieu au large, ./world/continu/sea.ts) ; le shader les lit interpolés et tranche net sur leur ligne
  * zéro, adoucie d'un pixel d'écran (`fwidth`) : quatre paliers francs, au contour lisse qui épouse le bras, jamais une flaque pixellisée. Une ligne de
@@ -946,9 +1000,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const landMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
   // Au 5e, la lumière par la hauteur (ses deux étages) ; le 6e garde son matériau tel quel.
   if (world.heightLight) heightLit(landMaterial, world.heightLight, world.thinFog, fifth ? 'archipeo-hauteur' : `archipeo-hauteur-${level}`);
+  // Le lieu, sa maquette et le décor de près : le même matériau, qui s'estompe entre la caméra et la scénette (`SEE_THROUGH`).
+  const see: SeeUniforms = { on: { value: 0 }, a: { value: new THREE.Vector3() }, b: { value: new THREE.Vector3() }, floor: { value: 0 } };
+  const volumeMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
+  if (world.heightLight) heightLit(volumeMaterial, world.heightLight, world.thinFog, fifth ? 'archipeo-hauteur' : `archipeo-hauteur-${level}`);
+  seeThrough(volumeMaterial, see, `archipeo-trame-${level}`);
+  // Le terrain (les tuiles, leurs arbres et leurs rochers) : la même trame, sans jamais trouer le sol.
+  const groundMaterial = unshadedLamp(new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true }), vaneAngle, rotorAngle);
+  if (world.heightLight) heightLit(groundMaterial, world.heightLight, world.thinFog, fifth ? 'archipeo-hauteur' : `archipeo-hauteur-${level}`);
+  seeThrough(groundMaterial, see, `archipeo-trame-sol-${level}`, true);
   const tiles = createTileStore(field, undefined, world.tiles);
-  const nearRing = new RingMesh(landMaterial, 9000);
-  const farRing = new RingMesh(landMaterial, 6000);
+  const nearRing = new RingMesh(groundMaterial, 9000);
+  const farRing = new RingMesh(groundMaterial, 6000);
   scene.add(nearRing.mesh, farRing.mesh);
   const touchables: THREE.Object3D[] = [nearRing.mesh, farRing.mesh];
 
@@ -1041,7 +1104,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const tallTop = tallTops.get(id);
     if (tallTop) tallTop.y = foot.y + top;
   };
-  const placesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
+  const placesMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), volumeMaterial));
   placesMesh.name = 'lieux';
   // Le premier triangle de ce que les lieux posent hors de leur emprise (`PlaceArt.reach`, aux Nacelles les deux câbles),
   // rangé en dernier dans le maillage des lieux : un toucher qui le rencontre passe au travers (il ne répond pas).
@@ -1050,7 +1113,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const solid = (h: THREE.Intersection): boolean => !(h.object === placesMesh && (h.faceIndex ?? 0) >= reachFrom);
   // Le lieu suivi, à part, du même matériau, pris dans la brume comme le reste : sorti d'elle, il se détachait net du
   // lointain voilé (retour du mainteneur, 19 octobre 2026) ; de loin, c'est la marque qui le montre.
-  const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
+  const landmarkMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), volumeMaterial));
   // Au 6e, sans brouillard : la partie qui descend, tout près, se détache plus claire. Au 5e, dans le brouillard comme
   // tout son décor (GD-22, lot 2) : son éclat (`emissive`) suffit à la détacher.
   const poseMaterial = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true, fog: !sixth, emissive: POSE_GLOW });
@@ -3213,7 +3276,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // au départ, un seul maillage ; la lumière de la réussite d'une scénette posée (la lanterne de proue des Quais),
   // dessinée par le maillage de la réaction avec un matériau sans lumière : aucun appel de plus ; la descente de la
   // caméra, courte (coupe franche avec « Réduire les animations »).
-  const decorMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), landMaterial));
+  const decorMesh = still(new THREE.Mesh(new THREE.BufferGeometry(), volumeMaterial));
   decorMesh.visible = false;
   scene.add(decorMesh);
   const lampMaterial = new THREE.MeshBasicMaterial({ color: LANTERN.off });
@@ -3227,10 +3290,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let finaleShown = false;
   /** Ceux qui écrivent les repères de la scène (la page) : la caméra tournée les déplace. */
   const sceneTurnListeners = new Set<(labels: LabelOnScreen[]) => void>();
-  const turnFrom = new THREE.Vector3();
-  const turnDir = new THREE.Vector3();
-  const turnSight = new THREE.Vector3();
-  const toVector = (p: Vec3) => new THREE.Vector3(p.x, p.y, p.z);
   // La scène de l'item est-elle à montrer (cachée le temps de la descente) ?
   let itemShown = false;
   const descent = {
@@ -3263,6 +3322,18 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     itemMesh.visible = itemShown;
   };
   /** La lampe qui s'allume, à l'instant `t`. */
+  /**
+   * La trame des volumes proches (`SEE_THROUGH`), le temps d'une image de scénette : les têtes de Kéo et de l'habitant ;
+   * éteinte ailleurs (la boucle la remet à zéro après l'image).
+   */
+  const seeScene = () => {
+    if (!scenette) return;
+    const h = scenetteHabitant(scenette, posed);
+    see.a.value.set(keo.position.x, keo.position.y + SCENE_TURN.keoHead, keo.position.z);
+    see.b.value.set(h.x, h.y + SCENE_TURN.habitantHead, h.z);
+    see.floor.value = Math.min(keo.position.y, h.y);
+    see.on.value = 1;
+  };
   const stepLamp = (t: number) => {
     if (lampStart === null) return;
     const u = reduceMotion ? 1 : Math.min(1, (t - lampStart) / FINALE_LAMP_SECONDS);
@@ -3358,69 +3429,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     return hit ? { x: hit.x, y: hit.y, z: hit.z } : null;
   };
   /**
-   * Tourne la pose prévue d'une scénette de `sceneYaw` autour de son point visé, puis l'écarte des volumes et du sol
-   * (`SCENE_TURN`). À l'angle nul, la pose prévue, telle quelle.
+   * Tourne la pose prévue d'une scénette de `sceneYaw` autour de son point visé, à la même distance et à la même hauteur,
+   * relevée seulement au-dessus du sol (`SCENE_TURN`) : les volumes entre elle et la scène s'estompent (`SEE_THROUGH`).
+   * À l'angle nul, la pose prévue, telle quelle.
    */
   const turnScenePose = (pose: CameraPose) => {
     if (!sceneYaw) return;
-    const t = pose.target;
-    pose.position = orbitAround(pose.position, t, sceneYaw);
-    turnFrom.set(t.x, t.y, t.z);
-    turnDir.set(pose.position.x - t.x, pose.position.y - t.y, pose.position.z - t.z);
-    const dist = turnDir.length();
-    turnDir.normalize();
-    // Les maillages montrés seulement (un lieu effacé le temps de la scénette ne retient pas la caméra).
-    const shown = [placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible);
-    const obstacle = () => {
-      raycaster.set(turnFrom, turnDir);
-      raycaster.far = dist + SCENE_TURN.clearance;
-      // Un câble hors de l'emprise d'un lieu n'arrête pas la caméra (`solid`).
-      const h = raycaster.intersectObjects(shown, false).find((i) => i.distance > 0.5 && solid(i));
-      raycaster.far = Infinity;
-      return h;
-    };
-    let hit = obstacle();
-    // Un volume haut juste derrière la scène (la tour du Guet) : la caméra monte au-dessus, à la même distance, plutôt
-    // que de s'approcher jusque dans lui ; au plus `SCENE_TURN.climbs` crans de `climb`.
-    // Le cap horizontal, unitaire, figé avant la montée : chaque cran repart de lui, sans cumuler les cosinus.
-    const horizontal = Math.hypot(turnDir.x, turnDir.z);
-    const hx = horizontal > 1e-6 ? turnDir.x / horizontal : 0;
-    const hz = horizontal > 1e-6 ? turnDir.z / horizontal : 0;
-    let elevation = Math.atan2(turnDir.y, horizontal);
-    for (let k = 0; k < SCENE_TURN.climbs && horizontal > 1e-6 && hit && hit.distance - SCENE_TURN.clearance < dist * SCENE_TURN.keep; k++) {
-      elevation = Math.min(SCENE_TURN.topElevation, elevation + SCENE_TURN.climb);
-      const c = Math.cos(elevation);
-      turnDir.set(hx * c, Math.sin(elevation), hz * c);
-      hit = obstacle();
-    }
-    let d = hit ? Math.max(SCENE_TURN.minDistance, Math.min(dist, hit.distance - SCENE_TURN.clearance)) : dist;
-    let rise = 0;
-    const place = () => {
-      pose.position = { x: t.x + turnDir.x * d, y: t.y + turnDir.y * d + rise, z: t.z + turnDir.z * d };
-      const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
-      if (pose.position.y < floor) pose.position.y = floor;
-    };
-    place();
-    // Rien ne cache Kéo ni l'habitant (directeur artistique, relecture du lot commun) : tant que l'un d'eux est caché
-    // par un volume, la caméra s'approche et monte, au plus `SCENE_TURN.tries` fois.
-    const heads = [keo.position.clone().setY(keo.position.y + SCENE_TURN.keoHead), ...(scenette ? [toVector(scenetteHabitant(scenette, posed)).setY(scenetteHabitant(scenette, posed).y + SCENE_TURN.habitantHead)] : [])];
-    const blockers = [placesMesh, landmarkMesh, decorMesh].filter((m) => m.visible);
-    const hidden = () =>
-      heads.some((h) => {
-        turnFrom.set(pose.position.x, pose.position.y, pose.position.z);
-        turnSight.subVectors(h, turnFrom);
-        const far = turnSight.length() - SCENE_TURN.margin;
-        raycaster.set(turnFrom, turnSight.normalize());
-        raycaster.far = far;
-        const blocked = raycaster.intersectObjects(blockers, false).some(solid);
-        raycaster.far = Infinity;
-        return blocked;
-      });
-    for (let k = 0; k < SCENE_TURN.tries && hidden(); k++) {
-      d = Math.max(SCENE_TURN.minDistance, d * 0.85);
-      rise += SCENE_TURN.rise;
-      place();
-    }
+    pose.position = orbitAround(pose.position, pose.target, sceneYaw);
+    const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
+    if (pose.position.y < floor) pose.position.y = floor;
   };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
@@ -4419,7 +4436,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
+      seeScene();
       renderer.render(scene, camera);
+      see.on.value = 0;
       meter?.tick(renderer.info, now);
       return;
     }
@@ -4669,6 +4688,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       nearRing.dispose();
       farRing.dispose();
       landMaterial.dispose();
+      volumeMaterial.dispose();
+      groundMaterial.dispose();
       veilMaterial.dispose();
       seaMaterial.dispose();
       seaTexture.dispose();
