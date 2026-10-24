@@ -10,7 +10,7 @@ import type { ScenetteLayout } from '../../world/continu/scenette';
 import type { ExerciseItem } from '../../exercises/types';
 import { DialScreen, dialOf } from './DialScreen';
 import { QuestionContext } from './placeScreen';
-import { sortAnswer } from './SortScreen';
+import { sortAnswer, spokenFiche } from './SortScreen';
 
 const item = { ...powerOfTenReverse(() => 0.5), placeScene: { kind: 'column' } };
 const dial = dialOf(item)!;
@@ -95,4 +95,9 @@ it('dit l’explication de chaque fiche mal rangée, une à une', () => {
     ],
     detail: { explanation: 'La baleine a des mamelles. Le manchot a des plumes.' },
   });
+});
+
+it('dit le trou d’une fiche « blanc », « blank » en anglais', () => {
+  expect(spokenFiche('Il va mang… à midi.')).toBe('Il va mang blanc à midi.');
+  expect(spokenFiche('I … got a dog.', 'en')).toBe('I blank got a dog.');
 });
