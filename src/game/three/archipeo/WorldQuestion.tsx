@@ -43,9 +43,10 @@ import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelP
 import { placePoseWords } from './constructionParts';
 import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
+import { DialScreen } from './DialScreen';
 import { SortScreen } from './SortScreen';
 import { ConsigneIcon, IconLabel, PlaceAid, PlaceCarnet, PlaceDocument, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
 import { WorldDone } from './WorldDone';
@@ -176,7 +177,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // Le geste « ranger » : les sujets sont des mots, et leurs étiquettes se mesurent comme celles des cloches.
     const words = (place === 'phare' && mission !== 'syllables') || (place === 'filets' && mission === 'word-classes');
     // « Valider » n'a sa place que pour marquer les cloches ou ranger ; ailleurs, un toucher répond.
-    const validate = place === 'phare' || (picked !== undefined && rangeGesture(place, picked.id) !== null);
+    const validate = place === 'phare' || (picked !== undefined && rangeGesture(place, picked.id) !== null) || Boolean(item?.gesture);
     // Au téléphone couché, la jauge des Marais salants garde la colonne à gauche (la disposition B) : sous la bulle, ses
     // graduations passeraient sous 8 px l'une de l'autre.
     const column = item?.scene.kind === 'jauge' && lowScreen;
@@ -426,6 +427,10 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // La révision le dit en ouvrant sa consigne, sans date ni échec (« Tu revois 5 questions. »), lue avec elle.
   const entry = revision?.entry ?? null;
   const instruction = placed && entry ? `${entry} ${placed}` : placed;
+  // Dans la bulle (GD-26), la consigne courte : celle de l'item (son geste), sinon celle du niveau ; la consigne entière
+  // reste dans « Vue simple » et pour les lecteurs d'écran.
+  const short = item?.short ?? ready?.def.shortInstruction;
+  const bubbleLine = short ? (entry ? `${entry} ${short}` : short) : instruction;
   // La fin d'un morceau de révision : la file et les blocs d'une révision, jamais la session de l'application.
   const runnerRevision = useMemo<RunnerRevision | undefined>(
     () =>
@@ -475,7 +480,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
             <Icon name="play" /> Commencer
           </button>
         )}
-        {tight && (
+        {/* La consigne courte de la bulle (GD-26) tient sur sa ligne : pas de « Lire la suite » ; la consigne entière est
+            dans « Vue simple ». */}
+        {tight && !(bulle && bubbleLine !== instruction) && (
           <button
             type="button"
             className="button world-consigne-more"
@@ -524,6 +531,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // elle ; la consigne reste dite, et dépliée, après la règle. La manche passe alors sous « Valider » et le panneau
     // défile (dérogation du 16 octobre 2026, choix du mainteneur : ce seul réglage, l'Enclos seulement).
     const rule = ranges && grandTexte && simpleLow ? placeRuleLine(place, exerciseId, readyLevel) : null;
+    const line = bulle ? bubbleLine : instruction;
     const head: ReactNode = tight ? (
         <div className="world-scenette-head world-consigne-line">
           <p className="world-consigne-fold" id="consigne-ligne">
@@ -536,7 +544,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
               </>
             )}
             <span aria-hidden="true" hidden={(Boolean(target) || Boolean(rule)) && !consigneOpen}>
-              {frenchTypography(instruction)
+              {frenchTypography(line)
                 .split(' ')
                 .map((word, i) => (
                   <Fragment key={i}>
@@ -559,7 +567,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
               </>
             )}
           </p>
-          <SpeakButton text={frenchTypography(instruction)} label="Consigne" compact />
+          <SpeakButton text={frenchTypography(line)} label="Consigne" compact />
         </div>
       ) : (
         <div className="world-scenette-head">
@@ -580,8 +588,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
         ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
         : ranges
           ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed))
-          : (items) => placeItems(place, exerciseId, items, fractionWords, simple).map((it) => [it]),
-      Screen: marks ? BellScreen : ranges ? SortScreen : PlaceChoiceScreen,
+          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed)),
+      Screen: marks ? BellScreen : ranges ? SortScreen : GestureScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
       extra,
@@ -595,6 +603,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     };
   }, [
     exerciseId,
+    bubbleLine,
     bellsPerRound,
     sortsPerRound,
     bellTarget,
@@ -856,6 +865,17 @@ export function PlaceText({ text }: { text: string }) {
  * grille, le schéma coté, la figure exacte restent dans le panneau, GD-20, point 8), la règle de l'item, l'indice sur
  * demande, une réponse par objet du lieu. La correction est celle de l'écran classique (CalculationScreen).
  */
+/**
+ * L'écran d'un item selon son geste (GD-26) : ranger ou placer (SortScreen), régler (DialScreen), toucher (une réponse
+ * par objet du lieu).
+ */
+function GestureScreen(props: ScreenProps) {
+  const gesture = itemGesture(props.items[0]);
+  if (gesture === 'ranger' || gesture === 'placer') return <SortScreen {...props} />;
+  if (gesture === 'régler') return <DialScreen {...props} />;
+  return <PlaceChoiceScreen {...props} />;
+}
+
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
   const { layout, show, simple } = useQuestion();
   useStopOnLeave();

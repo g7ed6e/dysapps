@@ -3248,3 +3248,53 @@
 .open-world .world-loading {
   z-index: 21;
 }
+
+/* Le geste « régler » (GD-26) : les crans réglés, un point plein par coup, sans valeur écrite avant « Valider ». */
+.world-dial-crans {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.world-dial-cran {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.world-dial-cran.plein {
+  background: currentColor;
+}
+.world-dial-compte {
+  margin: 0;
+}
+
+/* Les fiches à ranger, le panier à placer (GD-26) : en main dans la bulle de l'habitant, côte à côte, chacune de toute
+   sa largeur ; la rangée sous la scène garde les caisses ou les portes. */
+.world-question .world-answers.world-hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.world-question .in-world.bulle .world-question-prompt > .world-answers.world-hand {
+  grid-column: 1;
+  grid-row: 1;
+}
+.world-question .world-answers.world-hand .world-answer {
+  position: relative;
+  flex-shrink: 0;
+  max-width: 100%;
+  min-width: 48px;
+  min-height: 56px;
+}
+.world-question .world-answers.world-hand .world-answer-label {
+  position: static;
+  min-height: 56px;
+  flex-direction: column;
+  gap: 0;
+  padding: 0.1rem 0.6rem;
+  line-height: 1.2;
+  white-space: normal;
+}
+.world-question .world-hand .world-sort-verbe {
+  font-weight: 400;
+}

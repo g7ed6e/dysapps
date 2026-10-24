@@ -4,6 +4,7 @@
   "type": "solidarity",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "civics-5e-equality-solidarity-solidarity-2-0",
@@ -101,6 +102,9 @@
       "answer": "à l’échelle européenne",
       "hint": "Qui envoie l’argent ?",
       "explanation": "L’Union européenne et des secouristes d’autres pays aident : c’est une solidarité à l’échelle européenne.",
+      "gesture": "placer",
+      "shows": "l’argent pour reconstruire après le séisme",
+      "shortInstruction": "Pose le panier devant sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -37,6 +37,9 @@ export const powerOfTen: ItemGenerator = (rng) => {
   };
 };
 
+/** Le plus de coups qu'on règle (avis du contenu : de 1 à 7 coups, le plus grand exposant tiré). */
+const DIAL_MAX = 7;
+
 /** L'inverse : 1 000 = 10 puissance combien ? */
 export const powerOfTenReverse: ItemGenerator = (rng) => {
   const n = randomInt(2, 7, rng);
@@ -50,6 +53,11 @@ export const powerOfTenReverse: ItemGenerator = (rng) => {
     hint: 'Compte les zéros : c’est l’exposant.',
     explanation: `${fmt(10 ** n)} a ${n} zéros : c’est ${answer}.`,
     aid: { kind: 'rule-card', props: { title: 'Puissances de 10', lines: POW10_RULES } },
+    // Dans le lieu (GD-26) : régler le nombre de coups, chacun multiplie par 10 ; la valeur ne s'allume qu'à « Valider »
+    // (avis du contenu : sinon l'élève règle jusqu'à ce que les nombres se ressemblent). La grille garde les choix.
+    gesture: 'régler',
+    shortInstruction: 'Règle les coups, puis valide.',
+    dial: { min: 1, max: DIAL_MAX, answer: n, values: Array.from({ length: DIAL_MAX + 1 }, (_, c) => `${pow(10, c)} = ${fmt(10 ** c)}`) },
   };
 };
 

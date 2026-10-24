@@ -44,6 +44,7 @@ créature : Braise
 - description : Aire du parallélogramme, volumes du prisme droit et du cylindre, puis de la pyramide et du cône.
 - compétences : c4.ma.c.aires-volumes
 - consigne : Calcule, puis choisis la bonne réponse. Les formules sont affichées.
+- consigne courte : Calcule, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-4e-powers

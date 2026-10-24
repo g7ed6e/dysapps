@@ -17,6 +17,7 @@ créature : Écho
 - compétences : c4.en.lire.informations · c4.en.lire.recit
 - langue : en
 - consigne : Lis le petit texte en anglais, puis choisis la bonne réponse à la question. La règle est affichée.
+- consigne courte : Lis le texte, puis touche la bonne réponse.
 - bravo : Message reçu !
 - erreur : {explanation}
 - bloc gagné : english-3e-comprehension
@@ -140,6 +141,7 @@ Pour tous les items :
 - compétences : c4.en.langue.phrase-complexe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien relié !
 - erreur : {explanation}
 - bloc gagné : english-3e-comprehension
@@ -250,6 +252,7 @@ Pour tous les items :
 - compétences : c4.en.langue.lexique
 - langue : en
 - consigne : Que veut dire le mot entre guillemets ? Attention aux faux amis. La règle est affichée.
+- consigne courte : Touche le sens du mot entre guillemets.
 - bravo : Pas piégé !
 - erreur : {explanation}
 - bloc gagné : english-3e-comprehension
@@ -385,6 +388,7 @@ Pour tous les items :
 - compétences : c4.en.culture.ecole-societe · c4.en.culture.langages
 - langue : en
 - consigne : Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 - bravo : Message reçu !
 - erreur : {explanation}
 - bloc gagné : english-3e-comprehension

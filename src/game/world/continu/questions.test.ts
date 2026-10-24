@@ -97,6 +97,9 @@ import {
   sasExplanation,
   traceDone,
   type QuestionItem,
+  gestureBins,
+  gestureScreens,
+  itemGesture,
 } from './questions';
 
 const reference = (
@@ -1648,5 +1651,32 @@ describe('Le rivage nord (GD-20, point 8, lot L7)', () => {
     expect(listen.listen).toBe('reecouter');
     expect(listen.speakOnOpen).toBe(true);
     expect(listen.spoken).toBeTruthy();
+  });
+});
+
+describe('Les gestes des items (GD-26)', () => {
+  const fiche = (key: string, choices: string[]) => ({ key, gesture: 'ranger', choices });
+  it('lit le geste d’un item : ranger, placer, régler ; rien pour toucher', () => {
+    expect(itemGesture({ gesture: 'ranger' })).toBe('ranger');
+    expect(itemGesture({ gesture: 'régler' })).toBe('régler');
+    expect(itemGesture({ gesture: 'glisser' })).toBeNull();
+    expect(itemGesture({})).toBeNull();
+  });
+  it('donne aux caisses l’union des choix de la manche, dans leur ordre', () => {
+    expect(gestureBins([fiche('a', ['oiseau', 'mammifère']), fiche('b', ['poisson', 'oiseau'])]).map((b) => b.id)).toEqual(['oiseau', 'mammifère', 'poisson']);
+  });
+  it('range les fiches en manches à la place de la première, les autres items un par écran', () => {
+    const t1 = { key: 't1' };
+    const t2 = { key: 't2', gesture: 'placer' };
+    const [a, b, c] = ['a', 'b', 'c'].map((k) => fiche(k, ['x']));
+    expect(gestureScreens([t1, a, t2, b, c], 2)).toEqual([[t1], [a, b], [c], [t2]]);
+    expect(gestureScreens([t1, t2], 3)).toEqual([[t1], [t2]]);
+  });
+  it('écrit les fiches de la Mangrove et les paniers du Hameau dans le contenu, la réponse parmi les choix', async () => {
+    const vivant = await loadExercise('life-earth-sciences-6e-living-world-living-groups-1');
+    const solidarite = await loadExercise('civics-5e-equality-solidarity-solidarity-1');
+    expect(vivant?.items.filter((it) => itemGesture(it) === 'ranger')).toHaveLength(3);
+    expect(solidarite?.items.filter((it) => itemGesture(it) === 'placer')).toHaveLength(1);
+    for (const it of [...(vivant?.items ?? []), ...(solidarite?.items ?? [])].filter((x) => itemGesture(x))) expect(it.choices).toContain(it.answer);
   });
 });

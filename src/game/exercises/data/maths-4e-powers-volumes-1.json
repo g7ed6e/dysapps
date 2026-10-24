@@ -4,6 +4,7 @@
   "type": "volumes",
   "level": 1,
   "instruction": "Calcule, puis choisis la bonne réponse. Les formules sont affichées.",
+  "shortInstruction": "Calcule, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-4e-powers-volumes-1-0",

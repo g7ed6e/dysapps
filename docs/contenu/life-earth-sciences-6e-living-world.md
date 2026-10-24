@@ -18,6 +18,7 @@ créature : Fougère
 - description : Classer les êtres vivants selon ce qu’ils ont, puis lire les fossiles et les liens de parenté.
 - compétences : c3.sv.vivant.classer · c3.sv.vivant.evolution · c3.sv.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien classé !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-6e-living-world
@@ -41,16 +42,28 @@ Pour tous les items :
   - Les groupes s’emboîtent : un mammifère est aussi un vertébré.
 
 1. énoncé : La chauve-souris a des ailes et des poils. C’est un …
+   - sujet : la chauve-souris
+   - geste : ranger
+   - scène : ailes, poils
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : oiseau · mammifère · insecte
    - réponse : mammifère
    - indice : Regarde ce qu’elle a sur le corps : des poils ou des plumes ?
    - explication : La chauve-souris a des poils : c’est un mammifère. Voler ne compte pas : on classe selon ce qu’on a, pas selon ce qu’on fait.
 2. énoncé : Le manchot ne vole pas, mais il a des plumes. C’est un …
+   - sujet : le manchot
+   - geste : ranger
+   - scène : plumes, ailes courtes
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : poisson · mammifère · oiseau
    - réponse : oiseau
    - indice : Quel groupe a des plumes ?
    - explication : Le manchot a des plumes : c’est un oiseau, même s’il nage et ne vole pas.
 3. énoncé : La baleine vit dans la mer. Elle a des mamelles. C’est un …
+   - sujet : la baleine
+   - geste : ranger
+   - scène : mamelles, nageoires
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : poisson · oiseau · mammifère
    - réponse : mammifère
    - indice : Le lieu de vie ne compte pas. Que possède-t-elle ?
@@ -149,6 +162,7 @@ Pour tous les items :
 - description : Les groupes d’aliments et leur conservation, puis les étapes de la vie d’un animal et d’une plante.
 - compétences : c3.sv.vivant.alimentation · c3.sv.vivant.developpement · c3.sv.terre.chaines-alimentaires · c3.sv.demarches.observer · c3.sv.demarches.responsable
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-6e-living-world
@@ -281,6 +295,7 @@ Pour tous les items :
 - description : La Terre dans le système solaire, les volcans, les séismes et le temps qu’il fait, puis les milieux de vie et ce que l’humain y change.
 - compétences : c3.sv.terre.systeme-solaire · c3.sv.terre.phenomenes · c3.sv.terre.peuplement · c3.sv.terre.environnement · c3.sv.terre.chaines-alimentaires · c3.sv.demarches.responsable
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien observé !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-6e-living-world
@@ -416,6 +431,7 @@ Pour tous les items :
 - description : La cellule, les tailles et les temps du vivant, puis le réchauffement climatique lu dans des données, et la différence entre une preuve et une croyance.
 - compétences : c3.sv.vivant.cellule · c3.sv.terre.climat · c3.sv.demarches.esprit-critique · c3.sv.demarches.situer
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien enquêté !
 - erreur : {explanation}
 - bloc gagné : life-earth-sciences-6e-living-world

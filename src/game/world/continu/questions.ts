@@ -678,6 +678,44 @@ export function rangeGesture(anyPlace: AnyPlaceId, exerciseId: string): readonly
   return place === 'filets' && missionIs(exerciseId, 'word-classes') ? ENCLOS_BINS : null;
 }
 
+/**
+ * Le geste d'un item, écrit dans son Markdown (« geste : ranger », GD-26) ou posé par son générateur (la Forge) : ranger
+ * (une fiche dans sa caisse, par manches), placer (un objet devant sa porte, un item à la fois), régler (un nombre de
+ * crans, puis « Valider ») ; `null` pour toucher, le geste par défaut. Le geste est à l'item, jamais à la mission : une
+ * mission mêle des items qui s'y prêtent et d'autres non (directeur du contenu pédagogique, 24 octobre 2026).
+ */
+export type ItemGesture = 'ranger' | 'placer' | 'régler';
+
+export function itemGesture(item: object | undefined): ItemGesture | null {
+  const g = (item as { gesture?: unknown } | undefined)?.gesture;
+  return g === 'ranger' || g === 'placer' || g === 'régler' ? g : null;
+}
+
+/**
+ * Les caisses (ranger) ou les portes (placer) d'une manche : l'union des choix de ses items, dans l'ordre où ils
+ * apparaissent ; les choix de chaque item ne changent pas (avis du contenu, condition 5).
+ */
+export function gestureBins(items: readonly object[]): RangeBin[] {
+  const seen: string[] = [];
+  for (const { choices } of items as readonly { choices?: unknown }[]) for (const c of Array.isArray(choices) ? choices.map(String) : []) if (!seen.includes(c)) seen.push(c);
+  return seen.map((c) => ({ id: c, label: c }));
+}
+
+/**
+ * Les écrans d'une mission dont des items ont un geste : les items « ranger » de la partie en manches de `perRound`,
+ * posées à la place du premier d'entre eux ; les autres, un par écran, dans leur ordre.
+ */
+export function gestureScreens<T extends object>(items: readonly T[], perRound: number): T[][] {
+  const sorting = items.filter((it) => itemGesture(it) === 'ranger');
+  const rounds = sorting.length ? rangeRounds(sorting, perRound) : [];
+  const out: T[][] = [];
+  for (const it of items) {
+    if (itemGesture(it) !== 'ranger') out.push([it]);
+    else if (it === sorting[0]) out.push(...rounds);
+  }
+  return out;
+}
+
 /** Les manches du geste « ranger » : les items dans leur ordre, par quatre. */
 export function rangeRounds<T>(items: readonly T[], perRound = RANGE_PER_ROUND): T[][] {
   const out: T[][] = [];

@@ -16,6 +16,7 @@ créature : Mie
 - description : L’égalité entre les femmes et les hommes, garantie par la Constitution et conquise par des lois, les stéréotypes, puis les inégalités qui restent.
 - compétences : c4.emc.5e.egalite.discriminations
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-5e-equality-solidarity
@@ -151,6 +152,7 @@ Pour tous les items :
 - description : La discrimination, un délit puni par la loi ; les stéréotypes et les préjugés à la racine du racisme, de l’antisémitisme, de la xénophobie et du harcèlement ; l’inclusion.
 - compétences : c4.emc.5e.egalite.discriminations
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-5e-equality-solidarity
@@ -286,6 +288,7 @@ Pour tous les items :
 - description : La solidarité, liée à la fraternité : la Sécurité sociale, l’impôt, les collectivités et les associations, puis l’aide européenne et mondiale face aux risques.
 - compétences : c4.emc.5e.solidarite.echelles
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-5e-equality-solidarity
@@ -306,6 +309,7 @@ Pour tous les items :
   - La Sécurité sociale rembourse une partie des soins.
   - L’impôt finance les services publics, comme l’école.
   - La commune, le département et la région ont chacun leurs missions.
+  - La commune : la cantine. Le département : les personnes âgées. La région : les trains.
   - Les associations aident aussi, souvent avec des bénévoles.
 
 1. énoncé : La devise de la République est « Liberté, Égalité, … ».
@@ -338,6 +342,9 @@ Pour tous les items :
    - explication : Les impôts financent les services publics : l’école, les hôpitaux, les routes, les pompiers. C’est la part de chacun à la solidarité nationale.
 6. énoncé : "Qui fait quoi ?\nLa commune : la cantine de l’école.\nLe département : l’aide aux personnes âgées.\nLa région : les trains régionaux."
    - question : Qui aide les personnes âgées ?
+   - geste : placer
+   - scène : l’aide aux personnes âgées
+   - consigne courte : Pose le panier devant sa porte.
    - lu : Qui fait quoi ? La commune, la cantine de l’école. Le département, l’aide aux personnes âgées. La région, les trains régionaux.
    - choix : la commune · la région · le département
    - réponse : le département
@@ -387,6 +394,9 @@ Pour tous les items :
    - explication : La taxe sur la valeur ajoutée se paie sur ce que l’on achète : c’est un impôt indirect. L’impôt sur le revenu, lui, se paie selon ce que l’on gagne : c’est un impôt direct.
 4. énoncé : "Une région d’Europe touchée par un séisme\nL’Union européenne envoie de l’argent pour reconstruire.\nDes secouristes d’autres pays viennent aider."
    - question : À quelle échelle se fait cette solidarité ?
+   - geste : placer
+   - scène : l’argent pour reconstruire après le séisme
+   - consigne courte : Pose le panier devant sa porte.
    - lu : Une région d’Europe touchée par un séisme. L’Union européenne envoie de l’argent pour reconstruire. Des secouristes d’autres pays viennent aider.
    - choix : à l’échelle de la commune · à l’échelle de la famille · à l’échelle européenne
    - réponse : à l’échelle européenne

@@ -49,13 +49,15 @@ interface Spec {
   type: string;
   level: number;
   instruction: string;
+  /** La consigne de la bulle d'un lieu du monde ouvert (GD-26), huit mots au plus. */
+  shortInstruction?: string;
   generators: ItemGenerator[];
   block: BlockId;
   /** L’XP d’une réussite : 14 au cycle 4, 12 pour les missions de 6e (Rivière des fractions). */
   xp?: number;
 }
 
-export function defineData({ biome, type, level, instruction, generators, block, xp = 14 }: Spec): ExerciseDef {
+export function defineData({ biome, type, level, instruction, shortInstruction, generators, block, xp = 14 }: Spec): ExerciseDef {
   const id = `${biome}-${type}-${level}`;
   return {
     id,
@@ -63,6 +65,7 @@ export function defineData({ biome, type, level, instruction, generators, block,
     type,
     level,
     instruction,
+    ...(shortInstruction ? { shortInstruction } : {}),
     items: buildDataItems(id, generators),
     // Chaque partie tire d'autres nombres : la graine change à chaque partie.
     generate: (seed) => buildDataItems(seed, generators),

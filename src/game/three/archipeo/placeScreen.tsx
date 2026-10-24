@@ -14,7 +14,7 @@ import type { AidData } from '../../exercises/maths';
 import type { AnswerSlot, QuestionLayout, ScreenBox, SortLook } from '../../world/continu/questionScene';
 import type { PlaceId } from '../../world/continu/levelPlan';
 import type { ScenetteLayout } from '../../world/continu/scenette';
-import { isItemScene, type ItemScene } from '../../world/continu/questions';
+import { isItemScene, type ItemGesture, type ItemScene } from '../../world/continu/questions';
 
 /** Ce que l'écran d'un lieu demande à la scène : l'item à montrer, combien de réponses il a, s'il a une règle. */
 export interface ItemShown {
@@ -29,6 +29,10 @@ export interface ItemShown {
   aid: boolean;
   /** Le geste « ranger » (lot L4) : les places des paniers, de l'objet tenu, et le panier de chaque objet rangé. */
   sort?: SortLook;
+  /** Le geste de l'item (GD-26), quand ce n'est pas toucher : « Valider » a sa place. */
+  gesture?: ItemGesture | null;
+  /** La consigne de la bulle propre à l'item (son geste), huit mots au plus. */
+  short?: string;
 }
 
 export interface QuestionContextValue {
@@ -57,7 +61,9 @@ export const sameItem = (a: ItemShown, b: ItemShown) =>
   a.right.every((r, i) => r === b.right[i]) &&
   a.picked.length === b.picked.length &&
   a.picked.every((r, i) => r === b.picked[i]) &&
-  JSON.stringify(a.sort ?? null) === JSON.stringify(b.sort ?? null);
+  JSON.stringify(a.sort ?? null) === JSON.stringify(b.sort ?? null) &&
+  (a.gesture ?? null) === (b.gesture ?? null) &&
+  a.short === b.short;
 
 export function useQuestion(): QuestionContextValue {
   const ctx = useContext(QuestionContext);

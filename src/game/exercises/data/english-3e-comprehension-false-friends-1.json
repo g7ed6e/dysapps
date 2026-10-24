@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Que veut dire le mot entre guillemets ? Attention aux faux amis. La règle est affichée.",
+  "shortInstruction": "Touche le sens du mot entre guillemets.",
   "items": [
     {
       "key": "english-3e-comprehension-false-friends-1-0",
