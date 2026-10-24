@@ -110,9 +110,13 @@ const TOWER = { x0: 2.7, x1: 6.15, z0: -4.65, z1: -1.2, stump: 7.0, ruin: [8.2, 
  * retenue par un hauban du haut du poteau, épais et du bois de la flèche (le triangle fermé d'une grue) ; la contre-flèche,
  * courte, en haut, de l'autre côté, son contrepoids de pierre pendu à son bout ; au bout de la flèche, la poulie, un câble
  * court (`rope`) et une moufle épaisse, le crochet dessous ; le gros contrepoids de pierre au pied. Le bout de la flèche
- * reste dans la vue d'arrivée (articulée plus haut, elle sortait du cadre).
+ * reste dans la vue d'arrivée (articulée plus haut, elle sortait du cadre). Retouche 1 des restes, point 6 (directeur
+ * artistique) : tournée vers `{ x: -1, z: 7 }`, presque droit vers le sud, la flèche se cachait derrière le poteau dans
+ * la vue de dos ; revenue vers `{ x: -3, z: 6,6 }`, plus longue (10,3) et articulée plus bas (9,6), son bout reste vers
+ * (6,3 ; 17,5 ; 6,0), au-dessus du plancher et 1,5 au-dessus de la tête du poteau, et elle passe à côté du toit de
+ * l'atelier.
  */
-const CRANE_BOOM = { length: 9.5, rise: (50 * Math.PI) / 180, pivot: 10.4, toward: { x: -1, z: 7 } } as const;
+const CRANE_BOOM = { length: 10.3, rise: (50 * Math.PI) / 180, pivot: 9.6, toward: { x: -3, z: 6.6 } } as const;
 const CRANE_DIR = (() => {
   const l = Math.hypot(CRANE_BOOM.toward.x, CRANE_BOOM.toward.z);
   return { x: CRANE_BOOM.toward.x / l, z: CRANE_BOOM.toward.z / l };

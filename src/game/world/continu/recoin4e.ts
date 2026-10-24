@@ -111,13 +111,14 @@ const TRUNK = { knee: [-0.55, 1.15, 0.35] as P3, crown: [-0.2, 2.25, 0.15] as P3
  * Les deux masses de la couronne, depuis le pied du tronc : leur milieu, leur rayon, leur haut et leur bas, et leur tour
  * (retouche 1 du Bastion, point 6 : deux masses rondes et basses, irrégulières, à la place de deux cônes plats qui se
  * lisaient en parasol) ; elles couvrent l'angle des murets. Aplaties en coussins (restes du monde ouvert du 4e, point 3 :
- * un haut à 0,8 du rayon faisait deux losanges pointus) : le haut vers 0,45 du rayon, le bas vers 0,3 ; la grande sur
- * huit côtés, la petite sur six, plus basse et plus en avant (vers l'arrivée, au sud), à moitié dans la grande : une seule
+ * un haut à 0,8 du rayon faisait deux losanges pointus), puis regonflées en dôme (retouche 1 des restes, point 5,
+ * directeur artistique : à 0,45 et 0,3, deux plateaux minces se lisaient en parasol) : le haut à 0,6 du rayon, le bas à
+ * 0,45, dont on voit le dessous ombré ; la grande sur huit côtés, la petite sur six, plus basse et plus en avant (vers l'arrivée, au sud), à moitié dans la grande : une seule
  * couronne en deux bosses.
  */
 const CROWN = [
-  { at: [-0.45, 2.3, 0.2] as P3, r: 1.3, up: 0.58, down: 0.4, yaw: 0.2, lean: [0.2, 0.1] as const, rim: 0 },
-  { at: [0.55, 1.95, 0.5] as P3, r: 1.0, up: 0.45, down: 0.3, yaw: 0.9, lean: [0.15, -0.1] as const, rim: 1 },
+  { at: [-0.45, 2.3, 0.2] as P3, r: 1.3, up: 0.78, down: 0.58, yaw: 0.2, lean: [0.2, 0.1] as const, rim: 0 },
+  { at: [0.55, 1.95, 0.5] as P3, r: 1.0, up: 0.6, down: 0.45, yaw: 0.9, lean: [0.15, -0.1] as const, rim: 1 },
 ] as const;
 
 /**

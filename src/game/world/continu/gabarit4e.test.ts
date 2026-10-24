@@ -154,6 +154,9 @@ describe('Le Gabarit, lieu complet', () => {
     expect(C.tip.y).toBeGreaterThan(C.h);
     expect(C.boom).toBeGreaterThan(8);
     expect(C.rope).toBeLessThanOrEqual(2);
+    // De dos (vue vers le nord), la flèche part en biais, jamais dans l'axe du poteau : son bout s'écarte du poteau de
+    // plus de 2 en x (retouche 1 des restes du monde ouvert du 4e, point 6).
+    expect(Math.abs(C.tip.x - C.x)).toBeGreaterThan(2);
     // De l'autre côté du poteau, au-dessus de 12 : seule la contre-flèche courte et son contrepoids, jamais un bras.
     const away = { x: C.x - C.tip.x, z: C.z - C.tip.z };
     const len = Math.hypot(away.x, away.z);

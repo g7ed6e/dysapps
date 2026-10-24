@@ -18,6 +18,7 @@ import {
   DEPOSIT_SISTERS,
   DEPOSIT_SPOTS,
   DIGUE_ROCKS,
+  DIGUE_ROCK_TOP,
   FOLLOW_FAR_4E,
   NEF_4E,
   NEF_4E_DEPARTURE,
@@ -160,19 +161,29 @@ describe('La digue', () => {
       expect(t).toBeGreaterThanOrEqual(0.45);
       expect(t).toBeLessThanOrEqual(0.75);
     }
-    // Les blocs à leur haut ; les blocs en saillie (restes du monde ouvert, point 5b) dépassent leur dessus de 0,5 à 0,7,
-    // tout reste sous le quai.
+    // Les blocs à leur haut ; les blocs en saillie (restes du monde ouvert, point 5b ; retouche 1, point 7), un sur chacun,
+    // en troncs de pyramide, dépassent leur dessus de 0,8 à 1,1 : plus haut que le quai, on ne croit plus y marcher.
     let top = -Infinity;
     for (const v of vertices(digueFacets())) top = Math.max(top, v.y);
-    expect(top).toBeGreaterThan(Math.max(...CRIQUE_DIGUE.tops));
-    expect(top).toBeLessThan(CRIQUE_LEVEL);
-    expect(DIGUE_ROCKS.map((k) => k.block)).toEqual([1, 3, 5]);
-    for (const k of DIGUE_ROCKS) {
-      expect(k.above).toBeGreaterThanOrEqual(0.5);
-      expect(k.above).toBeLessThanOrEqual(0.7);
-      expect(Math.abs(k.pitch)).toBeLessThanOrEqual(0.15);
+    expect(top).toBeGreaterThan(Math.max(...CRIQUE_DIGUE.tops) + 0.8);
+    expect(top).toBeLessThan(Math.max(...CRIQUE_DIGUE.tops) + 1.1 + 0.3);
+    expect(DIGUE_ROCKS.map((k) => k.block)).toEqual([0, 1, 2, 3, 4, 5]);
+    expect(DIGUE_ROCK_TOP).toBeCloseTo(0.55);
+    for (const [i, k] of DIGUE_ROCKS.entries()) {
+      expect(k.above).toBeGreaterThanOrEqual(0.8);
+      expect(k.above).toBeLessThanOrEqual(1.1);
+      expect(k.size[0]).toBeGreaterThanOrEqual(2.2);
+      expect(k.size[0]).toBeLessThanOrEqual(2.6);
+      expect(k.size[2]).toBeGreaterThanOrEqual(1.6);
+      expect(k.size[2]).toBeLessThanOrEqual(1.9);
+      expect(k.yaw).toBeGreaterThanOrEqual(0.3);
+      expect(k.yaw).toBeLessThanOrEqual(0.8);
+      expect(Math.abs(k.pitch)).toBeGreaterThanOrEqual(0.15);
+      expect(Math.abs(k.pitch)).toBeLessThanOrEqual(0.3);
+      // Tour à tour vers le large et vers l'abri, pour briser la ligne.
+      expect(Math.sign(k.out)).toBe(i % 2 === 0 ? 1 : -1);
     }
-    expect(new Set(DIGUE_ROCKS.map((k) => k.yaw)).size).toBe(3);
+    expect(new Set(DIGUE_ROCKS.map((k) => k.yaw)).size).toBe(6);
     const end = points[points.length - 1];
     expect(end.x).toBeGreaterThan(NEF_4E.berth.x + CRIQUE_PAD.radius);
     expect(end.z).toBeGreaterThan(NEF_4E.berth.z);
@@ -389,6 +400,8 @@ describe('Les îles du ciel en portrait (Règle commune du port en portrait, 24 
   const portrait = NEF_4E.portrait!;
   /** Les colonnes de boutons du haut, en pixels (captures du 24 octobre 2026) : leur largeur, avec l'air, et leur hauteur. */
   const COLUMNS = { width: 80, left: 210, right: 280 } as const;
+  /** Le bas de la pastille de niveau « 4e < », plus 12 px d'air, en 390 × 844 (directeur artistique, retouche 1 des restes, point 9). */
+  const PASTILLE_BOTTOM = 78;
   /** Les sommets de chaque île, à part. */
   const islandVertices = (v: (typeof SKY_ISLANDS_4E_PORTRAIT)[number]) => [...vertices(skyIslandsPortraitFacets())].filter((p) => Math.hypot(p.x - v.x, p.z - v.z) <= v.r * 1.2);
 
@@ -407,6 +420,10 @@ describe('Les îles du ciel en portrait (Règle commune du port en portrait, 24 
       expect(Math.hypot(distance(v, quay) + v.r, v.top)).toBeLessThan(FOLLOW_FAR_4E);
       expect(2 * v.r).toBeGreaterThan(v.depth);
       expect(portrait.obstacleTouched(v)).toBe(true);
+      // Une île du ciel flotte : sa pointe toujours au-dessus de l'eau ; son cône épais, une île de roche, pas une plaque
+      // (retouche 1 des restes, point 9).
+      expect(v.top - v.depth).toBeGreaterThanOrEqual(0.5);
+      expect(v.depth).toBeGreaterThanOrEqual(6.5);
     }
     const far = SKY_ISLANDS_4E_PORTRAIT.map((v) => distance(v, quay)).sort((a, b) => a - b);
     for (let i = 1; i < far.length; i++) expect(far[i] - far[i - 1]).toBeGreaterThan(8);
@@ -417,20 +434,23 @@ describe('Les îles du ciel en portrait (Règle commune du port en portrait, 24 
     [800, 1280],
     [390, 844],
   ])
-    it(`en ${W} × ${H}, au quart de tour depuis le quai : chaque île entière, hors des colonnes de boutons, son haut à 50 à 90 px du bord du haut, sa pointe au-dessus de la mer ; aucune dans la première image`, () => {
+    it(`en ${W} × ${H}, au quart de tour depuis le quai : chaque île entière, hors des colonnes de boutons, son haut à 50 à 125 px du bord du haut (celle de droite sous la pastille), sa pointe au-dessus de la mer ; aucune dans la première image`, () => {
       const turned = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw - Math.PI / 2);
       for (const v of SKY_ISLANDS_4E_PORTRAIT) {
         const s = islandVertices(v).map((p) => screenOf(turned, p, W, H));
         const top = Math.min(...s.map((p) => p.y));
         expect(top, `${v.x}`).toBeGreaterThanOrEqual(50);
-        expect(top, `${v.x}`).toBeLessThanOrEqual(90);
+        expect(top, `${v.x}`).toBeLessThanOrEqual(125);
+        // L'île de droite sous la pastille de niveau, jamais dessous (retouche 1 des restes, point 9).
+        if ((v.gate ?? 0) > 0) expect(top, `${v.x}`).toBeGreaterThanOrEqual(PASTILLE_BOTTOM * (H / 844));
         for (const p of s) {
           expect(p.x, `${v.x}`).toBeGreaterThan(p.y < COLUMNS.left ? COLUMNS.width : 0);
           expect(p.x, `${v.x}`).toBeLessThan(p.y < COLUMNS.right ? W - COLUMNS.width : W);
           expect(p.y, `${v.x}`).toBeLessThan(H);
         }
+        // Sa pointe au-dessus de la mer qu'on voit encore : au-delà du bout de la brume, la mer a la couleur du ciel.
         const d = distance(v, turned.position);
-        const sea = { x: turned.position.x + ((v.x - turned.position.x) / d) * FOLLOW_FAR_4E, y: 0, z: turned.position.z + ((v.z - turned.position.z) / d) * FOLLOW_FAR_4E };
+        const sea = { x: turned.position.x + ((v.x - turned.position.x) / d) * FOG_4E.far, y: 0, z: turned.position.z + ((v.z - turned.position.z) / d) * FOG_4E.far };
         expect(screenOf(turned, { x: v.x, y: v.top - v.depth, z: v.z }, W, H).y).toBeLessThan(screenOf(turned, sea, W, H).y);
         // Jamais derrière le Bastion : ses toits (le Gabarit et sa grue, la Loge) tiennent, vus de cette caméra, de 4,6° à
         // gauche à 5,5° à droite de son axe (mesuré sur la capture en 800 × 1280 du 24 octobre 2026).

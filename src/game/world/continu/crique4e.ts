@@ -12,7 +12,7 @@
 // déposées sur l'aire (la toile pliée, les cordes lovées, le gouvernail démonté), part quand sa sœur touche l'aire. Son
 // obstacle : les îles du ciel, au nord-est, immobiles ; il passe entre deux d'entre elles. Tout va dans le maillage des
 // lieux : aucun appel de plus. Code pur.
-import { FacetBuilder, mergeFacets, placeFacets, type Facets } from './facets';
+import { FacetBuilder, drawPosed, mergeFacets, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { BUOY_TOUCH, NEF_BAND, buoyAt, type NefFlight, type NefLook, type NefSite } from './nef';
 import { C4E, brickCourse, brickCourseHeights, once } from './place4eKit';
@@ -79,7 +79,7 @@ export const CRIQUE_SITE: PortSite = {
     habitants: { z: 14.5, xs: [6, 16, 30] },
     boats: [[CRIQUE_PAVING.quay.x1 + 2.4, 22]],
   },
-  masonry: { courseHeights: (top) => brickCourseHeights(top), course: brickCourse, stone: COLORS_4E.stoneSun, backQuoinsToFoot: 6 },
+  masonry: { courseHeights: (top) => brickCourseHeights(top), course: brickCourse, stone: COLORS_4E.stoneSun, backQuoinsToFoot: 6, schoolPlinthRise: 0.3 },
 };
 
 /**
@@ -125,22 +125,46 @@ const DIGUE_COLORS = { top: COLORS_4E.stone, bevel: COLORS_4E.stone, side: COLOR
 const DIGUE_PROFILE = { foot: 2.2, shoulder: 0.5, crown: 0.36, bottom: -1.8, bevel: 0.25 } as const;
 
 /**
- * Les gros blocs de pierre brute posés en saillie sur un bloc de la digue sur deux, aux dessus les plus bas (restes du
- * monde ouvert du 4e, point 5b : de loin, chaque bloc se lisait comme une longue planche basse, la ligne comme un ruban en
- * tirets ; avec eux, une jetée d'enrochement aux têtes inégales) : le bloc qui le porte, sa taille (le long du bloc, en
- * travers, en haut), de combien il dépasse son dessus, son lacet et son tangage, et son décalage vers le large.
+ * Les gros blocs de pierre brute posés en saillie sur chaque bloc de la digue (restes du monde ouvert du 4e, point 5b : de
+ * loin, chaque bloc se lisait comme une longue planche basse, la ligne comme un ruban en tirets ; retouche 1, point 7,
+ * directeur artistique : trois petits pavés se lisaient comme des caisses qu'on charge, donc un endroit où l'on marche) :
+ * le bloc qui le porte, sa taille (le long du bloc, en haut, en travers : 2,2 à 2,6 sur 1,6 à 1,9), de combien il dépasse
+ * son dessus (0,8 à 1,1 : plus haut que le quai, on ne croit plus y marcher), son lacet (0,3 à 0,8, tous différents) et son
+ * tangage (0,15 à 0,3), et son décalage tour à tour vers le large (positif) et vers l'abri (négatif). Chacun est un tronc de
+ * pyramide à quatre pans, le dessus à `DIGUE_ROCK_TOP` de la base : une tête de roche, jamais une boîte.
  */
 export const DIGUE_ROCKS = [
-  { block: 1, size: [1.6, 1.4, 1.2] as P3, above: 0.55, yaw: 0.25, pitch: 0.1, out: 0.5 },
-  { block: 3, size: [1.5, 1.4, 1.25] as P3, above: 0.6, yaw: 0.45, pitch: -0.12, out: 0.45 },
-  { block: 5, size: [1.65, 1.4, 1.15] as P3, above: 0.65, yaw: 0.32, pitch: 0.08, out: 0.55 },
+  { block: 0, size: [2.4, 1.6, 1.7] as P3, above: 0.85, yaw: 0.35, pitch: 0.2, out: 0.5 },
+  { block: 1, size: [2.2, 1.6, 1.9] as P3, above: 1.05, yaw: 0.7, pitch: -0.25, out: -0.4 },
+  { block: 2, size: [2.6, 1.7, 1.6] as P3, above: 0.9, yaw: 0.5, pitch: 0.15, out: 0.5 },
+  { block: 3, size: [2.3, 1.6, 1.8] as P3, above: 1.1, yaw: 0.8, pitch: -0.3, out: -0.4 },
+  { block: 4, size: [2.5, 1.6, 1.75] as P3, above: 0.8, yaw: 0.3, pitch: 0.22, out: 0.5 },
+  { block: 5, size: [2.2, 1.7, 1.65] as P3, above: 1.0, yaw: 0.6, pitch: -0.18, out: -0.4 },
 ] as const;
+
+/** Le dessus d'un bloc en saillie, en part de sa base (retouche 1 des restes, point 7). */
+export const DIGUE_ROCK_TOP = 0.55;
+
+/**
+ * Un tronc de pyramide à quatre pans, posé sur sa base (y = 0 du repère), centré : `size` en x, y, z à la base, le dessus
+ * réduit à `top` ; sans dessous (il est posé), dix triangles comme un pavé ouvert.
+ */
+function rockHead(b: FacetBuilder, size: P3, top: number, side: number, crown: number): void {
+  const [sx, sy, sz] = size;
+  const lo = (x: number, z: number): P3 => [(x * sx) / 2, 0, (z * sz) / 2];
+  const hi = (x: number, z: number): P3 => [(x * sx * top) / 2, sy, (z * sz * top) / 2];
+  b.quad(hi(-1, -1), hi(-1, 1), hi(1, 1), hi(1, -1), crown);
+  b.quad(lo(-1, 1), lo(1, 1), hi(1, 1), hi(-1, 1), side);
+  b.quad(lo(1, -1), lo(-1, -1), hi(-1, -1), hi(1, -1), side);
+  b.quad(lo(1, 1), lo(1, -1), hi(1, -1), hi(1, 1), side);
+  b.quad(lo(-1, -1), lo(-1, 1), hi(-1, 1), hi(-1, -1), side);
+}
 
 /**
  * La digue de la Crique (intention, § 2 ; retouche 1 du directeur artistique) : un bras bas de pierre grise dans l'eau,
  * six blocs séparés en ligne brisée (un par coude de `CRIQUE_DIGUE`), chacun son haut, l'eau visible entre eux, en
  * grandes facettes : le dessus plat, un biseau de chaque côté, des flancs qui s'évasent jusque sous l'eau ; ni parapet
- * ni rail ; un bloc sur deux porte un gros bloc de pierre brute en saillie (`DIGUE_ROCKS`). Le vide entre deux blocs se
+ * ni rail ; chaque bloc porte un gros bloc de pierre brute en saillie (`DIGUE_ROCKS`). Le vide entre deux blocs se
  * mesure au bord intérieur du dessus, là où le coude le resserre.
  */
 export function digueFacets(): Facets {
@@ -188,14 +212,15 @@ export function digueFacets(): Facets {
       ] as const)
         if (flip) b.triangle(s[p], s[w], s[q], DIGUE_COLORS.side);
         else b.triangle(s[p], s[q], s[w], DIGUE_COLORS.side);
-    // Le bloc en saillie, vers le milieu du bloc, un peu vers le large (à gauche du sens de la digue, l'anse à droite) ;
-    // ses flancs à l'ombre, son dessus dans la pierre grise, jamais la pierre claire.
+    // Le bloc en saillie, vers le milieu du bloc, un peu vers le large (à gauche du sens de la digue, l'anse à droite) ou
+    // vers l'abri ; ses flancs à l'ombre, son dessus dans la pierre grise, jamais la pierre claire.
     const rock = DIGUE_ROCKS.find((k) => k.block === i);
     if (rock) {
       const mx = (ax + cx) / 2 - r.x * rock.out,
         mz = (az + cz) / 2 - r.z * rock.out;
-      const [along, high, across] = rock.size;
-      b.box({ x: mx, y: y + rock.above - high, z: mz, yaw: Math.atan2(-u.z, u.x) + rock.yaw, pitch: rock.pitch }, [along, high, across], DIGUE_COLORS.side, DIGUE_COLORS.top);
+      drawPosed(b, { x: mx, y: y + rock.above - rock.size[1], z: mz, yaw: Math.atan2(-u.z, u.x) + rock.yaw, pitch: rock.pitch }, (l) =>
+        rockHead(l, rock.size, DIGUE_ROCK_TOP, DIGUE_COLORS.side, DIGUE_COLORS.top),
+      );
     }
   }
   return placeFacets(b.build(), { x: CRIQUE.origin.x, y: 0, z: CRIQUE.origin.z, yaw: CRIQUE.yaw });
@@ -695,13 +720,17 @@ function skyIsland(b: FacetBuilder, v: SkyIsland, turn: number): void {
  * derrière le Bastion, qui tient le milieu de cette vue (le Gabarit, sa grue, la Loge : leurs toits à 7 % du haut de
  * l'écran) : il ne reste du ciel libre, entre les colonnes de boutons et sous la ligne des 50 px, qu'un coin de chaque
  * côté du Bastion, d'environ 2,5° chacun. D'où deux îles, plus petites, une dans chaque coin, qui sont la porte : entières,
- * hors des boutons, jamais derrière un toit, en 800 × 1280 comme en 390 × 844, leur haut à 50 à 90 px du bord du haut,
- * leur pointe au-dessus de la mer au loin. La caméra ne bouge pas ; en paysage, rien ne change. Le départ passe entre
- * elles, au-dessus du Bastion (`SKY_ROUTES`).
+ * hors des boutons, jamais derrière un toit, en 800 × 1280 comme en 390 × 844, leur haut à 50 px au moins du bord du
+ * haut, leur pointe au-dessus de la mer qu'on voit encore (en deçà du bout de la brume). La caméra ne bouge pas ; en
+ * paysage, rien ne change. Le départ passe entre elles, au-dessus du Bastion (`SKY_ROUTES`). Retouche 1 des restes,
+ * point 9 (directeur artistique) : leur cône de dessous épaissi (`depth` 5 → 7,5 : une île de roche qui flotte, plus
+ * une plaque) ; celle de droite, qui passait sous la pastille de niveau en 390 × 844, descend sous elle (son haut à 78 px
+ * au moins du bord du haut : `top` 15 → 7,2 ; à 12, la valeur de départ, il n'était qu'à 65 px). Si bas, son dessus est
+ * sous l'œil de la caméra (vers 8,5) : pour que sa pointe reste à 0,6 au-dessus de l'eau, son cône s'arrête à 6,6.
  */
 export const SKY_ISLANDS_4E_PORTRAIT: readonly SkyIsland[] = [
-  { x: 290, z: -69, top: 14, r: 5.5, depth: 5, sides: 8, gate: -1 },
-  { x: 372, z: -48, top: 15, r: 5.5, depth: 5, sides: 8, gate: 1 },
+  { x: 290, z: -69, top: 14, r: 5.5, depth: 7.5, sides: 8, gate: -1 },
+  { x: 372, z: -48, top: 7.2, r: 5.5, depth: 6.6, sides: 8, gate: 1 },
 ];
 
 /** Les îles du ciel de chaque liste, faites une fois (elles ne changent pas : la même chose avant, pendant et après le départ). */

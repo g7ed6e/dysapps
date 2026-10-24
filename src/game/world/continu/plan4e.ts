@@ -49,15 +49,17 @@ export const COLORS_4E = {
    * Le vert olive des Coteaux, sec, jamais vif : la seule terre verte du 4e, à côté de la terre rouge des Fabriques
    * (intention des restes du monde ouvert du 4e, 23 octobre 2026, point 1) ; ses taches au soleil ; ses pentes douces à
    * l'ombre, et ses talus raides à l'ombre (la terre noire y tomberait presque noire à l'écran). Jamais sur l'Épaule.
+   * `burntSun`, un olive plus jaune et sec, s'écarte de `burnt` pour que ses plaques se voient (retouche 1 des restes,
+   * point 1, directeur artistique).
    */
   burnt: 0x6a8046,
-  burntSun: 0x6e8448,
+  burntSun: 0x74844c,
   burntShade: 0x5a6c3c,
   /** La roche ocre rosé de l'Épaule, au nord de la coulée, à côté de `rockSun` : plus aucun vert (même intention). */
   shoulder: 0x9a7262,
   /**
    * La terre noire du volcan (les bacs, les seuils, la tonnelle, les talus au soleil des Coteaux), et son dessus, plus
-   * froid et plus gris (l'ancien tirait vers le bois) ; `C4E.earth` et `C4E.earthTop` les reprennent.
+   * froid et plus gris, aussi en taches sur le sol à plat des Coteaux (l'ancien tirait vers le bois) ; `C4E.earth` et `C4E.earthTop` les reprennent.
    */
   blackEarth: 0x5a4e46,
   blackEarthTop: 0x5e544e,

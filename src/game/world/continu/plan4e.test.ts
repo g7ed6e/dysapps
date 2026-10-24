@@ -302,7 +302,7 @@ describe('Les couleurs chaudes du 4e', () => {
     for (const earth of [COLORS_4E.soil, COLORS_4E.soilSun, COLORS_4E.soilShade])
       for (const light of [COLORS_6E.path, CRIQUE_SITE.colors.stone]) expect(ratio(light, earth), `${light.toString(16)} / ${earth.toString(16)}`).toBeGreaterThanOrEqual(3);
     // L'olive des Coteaux, l'ocre rosé de l'Épaule, la terre noire et l'herbe du Replat (restes du monde ouvert, point 1).
-    const others = [COLORS_4E.burnt, COLORS_4E.burntSun, COLORS_4E.burntShade, COLORS_4E.shoulder, COLORS_4E.blackEarth, REPLAT_GRASS.grass, REPLAT_GRASS.grassEdge];
+    const others = [COLORS_4E.burnt, COLORS_4E.burntSun, COLORS_4E.burntShade, COLORS_4E.shoulder, COLORS_4E.blackEarth, COLORS_4E.blackEarthTop, REPLAT_GRASS.grass, REPLAT_GRASS.grassEdge];
     for (const earth of others) expect(ratio(COLORS_6E.path, earth), earth.toString(16)).toBeGreaterThanOrEqual(3);
   });
 
