@@ -178,7 +178,7 @@ export function PlacesSheet({ rows, onPick, onClose }: Props) {
                 <span className="app-icon lieux-row-icon" aria-hidden="true">
                   <Icon name={row.icon} />
                 </span>
-                {/* Jamais de coupure après l'article élidé (« L’Imprimerie » reste entier), comme sur la Carte (`nameLines`). */}
+                {/* Jamais de coupure après l'article élidé (« L’Imprimerie » reste entier), comme sur la Carte, où un nom reste entier, sur une ligne. */}
                 <span className="lieux-row-text">{row.name}</span>
               </span>
               {/* L'espace où l'état passe à la ligne, au plus grand texte (sans effet dans la grille du texte normal). */}{' '}

@@ -32,7 +32,7 @@ import { lacFacets } from '../../world/continu/lac3e';
 import { constructionFacets, createPoseRun, fallenFacets, lanternLit, POSE_DROP, posedTraces, poseView, rowPosed, ruinFacets, stageComplete, traceStagePosed, type PartShape } from '../../world/continu/construction';
 import { FacetBuilder, mergeFacets, placeFacets, type Facets } from '../../world/continu/facets';
 import { distance, linearRgb, type Vec2, type Vec3 } from '../../world/continu/geometry';
-import { clampMap, mapFarPlane, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
+import { clampMap, mapFarPlane, mapLabelSide, mapPose, mapStart, panMap, reframeMap, zoomMap, type MapView } from '../../world/continu/map';
 import { BRIDGE_TOUCH, bridgeDeck, bridgeFacets, bridgeFloor, bridgeLayRest, bridgeLockPoint, bridgeLockRange, bridgeMapMark, bridgeSite, cabinCarBox, cabinCarFacets, cabinCarFloor, cabinPoint, cabinStops, cabinYaw, clampToOpen, colGalleryOf, colRoofOpen, type CabinCar } from '../../world/continu/bridges';
 import { cabinButtonRoute, cabinCarOpen, cabinOf, cabinSide, routeWithRide } from '../../world/continu/cabinRide';
 import { creuxFacets } from '../../world/continu/creux5e';
@@ -579,8 +579,7 @@ const IDLE_DELAY_MS = 40;
  * monte et va se coucher sur le râtelier, en arc bas (sous le toit de la halle, que la caméra voit de haut) ; d'un coup avec « Réduire les animations ».
  */
 const ASSEMBLY = { join: 0.6, carry: 1.3, arc: 0.7 } as const;
-/** Sur la Carte, un lieu ne se montre qu'à tant de pixels des bords gauche et droit, et du haut (son nom au-dessus). */
-const MAP_LABEL_SIDE = 100;
+/** Sur la Carte, un lieu ne se montre qu'à tant de pixels du haut (son nom au-dessus) ; des côtés : `mapLabelSide`. */
 const MAP_LABEL_TOP = 64;
 /**
  * Les images, au plus, où la Carte qui s'ouvre attend que ses étiquettes choisissent sa vue de départ avant de se
@@ -2955,8 +2954,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   );
   const placeMapPoint = (id: PlaceId) => mapPoints.get(id) ?? marks.get(id);
   const mapMark = (id: MapSpotOnScreen['id']) => (id === 'keo' ? keoPoint.set(keoFeet.x, keoFeet.y, keoFeet.z) : id === 'port' ? portPoint : (bridgePoints.get(id) ?? placeMapPoint(id as PlaceId)));
-  // Le nom d'un lieu, centré au-dessus de lui, reste entier à l'écran : assez loin des bords gauche et droit.
-  const mapShown = (x: number, y: number) => x > MAP_LABEL_SIDE && x < viewW - MAP_LABEL_SIDE && y > MAP_LABEL_TOP && y < viewH - LOCK_MARGIN;
+  // Un lieu assez loin des bords gauche et droit (une part de la largeur, `mapLabelSide` : au téléphone en portrait, 100 px
+  // ne laissaient que 190 px sur 390), et du haut.
+  const mapShown = (x: number, y: number) => x > mapLabelSide(viewW) && x < viewW - mapLabelSide(viewW) && y > MAP_LABEL_TOP && y < viewH - LOCK_MARGIN;
   // Les coins de ce que les étiquettes laissent à découvert, au niveau de l'eau, faits une fois (les trois radeaux).
   const clearCorners = new Map<string, THREE.Vector3[]>(
     PLACES.flatMap((p) => {
