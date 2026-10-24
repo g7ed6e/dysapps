@@ -18,6 +18,7 @@ créature : Virage
 - description : Décrire un mouvement par rapport à une référence, uniforme, accéléré ou ralenti, calculer une vitesse, puis les forces, le poids, la masse et la gravitation.
 - compétences : c4.pc.mouvement.decrire · c4.pc.mouvement.forces · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-3e-motion-energy
@@ -150,6 +151,7 @@ Pour tous les items :
 - description : Les formes d’énergie, ce qui les convertit et ce qui se perd en chaleur, puis la puissance électrique, l’énergie consommée et le kilowattheure.
 - compétences : c4.pc.energie.formes · c4.pc.energie.circuits · c4.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-3e-motion-energy
@@ -284,6 +286,7 @@ Pour tous les items :
 - description : Le pH des solutions de tous les jours, acides, neutres et basiques, puis les précautions, la réaction d’un acide avec le fer et le test du gaz qui se forme.
 - compétences : c4.pc.matiere.acides-bases · c4.pc.matiere.transformations · c4.pc.demarches.experimenter
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-3e-motion-energy

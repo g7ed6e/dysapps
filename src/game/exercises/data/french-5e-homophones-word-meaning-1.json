@@ -4,6 +4,7 @@
   "type": "word-meaning",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. La règle est affichée.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "programme": [
     "c4.fr.5e.vocabulaire.sens",
     "c4.fr.5e.vocabulaire.relations",

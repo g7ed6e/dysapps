@@ -4,6 +4,7 @@
   "type": "tense-meaning",
   "level": 1,
   "instruction": "Lis la phrase : que dit le temps ou le mode du verbe ? La règle est affichée.",
+  "shortInstruction": "Touche le temps ou le mode du verbe.",
   "items": [
     {
       "key": "french-4e-agreement-tense-meaning-1-0",

@@ -5,6 +5,7 @@
   "level": 1,
   "target": "an",
   "instruction": "Tape les mots où tu entends le son [an], comme dans maman. Puis valide.",
+  "shortInstruction": "Tape les mots du son [an], puis valide.",
   "items": [
     {
       "key": "enfant",

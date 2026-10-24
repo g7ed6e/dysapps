@@ -4,6 +4,7 @@
   "type": "adjectives",
   "level": 1,
   "instruction": "Accorde l’adjectif avec le nom, ou avec le sujet après être. La règle est affichée.",
+  "shortInstruction": "Touche l’adjectif bien accordé.",
   "items": [
     {
       "key": "french-4e-agreement-adjectives-1-0",

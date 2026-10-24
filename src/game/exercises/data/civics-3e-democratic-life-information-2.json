@@ -4,6 +4,7 @@
   "type": "information",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "civics-3e-democratic-life-information-2-0",

@@ -4,6 +4,7 @@
   "type": "effort-brain",
   "level": 1,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "life-earth-sciences-3e-human-body-effort-brain-1-0",

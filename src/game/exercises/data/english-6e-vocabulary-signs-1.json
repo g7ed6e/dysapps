@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Lis la question, puis l’étiquette ou la carte en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis l’étiquette, puis touche la bonne réponse.",
   "items": [
     {
       "key": "english-6e-vocabulary-signs-1-0",

@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Écoute l’heure ou la date en anglais et choisis la bonne. La règle est affichée.",
+  "shortInstruction": "Écoute en anglais, touche l’heure ou la date.",
   "items": [
     {
       "key": "english-6e-vocabulary-numbers-2-0",

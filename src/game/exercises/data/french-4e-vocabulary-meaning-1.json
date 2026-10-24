@@ -4,6 +4,7 @@
   "type": "meaning",
   "level": 1,
   "instruction": "Sens propre ou sens figuré ? Demande-toi si c’est réel ou une image.",
+  "shortInstruction": "Touche : sens propre ou sens figuré ?",
   "items": [
     {
       "key": "french-4e-vocabulary-meaning-1-0",

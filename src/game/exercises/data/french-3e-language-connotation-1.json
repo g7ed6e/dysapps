@@ -4,6 +4,7 @@
   "type": "connotation",
   "level": 1,
   "instruction": "Lis l’extrait : quelle image donne le mot ? La règle est affichée.",
+  "shortInstruction": "Lis l’extrait, puis touche l’image du mot.",
   "items": [
     {
       "key": "french-3e-language-connotation-1-0",

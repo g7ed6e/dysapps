@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Lis et écoute le nom espagnol, puis choisis son pluriel. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Écoute le nom espagnol, puis touche son pluriel.",
   "items": [
     {
       "key": "lv2-5e-introductions-es-articles-2-0",

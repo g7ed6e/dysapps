@@ -4,6 +4,7 @@
   "type": "solve-program",
   "level": 1,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "technology-6e-objects-solve-program-1-0",

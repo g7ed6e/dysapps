@@ -5,6 +5,7 @@
   "level": 2,
   "target": "in",
   "instruction": "Tape les mots où tu entends le son [in], comme dans lapin. Puis valide.",
+  "shortInstruction": "Tape les mots du son [in], puis valide.",
   "items": [
     {
       "key": "pain",

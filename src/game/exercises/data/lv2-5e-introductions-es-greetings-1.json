@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "es",
   "instruction": "Lis et écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Écoute en espagnol, touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-5e-introductions-es-greetings-1-0",

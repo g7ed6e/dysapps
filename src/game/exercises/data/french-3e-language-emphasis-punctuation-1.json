@@ -4,6 +4,7 @@
   "type": "emphasis-punctuation",
   "level": 1,
   "instruction": "Quel signe va à la place du trou ? La règle est affichée.",
+  "shortInstruction": "Touche le signe qui va dans le trou.",
   "items": [
     {
       "key": "french-3e-language-emphasis-punctuation-1-0",

@@ -5,6 +5,7 @@
   "level": 1,
   "target": "b",
   "instruction": "Pioche seulement les blocs avec la lettre b. Laisse passer les autres.",
+  "shortInstruction": "Pioche seulement les blocs avec la lettre b.",
   "items": [
     {
       "key": "0-d",

@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Écoute le nom allemand et choisis son article. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Écoute le nom allemand, touche son article.",
   "items": [
     {
       "key": "lv2-5e-introductions-de-articles-1-0",

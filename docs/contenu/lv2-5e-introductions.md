@@ -31,6 +31,7 @@ créature : Lina
 ### Niveau 1 · `lv2-5e-introductions-es-greetings-1`
 
 - consigne : Lis et écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute en espagnol, touche la bonne réponse.
 
 Pour tous les items :
 - aide « Se présenter » :
@@ -93,6 +94,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-greetings-2`
 
 - consigne : Lis et écoute la phrase en espagnol, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute en espagnol, touche la bonne réaction.
 - programme : c4.es.5e.interagir.reagir
 
 Pour tous les items :
@@ -160,6 +162,7 @@ Pour tous les items :
 - lv2 : es
 - langue : es
 - consigne : Écoute le nombre en espagnol et choisis le bon nombre. La règle est affichée.
+- consigne courte : Écoute en espagnol, touche le bon nombre.
 - bravo : Bien compté !
 - erreur : {explanation}
 - bloc gagné : lv2-5e-introductions
@@ -307,6 +310,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-5e-introductions-es-family-1`
 
 - consigne : Lis la question, puis la phrase ou le panneau en espagnol, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le panneau, puis touche la bonne réponse.
 - bravo : Bien lu !
 
 Pour tous les items :
@@ -378,6 +382,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-family-2`
 
 - consigne : Écoute le mot ou la phrase en espagnol, puis choisis ce qui manque. La règle est affichée.
+- consigne courte : Écoute en espagnol, touche ce qui manque.
 - programme : c4.es.5e.exprimer.dictee
 - bravo : Bien écrit !
 
@@ -457,6 +462,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-5e-introductions-es-articles-1`
 
 - consigne : Écoute le nom espagnol et choisis son article. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute le nom espagnol, touche son article.
 - bravo : Bon article !
 
 Pour tous les items :
@@ -512,6 +518,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-articles-2`
 
 - consigne : Lis et écoute le nom espagnol, puis choisis son pluriel. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute le nom espagnol, puis touche son pluriel.
 - bravo : Bon pluriel !
 
 Pour tous les items :
@@ -590,6 +597,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-5e-introductions-es-sentences-1`
 
 - consigne : Lis et écoute la question en espagnol. Choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en espagnol, touche la bonne réponse.
 - bravo : Bien répondu !
 
 Pour tous les items :
@@ -653,6 +661,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-es-sentences-2`
 
 - consigne : Lis la question, puis le document en espagnol, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 - bravo : Bien lu !
 
 Pour tous les items :
@@ -739,6 +748,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-5e-introductions-de-greetings-1`
 
 - consigne : Lis et écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute en allemand, touche la bonne réponse.
 
 Pour tous les items :
 - aide « Se présenter » :
@@ -800,6 +810,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-greetings-2`
 
 - consigne : Lis et écoute la phrase en allemand, puis choisis la bonne réaction. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute en allemand, touche la bonne réaction.
 - programme : c4.de.5e.interagir.reagir
 
 Pour tous les items :
@@ -868,6 +879,7 @@ Pour tous les items :
 - lv2 : de
 - langue : de
 - consigne : Écoute le nombre en allemand et choisis le bon nombre. La règle est affichée.
+- consigne courte : Écoute en allemand, touche le bon nombre.
 - bravo : Bien compté !
 - erreur : {explanation}
 - bloc gagné : lv2-5e-introductions
@@ -1016,6 +1028,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-5e-introductions-de-family-1`
 
 - consigne : Lis la question, puis la phrase ou le panneau en allemand, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le panneau, puis touche la bonne réponse.
 - bravo : Bien lu !
 
 Pour tous les items :
@@ -1087,6 +1100,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-family-2`
 
 - consigne : Écoute le mot en allemand, puis choisis les lettres qui manquent. La règle est affichée.
+- consigne courte : Écoute le mot allemand, touche les lettres manquantes.
 - programme : c4.de.5e.exprimer.dictee
 - bravo : Bien écrit !
 
@@ -1166,6 +1180,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-5e-introductions-de-articles-1`
 
 - consigne : Écoute le nom allemand et choisis son article. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute le nom allemand, touche son article.
 
 Pour tous les items :
 - choix : der · die · das
@@ -1221,6 +1236,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-articles-2`
 
 - consigne : Écoute le nom allemand, puis choisis le bon article, écrit avec son nom. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Écoute le nom allemand, touche son article.
 
 Pour tous les items :
 - aide « Der, die, das : plus loin » :
@@ -1297,6 +1313,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-5e-introductions-de-sentences-1`
 
 - consigne : Lis et écoute la phrase en allemand. Choisis la phrase qui va avec. La règle est affichée.
+- consigne courte : Écoute en allemand, touche la bonne phrase.
 - programme : c4.de.5e.langue.phrase
 - bravo : Bien construit !
 
@@ -1361,6 +1378,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-5e-introductions-de-sentences-2`
 
 - consigne : Lis la question, puis le message en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
+- consigne courte : Lis le message, puis touche la bonne réponse.
 - programme : c4.de.5e.culture.axes · c4.de.5e.langue.phrase
 - bravo : Bien lu !
 

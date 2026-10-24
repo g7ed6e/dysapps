@@ -4,6 +4,7 @@
   "type": "sentence-order",
   "level": 1,
   "instruction": "Lis la question, puis la phrase. Trouve le type ou la forme de la phrase. Le rappel est affiché.",
+  "shortInstruction": "Touche le type ou la forme.",
   "items": [
     {
       "key": "french-6e-reading-sentence-order-1-0",

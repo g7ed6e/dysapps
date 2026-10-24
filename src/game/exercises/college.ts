@@ -123,6 +123,9 @@ const FAISCEAUX_ANTECEDENT = 'Lis l’antécédent sur le graphique : pars du no
 
 const FAISCEAUX_DROITE = 'Lis sur la droite : l’ordonnée à l’origine sur l’axe vertical, le coefficient directeur en comptant les carreaux.';
 
+/** La consigne de la bulle de la Forge (GD-26) ; un item à régler a la sienne. */
+const CALCULE_TOUCHE = 'Calcule, puis touche la bonne réponse.';
+
 export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'maths-5e-signed-numbers', type: 'thermometer', level: 1, instruction: THERMO, generators: [compareRelatifs], block: 'maths-5e-signed-numbers' }),
   defineData({ biome: 'maths-5e-signed-numbers', type: 'thermometer', level: 2, instruction: THERMO_READ, generators: [readRelatif], block: 'maths-5e-signed-numbers' }),
@@ -136,18 +139,18 @@ export const COLLEGE_EXERCISES: ExerciseDef[] = [
   defineData({ biome: 'maths-5e-proportionality', type: 'percentages', level: 2, instruction: REMISES_CHANGE, generators: [percentChange], block: 'maths-5e-proportionality' }),
   defineData({ biome: 'maths-5e-proportionality', type: 'ratios', level: 1, instruction: BALANCES, generators: [speed], block: 'maths-5e-proportionality' }),
   defineData({ biome: 'maths-5e-proportionality', type: 'ratios', level: 2, instruction: BALANCES_SCALE, generators: [mapScale], block: 'maths-5e-proportionality' }),
-  defineData({ biome: 'maths-4e-powers', type: 'powers', level: 1, instruction: ETINCELLES, generators: [powerOfTen, powerOfTenReverse], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'powers', level: 2, instruction: ETINCELLES_SCI, generators: [scientific], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'square-roots', level: 1, instruction: ENCLUME, generators: [powerOfNumber], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'square-roots', level: 2, instruction: ENCLUME_PROD, generators: [productOfPowers], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 1, instruction: TREMPE, generators: [squareRoot], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 2, instruction: TREMPE_PRIME, generators: [primeOrDivisor], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 3, instruction: TREMPE_FACTEURS, generators: [primeDecomposition], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'powers', level: 1, instruction: ETINCELLES, shortInstruction: CALCULE_TOUCHE, generators: [powerOfTen, powerOfTenReverse], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'powers', level: 2, instruction: ETINCELLES_SCI, shortInstruction: CALCULE_TOUCHE, generators: [scientific], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'square-roots', level: 1, instruction: ENCLUME, shortInstruction: CALCULE_TOUCHE, generators: [powerOfNumber], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'square-roots', level: 2, instruction: ENCLUME_PROD, shortInstruction: CALCULE_TOUCHE, generators: [productOfPowers], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 1, instruction: TREMPE, shortInstruction: CALCULE_TOUCHE, generators: [squareRoot], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 2, instruction: TREMPE_PRIME, shortInstruction: CALCULE_TOUCHE, generators: [primeOrDivisor], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'scientific-notation', level: 3, instruction: TREMPE_FACTEURS, shortInstruction: CALCULE_TOUCHE, generators: [primeDecomposition], block: 'maths-4e-powers' }),
   // Le Fourneau : multiplier et diviser des relatifs, puis des fractions (venus du Glacier des relatifs, 5e, avec les
   // programmes de 2026, qui placent ces calculs en 4e). Le type `subtracting` est gardé : le niveau adapté le suit.
-  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 1, instruction: CREVASSES, generators: [mulRelatifs], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 2, instruction: CREVASSES_DIV, generators: [divRelatifs], block: 'maths-4e-powers' }),
-  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 3, instruction: ICEBERGS_PRODUIT, generators: [mulDivFractions], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 1, instruction: CREVASSES, shortInstruction: CALCULE_TOUCHE, generators: [mulRelatifs], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 2, instruction: CREVASSES_DIV, shortInstruction: CALCULE_TOUCHE, generators: [divRelatifs], block: 'maths-4e-powers' }),
+  defineData({ biome: 'maths-4e-powers', type: 'subtracting', level: 3, instruction: ICEBERGS_PRODUIT, shortInstruction: CALCULE_TOUCHE, generators: [mulDivFractions], block: 'maths-4e-powers' }),
   defineData({ biome: 'maths-4e-algebra', type: 'simplifying', level: 1, instruction: REDUIRE, generators: [reduceSimple], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-4e-algebra', type: 'simplifying', level: 2, instruction: REDUIRE_MIXTE, generators: [reduceMixed], block: 'maths-4e-algebra' }),
   defineData({ biome: 'maths-4e-algebra', type: 'expanding', level: 1, instruction: DEVELOPPER, generators: [developSimple], block: 'maths-4e-algebra' }),

@@ -4,6 +4,7 @@
   "type": "tense-recognition",
   "level": 1,
   "instruction": "Quel est le temps du verbe de la phrase ? Le tableau des temps est affiché.",
+  "shortInstruction": "Touche le temps du verbe de la phrase.",
   "items": [
     {
       "key": "french-5e-conjugation-subjunctive-2-0",

@@ -5,6 +5,7 @@
   "level": 1,
   "target": "on",
   "instruction": "Tape les mots où tu entends le son [on], comme dans ballon. Puis valide.",
+  "shortInstruction": "Tape les mots du son [on], puis valide.",
   "items": [
     {
       "key": "pont",

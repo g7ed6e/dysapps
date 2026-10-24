@@ -4,6 +4,7 @@
   "type": "power-rules",
   "level": 1,
   "instruction": "Choisis l’écriture décimale de la puissance. Le tableau est affiché.",
+  "shortInstruction": "Touche l’écriture décimale de la puissance.",
   "items": [
     {
       "key": "maths-3e-numbers-power-rules-1-0",

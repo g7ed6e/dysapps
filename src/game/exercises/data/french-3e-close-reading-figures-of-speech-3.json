@@ -4,6 +4,7 @@
   "type": "figures-of-speech",
   "level": 3,
   "instruction": "Lis la phrase, puis réponds à la question sur son type, sa forme ou son effet. Le rappel est affiché.",
+  "shortInstruction": "Lis la phrase, puis touche la bonne réponse.",
   "items": [
     {
       "key": "french-3e-close-reading-figures-of-speech-3-0",

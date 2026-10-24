@@ -36,6 +36,7 @@ Pour tous les items :
 ### Niveau 1 · `french-5e-homophones-choices-1`
 
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - programme : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
 
 Pour tous les items :
@@ -97,6 +98,7 @@ Pour tous les items :
 ### Niveau 2 · `french-5e-homophones-choices-2`
 
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - programme : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
 
 Pour tous les items :
@@ -158,6 +160,7 @@ Pour tous les items :
 ### Niveau 3 · `french-5e-homophones-choices-3`
 
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - programme : c4.fr.5e.grammaire.classes-de-mots · c4.fr.5e.grammaire.accords · c4.fr.5e.vocabulaire.orthographe
 
 Pour tous les items :
@@ -221,6 +224,7 @@ Pour tous les items :
 - description : Deux trous dans la phrase : choisis la bonne paire de mots.
 - compétences : c4.fr.5e.vocabulaire.orthographe · c4.fr.5e.grammaire.classes-de-mots · c3.fr.langue.orthographe-grammaticale
 - consigne : Deux trous dans la phrase : choisis la paire de mots qui convient, dans l’ordre.
+- consigne courte : Touche la paire de mots, dans l’ordre.
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-homophones
@@ -372,6 +376,7 @@ Pour tous les items :
 ### Niveau 1 · `french-5e-homophones-participles-1`
 
 - consigne : Choisis la forme qui complète la phrase : participe passé ou infinitif. La règle est affichée.
+- consigne courte : Touche le participe passé ou l’infinitif.
 
 Pour tous les items :
 - aide « Participe passé ou infinitif ? » :
@@ -425,6 +430,7 @@ Pour tous les items :
 ### Niveau 2 · `french-5e-homophones-participles-2`
 
 - consigne : Choisis la forme qui complète la phrase. La règle est affichée.
+- consigne courte : Touche la forme qui complète la phrase.
 
 Pour tous les items :
 - aide « Participe passé avec avoir » :
@@ -480,6 +486,7 @@ Pour tous les items :
 - description : Le sens d’un mot par la phrase et par sa formation : synonymes, contraires, sens figuré, registres.
 - compétences : c4.fr.5e.vocabulaire.sens · c4.fr.5e.vocabulaire.relations · c4.fr.5e.vocabulaire.reemploi · c4.fr.5e.vocabulaire.formation
 - consigne : Choisis le mot qui complète la phrase. La règle est affichée.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bonne route !
 - erreur : {explanation}
 - bloc gagné : french-5e-homophones

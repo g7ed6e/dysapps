@@ -4,6 +4,7 @@
   "type": "complex-agreements",
   "level": 3,
   "instruction": "Trouve le mot qui commande, puis accorde le verbe. La règle est affichée.",
+  "shortInstruction": "Touche le verbe accordé avec son sujet.",
   "items": [
     {
       "key": "french-3e-language-complex-agreements-3-0",

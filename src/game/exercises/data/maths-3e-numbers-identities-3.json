@@ -4,6 +4,7 @@
   "type": "identities",
   "level": 3,
   "instruction": "Factorise : écris un produit. Les identités sont affichées.",
+  "shortInstruction": "Factorise, puis touche le produit.",
   "items": [
     {
       "key": "maths-3e-numbers-identities-3-0",

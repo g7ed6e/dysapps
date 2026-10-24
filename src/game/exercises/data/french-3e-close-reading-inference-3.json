@@ -4,6 +4,7 @@
   "type": "inference",
   "level": 3,
   "instruction": "Lis la question, puis cherche la réponse dans les lignes du document. Le rappel est affiché.",
+  "shortInstruction": "Lis la question, puis touche la bonne ligne.",
   "items": [
     {
       "key": "french-3e-close-reading-inference-3-0",

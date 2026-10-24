@@ -4,6 +4,7 @@
   "type": "acids-bases",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "physics-chemistry-3e-motion-energy-acids-bases-2-0",

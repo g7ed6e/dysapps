@@ -4,6 +4,7 @@
   "type": "comprehension",
   "level": 2,
   "instruction": "Un texte reprend souvent un nom avec d’autres mots. Lis la question, puis le texte. Trouve de qui ou de quoi on parle. Le rappel est affiché.",
+  "shortInstruction": "Touche de qui ou de quoi on parle.",
   "items": [
     {
       "key": "french-6e-reading-comprehension-2-0",

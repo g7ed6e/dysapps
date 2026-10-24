@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis la question, puis trouve la bonne ligne du document en allemand. Le lexique est affiché.",
+  "shortInstruction": "Touche la bonne ligne du document.",
   "items": [
     {
       "key": "lv2-4e-daily-life-de-timetable-1-0",

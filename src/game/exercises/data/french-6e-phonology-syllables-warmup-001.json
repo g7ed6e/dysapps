@@ -4,6 +4,7 @@
   "type": "syllables",
   "level": 1,
   "instruction": "Écoute le mot, puis tape le nombre de syllabes que tu entends.",
+  "shortInstruction": "Écoute, puis tape le nombre de syllabes.",
   "items": [
     {
       "key": "cabane",

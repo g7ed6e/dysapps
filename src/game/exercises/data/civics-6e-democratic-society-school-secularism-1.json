@@ -4,6 +4,7 @@
   "type": "school-secularism",
   "level": 1,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "civics-6e-democratic-society-school-secularism-1-0",

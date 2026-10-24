@@ -4,6 +4,7 @@
   "type": "compound-tenses",
   "level": 1,
   "instruction": "Quel est le temps du verbe ? Regarde d’abord l’auxiliaire. La règle est affichée.",
+  "shortInstruction": "Touche le temps du verbe. Regarde l’auxiliaire.",
   "items": [
     {
       "key": "french-4e-sentence-compound-tenses-1-0",

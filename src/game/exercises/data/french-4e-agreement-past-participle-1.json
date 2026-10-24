@@ -4,6 +4,7 @@
   "type": "past-participle",
   "level": 1,
   "instruction": "Accorde le participe passé : avec être, il suit le sujet ; avec avoir, il ne s’accorde pas avec le sujet. La règle est affichée.",
+  "shortInstruction": "Touche le participe passé bien accordé.",
   "items": [
     {
       "key": "french-4e-agreement-past-participle-1-0",

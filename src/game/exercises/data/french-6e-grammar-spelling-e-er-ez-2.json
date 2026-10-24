@@ -4,6 +4,7 @@
   "type": "e-er-ez",
   "level": 2,
   "instruction": "Choisis la bonne fin du verbe : é, er ou ez. Pense à remplacer par vendre ou vendu, et regarde qui parle.",
+  "shortInstruction": "Touche la bonne fin : é, er ou ez.",
   "items": [
     {
       "key": "sans-parler",

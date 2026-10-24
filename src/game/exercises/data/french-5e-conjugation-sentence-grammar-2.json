@@ -4,6 +4,7 @@
   "type": "sentence-grammar",
   "level": 2,
   "instruction": "Lis la phrase, puis trouve la fonction du groupe demandé. La règle est affichée.",
+  "shortInstruction": "Touche la fonction du groupe demandé.",
   "items": [
     {
       "key": "french-5e-conjugation-sentence-grammar-2-0",

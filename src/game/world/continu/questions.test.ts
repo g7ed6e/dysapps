@@ -7,6 +7,7 @@ import { fractionWords } from '../../../core/fractions';
 import { pourLaVoix } from '../../../core/speech';
 import { seeded } from '../../../core/random';
 import { CATALOG, loadExercise } from '../../exercises';
+import { SHORT_INSTRUCTIONS } from '../../exercises/shortInstructions';
 import { MATHS_EXERCISES } from '../../exercises/maths';
 import { PROBLEMES_EXERCISES } from '../../exercises/problems';
 import { POSEES_EXERCISES } from '../../exercises/writtenOperations';
@@ -77,12 +78,10 @@ import {
   agreedSentence,
   placeRuleLine,
   EXERCISES_WITH_TWINS,
-  LOCK_COLUMN,
   LOCK_IDLE,
   PAIR_INSTRUCTION,
   PHARE_SYLLABLES,
   SAS_HINT,
-  answersInColumn,
   pairScene,
   sceneDrawsFigure,
   bellRounds,
@@ -99,6 +98,11 @@ import {
   sasExplanation,
   traceDone,
   type QuestionItem,
+  gestureBins,
+  gestureScreens,
+  itemGesture,
+  placeShortInstruction,
+  SAS_INSTRUCTION,
 } from './questions';
 
 const reference = (
@@ -315,7 +319,7 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     });
   });
 
-  it('Partage du gâteau et Galets en colonnes : leurs items de référence tels quels, le sas au repos ; Calculer avec des fractions : les réponses dans la colonne', () => {
+  it('Partage du gâteau, Galets en colonnes et Calculer avec des fractions : leurs items de référence tels quels, le sas au repos', () => {
     const defs = [...MATHS_EXERCISES, ...POSEES_EXERCISES].filter((e) => e.biome === 'maths-6e-fractions' && (e.type === 'sharing' || e.type === 'place-value'));
     expect(defs.length).toBe(5);
     for (const def of defs) {
@@ -325,11 +329,9 @@ describe('Les Quais et les Écluses gardent l’item de référence', () => {
     for (const id of ['maths-6e-fractions-fraction-sums-1', 'maths-6e-fractions-fraction-sums-2']) {
       const { items } = reference(id);
       const placed = placeItems('ecluses', id, items);
-      expect(placed).toEqual(items.map((it) => ({ ...it, placeScene: LOCK_COLUMN })));
-      expect(placed.every((p) => answersInColumn(p.placeScene))).toBe(true);
+      expect(placed).toEqual(items.map((it) => ({ ...it, placeScene: LOCK_IDLE })));
     }
-    expect(answersInColumn(LOCK_IDLE)).toBe(false);
-    expect(isItemScene(LOCK_COLUMN) && isItemScene({ kind: 'lockPair', a: [1, 2], b: [2, 4] })).toBe(true);
+    expect(isItemScene(LOCK_IDLE) && isItemScene({ kind: 'lockPair', a: [1, 2], b: [2, 4] })).toBe(true);
     expect(isItemScene({ kind: 'lockPair', a: [3, 2], b: [2, 4] })).toBe(false);
   });
 
@@ -526,10 +528,9 @@ describe('La Turbine (GD-20, point 8, lot L6a)', () => {
     return out;
   };
 
-  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+  it('ses quatre missions, aux deux niveaux, sur le décor neutre : les items de référence tels quels, les réponses sur la rangée (GD-26)', () => {
     expect(ids.length).toBe(8);
     expect(isItemScene(COLUMN)).toBe(true);
-    expect(answersInColumn(COLUMN)).toBe(true);
     for (const id of ids) {
       const items = reference(id).items;
       const placed = placeItems('engine', id, items);
@@ -697,7 +698,7 @@ describe('Le Chantier naval (GD-20, point 8, lot L6b)', () => {
   const c = placeById('shipyard').center;
   const y0 = standingHeight(heightAt(c));
 
-  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+  it('ses quatre missions, aux deux niveaux, sur le décor neutre : les items de référence tels quels, les réponses sur la rangée (GD-26)', () => {
     expect(ids.length).toBe(8);
     for (const id of ids) {
       const items = reference(id).items;
@@ -782,7 +783,7 @@ describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
     return out;
   };
 
-  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+  it('ses quatre missions, aux deux niveaux, sur le décor neutre : les items de référence tels quels, les réponses sur la rangée (GD-26)', () => {
     expect(ids.length).toBe(8);
     for (const id of ids) {
       const items = reference(id).items;
@@ -871,7 +872,7 @@ describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
     return out;
   };
 
-  it('ses quatre missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+  it('ses quatre missions, aux deux niveaux, sur le décor neutre : les items de référence tels quels, les réponses sur la rangée (GD-26)', () => {
     expect(ids.length).toBe(8);
     for (const id of ids) {
       const items = reference(id).items;
@@ -979,7 +980,7 @@ describe('Les Ruines (GD-20, point 8, lot L8b)', () => {
 describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
   const ids = CATALOG.filter((d) => d.biome === 'geography-6e-living').map((d) => d.id);
 
-  it('ses trois missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+  it('ses trois missions, aux deux niveaux, sur le décor neutre : les items de référence tels quels, les réponses sur la rangée (GD-26)', () => {
     expect(ids.length).toBe(placeById('observatory').scenes.length * 2);
     for (const id of ids) {
       const items = reference(id).items;
@@ -1041,7 +1042,7 @@ describe('L’Observatoire (GD-20, point 8, lot L8c)', () => {
 describe('La Halle (GD-20, point 8, lot L8d)', () => {
   const ids = CATALOG.filter((d) => d.biome === 'civics-6e-democratic-society').map((d) => d.id);
 
-  it('ses trois missions, aux deux niveaux, en C : les items de référence tels quels, les réponses dans la colonne', () => {
+  it('ses trois missions, aux deux niveaux, sur le décor neutre : les items de référence tels quels, les réponses sur la rangée (GD-26)', () => {
     expect(ids.length).toBe(placeById('commons').scenes.length * 2);
     for (const id of ids) {
       const items = reference(id).items;
@@ -1605,7 +1606,7 @@ describe('Le rivage nord (GD-20, point 8, lot L7)', () => {
   const north = { lookout: 'french-6e-reading', archives: 'french-6e-word-spelling', printworks: 'french-6e-letter-confusion' } as const;
   const COLUMN_MISSIONS = ['comprehension', 'tense-values', 'word-forms'];
 
-  it('Étages du sens, Les temps du récit et Facettes en C ; les autres missions de la scène en R, le lieu au repos', () => {
+  it('Étages du sens, Les temps du récit et Facettes sur le décor neutre ; les autres missions de la scène en R, le lieu au repos', () => {
     for (const [place, island] of Object.entries(north) as [keyof typeof north, string][]) {
       for (const d of CATALOG.filter((e) => e.biome === island)) {
         const mission = placeById(place).scenes.find((m) => missionIs(d.id, m));
@@ -1623,7 +1624,6 @@ describe('Le rivage nord (GD-20, point 8, lot L7)', () => {
       }
     }
     expect(isItemScene(REST)).toBe(true);
-    expect(answersInColumn(REST)).toBe(false);
   });
 
   it('aucun item redit sans son mot : chaque écran de référence a sa phrase affichée et sa voix', () => {
@@ -1654,5 +1654,62 @@ describe('Le rivage nord (GD-20, point 8, lot L7)', () => {
     expect(listen.listen).toBe('reecouter');
     expect(listen.speakOnOpen).toBe(true);
     expect(listen.spoken).toBeTruthy();
+  });
+});
+
+describe('Les gestes des items (GD-26)', () => {
+  const fiche = (key: string, choices: string[]) => ({ key, gesture: 'ranger', choices });
+  it('lit le geste d’un item : ranger, placer, régler ; rien pour toucher', () => {
+    expect(itemGesture({ gesture: 'ranger' })).toBe('ranger');
+    expect(itemGesture({ gesture: 'régler' })).toBe('régler');
+    expect(itemGesture({ gesture: 'glisser' })).toBeNull();
+    expect(itemGesture({})).toBeNull();
+  });
+  it('donne aux caisses l’union des choix de la manche, dans leur ordre', () => {
+    expect(gestureBins([fiche('a', ['oiseau', 'mammifère']), fiche('b', ['poisson', 'oiseau'])]).map((b) => b.id)).toEqual(['oiseau', 'mammifère', 'poisson']);
+  });
+  it('range les fiches en manches à la place de la première, les autres items un par écran', () => {
+    const t1 = { key: 't1' };
+    const t2 = { key: 't2', gesture: 'placer' };
+    const [a, b, c] = ['a', 'b', 'c'].map((k) => fiche(k, ['x']));
+    expect(gestureScreens([t1, a, t2, b, c], 2)).toEqual([[t1], [a, b], [c], [t2]]);
+    expect(gestureScreens([t1, t2], 3)).toEqual([[t1], [t2]]);
+  });
+  it('écrit les fiches de la Mangrove et les paniers du Hameau dans le contenu, la réponse parmi les choix', async () => {
+    const vivant = await loadExercise('life-earth-sciences-6e-living-world-living-groups-1');
+    const solidarite = await loadExercise('civics-5e-equality-solidarity-solidarity-1');
+    expect(vivant?.items.filter((it) => itemGesture(it) === 'ranger')).toHaveLength(3);
+    expect(solidarite?.items.filter((it) => itemGesture(it) === 'placer')).toHaveLength(1);
+    for (const it of [...(vivant?.items ?? []), ...(solidarite?.items ?? [])].filter((x) => itemGesture(x))) expect(it.choices).toContain(it.answer);
+  });
+});
+
+describe('Les caisses d’une manche (GD-26, avis du contenu)', () => {
+  it('donne à chaque fiche de la Mangrove une caisse de sa manche', async () => {
+    const fiches = (await loadExercise('life-earth-sciences-6e-living-world-living-groups-1'))!.items.filter((it) => itemGesture(it) === 'ranger');
+    const bins = gestureBins(fiches).map((b) => b.id);
+    for (const f of fiches) expect(bins).toContain(f.answer);
+  });
+});
+
+describe('Les consignes courtes des missions produites par le code (GD-26)', () => {
+  it('tiennent en huit mots, et chaque mission du code en a une', async () => {
+    const all = await Promise.all(CATALOG.map((m) => loadExercise(m.id)));
+    const words = (t: string) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+    for (const t of Object.values(SHORT_INSTRUCTIONS)) expect(words(t), t).toBeLessThanOrEqual(8);
+    for (const ex of all) if (ex?.generate) expect(ex.shortInstruction, ex.id).toBeTruthy();
+  });
+});
+
+describe('Les consignes courtes des consignes de lieu (GD-26)', () => {
+  it('existent pour chaque consigne de lieu et tiennent en huit mots', () => {
+    const words = (t: string) => t.split(/\s+/).filter((w) => /[\p{L}\p{N}]/u.test(w)).length;
+    const placed = [...ENCLOS_INSTRUCTION, `${PHARE_SYLLABLES} Puis valide.`, PAIR_INSTRUCTION, JAUGE_INSTRUCTION, ...SAS_INSTRUCTION];
+    for (const p of placed) {
+      const short = placeShortInstruction(p);
+      expect(short, p).toBeTruthy();
+      expect(words(short!), short).toBeLessThanOrEqual(8);
+    }
+    expect(placeShortInstruction('Lis, puis touche la bonne réponse.')).toBeUndefined();
   });
 });

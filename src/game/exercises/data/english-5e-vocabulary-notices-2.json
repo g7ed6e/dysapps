@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis trouve la bonne ligne du menu ou de l’horaire en anglais. Le lexique est affiché.",
+  "shortInstruction": "Touche la bonne ligne du document.",
   "items": [
     {
       "key": "english-5e-vocabulary-notices-2-0",

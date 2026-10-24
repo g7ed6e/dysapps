@@ -473,13 +473,13 @@
 /* « Presque ! » et l'indice redit, au deuxième essai : serrés sous la phrase (ou le mot troué), sans bulle ni saut ; la
    consigne et la phrase restent où elles étaient au premier essai (relecture de L7, référent dys, consultant UX UI). La
    rangée des réponses est posée dans la scène (hors de la colonne) ; en « Vue simple », la liste passe sous le retour.
-   Sur un écran bas, l'étiquette à droite de la colonne (plus bas) ; en C, après les réponses (`mode-c`). Seul l'ordre
+   Sur un écran bas, l'étiquette à droite de la colonne (plus bas). Seul l'ordre
    affiché change : le retour n'est pas focalisable, la voix le dit à son arrivée. */
 .world-question .in-world > .feedback {
   order: 1;
   margin: 0.3rem 0 0;
 }
-.world-question .in-world.simple:not(.mode-c) .world-answers {
+.world-question .in-world.simple .world-answers {
   order: 2;
 }
 .world-question .in-world > .feedback .feedback-shout {
@@ -700,12 +700,7 @@
   padding: 0 0.2rem;
   gap: 0.2rem;
 }
-/* En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8), le résultat de la colonne reste à sa
-   largeur (il défile avec elle) : élargi, il couvrait Kéo, au bord gauche de la scène. La forme de la colonne : à la fin
-   de la feuille. */
-.world-question .quiz.in-world.low.has-sheet.scene-gardee {
-  width: var(--question-width);
-}
+
 /* Le premier item d'un écran bas : la consigne en entier, puis « Commencer », sur toute la largeur sous la barre du
    haut ; la question et ses réponses attendent derrière. */
 .world-question .quiz.in-world.low.intro {
@@ -1561,38 +1556,7 @@
 .world-question .in-world .world-repere {
   display: none;
 }
-.world-question .quiz.in-world:is(.simple, .mode-c) > .world-repere {
-  --repere-haut: 34px;
-  position: sticky;
-  bottom: calc(-1 * var(--panneau-bas));
-  z-index: 1;
-  order: 99;
-  display: flex;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 100%;
-  height: var(--repere-haut);
-  margin: calc(-1 * var(--repere-haut)) 0 calc(-1 * var(--panneau-bas));
-  background: var(--surface);
-  border-bottom: 5px dashed currentColor;
-  overflow: hidden;
-  pointer-events: none;
-  visibility: hidden;
-}
-.world-question .quiz.in-world:is(.simple, .mode-c)[data-repere] > .world-repere {
-  visibility: visible;
-}
-/* Le chevron ne remplit que le milieu de son carré : un carré plus grand que la bande, pour un chevron de 22 px. */
-.world-question .quiz.in-world:is(.simple, .mode-c) > .world-repere svg {
-  flex: none;
-  width: 44px;
-  height: 44px;
-  /* Rien ne dépasse de la bande (le panneau ne s'allonge pas pour lui). */
-  margin-block: calc((var(--repere-haut) - 5px - 44px) / 2);
-  stroke-width: 3;
-}
+
 /* Avec « Valider », de quoi lire caché sous sa bande (au plus grand texte sur un téléphone couché, le sujet et les
    paniers de l'Enclos, dérogation du 16 octobre 2026) : le chevron se pose à droite dans la bande, qui garde « Valider »
    et la voix à gauche, et l'ombre au-dessus de la bande se fait nette, comme celle du haut (référent dys). */
@@ -1659,6 +1623,73 @@
   --panneau-bas: 4px;
   padding: 4px 0.6rem var(--panneau-bas);
   scroll-padding-bottom: 62px;
+}
+/* La bulle de l'habitant (GD-26) : la même ligne repliée en tête (le rôle, le début de la consigne, sa voix, « Lire la
+   suite »), puis la phrase de l'item ; la scène prend le reste de l'écran. */
+.world-question .quiz.in-world.scenette.bulle {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  column-gap: 0.5rem;
+  row-gap: 6px;
+  padding: 6px 0.75rem;
+}
+/* Le carnet (GD-26) : sa hauteur est celle de sa place, il défile seul au-delà. */
+.world-question .in-world:not(.low) .world-question-prompt > .aid.world-question-aid.world-carnet {
+  min-height: 0;
+}
+.world-question .world-carnet > * + * {
+  margin-top: 0.5rem;
+}
+/* Le rôle séparé de la consigne par un cadre, comme au plus grand texte (« Le boulanger » collé à « Lis la phrase »). */
+.world-question .in-world.bulle .world-consigne-fold .world-scenette-role {
+  display: inline-block;
+  margin-right: 0.25em;
+  padding: 0 0.2em;
+  border: var(--border-width, 2px) solid currentColor;
+  border-radius: 6px;
+  line-height: 1.2;
+}
+/* L'indice à droite de la phrase, son icône seule (son nom dit) : la bulle garde la hauteur de la consigne et de la
+   phrase. */
+.world-question .in-world.bulle .world-question-prompt {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 0.5rem;
+  align-items: start;
+}
+.world-question .in-world.bulle .world-question-prompt > * {
+  grid-column: 1 / -1;
+}
+.world-question .in-world.bulle .world-question-prompt > .question-head {
+  grid-column: 1;
+}
+.world-question .in-world.bulle .world-question-prompt > .world-question-actions {
+  grid-column: 2;
+  grid-row: 1;
+  margin: 0;
+}
+.world-question .in-world.bulle .world-hint-word {
+  display: none;
+}
+.world-question .in-world.bulle .world-place,
+.world-question .in-world.bulle .world-question-prompt,
+.world-question .in-world.bulle .world-question-prompt > .question-head {
+  margin: 0;
+  padding: 0;
+}
+/* Dans la bulle, « Lire la suite » n'est que son icône (son nom dit) : à côté d'une consigne courte coupée, le mot la
+   coupait encore (directeur artistique, deuxième passe de la PR 1). Sur un écran bas (un téléphone couché), la bulle plus
+   serrée tient en deux lignes, la consigne repliée et la phrase. */
+.world-question .in-world.bulle .world-consigne-more-word {
+  display: none;
+}
+@media (max-height: 499px) {
+  .world-question .quiz.in-world.scenette.bulle {
+    padding-block: 3px;
+    row-gap: 2px;
+  }
 }
 .world-question .quiz.in-world.simple-bas > *,
 .world-question .in-world.simple-bas .world-question-prompt,
@@ -2490,28 +2521,6 @@
   min-height: 48px;
 }
 
-/* Calculer avec des fractions (GD-20, point 8, lot L2) : les réponses restent dans la colonne, juste après la phrase, en
-   liste qui passe à la ligne, comme dans « Vue simple » ; la scène fait le décor, aucun objet ne les porte. La colonne
-   défile si l'indice, la figure et le rappel n'y tiennent pas dessous. */
-.world-question .quiz.in-world.reponses-colonne {
-  overflow-y: auto;
-}
-.world-question .in-world.reponses-colonne .world-answers {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin: 0.4rem 0;
-}
-.world-question .in-world.reponses-colonne .world-answers .world-answer {
-  position: static;
-  min-width: 72px;
-  min-height: 56px;
-}
-.world-question .in-world.reponses-colonne .world-answer-label {
-  position: static;
-  min-height: 56px;
-  white-space: normal;
-}
 /* Une fraction et le signe qui la suit restent ensemble en fin de ligne (la phrase de Deux rives, lot L2). */
 .world-question .world-nobreak {
   white-space: nowrap;
@@ -2519,12 +2528,10 @@
 
 /* Une rangée ou une colonne de réponses dont l'une est une fraction en colonne : toutes à la hauteur de la fraction, un
    « 3 » seul pas plus petit qu'un « 3/5 » (référent dys, relecture de L2). Sur une même ligne, toutes à la même hauteur. */
-.world-question .in-world.simple .world-answers,
-.world-question .in-world.reponses-colonne .world-answers {
+.world-question .in-world.simple .world-answers {
   align-items: stretch;
 }
-.world-question .in-world.simple .world-answers:has(.frac) .world-answer-label,
-.world-question .in-world.reponses-colonne .world-answers:has(.frac) .world-answer-label {
+.world-question .in-world.simple .world-answers:has(.frac) .world-answer-label {
   min-height: calc(2.6em + 10px);
 }
 :root[data-texte="grand"] .world-question .in-world.simple-bas .world-answers:has(.frac) .world-answer-label {
@@ -2562,124 +2569,6 @@
   visibility: hidden;
 }
 
-/* Le C (GD-20, point 8, lot L6a, règle du C, au plus grand texte sur téléphone comme ailleurs), dans la scène et dans
-   « Vue simple », dans le même ordre : la ligne de la consigne repliée (ou la consigne), la phrase, les réponses, le
-   document, le rappel. Le panneau seul défile (le document n'a jamais sa boîte à lui) ; la ligne de la consigne et la
-   phrase restent épinglées en haut quand il défile, sur le fond uni (la phrase sous la ligne, à sa hauteur mesurée,
-   --pin-ligne) ; une ombre nette sous la phrase dit qu'on est descendu, le chevron « Suite plus bas » qu'il reste à
-   lire. Seuls le document, le rappel, l'indice et la correction passent sous le pli. */
-.world-question .quiz.in-world.mode-c {
-  --pin-haut: 0.6rem;
-  overflow-y: auto;
-  padding-top: 0;
-}
-/* La marge du haut, épinglée elle aussi, sur toute la largeur : ce qui défile ne passe jamais au-dessus de la ligne de
-   la consigne ; dès que le panneau a défilé, la bande descend derrière toute la ligne (sur un écran bas, la ligne, « Lire
-   la suite » et les étapes ne la couvrent pas d'un bord à l'autre). Sa ligne à elle ne prend que la marge (sa marge du
-   bas rend le reste) : rien ne bouge quand elle descend. */
-.world-question .quiz.in-world.mode-c::before {
-  --pin-bande: 0px;
-  content: '';
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  order: -1;
-  flex: none;
-  width: 100%;
-  height: calc(var(--pin-haut) + var(--pin-bande));
-  margin-bottom: calc(-1 * var(--pin-bande));
-  background: var(--surface);
-  /* Jusqu'au bord du panneau, par-dessus sa marge intérieure du haut (quelle qu'elle soit d'une mise en page à l'autre). */
-  box-shadow: 0 -16px 0 var(--surface);
-  pointer-events: none;
-}
-.world-question .quiz.in-world.mode-c:is([data-suite="haut"], [data-suite="deux"])::before {
-  --pin-bande: var(--pin-ligne, 0px);
-}
-.world-question .in-world.mode-c .world-place,
-.world-question .in-world.mode-c .world-question-prompt {
-  display: contents;
-}
-.world-question .quiz.in-world.mode-c > *,
-.world-question .in-world.mode-c .world-question-prompt > * {
-  flex: 0 0 auto;
-}
-.world-question .quiz.in-world.mode-c:not(.simple-bas) > .consigne,
-.world-question .quiz.in-world.mode-c.simple-bas:not(.consigne-ouverte) > .world-consigne-line,
-.world-question .quiz.in-world.mode-c.simple-bas:not(.consigne-ouverte) > .world-consigne-more {
-  position: sticky;
-  top: var(--pin-haut);
-  z-index: 2;
-  background: var(--surface);
-}
-/* (`:root` en tête : la règle passe devant celle du plus grand texte sur un écran bas, qui pose la phrase en relatif.) */
-:root .world-question .quiz.in-world.mode-c:not([data-epingle="ligne"]) .world-question-prompt > .question-head {
-  position: sticky;
-  top: calc(var(--pin-haut) + var(--pin-ligne, 0px));
-  z-index: 2;
-  margin: 0;
-  padding-block: 0.2rem;
-  background: var(--surface);
-}
-.world-question .quiz.in-world.mode-c:not([data-epingle="ligne"])[data-suite="haut"] .question-head,
-.world-question .quiz.in-world.mode-c:not([data-epingle="ligne"])[data-suite="deux"] .question-head {
-  box-shadow:
-    0 3px 0 rgb(0 0 0 / 0.45),
-    0 16px 10px -8px rgb(0 0 0 / 0.55);
-}
-.world-question .quiz.in-world.mode-c[data-suite="haut"],
-.world-question .quiz.in-world.mode-c[data-suite="deux"] {
-  box-shadow: none;
-}
-/* La phrase trop haute pour être épinglée (plus de la moitié du panneau) défile : l'ombre passe sous la ligne de la
-   consigne, seule épinglée. */
-.world-question .quiz.in-world.mode-c[data-epingle="ligne"]:is([data-suite="haut"], [data-suite="deux"]) > :is(.consigne, .world-consigne-line, .world-consigne-more) {
-  box-shadow:
-    0 3px 0 rgb(0 0 0 / 0.45),
-    0 16px 10px -8px rgb(0 0 0 / 0.55);
-}
-/* Les réponses d'un C : une par ligne, sur toute la largeur, à gauche ; chacune passe à la ligne dans son étiquette,
-   jamais au milieu d'un mot ; toutes à la même hauteur, 48 px au moins (la plus haute donne la mesure). */
-.world-question .in-world.mode-c .world-answers {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  grid-auto-rows: 1fr;
-  gap: 8px;
-  width: 100%;
-  margin: 0.4rem 0;
-}
-.world-question .in-world.mode-c .world-answers .world-answer {
-  position: static;
-  width: 100%;
-  min-height: 48px;
-  margin: 0;
-}
-/* (`:root` en tête : passe devant les réglages du plus grand texte sur un écran bas, qui serrent l'interligne d'une
-   rangée.) Le contenu donne la hauteur : l'interligne d'OpenDyslexic n'y déborde jamais. */
-:root .world-question .quiz.in-world.mode-c .world-answers .world-answer {
-  height: auto;
-}
-:root .world-question .quiz.in-world.mode-c .world-answers .world-answer-label {
-  box-sizing: border-box;
-  height: auto;
-  /* Le cadre visible prend toute la rangée : une réponse d'une ligne à côté d'une de deux a le même cadre. */
-  min-height: 100%;
-  padding-block: 4px;
-  line-height: 1.35;
-}
-.world-question .in-world.mode-c .world-answer-label {
-  position: static;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  height: 100%;
-  min-height: 48px;
-  text-align: left;
-  white-space: normal;
-  overflow-wrap: normal;
-  word-break: normal;
-  hyphens: none;
-}
 /* Le document d'un C : toujours ouvert, sur le fond uni, après les réponses ; « Écouter le document » en tête, à droite
    de la première ligne (48 px, l'icône seule, son nom dit). */
 .world-question .world-place .notice.world-document {
@@ -2697,181 +2586,7 @@
 .world-question .world-document .notice-text {
   font-size: max(18px, 1.15rem);
 }
-/* L'ordre d'un C, quelle que soit la taille du texte (relecture de L6a) : ce qui reste épinglé (la ligne de la consigne, la
-   voix de la phrase quand elle défile, les étapes), la phrase (et la ligne de calcul), les réponses, puis, après une
-   réponse, la correction (et « Presque ! ») juste dessous, avant le document : la réponse touchée et la bonne réponse
-   restent visibles avec elle (www/pedagogie/principes.md) ; enfin le document, l'indice, la figure et le rappel. Rien ne
-   s'intercale entre la phrase et les réponses. */
-:root .world-question .quiz.in-world.mode-c > :is(.consigne, .world-consigne-line, .world-consigne-more, .world-phrase-voice, .quiz-steps) {
-  order: 0;
-}
-:root .world-question .quiz.in-world.mode-c .world-question-prompt > :is(.question-head, .world-question-reference) {
-  order: 1;
-}
-:root .world-question .quiz.in-world.mode-c .world-question-prompt > .world-answers {
-  order: 2;
-}
-:root .world-question .quiz.in-world.mode-c > :is(.result-sheet, .feedback) {
-  order: 3;
-}
-:root .world-question .quiz.in-world.mode-c .world-question-prompt > :not(.question-head, .world-question-reference, .world-answers) {
-  order: 4;
-}
-/* La correction d'un C, serrée : « Pas tout à fait » (ou « Bravo ! ») et sa voix sur une seule ligne (le message vide
-   du résultat ne la pousse plus à la ligne) : les réponses et « Suivant » tiennent ensemble sur tablette. */
-.world-question .in-world.mode-c .result-sheet .feedback-compact {
-  flex-wrap: nowrap;
-}
-.world-question .in-world.mode-c .result-sheet .feedback-body {
-  flex: 0 0 auto;
-  margin-left: auto;
-}
-.world-question .in-world.mode-c .result-sheet .feedback-body > p:empty {
-  display: none;
-}
-/* La voix de la phrase dans ce qui reste épinglé, seulement quand la phrase, trop haute (plus de la moitié du panneau
-   avec la ligne), défile avec le reste : la question reste à un geste (directeur artistique). Son mot, « Phrase », la
-   distingue de la voix de la consigne ; celle de la phrase s'efface (sa place gardée : rien ne bouge). Sur tablette, elle
-   tient sa bande sous la consigne, à droite ; sur un écran bas, elle prend la place des étapes, dans la ligne. */
-.world-question .world-phrase-voice {
-  display: none;
-}
-.world-question .quiz.in-world.mode-c[data-epingle="ligne"] > .world-phrase-voice {
-  position: sticky;
-  top: calc(var(--pin-haut) + var(--pin-ligne, 0px));
-  z-index: 2;
-  display: flex;
-  justify-content: flex-end;
-  background: var(--surface);
-}
-.world-question .quiz.in-world.mode-c[data-epingle="ligne"] .question-head > .speak-button {
-  visibility: hidden;
-}
-.world-question .world-phrase-voice .speak-button {
-  min-height: 48px;
-  margin: 0;
-}
-.world-question .quiz.in-world.mode-c[data-epingle="ligne"]:is([data-suite="haut"], [data-suite="deux"]) > .world-phrase-voice {
-  box-shadow:
-    0 3px 0 rgb(0 0 0 / 0.45),
-    0 16px 10px -8px rgb(0 0 0 / 0.55);
-}
-/* En « Vue simple » d'un C sur un écran bas (relecture de L6a, consultant UX UI, piste 1 : rendre la place) : le panneau
-   monte jusqu'en haut de l'écran ; « Scène » (son icône seule, son nom dit) et la pause se tiennent au bout de la ligne
-   d'en-tête du panneau, que les étapes (ou la voix de la phrase) leur gardent ; le rôle de l'habitant quitte la ligne
-   (WorldQuestion) ; la marge épinglée du haut se fait mince. La ligne se tient à la hauteur de la pause : le monde
-   commence sous la marge du haut de la page (1rem, global.css, `.app-shell.focus .content`), la pause à 0.6rem du haut
-   de l'écran ; le panneau monte de la différence, moins son bord et sa marge épinglée. */
-.world-question .quiz.in-world.scenette.simple.simple-bas.mode-c {
-  --pin-haut: 4px;
-  --barre-haut: calc(56px + 12px + 56px - 8px - var(--border-width, 2px) + 8px + env(safe-area-inset-right, 0px));
-  top: calc(0.6rem - 1rem - var(--border-width, 2px) - var(--pin-haut));
-}
-.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple {
-  top: calc(0.6rem - 1rem);
-}
-:root .world-question .quiz.in-world.simple-bas.mode-c > .quiz-steps {
-  flex: 0 0 120px;
-  align-self: center;
-  margin: 0 var(--barre-haut) 0 0;
-}
-:root .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice {
-  top: var(--pin-haut);
-  flex: 0 0 auto;
-  align-self: center;
-  margin: 0 var(--barre-haut) 0 0;
-}
-.world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] > .quiz-steps {
-  display: none;
-}
-:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice .speak-button {
-  padding-inline: 10px;
-  font-size: 18px;
-}
-:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice .speak-button svg {
-  width: 32px;
-  height: 32px;
-}
-.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple {
-  width: 56px;
-  min-width: 56px;
-  padding: 0;
-  justify-content: center;
-}
-.world-question:has(.quiz.in-world.mode-c.simple-bas) > .world-question-simple .world-question-simple-word {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-/* En C sur un écran bas, revenu de « Vue simple » à « Scène » (GD-20, point 8, L8 ; relecture UX UI, piste A) : la colonne,
-   à gauche, prend la forme serrée de « Vue simple » (`simple-bas`, WorldQuestion) : la consigne repliée en une ligne, son
-   « Lire la suite », puis les étapes ou la voix de la phrase, sur une rangée ; la phrase et les réponses dessous. La barre
-   du haut (« Vue simple », son icône seule, et la pause) se tient à droite de la colonne : rien ne la pousse vers le bas. */
-.world-question .quiz.in-world.scenette.scene-gardee.simple-bas {
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  align-content: flex-start;
-  column-gap: 0.5rem;
-  row-gap: 6px;
-  --pin-haut: 4px;
-  padding: 4px 0.6rem 4px;
-}
-:root .world-question .quiz.in-world.scene-gardee.simple-bas.mode-c > :is(.quiz-steps, .world-phrase-voice) {
-  margin: 0;
-}
-:root .world-question .quiz.in-world.scene-gardee.simple-bas.mode-c > .quiz-steps {
-  flex: 1 0 100%;
-}
-/* « Lire la suite », son icône seule à toute taille de texte (son nom dit, WorldQuestion), en C sur un écran bas, dans
-   « Vue simple » comme dans la colonne revenue à « Scène » : sinon le mot prenait la place de la consigne repliée,
-   réduite à « … » à 667 × 375 (directeur artistique, L8). */
-.world-question .quiz.in-world.simple-bas.mode-c > .world-consigne-more {
-  padding-inline: 10px;
-}
-.world-question .in-world.simple-bas.mode-c .world-consigne-more-word {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-/* Le résultat tient dans la colonne, bord compris (« Suivant » sortait à droite). */
-.world-question .quiz.in-world.scene-gardee.simple-bas > .result-sheet {
-  box-sizing: border-box;
-  min-width: 0;
-  max-width: 100%;
-}
-/* En C sur un écran bas, en « Vue simple » comme dans la colonne revenue à « Scène », la phrase, ses réponses et ce qui
-   les suit prennent chacun la largeur du panneau, à toute taille de texte : sans quoi la phrase restait sur une ligne,
-   coupée à droite, au texte normal (« …la vapeur d'eau re », relecture UX UI de L8). */
-.world-question .in-world.simple-bas.mode-c .world-question-prompt > * {
-  flex: 0 0 100%;
-  box-sizing: border-box;
-  min-width: 0;
-}
-/* Chaque voix touche le texte qu'elle lit (directeur artistique, L8 ; relecture UX UI, quatrième passe) : en C sur un
-   écran bas, en « Vue simple » comme dans la colonne revenue à « Scène », la voix de la phrase reste à droite de la
-   phrase, sur sa rangée, même quand la phrase n'est pas épinglée (elle défile alors avec elle) ; elle ne passe jamais
-   dans la ligne de la consigne, ni sur une rangée à elle. Les étapes gardent leur place. */
-:root .world-question .quiz.in-world.simple-bas.mode-c > .world-phrase-voice {
-  display: none;
-}
-.world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] .question-head > .speak-button {
-  visibility: visible;
-}
-:root .world-question .quiz.in-world.simple-bas.mode-c[data-epingle="ligne"] > .quiz-steps {
-  display: flex;
-}
-/* Au plus grand texte, en « Vue simple » d'un C sur un écran bas, les étapes ne sont plus qu'une rangée de points sans
-   signe de lecture entre « Lire la suite » et « Scène » : elles quittent la ligne (relecture UX UI, quatrième passe) ;
-   elles reviennent dans la colonne revenue à « Scène », sous la ligne. */
-:root[data-texte="grand"] .world-question .quiz.in-world.scenette.simple.simple-bas.mode-c > .quiz-steps {
-  display: none;
-}
+
 /* La ligne repliée garde au moins son premier mot (WorldQuestion, `premier-mot`) : elle prend sa largeur, ses boutons
    passent après elle. */
 .world-question .in-world.simple-bas .world-consigne-fold.premier-mot {
@@ -2880,37 +2595,6 @@
 }
 .world-question .quiz.in-world.simple-bas > .world-consigne-line:has(.premier-mot) {
   min-width: auto;
-}
-/* En « Vue simple », la place de « Scène » et de la pause reste au bout de la première rangée quand la ligne garde son
-   premier mot, et au plus grand texte, où ni les étapes ni la voix de la phrase ne la tiennent plus : « Lire la suite »
-   ne passe jamais dessous. */
-.world-question .quiz.in-world.scenette.simple.simple-bas.mode-c:has(.premier-mot) > .world-consigne-more,
-:root[data-texte="grand"] .world-question .quiz.in-world.scenette.simple.simple-bas.mode-c > .world-consigne-more {
-  margin-right: var(--barre-haut);
-}
-/* Au plus grand texte, le résultat d'un C sur un écran bas (« Vue simple » et colonne revenue à « Scène ») se serre pour
-   que « Bravo ! » et « Suivant » se voient entiers ensemble (référent dys, L8) : « Bravo ! » sur une ligne, à la taille du
-   texte choisie, l'explication et « Suivant » sans marge de plus ; rien n'est réduit sous la taille choisie. */
-:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet {
-  padding: 4px 0.4rem;
-}
-:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .feedback-shout {
-  padding: 0 0.4rem;
-  font-size: max(18px, 1rem);
-  white-space: nowrap;
-}
-:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .explanation {
-  margin: 0 0 4px;
-  padding: 2px 0.5rem;
-}
-:root[data-texte="grand"] .world-question .quiz.in-world.simple-bas.mode-c .result-sheet .next-button {
-  min-height: 48px;
-  padding-block: 0;
-}
-/* « Lire la suite » passé sous la ligne qui garde son premier mot (WorldQuestion, `data-livre`) défile avec le panneau :
-   épinglé en haut, il se posait sur le premier mot (directeur artistique, L8). */
-:root .world-question .quiz.in-world.mode-c.simple-bas[data-livre="dessous"] > .world-consigne-more {
-  position: static;
 }
 
 /* La fiche d'une terre fermée (GD-20, point 3, « vraies terres » ; consultant UX UI) : les icônes de ses lieux en une
@@ -3564,4 +3248,104 @@
 /* Le mot du chargement reste lisible par-dessus le fondu, le temps que le monde du niveau d'arrivée se fasse. */
 .open-world .world-loading {
   z-index: 21;
+}
+
+/* Le geste « régler » (GD-26) : les crans réglés, un point plein par coup, sans valeur écrite avant « Valider ». */
+.world-dial-crans {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+}
+.world-dial-cran {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+}
+.world-dial-cran.plein {
+  background: currentColor;
+}
+.world-dial-compte {
+  margin: 0;
+}
+
+/* Les fiches à ranger, le panier à placer (GD-26) : en main dans la bulle de l'habitant, côte à côte, chacune de toute
+   sa largeur ; la rangée sous la scène garde les caisses ou les portes. */
+.world-question .world-answers.world-hand {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.world-question .in-world.bulle .world-question-prompt > .world-answers.world-hand {
+  grid-column: 1;
+  grid-row: 1;
+}
+.world-question .world-answers.world-hand .world-answer {
+  position: relative;
+  flex-shrink: 0;
+  max-width: 100%;
+  min-width: 48px;
+  min-height: 56px;
+}
+.world-question .world-answers.world-hand .world-answer-label {
+  position: static;
+  min-height: 56px;
+  flex-direction: column;
+  gap: 0;
+  padding: 0.1rem 0.6rem;
+  line-height: 1.2;
+  white-space: normal;
+}
+.world-question .world-hand .world-sort-verbe {
+  font-weight: 400;
+}
+
+/* Le carnet plus haut que sa place (GD-26) : un chevron sur un trait pointillé, collé à son bas, tant qu'il reste à
+   lire plus bas ; le carnet défile seul. */
+.world-question .world-carnet .world-carnet-suite {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  margin: 0.25rem -0.5rem 0;
+  border-top: 2px dashed var(--ink);
+  background: inherit;
+  background-color: var(--surface);
+  color: var(--ink);
+}
+.world-question .world-carnet .world-carnet-suite svg {
+  width: 28px;
+  height: 28px;
+}
+/* Le repère d'une caisse ou d'une porte (GD-26) : 24 px au moins (référent dys). */
+.world-question .world-sort-bins .world-sort-panier {
+  width: max(24px, 1.1em);
+  height: max(24px, 1.1em);
+}
+/* « Vue simple » proposé dans la bulle : la bulle repart de son haut, « Lire la suite » passe dans « Vue simple ». */
+.world-question .in-world.bulle.offer .world-consigne-more {
+  display: none;
+}
+/* Le nombre de fiches reçues par une caisse (GD-26), à côté de son repère. */
+.world-question .world-sort-compte {
+  min-width: 1.4em;
+  padding: 0 0.3em;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--surface);
+  font-weight: 700;
+  text-align: center;
+}
+/* Les crans sur une ligne, « 4 coups sur 7 » dessous : l'étiquette garde la largeur de sa place. */
+.world-question .world-dial-compte .world-answer-label {
+  flex-direction: column;
+  gap: 2px;
+  line-height: 1.1;
+}
+/* Dans la bulle, « Vue simple » proposé : la bulle garde ses lignes (le rôle et la consigne, puis le bouton), jamais la
+   colonne du panneau, où la ligne de la consigne prenait une hauteur nulle au téléphone ; elle défile si elle dépasse. */
+.world-question .quiz.in-world.scenette.bulle.offer {
+  flex-direction: row;
+  flex-wrap: wrap;
+  overflow-y: auto;
 }

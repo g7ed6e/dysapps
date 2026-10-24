@@ -32,6 +32,7 @@ créature : Mémo
 ### Niveau 1 · `history-3e-twentieth-century-total-wars-1`
 
 - consigne : Choisis le mot qui complète la phrase. La frise est affichée.
+- consigne courte : Touche le mot qui complète la phrase.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -89,6 +90,7 @@ Pour tous les items :
 ### Niveau 2 · `history-3e-twentieth-century-total-wars-2`
 
 - consigne : Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire un document d’histoire » :
@@ -169,6 +171,7 @@ Pour tous les items :
 ### Niveau 1 · `history-3e-twentieth-century-world-since-1945-1`
 
 - consigne : Choisis le mot qui complète la phrase. La frise est affichée.
+- consigne courte : Touche le mot qui complète la phrase.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -228,6 +231,7 @@ Pour tous les items :
 ### Niveau 2 · `history-3e-twentieth-century-world-since-1945-2`
 
 - consigne : Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire un document d’histoire » :
@@ -308,6 +312,7 @@ Pour tous les items :
 ### Niveau 1 · `history-3e-twentieth-century-republic-1`
 
 - consigne : Choisis le mot qui complète la phrase. La frise est affichée.
+- consigne courte : Touche le mot qui complète la phrase.
 
 Pour tous les items :
 - trou lu : (mot manquant)
@@ -370,6 +375,7 @@ Pour tous les items :
 ### Niveau 2 · `history-3e-twentieth-century-republic-2`
 
 - consigne : Lis la question, puis le document. Choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire un document d’histoire » :

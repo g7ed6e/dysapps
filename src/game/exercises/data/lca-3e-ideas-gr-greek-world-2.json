@@ -4,6 +4,7 @@
   "type": "gr-greek-world",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "lca-3e-ideas-gr-greek-world-2-0",

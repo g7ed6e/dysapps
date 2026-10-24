@@ -4,6 +4,7 @@
   "type": "compound-tenses",
   "level": 2,
   "instruction": "Choisis la bonne forme du verbe : son radical change. La règle est affichée.",
+  "shortInstruction": "Touche la bonne forme du verbe.",
   "items": [
     {
       "key": "french-4e-sentence-compound-tenses-2-0",

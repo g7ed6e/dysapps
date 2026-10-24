@@ -4,6 +4,7 @@
   "type": "verb-stems",
   "level": 2,
   "instruction": "Choisis la bonne écriture du verbe au subjonctif. La règle est affichée.",
+  "shortInstruction": "Touche la bonne écriture du verbe au subjonctif.",
   "items": [
     {
       "key": "french-3e-language-verb-stems-2-0",

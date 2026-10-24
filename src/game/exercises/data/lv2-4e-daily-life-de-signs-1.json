@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis la question, puis le panneau ou le message en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.",
+  "shortInstruction": "Lis le message, puis touche la bonne réponse.",
   "programme": [
     "c4.de.lire.consignes-panneaux"
   ],

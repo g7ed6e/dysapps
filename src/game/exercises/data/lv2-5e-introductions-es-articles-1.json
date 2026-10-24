@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "es",
   "instruction": "Écoute le nom espagnol et choisis son article. La règle est affichée : lis-la avant de répondre.",
+  "shortInstruction": "Écoute le nom espagnol, touche son article.",
   "items": [
     {
       "key": "lv2-5e-introductions-es-articles-1-0",

@@ -4,6 +4,7 @@
   "type": "subject-verb",
   "level": 1,
   "instruction": "Trouve le sujet avec « qui est-ce qui ? », puis accorde le verbe. La règle est affichée.",
+  "shortInstruction": "Trouve le sujet, puis touche le verbe accordé.",
   "items": [
     {
       "key": "french-4e-agreement-subject-verb-1-0",

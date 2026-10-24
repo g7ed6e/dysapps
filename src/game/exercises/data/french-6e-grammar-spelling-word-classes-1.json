@@ -4,6 +4,7 @@
   "type": "word-classes",
   "level": 1,
   "instruction": "Pour chaque sujet, choisis le verbe qui va avec : un seul, ou plusieurs. Puis valide.",
+  "shortInstruction": "Pour chaque sujet, touche son verbe, puis valide.",
   "items": [
     {
       "key": "le-chien",

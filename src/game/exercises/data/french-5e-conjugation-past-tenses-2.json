@@ -4,6 +4,7 @@
   "type": "past-tenses",
   "level": 2,
   "instruction": "Choisis le verbe au passé simple, le temps du récit écrit. La règle est affichée.",
+  "shortInstruction": "Touche le verbe au passé simple.",
   "items": [
     {
       "key": "french-5e-conjugation-past-tenses-2-0",

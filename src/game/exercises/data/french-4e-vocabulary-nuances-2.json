@@ -4,6 +4,7 @@
   "type": "nuances",
   "level": 2,
   "instruction": "Degré d’intensité : trouve le mot le plus fort, ou la liste bien rangée.",
+  "shortInstruction": "Touche le plus fort, ou la bonne liste.",
   "items": [
     {
       "key": "french-4e-vocabulary-nuances-2-0",

@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Écoute le mot ou la phrase en espagnol, puis choisis ce qui manque. La règle est affichée.",
+  "shortInstruction": "Écoute en espagnol, touche ce qui manque.",
   "programme": [
     "c4.es.5e.exprimer.dictee"
   ],

@@ -4,6 +4,7 @@
   "type": "world-since-1945",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "history-3e-twentieth-century-world-since-1945-1-0",

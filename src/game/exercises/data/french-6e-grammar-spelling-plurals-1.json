@@ -4,6 +4,7 @@
   "type": "plurals",
   "level": 1,
   "instruction": "Choisis le mot bien accordé : regarde les mots de son groupe. La règle est affichée.",
+  "shortInstruction": "Touche le mot bien accordé avec son groupe.",
   "programme": [
     "c3.fr.langue.accord-gn"
   ],

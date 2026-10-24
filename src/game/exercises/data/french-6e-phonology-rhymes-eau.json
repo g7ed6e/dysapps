@@ -5,6 +5,7 @@
   "level": 1,
   "target": "chapeau",
   "instruction": "Tape les mots qui riment avec chapeau. Puis valide.",
+  "shortInstruction": "Tape les mots qui riment avec chapeau.",
   "items": [
     {
       "key": "bateau",

@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Écoute le nombre en espagnol et choisis le bon nombre. La règle est affichée.",
+  "shortInstruction": "Écoute en espagnol, touche le bon nombre.",
   "items": [
     {
       "key": "lv2-5e-introductions-es-numbers-2-0",

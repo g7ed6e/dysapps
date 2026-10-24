@@ -4,6 +4,7 @@
   "type": "moods",
   "level": 1,
   "instruction": "Que dit le conditionnel dans cette phrase ? La règle est affichée.",
+  "shortInstruction": "Touche ce que dit le conditionnel.",
   "items": [
     {
       "key": "french-4e-sentence-moods-1-0",

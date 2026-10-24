@@ -4,6 +4,7 @@
   "type": "subordinate-clauses",
   "level": 2,
   "instruction": "Que dit la subordonnée : complément du verbe, ou une circonstance ? La règle est affichée.",
+  "shortInstruction": "Touche : complément du verbe, ou circonstance ?",
   "items": [
     {
       "key": "french-4e-sentence-subordinate-clauses-2-0",

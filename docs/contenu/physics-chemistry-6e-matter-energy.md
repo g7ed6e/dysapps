@@ -18,6 +18,7 @@ créature : Bulle
 - description : Solide, liquide, gaz et les changements d’état, puis mesurer, dissoudre et séparer.
 - compétences : c3.pc.matiere.etats · c3.pc.matiere.grandeurs · c3.pc.matiere.melanges · c3.pc.demarches.mesurer · c3.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-6e-matter-energy
@@ -149,6 +150,7 @@ Pour tous les items :
 - description : Décrire un mouvement par sa trajectoire et sa vitesse, puis reconnaître un signal et tester une idée par une expérience.
 - compétences : c3.pc.matiere.mouvements · c3.pc.matiere.signal · c3.pc.demarches.experimenter · c3.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-6e-matter-energy
@@ -282,6 +284,7 @@ Pour tous les items :
 - description : Les sources d’énergie et ce qu’en font les objets, puis le circuit électrique et ses règles de sécurité.
 - compétences : c3.pc.matiere.energie · c3.pc.matiere.circuit · c3.pc.demarches.langages
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-6e-matter-energy
@@ -413,6 +416,7 @@ Pour tous les items :
 - description : Trier des matériaux et reconnaître une transformation chimique, puis l’air, les pictogrammes de danger, le jour, la nuit et les saisons.
 - compétences : c3.pc.matiere.materiaux · c3.pc.matiere.transformations · c3.pc.matiere.lumiere
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : physics-chemistry-6e-matter-energy

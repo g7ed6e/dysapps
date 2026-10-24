@@ -4,6 +4,7 @@
   "type": "figures-of-speech",
   "level": 2,
   "instruction": "Quelle figure de style ? Énumération, répétition, antithèse ou litote. Le rappel est affiché.",
+  "shortInstruction": "Touche la bonne figure de style.",
   "items": [
     {
       "key": "french-3e-close-reading-figures-of-speech-2-0",

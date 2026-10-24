@@ -17,6 +17,7 @@ créature : Moustache
 - compétences : c4.en.5e.langue.verbe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-5e-grammar
@@ -132,6 +133,7 @@ Pour tous les items :
 - compétences : c4.en.5e.langue.verbe
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-5e-grammar
@@ -242,6 +244,7 @@ Pour tous les items :
 - compétences : c4.en.5e.langue.groupe-nominal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-5e-grammar
@@ -358,6 +361,7 @@ Pour tous les items :
 - compétences : c4.en.5e.langue.phrase · c3.en.langue.groupe-nominal
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-5e-grammar
@@ -486,6 +490,7 @@ Pour tous les items :
 ### Niveau 1 · `english-5e-grammar-portraits-1`
 
 - consigne : Lis la question, puis le texte en anglais. Choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le texte, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Décrire quelqu’un » :
@@ -572,6 +577,7 @@ Pour tous les items :
 ### Niveau 2 · `english-5e-grammar-portraits-2`
 
 - consigne : Lis la question, puis le texte en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le texte, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Des personnages de livres » :

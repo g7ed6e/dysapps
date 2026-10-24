@@ -4,10 +4,12 @@
   "type": "living-groups",
   "level": 1,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "life-earth-sciences-6e-living-world-living-groups-1-0",
       "prompt": "La chauve-souris a des ailes et des poils. C’est un …",
+      "subject": "la chauve-souris",
       "spoken": "La chauve-souris a des ailes et des poils. C’est un  (mot manquant) ",
       "choices": [
         "oiseau",
@@ -17,6 +19,9 @@
       "answer": "mammifère",
       "hint": "Regarde ce qu’elle a sur le corps : des poils ou des plumes ?",
       "explanation": "La chauve-souris a des poils : c’est un mammifère. Voler ne compte pas : on classe selon ce qu’on a, pas selon ce qu’on fait.",
+      "gesture": "ranger",
+      "shows": "ailes, poils",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -35,6 +40,7 @@
     {
       "key": "life-earth-sciences-6e-living-world-living-groups-1-1",
       "prompt": "Le manchot ne vole pas, mais il a des plumes. C’est un …",
+      "subject": "le manchot",
       "spoken": "Le manchot ne vole pas, mais il a des plumes. C’est un  (mot manquant) ",
       "choices": [
         "poisson",
@@ -44,6 +50,9 @@
       "answer": "oiseau",
       "hint": "Quel groupe a des plumes ?",
       "explanation": "Le manchot a des plumes : c’est un oiseau, même s’il nage et ne vole pas.",
+      "gesture": "ranger",
+      "shows": "plumes, ailes courtes",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -62,6 +71,7 @@
     {
       "key": "life-earth-sciences-6e-living-world-living-groups-1-2",
       "prompt": "La baleine vit dans la mer. Elle a des mamelles. C’est un …",
+      "subject": "la baleine",
       "spoken": "La baleine vit dans la mer. Elle a des mamelles. C’est un  (mot manquant) ",
       "choices": [
         "poisson",
@@ -71,6 +81,9 @@
       "answer": "mammifère",
       "hint": "Le lieu de vie ne compte pas. Que possède-t-elle ?",
       "explanation": "La baleine a des mamelles : c’est un mammifère. Vivre dans la mer ne fait pas d’elle un poisson.",
+      "gesture": "ranger",
+      "shows": "mamelles, nageoires",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

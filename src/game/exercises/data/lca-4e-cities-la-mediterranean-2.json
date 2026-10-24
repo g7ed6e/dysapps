@@ -4,6 +4,7 @@
   "type": "la-mediterranean",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "lca-4e-cities-la-mediterranean-2-0",

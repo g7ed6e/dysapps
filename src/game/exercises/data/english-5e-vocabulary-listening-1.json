@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Écoute la phrase en anglais, puis choisis ce qu’elle veut dire.",
+  "shortInstruction": "Écoute en anglais, touche le sens.",
   "items": [
     {
       "key": "english-5e-vocabulary-listening-1-0",

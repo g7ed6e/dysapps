@@ -4,6 +4,7 @@
   "type": "france-eu",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "geography-3e-france-france-eu-1-0",

@@ -4,6 +4,7 @@
   "type": "planning",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "geography-3e-france-planning-1-0",

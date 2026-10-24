@@ -4,6 +4,7 @@
   "type": "connotation",
   "level": 3,
   "instruction": "Relève les mots qui vont ensemble : quelle impression donnent-ils ? La règle est affichée.",
+  "shortInstruction": "Touche l’impression que donnent ces mots.",
   "items": [
     {
       "key": "french-3e-language-connotation-3-0",

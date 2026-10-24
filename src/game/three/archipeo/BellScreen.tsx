@@ -94,11 +94,11 @@ function BellVoice({ text }: { text: string }) {
  * pourrait désigner le son demandé, ou la fin qui rime.
  */
 export function BellScreen({ items, answered, onAnswer, target, exerciseId }: ScreenProps) {
-  const { layout, show, simple } = useQuestion();
+  const { layout, show, simple, lowScreen } = useQuestion();
   const { speak, settings } = useSettings();
   // Au plus grand texte sur un écran bas, en « Vue simple » : la cible est sur la ligne de la consigne repliée
   // (WorldQuestion.tsx), « Écouter les cloches » dans la bande de « Valider » ; la manche tient au-dessus de la bande.
-  const compact = simple && layout.low && texteGrand(settings);
+  const compact = simple && lowScreen && texteGrand(settings);
   useStopOnLeave();
   const [picked, setPicked] = useState<Set<string>>(new Set());
   const rhymes = missionIs(exerciseId, 'rhymes');

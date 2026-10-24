@@ -5,6 +5,7 @@
   "level": 2,
   "target": "ch",
   "instruction": "Tape les mots où tu entends le son [ch], comme dans chapeau. Puis valide.",
+  "shortInstruction": "Tape les mots du son [ch], puis valide.",
   "items": [
     {
       "key": "chat",

@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis le texte en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis le texte, puis touche la bonne réponse.",
   "items": [
     {
       "key": "english-5e-grammar-portraits-2-0",

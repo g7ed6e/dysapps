@@ -4,6 +4,7 @@
   "type": "word-forms",
   "level": 1,
   "instruction": "Choisis le mot de même sens pour compléter la deuxième phrase. La règle est affichée.",
+  "shortInstruction": "Touche le mot de même sens pour compléter.",
   "items": [
     {
       "key": "french-6e-word-spelling-word-forms-1-0",

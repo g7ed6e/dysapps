@@ -16,6 +16,11 @@ export interface ExerciseDef {
   level: number;
   /** Consigne unique, courte, lue à voix haute au démarrage. */
   instruction: string;
+  /**
+   * La consigne de la bulle d'un lieu du monde ouvert (GD-26) : huit mots au plus, le geste et la réponse ; la consigne
+   * entière reste dans « Vue simple », la grille et Blocland. Un item peut avoir la sienne (`shortInstruction`).
+   */
+  shortInstruction?: string;
   target?: string;
   /**
    * Langue du contenu travaillé : `en` pour l'anglais (prompt, spoken, word, sentence et choices affichés et lus en

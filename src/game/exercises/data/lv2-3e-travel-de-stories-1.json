@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis la question, puis lis l’histoire en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.",
+  "shortInstruction": "Lis l’histoire, puis touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-3e-travel-de-stories-1-0",

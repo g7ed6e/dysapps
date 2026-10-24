@@ -4,6 +4,7 @@
   "type": "calculation-programs",
   "level": 1,
   "instruction": "Suis le programme, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Suis le programme, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-4e-data-calculation-programs-1-0",

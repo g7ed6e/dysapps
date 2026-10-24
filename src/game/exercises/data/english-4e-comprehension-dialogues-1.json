@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Écoute la question en anglais, puis choisis la bonne réponse.",
+  "shortInstruction": "Écoute en anglais, touche la bonne réponse.",
   "items": [
     {
       "key": "english-4e-comprehension-dialogues-1-0",

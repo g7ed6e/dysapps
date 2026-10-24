@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis écoute l’histoire en anglais. Pour l’entendre encore, appuie sur Écouter. Le lexique est affiché.",
+  "shortInstruction": "Écoute en anglais, touche la bonne réponse.",
   "items": [
     {
       "key": "english-6e-grammar-story-2-0",

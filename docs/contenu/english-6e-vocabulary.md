@@ -17,6 +17,7 @@ créature : Robin
 - compétences : c3.en.dialoguer.contact-social · c3.en.ecouter.consignes
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-6e-vocabulary
@@ -149,6 +150,7 @@ Pour tous les items :
 ### Niveau 1 · `english-6e-vocabulary-numbers-1`
 
 - consigne : Écoute le nombre en anglais et choisis le bon nombre. La règle est affichée.
+- consigne courte : Écoute en anglais, touche le bon nombre.
 
 Pour tous les items :
 - aide « Les nombres » :
@@ -210,6 +212,7 @@ Pour tous les items :
 ### Niveau 2 · `english-6e-vocabulary-numbers-2`
 
 - consigne : Écoute l’heure ou la date en anglais et choisis la bonne. La règle est affichée.
+- consigne courte : Écoute en anglais, touche l’heure ou la date.
 
 Pour tous les items :
 - aide « L’heure et la date » :
@@ -274,6 +277,7 @@ Pour tous les items :
 - compétences : c3.en.ecouter.mots-familiers · c3.en.langue.phonie-graphie
 - langue : en
 - consigne : Écoute le mot anglais, puis choisis ce qu’il veut dire.
+- consigne courte : Écoute le mot anglais, touche son sens.
 - bravo : Bien entendu !
 - erreur : {explanation}
 - bloc gagné : english-6e-vocabulary
@@ -390,6 +394,7 @@ Pour tous les items :
 ### Niveau 1 · `english-6e-vocabulary-signs-1`
 
 - consigne : Lis la question, puis l’étiquette ou la carte en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis l’étiquette, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Lire une étiquette, une carte » :
@@ -467,6 +472,7 @@ Pour tous les items :
 ### Niveau 2 · `english-6e-vocabulary-signs-2`
 
 - consigne : Lis la question, puis le petit texte en anglais, et trouve la phrase qui répond. Le lexique est affiché.
+- consigne courte : Touche la phrase du texte qui répond.
 
 Pour tous les items :
 - aide « Lire un petit texte » :
@@ -557,6 +563,7 @@ Pour tous les items :
 ### Niveau 1 · `english-6e-vocabulary-famous-people-1`
 
 - consigne : Lis la question, puis la fiche en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis la fiche, puis touche la bonne réponse.
 
 Pour tous les items :
 - langue des choix : fr
@@ -627,6 +634,7 @@ Pour tous les items :
 ### Niveau 2 · `english-6e-vocabulary-famous-people-2`
 
 - consigne : Lis la question, puis le petit texte en anglais. Choisis le mot qui dit ce qu’on ressent. Le lexique est affiché.
+- consigne courte : Touche le mot qui dit ce qu’on ressent.
 
 Pour tous les items :
 - aide « Dire ce qu’on ressent » :

@@ -4,6 +4,7 @@
   "type": "sentence-grammar",
   "level": 1,
   "instruction": "Lis la phrase, puis réponds à la question. La règle est affichée.",
+  "shortInstruction": "Lis la phrase, puis touche la bonne réponse.",
   "items": [
     {
       "key": "french-5e-conjugation-sentence-grammar-1-0",

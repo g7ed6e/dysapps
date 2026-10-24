@@ -24,6 +24,7 @@ créature : Bloquette
 ### Niveau 1 · `french-6e-grammar-spelling-word-classes-1`
 
 - consigne : Pour chaque sujet, choisis le verbe qui va avec : un seul, ou plusieurs. Puis valide.
+- consigne courte : Pour chaque sujet, touche son verbe, puis valide.
 - blocs : 4
 - XP : 12
 
@@ -85,6 +86,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-grammar-spelling-word-classes-2`
 
 - consigne : Attention aux pièges : cherche qui fait l’action, choisis le verbe, puis valide.
+- consigne courte : Qui agit ? Touche le verbe, puis valide.
 - blocs : 5
 - XP : 14
 
@@ -170,6 +172,7 @@ Pour tous les items :
 ### Niveau 1 · `french-6e-grammar-spelling-e-er-ez-1`
 
 - consigne : Choisis la bonne fin du verbe : é, er ou ez. Astuce : remplace par vendre ou vendu.
+- consigne courte : Touche la bonne fin : é, er ou ez.
 - blocs : 4
 - XP : 12
 
@@ -209,6 +212,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-grammar-spelling-e-er-ez-2`
 
 - consigne : Choisis la bonne fin du verbe : é, er ou ez. Pense à remplacer par vendre ou vendu, et regarde qui parle.
+- consigne courte : Touche la bonne fin : é, er ou ez.
 - blocs : 5
 - XP : 14
 
@@ -260,6 +264,7 @@ Pour tous les items :
 ### Niveau 1 · `french-6e-grammar-spelling-plurals-1`
 
 - consigne : Choisis le mot bien accordé : regarde les mots de son groupe. La règle est affichée.
+- consigne courte : Touche le mot bien accordé avec son groupe.
 - programme : c3.fr.langue.accord-gn
 - bravo : Tout le groupe va ensemble !
 - blocs : 4
@@ -316,6 +321,7 @@ Pour tous les items :
 ### Niveau 2 · `french-6e-grammar-spelling-plurals-2`
 
 - consigne : Trouve le sujet avec « qui est-ce qui ? », même s’il est après le verbe, puis accorde le verbe. La règle est affichée.
+- consigne courte : Trouve le sujet, puis touche le verbe accordé.
 - programme : c3.fr.langue.accord-sujet-verbe
 - bravo : Tu as trouvé le sujet !
 - blocs : 5

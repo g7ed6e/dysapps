@@ -37,6 +37,7 @@ créature : Ixe
 - description : Opposé, comparer, ranger et encadrer des relatifs, puis fractions égales, comparer, ranger et inverse.
 - compétences : c4.ma.a.relatifs · c4.ma.a.fractions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-4e-algebra

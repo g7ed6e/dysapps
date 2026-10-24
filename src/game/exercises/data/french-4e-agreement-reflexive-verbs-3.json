@@ -4,6 +4,7 @@
   "type": "reflexive-verbs",
   "level": 3,
   "instruction": "Trouve le groupe apposé ou le nom qu’il précise, ou choisis le bon accord. La règle est affichée.",
+  "shortInstruction": "Touche le groupe apposé ou le bon accord.",
   "items": [
     {
       "key": "french-4e-agreement-reflexive-verbs-3-0",

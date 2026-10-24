@@ -4,6 +4,7 @@
   "type": "inference",
   "level": 1,
   "instruction": "Lis le passage et choisis ce qu’il laisse comprendre sans le dire. Relie tous les indices.",
+  "shortInstruction": "Touche ce que le passage laisse comprendre.",
   "items": [
     {
       "key": "french-3e-close-reading-inference-1-0",

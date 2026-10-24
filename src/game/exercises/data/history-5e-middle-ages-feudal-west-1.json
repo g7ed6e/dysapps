@@ -4,6 +4,7 @@
   "type": "feudal-west",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "history-5e-middle-ages-feudal-west-1-0",

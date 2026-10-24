@@ -4,6 +4,7 @@
   "type": "moods",
   "level": 2,
   "instruction": "Que dit le subjonctif dans cette phrase ? La règle est affichée.",
+  "shortInstruction": "Touche ce que dit le subjonctif.",
   "items": [
     {
       "key": "french-4e-sentence-moods-2-0",

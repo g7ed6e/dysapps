@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Lis le petit texte en anglais, puis choisis la bonne réponse à la question. La règle est affichée.",
+  "shortInstruction": "Lis le texte, puis touche la bonne réponse.",
   "items": [
     {
       "key": "english-3e-comprehension-understanding-1-0",

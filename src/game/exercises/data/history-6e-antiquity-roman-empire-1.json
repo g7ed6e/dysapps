@@ -4,6 +4,7 @@
   "type": "roman-empire",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "history-6e-antiquity-roman-empire-1-0",

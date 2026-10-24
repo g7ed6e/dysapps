@@ -44,6 +44,7 @@ créature : Lavi
 - description : Arrondis un décimal, convertis une longueur en mètres, puis multiplie deux décimaux et vérifie avec un ordre de grandeur.
 - compétences : c3.ma.nombres.arrondi · c3.ma.nombres.produit-decimaux · c3.ma.grandeurs.unites-conversions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-6e-decimals

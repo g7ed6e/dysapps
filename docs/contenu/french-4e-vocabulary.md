@@ -29,6 +29,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-vocabulary-word-roots-1`
 
 - consigne : Retrouve le sens de la racine grecque ou latine. Les racines sont affichées.
+- consigne courte : Touche le sens de la racine.
 
 Pour tous les items :
 - aide « Racines grecques et latines » :
@@ -86,6 +87,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-vocabulary-word-roots-2`
 
 - consigne : Préfixes et suffixes : forme le mot ou retrouve son sens. La liste est affichée.
+- consigne courte : Forme le mot, ou touche son sens.
 
 Pour tous les items :
 - aide « Préfixes et suffixes » :
@@ -152,6 +154,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-vocabulary-meaning-1`
 
 - consigne : Sens propre ou sens figuré ? Demande-toi si c’est réel ou une image.
+- consigne courte : Touche : sens propre ou sens figuré ?
 
 Pour tous les items :
 - trou lu : " (mot manquant) "
@@ -209,6 +212,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-vocabulary-meaning-2`
 
 - consigne : Champ lexical : trouve le mot qui parle du thème. La règle est affichée.
+- consigne courte : Touche le mot qui parle du thème.
 
 Pour tous les items :
 - aide « Champ lexical » :
@@ -268,6 +272,7 @@ Pour tous les items :
 ### Niveau 3 · `french-4e-vocabulary-meaning-3`
 
 - consigne : Champ lexical dans une phrase : trouve le thème, ou le mot qui en fait partie. La règle est affichée.
+- consigne courte : Touche le thème ou un mot du thème.
 
 Pour tous les items :
 - aide « Champ lexical dans une phrase » :
@@ -339,6 +344,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-vocabulary-nuances-1`
 
 - consigne : Synonymes, antonymes, registres de langue : choisis le bon mot. Le rappel est affiché.
+- consigne courte : Touche le bon mot.
 
 Pour tous les items :
 - trou lu : " (mot manquant) "
@@ -397,6 +403,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-vocabulary-nuances-2`
 
 - consigne : Degré d’intensité : trouve le mot le plus fort, ou la liste bien rangée.
+- consigne courte : Touche le plus fort, ou la bonne liste.
 
 Pour tous les items :
 - aide « Degré d’intensité » :
@@ -456,6 +463,7 @@ Pour tous les items :
 ### Niveau 3 · `french-4e-vocabulary-nuances-3`
 
 - consigne : Registres : reconnais le registre, ou choisis la phrase qui convient à la situation. Le rappel est affiché.
+- consigne courte : Touche le registre, ou la phrase qui convient.
 
 Pour tous les items :
 - aide « Registres de langue » :
@@ -531,6 +539,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-vocabulary-conjunctions-1`
 
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - programme : c4.fr.langue.orthographe-lexicale · c4.fr.langue.classes-de-mots · c3.fr.langue.classes-de-mots
 
 Pour tous les items :
@@ -592,6 +601,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-vocabulary-conjunctions-2`
 
 - consigne : Choisis le bon mot pour compléter la phrase. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - programme : c4.fr.langue.orthographe-lexicale · c4.fr.langue.classes-de-mots · c3.fr.langue.classes-de-mots
 
 Pour tous les items :
@@ -654,6 +664,7 @@ Pour tous les items :
 ### Niveau 3 · `french-4e-vocabulary-conjunctions-3`
 
 - consigne : Choisis le verbe au subjonctif présent après « bien que », « pour que », « avant que ».
+- consigne courte : Touche le verbe au subjonctif présent.
 - programme : c4.fr.langue.temps-a-memoriser · c4.fr.langue.morphologie-verbale
 
 Pour tous les items :

@@ -18,6 +18,7 @@ créature : Manivelle
 - description : Alimenter, distribuer, convertir et transmettre : le chemin de l’énergie dans un objet, puis son schéma.
 - compétences : c4.te.fonctionnement.energie
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-4e-modeling
@@ -152,6 +153,7 @@ Pour tous les items :
 - description : Acquérir, traiter et communiquer : capteurs, carte programmable et actionneurs, puis les deux chaînes ensemble.
 - compétences : c4.te.fonctionnement.information · c4.te.fonctionnement.energie
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-4e-modeling
@@ -284,6 +286,7 @@ Pour tous les items :
 - description : Ce qu’est un modèle et une simulation, puis lire un résultat (tableau, courbe) et le comparer au cahier des charges.
 - compétences : c4.te.conception.valider · c4.te.usages.interactions
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-4e-modeling
@@ -424,6 +427,7 @@ Pour tous les items :
 - description : Repérer la pièce défectueuse d’un objet en panne et suivre un protocole de dépannage, puis la fiabilité, la réparabilité et la sécurité à l’atelier.
 - compétences : c4.te.fonctionnement.depanner
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : technology-4e-modeling

@@ -4,6 +4,7 @@
   "type": "early-humans",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "history-6e-antiquity-early-humans-1-0",

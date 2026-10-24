@@ -4,6 +4,7 @@
   "type": "passive-reported",
   "level": 2,
   "instruction": "Paroles rapportées : choisis la phrase au discours indirect, ou trouve-la. La règle est affichée.",
+  "shortInstruction": "Touche la phrase au discours indirect.",
   "items": [
     {
       "key": "french-4e-sentence-passive-reported-2-0",

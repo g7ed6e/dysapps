@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Lis ou écoute la question en allemand, puis choisis la bonne réponse. La règle est affichée.",
+  "shortInstruction": "Écoute en allemand, touche la bonne réponse.",
   "programme": [
     "c4.de.langue.modaux-passif"
   ],

@@ -98,6 +98,9 @@ const NIVEAU = [
   ['langue', 'lang', 'texte'],
   ['cible', 'target', 'texte'],
   ['consigne', 'instruction', 'texte'],
+  // La consigne de la bulle d'un lieu du monde ouvert (GD-26) : huit mots au plus ; la consigne entière reste dans
+  // « Vue simple », la grille et Blocland.
+  ['consigne courte', 'shortInstruction', 'texte'],
   ['programme', 'programme', 'liste'],
   ['par partie', 'perRun', 'nombre'],
   ['bravo', 'feedback.correct', 'texte'],
@@ -141,7 +144,23 @@ const ITEM = [
   ['astuce', 'tip', 'texte'],
   ['explication', 'explanation', 'texte'],
   ['pourquoi', 'why', 'texte'],
+  // Le geste de l'item dans son lieu du monde ouvert (GD-26) : ranger, placer ou régler ; toucher sans rien écrire. La
+  // grille et Blocland l'ignorent.
+  ['geste', 'gesture', 'texte'],
+  // Ce que l'objet du geste montre (« ailes, poils » sur la fiche à ranger, « la cantine » sur le panier à placer).
+  ['scène', 'shows', 'texte'],
+  // La consigne de la bulle pour cet item (son geste) : huit mots au plus, comme celle du niveau.
+  ['consigne courte', 'shortInstruction', 'texte'],
 ];
+
+/** Les gestes qu'un item écrit peut prendre (GD-26) ; « régler » vient d'un générateur (la Forge). */
+const GESTES = ['ranger', 'placer'];
+
+/** Le plafond d'une consigne courte, en mots (avis du contenu, 24 octobre 2026). */
+export const MOTS_CONSIGNE_COURTE = 8;
+
+/** Les mots d'une consigne : séparés par des espaces (une apostrophe ne coupe pas le mot). */
+export const motsDe = (texte) => texte.split(/\s+/).filter((m) => /[\p{L}\p{N}]/u.test(m)).length;
 
 const PAR_ETIQUETTE_NIVEAU = new Map(NIVEAU.map((c) => [c[0], c]));
 const PAR_ETIQUETTE_ITEM = new Map(ITEM.map((c) => [c[0], c]));
@@ -759,6 +778,7 @@ export function lireIle(md, fichier = 'md') {
       if (trou !== undefined && it.spoken === undefined && parties) it.spoken = parties[0] + trou + parties[1];
       it.key ??= cleParDefaut(cle, it, ex.id, n);
       if (typeof it.key !== 'string') throw new Error(`${fichier}, ${ex.id} : l’item ${n + 1} n’a pas de ${cle} pour faire sa clé ; lui écrire « - clé : … »`);
+      verifierGeste(it, `${fichier}, ${ex.id}, item ${n + 1}`);
       return ordonnerItem(it);
     });
     // Une clé par défaut (le rang) peut retomber sur une clé écrite à la main : deux items partageraient alors
@@ -772,6 +792,8 @@ export function lireIle(md, fichier = 'md') {
       }
       vus.set(it.key, n);
     });
+    const courte = ex.shortInstruction;
+    if (courte !== undefined && motsDe(courte) > MOTS_CONSIGNE_COURTE) throw new Error(`${fichier}, ${ex.id} : la consigne courte a ${motsDe(courte)} mots, ${MOTS_CONSIGNE_COURTE} au plus`);
     exercices.push(ex);
     ex = null;
   };
@@ -957,6 +979,23 @@ export function lireIle(md, fichier = 'md') {
   };
 }
 
+/**
+ * Un item à geste (GD-26) : un geste connu, ce que son objet montre, sa réponse parmi ses choix ; une fiche à ranger a
+ * aussi son nom (« sujet »). Sa consigne courte tient en huit mots.
+ */
+function verifierGeste(it, ou) {
+  if (it.shortInstruction !== undefined && motsDe(it.shortInstruction) > MOTS_CONSIGNE_COURTE)
+    throw new Error(`${ou} : la consigne courte a ${motsDe(it.shortInstruction)} mots, ${MOTS_CONSIGNE_COURTE} au plus`);
+  if (it.gesture === undefined) {
+    if (it.shows !== undefined) throw new Error(`${ou} : « scène » sans « geste »`);
+    return;
+  }
+  if (!GESTES.includes(it.gesture)) throw new Error(`${ou} : geste « ${it.gesture} » inconnu (${GESTES.join(', ')} ; toucher sans rien écrire)`);
+  if (typeof it.shows !== 'string') throw new Error(`${ou} : un item à geste dit ce que son objet montre (« - scène : … »)`);
+  if (!Array.isArray(it.choices) || !it.choices.includes(it.answer)) throw new Error(`${ou} : la réponse d’un item à geste est un de ses choix`);
+  if (it.gesture === 'ranger' && typeof it.subject !== 'string') throw new Error(`${ou} : une fiche à ranger a un nom (« - sujet : … »)`);
+}
+
 /** L'ordre des champs d'un item dans le JSON produit : celui du tableau ITEM, puis la figure, puis l'aide. */
 function ordonnerItem(it) {
   const sortie = {};
@@ -967,7 +1006,7 @@ function ordonnerItem(it) {
 }
 
 /** L'ordre des champs d'un exercice dans le JSON produit. */
-const ORDRE = ['id', 'biome', 'type', 'level', 'title', 'lang', 'target', 'instruction', 'programme', 'items', 'perRun', 'feedback', 'reward', 'adaptive'];
+const ORDRE = ['id', 'biome', 'type', 'level', 'title', 'lang', 'target', 'instruction', 'shortInstruction', 'programme', 'items', 'perRun', 'feedback', 'reward', 'adaptive'];
 
 function ordonner(ex) {
   const sortie = {};

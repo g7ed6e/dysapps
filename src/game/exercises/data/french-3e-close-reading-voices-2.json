@@ -4,6 +4,7 @@
   "type": "voices",
   "level": 2,
   "instruction": "Voix active, voix passive ou forme impersonnelle : qui fait l’action ? Le rappel est affiché.",
+  "shortInstruction": "Touche la voix, ou qui fait l’action.",
   "items": [
     {
       "key": "french-3e-close-reading-voices-2-0",

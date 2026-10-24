@@ -4,6 +4,7 @@
   "type": "christendoms-islam",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. La frise est affichée.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "history-5e-middle-ages-christendoms-islam-1-0",

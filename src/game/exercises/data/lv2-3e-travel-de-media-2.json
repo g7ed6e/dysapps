@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "de",
   "instruction": "Écoute la ligne de la fiche. Choisis le mot bien écrit. La règle est affichée.",
+  "shortInstruction": "Écoute la ligne, touche le mot bien écrit.",
   "programme": [
     "c4.de.ecrire.dictee-fiche"
   ],

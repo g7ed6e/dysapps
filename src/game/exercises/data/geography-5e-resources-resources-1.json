@@ -4,6 +4,7 @@
   "type": "resources",
   "level": 1,
   "instruction": "Choisis le mot qui complète la phrase. Le rappel est affiché.",
+  "shortInstruction": "Touche le mot qui complète la phrase.",
   "items": [
     {
       "key": "geography-5e-resources-resources-1-0",

@@ -29,6 +29,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-agreement-past-participle-1`
 
 - consigne : Accorde le participe passé : avec être, il suit le sujet ; avec avoir, il ne s’accorde pas avec le sujet. La règle est affichée.
+- consigne courte : Touche le participe passé bien accordé.
 
 Pour tous les items :
 - aide « Participe passé avec être et avoir » :
@@ -80,6 +81,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-agreement-past-participle-2`
 
 - consigne : Accorde le participe passé avec avoir : il s’accorde avec le complément d’objet direct placé avant. Pose la question « quoi ? ».
+- consigne courte : Pose « quoi ? », puis touche le participe accordé.
 
 Pour tous les items :
 - aide « Participe passé avec avoir et COD placé avant » :
@@ -147,6 +149,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-agreement-adjectives-1`
 
 - consigne : Accorde l’adjectif avec le nom, ou avec le sujet après être. La règle est affichée.
+- consigne courte : Touche l’adjectif bien accordé.
 
 Pour tous les items :
 - aide « Accord de l’adjectif » :
@@ -198,6 +201,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-agreement-adjectives-2`
 
 - consigne : Accorde ou non les adjectifs de couleur et les cas particuliers. La règle est affichée.
+- consigne courte : Touche l’adjectif de couleur bien écrit.
 
 Pour tous les items :
 - aide « Adjectifs de couleur et cas particuliers » :
@@ -265,6 +269,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-agreement-subject-verb-1`
 
 - consigne : Trouve le sujet avec « qui est-ce qui ? », puis accorde le verbe. La règle est affichée.
+- consigne courte : Trouve le sujet, puis touche le verbe accordé.
 
 Pour tous les items :
 - aide « Trouver le sujet » :
@@ -316,6 +321,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-agreement-subject-verb-2`
 
 - consigne : Sujet éloigné, pronom « qui », deux sujets : accorde le verbe. La règle est affichée.
+- consigne courte : Accorde le verbe, puis touche la bonne forme.
 
 Pour tous les items :
 - aide « Sujet éloigné ou pronom » :
@@ -381,6 +387,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-agreement-reflexive-verbs-1`
 
 - consigne : Choisis la bonne forme du verbe pronominal. La règle est affichée.
+- consigne courte : Touche la bonne forme du verbe pronominal.
 - bravo : Bien conjugué !
 
 Pour tous les items :
@@ -437,6 +444,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-agreement-reflexive-verbs-2`
 
 - consigne : Accorde le participe passé du verbe pronominal. La règle est affichée.
+- consigne courte : Touche le bon participe du verbe pronominal.
 - bravo : Bien accordé !
 
 Pour tous les items :
@@ -490,6 +498,7 @@ Pour tous les items :
 ### Niveau 3 · `french-4e-agreement-reflexive-verbs-3`
 
 - consigne : Trouve le groupe apposé ou le nom qu’il précise, ou choisis le bon accord. La règle est affichée.
+- consigne courte : Touche le groupe apposé ou le bon accord.
 - bravo : Bien vu !
 
 Pour tous les items :
@@ -559,6 +568,7 @@ Pour tous les items :
 ### Niveau 1 · `french-4e-agreement-tense-meaning-1`
 
 - consigne : Lis la phrase : que dit le temps ou le mode du verbe ? La règle est affichée.
+- consigne courte : Touche le temps ou le mode du verbe.
 
 Pour tous les items :
 - aide « Ce que disent les temps et les modes » :
@@ -619,6 +629,7 @@ Pour tous les items :
 ### Niveau 2 · `french-4e-agreement-tense-meaning-2`
 
 - consigne : Ponctuation : lis la phrase, puis réponds à la question. La règle est affichée.
+- consigne courte : Lis la phrase, puis touche la bonne réponse.
 
 Pour tous les items :
 - aide « Les signes de ponctuation » :

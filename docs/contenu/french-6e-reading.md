@@ -30,6 +30,7 @@ Pour tous les items :
 
 - titre : Le réveil de Mousso
 - consigne : Lis « Le réveil de Mousso » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.
+- consigne courte : Lis à voix haute, puis valide.
 
 1. texte : Au bord de la forêt, un golem de mousse dort depuis très longtemps. Les oiseaux ont fait leur nid sur sa tête.
 2. texte : Un matin, une pierre roule sur son pied. Le golem ouvre un œil, puis l’autre. Il s’appelle Mousso.
@@ -40,6 +41,7 @@ Pour tous les items :
 
 - titre : Le pont du village
 - consigne : Lis « Le pont du village » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.
+- consigne courte : Lis à voix haute, puis valide.
 
 1. texte : Le vieux pont est tombé pendant l’orage. Pour aller à l’école, les enfants doivent faire un grand tour.
 2. texte : Le bâtisseur arrive avec ses blocs de bois et de pierre. Il pose le premier bloc sur la rive.
@@ -50,6 +52,7 @@ Pour tous les items :
 
 - titre : La mine de Tunel
 - consigne : Lis « La mine de Tunel » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.
+- consigne courte : Lis à voix haute, puis valide.
 
 1. texte : Sous la colline, il y a une mine. Dedans vit une taupe carrée qui s’appelle Tunel.
 2. texte : Tunel creuse des galeries avec ses pattes. Chaque jour, elle trouve des pierres grises, des pierres bleues et parfois de l’or.
@@ -71,6 +74,7 @@ Pour tous les items :
 - blocs : 4
 - XP : 12
 - consigne : Lis la question, puis le petit texte. Trouve de qui ou de quoi on parle. Le rappel est affiché.
+- consigne courte : Touche de qui ou de quoi on parle.
 
 Pour tous les items :
 - aide « Le pronom » :
@@ -141,6 +145,7 @@ Pour tous les items :
 - blocs : 5
 - XP : 14
 - consigne : Un texte reprend souvent un nom avec d’autres mots. Lis la question, puis le texte. Trouve de qui ou de quoi on parle. Le rappel est affiché.
+- consigne courte : Touche de qui ou de quoi on parle.
 
 Pour tous les items :
 - aide « Le même, avec d’autres mots » :
@@ -223,6 +228,7 @@ Pour tous les items :
 - blocs : 4
 - XP : 12
 - consigne : Lis la question, puis la phrase. Trouve le type ou la forme de la phrase. Le rappel est affiché.
+- consigne courte : Touche le type ou la forme.
 
 Pour tous les items :
 - aide « Types et formes de phrases » :
@@ -287,6 +293,7 @@ Pour tous les items :
 - blocs : 5
 - XP : 14
 - consigne : Lis la question, puis la phrase. Trouve la fonction du mot ou du groupe de mots. Le rappel est affiché.
+- consigne courte : Touche la fonction du mot ou du groupe.
 
 Pour tous les items :
 - aide « Attribut, épithète, complément du nom » :
@@ -350,6 +357,7 @@ Pour tous les items :
 - blocs : 5
 - XP : 14
 - consigne : Lis la question, puis la phrase. Compte les verbes conjugués, ou trouve ce qui relie les propositions. Le rappel est affiché.
+- consigne courte : Compte les verbes conjugués, ou trouve le lien.
 
 Pour tous les items :
 - aide « Phrase simple, phrase complexe » :
@@ -424,6 +432,7 @@ Pour tous les items :
 - blocs : 4
 - XP : 12
 - consigne : Lis la question, puis la phrase. Trouve quand se passe l’action. Le rappel est affiché.
+- consigne courte : Touche quand se passe l’action.
 
 Pour tous les items :
 - aide « Le moment de l’action, le temps du verbe » :
@@ -487,6 +496,7 @@ Pour tous les items :
 - blocs : 5
 - XP : 14
 - consigne : Lis la question, puis le petit récit. Trouve ce que dit le temps du verbe. Le rappel est affiché.
+- consigne courte : Lis le récit, touche le temps du verbe.
 
 Pour tous les items :
 - aide « Les temps du récit » :

@@ -4,6 +4,7 @@
   "type": "solidarity",
   "level": 1,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "civics-5e-equality-solidarity-solidarity-1-0",
@@ -27,6 +28,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }
@@ -54,6 +56,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }
@@ -81,6 +84,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }
@@ -109,6 +113,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }
@@ -136,6 +141,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }
@@ -154,6 +160,9 @@
       "answer": "le département",
       "hint": "Cherche la ligne qui parle des personnes âgées.",
       "explanation": "Le département aide les personnes âgées et les personnes en difficulté. La commune s’occupe de l’école, la région des trains régionaux.",
+      "gesture": "placer",
+      "shows": "l’aide aux personnes âgées",
+      "shortInstruction": "Pose le panier devant sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -164,6 +173,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }
@@ -191,6 +201,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }
@@ -218,6 +229,7 @@
             "La Sécurité sociale rembourse une partie des soins.",
             "L’impôt finance les services publics, comme l’école.",
             "La commune, le département et la région ont chacun leurs missions.",
+            "La commune : la cantine. Le département : les personnes âgées. La région : les trains.",
             "Les associations aident aussi, souvent avec des bénévoles."
           ]
         }

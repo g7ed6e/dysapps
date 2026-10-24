@@ -31,6 +31,7 @@ créature : Timbre
 ### Niveau 1 · `lv2-3e-travel-es-past-1`
 
 - consigne : Lis la phrase en espagnol, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Lis ou écoute en espagnol, touche la réponse.
 
 Pour tous les items :
 - aide « El pretérito indefinido » :
@@ -98,6 +99,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-es-past-2`
 
 - consigne : Lis la question en espagnol, ou appuie sur Écouter. Hier ou demain ? Choisis la bonne réponse. La règle est affichée.
+- consigne courte : Hier ou demain ? Touche la bonne réponse.
 
 Pour tous les items :
 - aide « ¿Ayer o mañana? » :
@@ -163,6 +165,7 @@ Pour tous les items :
 - lv2 : es
 - langue : es
 - consigne : Lis la question, puis lis l’histoire en espagnol. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
+- consigne courte : Lis l’histoire, puis touche la bonne réponse.
 - bravo : Bien lu !
 - erreur : {explanation}
 - bloc gagné : lv2-3e-travel
@@ -324,6 +327,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-3e-travel-es-countries-1`
 
 - consigne : Lis la question, puis trouve la bonne ligne du document en espagnol. Le lexique est affiché.
+- consigne courte : Touche la bonne ligne du document.
 - bravo : Bien lu !
 
 Pour tous les items :
@@ -395,6 +399,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-es-countries-2`
 
 - consigne : Lis la question, puis lis le document en espagnol pour comparer. La règle est affichée.
+- consigne courte : Compare avec le document, puis touche la réponse.
 - bravo : Bien comparé !
 
 Pour tous les items :
@@ -486,6 +491,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-3e-travel-es-connectives-1`
 
 - consigne : Lis la question en espagnol, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en espagnol, touche la bonne réponse.
 - bravo : Bien répondu !
 
 Pour tous les items :
@@ -548,6 +554,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-es-connectives-2`
 
 - consigne : Que veut dire le mot entre guillemets ? Attention aux faux amis. La règle est affichée.
+- consigne courte : Touche le sens du mot entre guillemets.
 - bravo : Pas piégé !
 
 Pour tous les items :
@@ -624,6 +631,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-3e-travel-es-media-1`
 
 - consigne : Lis la question, puis le document en espagnol, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 - bravo : Bien lu !
 
 Pour tous les items :
@@ -703,6 +711,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-es-media-2`
 
 - consigne : Lis la question, puis le document en espagnol : tu remplis une fiche. Le lexique est affiché.
+- consigne courte : Lis le document, puis remplis la fiche.
 - bravo : Bien rempli !
 
 Pour tous les items :
@@ -796,6 +805,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-3e-travel-de-past-1`
 
 - consigne : Lis la question en allemand, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en allemand, touche la bonne réponse.
 
 Pour tous les items :
 - aide « Das Perfekt mit haben » :
@@ -857,6 +867,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-de-past-2`
 
 - consigne : Lis la question en allemand, ou appuie sur Écouter. haben ou sein ? Choisis la bonne réponse. La règle est affichée.
+- consigne courte : haben ou sein ? Touche la bonne réponse.
 
 Pour tous les items :
 - aide « haben oder sein? » :
@@ -922,6 +933,7 @@ Pour tous les items :
 - lv2 : de
 - langue : de
 - consigne : Lis la question, puis lis l’histoire en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
+- consigne courte : Lis l’histoire, puis touche la bonne réponse.
 - bravo : Bien lu !
 - erreur : {explanation}
 - bloc gagné : lv2-3e-travel
@@ -1083,6 +1095,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-3e-travel-de-on-the-road-1`
 
 - consigne : Lis la question en allemand, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en allemand, touche la bonne réponse.
 - bravo : Bien répondu !
 
 Pour tous les items :
@@ -1145,6 +1158,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-de-on-the-road-2`
 
 - consigne : Lis la question, puis lis le document en allemand pour comparer. La règle est affichée.
+- consigne courte : Compare avec le document, puis touche la réponse.
 - bravo : Bien comparé !
 
 Pour tous les items :
@@ -1236,6 +1250,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-3e-travel-de-connectives-1`
 
 - consigne : Lis la question en allemand, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.
+- consigne courte : Écoute en allemand, touche la bonne réponse.
 - bravo : Bien répondu !
 
 Pour tous les items :
@@ -1298,6 +1313,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-de-connectives-2`
 
 - consigne : Que veut dire le mot entre guillemets ? Attention aux faux amis. La règle est affichée.
+- consigne courte : Touche le sens du mot entre guillemets.
 - bravo : Pas piégé !
 
 Pour tous les items :
@@ -1374,6 +1390,7 @@ Pour tous les items :
 ### Niveau 1 · `lv2-3e-travel-de-media-1`
 
 - consigne : Lis la question, puis le document en allemand. Pour l’entendre, appuie sur Écouter. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 - programme : c4.de.culture.langages
 - bravo : Bien lu !
 
@@ -1448,6 +1465,7 @@ Pour tous les items :
 ### Niveau 2 · `lv2-3e-travel-de-media-2`
 
 - consigne : Écoute la ligne de la fiche. Choisis le mot bien écrit. La règle est affichée.
+- consigne courte : Écoute la ligne, touche le mot bien écrit.
 - programme : c4.de.ecrire.dictee-fiche
 - bravo : Bien écrit !
 

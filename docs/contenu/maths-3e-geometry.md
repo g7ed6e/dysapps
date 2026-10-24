@@ -37,6 +37,7 @@ créature : Théo
 - description : Agrandir ou réduire : longueurs, angles, aires, volumes et échelle d’une carte, puis les angles du triangle et des droites parallèles.
 - compétences : c4.ma.c.agrandissement · c4.ma.d.angles-triangles
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien calculé !
 - erreur : {explanation}
 - bloc gagné : maths-3e-geometry
@@ -184,6 +185,7 @@ Pour tous les items :
 - description : Translation, symétries, rotation, homothétie : ce qui change et ce qui reste ; puis triangles égaux, triangles semblables et parallélogramme.
 - compétences : c4.ma.d.transformations · c4.ma.d.triangles-parallelogramme
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : maths-3e-geometry

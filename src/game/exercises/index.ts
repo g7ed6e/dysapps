@@ -2,6 +2,7 @@
 // Le bundle principal ne porte que l'index des exercices JSON (id, île, type, niveau, par le plugin
 // scripts/exerciseMeta.mjs) ; leur contenu est chargé à la demande, au lancement d'une partie ou d'un Gardien.
 // Le service worker met ces fichiers en cache à l'installation : ils restent disponibles hors ligne.
+import { SHORT_INSTRUCTIONS } from './shortInstructions';
 import { SETS } from '../../apps/homophones/data';
 import type { IleId } from '../biomes';
 import type { DrawKey } from '../engine/state';
@@ -69,7 +70,10 @@ const panneaux: ExerciseDef[] = SETS.filter((s) => s.id in PANNEAUX_SETS).map((s
 }));
 
 /** Les exercices écrits en code (générateurs, dérivés de la mission Homophones) : déjà là, rien à charger. */
-const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...POSEES_EXERCISES, ...VOLCAN_EXERCISES, ...PROBLEMES_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES, ...panneaux];
+// La consigne courte de la bulle (GD-26) : celle que donne le générateur, sinon celle de sa consigne entière.
+const CODE_EXERCISES: ExerciseDef[] = [...graines, ...MATHS_EXERCISES, ...POSEES_EXERCISES, ...VOLCAN_EXERCISES, ...PROBLEMES_EXERCISES, ...COLLEGE_EXERCISES, ...PROBLEMES_COLLEGE_EXERCISES, ...panneaux].map((e) =>
+  e.shortInstruction || !SHORT_INSTRUCTIONS[e.instruction] ? e : { ...e, shortInstruction: SHORT_INSTRUCTIONS[e.instruction] },
+);
 
 /**
  * L'ordre du catalogue : celui de la progression dans une île (il départage les variantes d'un même niveau et

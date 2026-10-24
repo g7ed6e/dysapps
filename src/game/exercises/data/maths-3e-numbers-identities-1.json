@@ -4,6 +4,7 @@
   "type": "identities",
   "level": 1,
   "instruction": "Développe et réduis. La règle est affichée.",
+  "shortInstruction": "Développe et réduis, puis touche la réponse.",
   "items": [
     {
       "key": "maths-3e-numbers-identities-1-0",

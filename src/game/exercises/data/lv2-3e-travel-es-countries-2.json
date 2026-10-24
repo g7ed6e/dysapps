@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Lis la question, puis lis le document en espagnol pour comparer. La règle est affichée.",
+  "shortInstruction": "Compare avec le document, puis touche la réponse.",
   "items": [
     {
       "key": "lv2-3e-travel-es-countries-2-0",

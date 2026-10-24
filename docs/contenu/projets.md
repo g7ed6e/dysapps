@@ -43,6 +43,7 @@
 - compétences : c4.ma.5e.proportionnalite.proportionnalite · c4.ma.5e.proportionnalite.pourcentages · c4.en.5e.interagir.echanges · c4.en.5e.langue.lexique · c4.en.5e.comprendre.informations-pratiques
 - langue : en
 - consigne : Lis l’énoncé en anglais, calcule, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
+- consigne courte : Calcule, puis touche la phrase bien écrite.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -171,6 +172,7 @@
 
 - compétences : c4.fr.5e.grammaire.temps-modes · c4.fr.5e.grammaire.formes-verbales · c3.fr.langue.temps-a-memoriser · c4.hg.histoire.occident-feodal · c4.hg.demarches.document · c4.hg.demarches.lexique · c4.hg.temps.ordonner · c4.hg.temps.reperes
 - consigne : Lis le document, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
+- consigne courte : Touche la phrase juste et bien écrite.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -300,6 +302,7 @@
 - compétences : c4.en.5e.langue.verbe · c4.en.5e.langue.groupe-nominal · c4.en.5e.comprendre.oral-ecrit · c4.hg.geographie.ressources · c4.hg.geographie.demographie-developpement · c4.hg.demarches.document · c4.hg.demarches.lexique
 - langue : en
 - consigne : Lis l’énoncé en anglais, puis choisis la phrase juste et bien écrite. Le rappel est affiché.
+- consigne courte : Touche la phrase juste et bien écrite.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -428,6 +431,7 @@
 
 - compétences : c4.ma.a.puissances · c4.ma.a.ecritures-ordres-de-grandeur · c4.hg.geographie.mondialisation · c4.hg.espace.localiser · c4.hg.demarches.document · c4.hg.demarches.lexique
 - consigne : Lis le document, calcule, puis choisis la phrase juste. Le rappel est affiché.
+- consigne courte : Lis, calcule, puis touche la phrase juste.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -556,6 +560,7 @@
 
 - compétences : c4.fr.langue.formation-des-mots · c4.fr.langue.sens-des-mots · c4.pc.signaux.lumiere-son · c4.pc.energie.circuits · c4.pc.demarches.langages
 - consigne : Lis le document, puis choisis la phrase juste. Le rappel est affiché.
+- consigne courte : Lis, puis touche la phrase juste.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -684,6 +689,7 @@
 
 - compétences : c4.ma.d.pythagore · c4.ma.d.thales · c4.fr.lecture.procedes · c4.fr.langue.enonciation · c4.fr.langue.discours-rapporte · c4.fr.langue.passif · c4.fr.langue.coherence-textuelle
 - consigne : Lis le texte, calcule, puis choisis la phrase juste. Le rappel est affiché.
+- consigne courte : Lis, calcule, puis touche la phrase juste.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -823,6 +829,7 @@
 
 - compétences : c4.ma.b.image-antecedent · c4.ma.b.lineaire-affine · c4.hg.geographie.amenager · c4.hg.geographie.dynamiques-france · c4.hg.demarches.document · c4.hg.demarches.lexique
 - consigne : Lis le document, calcule, puis choisis la phrase juste. Le rappel est affiché.
+- consigne courte : Lis, calcule, puis touche la phrase juste.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -962,6 +969,7 @@
 - compétences : c4.en.lire.informations · c4.en.langue.phrase-complexe · c4.pc.mouvement.decrire · c4.pc.mouvement.forces · c4.pc.energie.formes
 - langue : en
 - consigne : Lis l’énoncé en anglais, puis choisis la phrase juste. Le rappel est affiché.
+- consigne courte : Lis, puis touche la phrase juste.
 - bravo : Bien construit !
 - erreur : {explanation}
 
@@ -1090,6 +1098,7 @@
 
 - compétences : c4.hg.histoire.monde-depuis-1945 · c4.hg.temps.reperes · c4.hg.temps.ordonner · c4.hg.demarches.document · c4.hg.demarches.lexique · c4.pc.mouvement.decrire · c4.pc.mouvement.forces · c4.pc.energie.formes
 - consigne : Lis le document, puis choisis la phrase juste. Le rappel est affiché.
+- consigne courte : Lis, puis touche la phrase juste.
 - bravo : Bien construit !
 - erreur : {explanation}
 

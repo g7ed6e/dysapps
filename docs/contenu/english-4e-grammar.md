@@ -17,6 +17,7 @@ créature : Vapeur
 - compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-4e-grammar
@@ -133,6 +134,7 @@ Pour tous les items :
 - compétences : c4.en.langue.modaux-passif
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-4e-grammar
@@ -249,6 +251,7 @@ Pour tous les items :
 - compétences : c4.en.langue.temps-verbaux
 - langue : en
 - consigne : Choisis le mot qui complète la phrase en anglais. La règle est affichée : lis-la avant de répondre.
+- consigne courte : Touche le mot qui complète la phrase.
 - bravo : Bien dit !
 - erreur : {explanation}
 - bloc gagné : english-4e-grammar
@@ -364,6 +367,7 @@ Pour tous les items :
 - compétences : c3.en.culture.reperes · c3.en.culture.imaginaire · c4.en.culture.voyages-rencontres
 - langue : en
 - consigne : Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.
+- consigne courte : Lis le document, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : english-4e-grammar
@@ -516,6 +520,7 @@ Pour tous les items :
 - compétences : c4.en.ecrire.dictee-fiche
 - langue : en
 - consigne : Choisis ce qui complète la fiche ou le message en anglais. La règle est affichée.
+- consigne courte : Touche ce qui complète la fiche en anglais.
 - bravo : Bien écrit !
 - erreur : {explanation}
 - bloc gagné : english-4e-grammar

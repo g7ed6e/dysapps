@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "en",
   "instruction": "Lis la question, puis le petit texte en anglais. Choisis le mot qui dit ce qu’on ressent. Le lexique est affiché.",
+  "shortInstruction": "Touche le mot qui dit ce qu’on ressent.",
   "items": [
     {
       "key": "english-6e-vocabulary-famous-people-2-0",

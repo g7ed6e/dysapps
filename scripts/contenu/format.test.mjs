@@ -5,7 +5,7 @@ import { createElement } from 'react';
 import { Aid } from '../../src/game/exercises/Aid';
 import { AID_COMPONENTS } from '../../src/game/exercises/maths';
 import { clesDeplacees, clesRemplacees } from './chemins.mjs';
-import { ecrireFigure, ecrireIle, lireFigure, lireIle } from './format.mjs';
+import { MOTS_CONSIGNE_COURTE, ecrireFigure, ecrireIle, lireFigure, lireIle, motsDe } from './format.mjs';
 
 const DATA = 'src/game/exercises/data';
 
@@ -46,6 +46,25 @@ describe('le format Markdown du contenu', () => {
       const relu = lireIle(md, `${ile}.md`);
       expect(relu.ile).toBe(ile);
       expect(relu.exercices).toEqual(exercices);
+    }
+  });
+
+  it('lit le geste, la scène et la consigne courte d’un item (GD-26), et les vérifie', () => {
+    const md = (lignes) =>
+      ['---', 'lieu : english-6e-vocabulary', '---', '## X · `x`', '- consigne : Lis, puis choisis.', '- consigne courte : Lis, puis touche.', '### Niveau 1 · `english-6e-vocabulary-x-1`', '1. énoncé : La baleine est un …', ...lignes, ''].join('\n');
+    const bon = ['   - sujet : la baleine', '   - choix : poisson · mammifère', '   - réponse : mammifère', '   - geste : ranger', '   - scène : mamelles'];
+    const [ex] = lireIle(md(bon), 'english-6e-vocabulary.md').exercices;
+    expect(ex.shortInstruction).toBe('Lis, puis touche.');
+    expect(ex.items[0]).toMatchObject({ gesture: 'ranger', shows: 'mamelles', subject: 'la baleine' });
+    expect(() => lireIle(md([...bon.slice(0, 3), '   - geste : glisser', '   - scène : mamelles']), 'x.md')).toThrow('geste « glisser » inconnu');
+    expect(() => lireIle(md(bon.slice(0, 4)), 'x.md')).toThrow('« - scène : … »');
+    expect(() => lireIle(md(bon.slice(1)), 'x.md')).toThrow('« - sujet : … »');
+    expect(() => lireIle(md([...bon, '   - consigne courte : Range chaque fiche dans la bonne caisse du ponton.']), 'x.md')).toThrow('9 mots, 8 au plus');
+  });
+
+  it('tient chaque consigne courte du contenu en huit mots au plus', () => {
+    for (const ex of [...parIle().values()].flat()) {
+      for (const t of [ex.shortInstruction, ...ex.items.map((it) => it.shortInstruction)]) if (typeof t === 'string') expect(motsDe(t), `${ex.id} : ${t}`).toBeLessThanOrEqual(MOTS_CONSIGNE_COURTE);
     }
   });
 

@@ -4,6 +4,7 @@
   "type": "energy-power",
   "level": 1,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "physics-chemistry-3e-motion-energy-energy-power-1-0",

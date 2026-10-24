@@ -4,6 +4,7 @@
   "type": "connotation",
   "level": 2,
   "instruction": "Trouve le mot qui sert à analyser le texte. Les définitions sont affichées.",
+  "shortInstruction": "Touche le mot d’analyse du texte.",
   "items": [
     {
       "key": "french-3e-language-connotation-2-0",

@@ -4,6 +4,7 @@
   "type": "tense-choice",
   "level": 1,
   "instruction": "Présent ou impératif : choisis la bonne forme du verbe. La règle est affichée.",
+  "shortInstruction": "Touche la bonne forme du verbe.",
   "items": [
     {
       "key": "french-5e-conjugation-tense-choice-1-0",

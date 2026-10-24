@@ -4,6 +4,7 @@
   "type": "tense-values",
   "level": 1,
   "instruction": "Lis la question, puis la phrase. Trouve quand se passe l’action. Le rappel est affiché.",
+  "shortInstruction": "Touche quand se passe l’action.",
   "items": [
     {
       "key": "french-6e-reading-tense-values-1-0",

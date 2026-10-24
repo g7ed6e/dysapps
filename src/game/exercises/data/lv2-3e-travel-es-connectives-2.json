@@ -5,6 +5,7 @@
   "level": 2,
   "lang": "es",
   "instruction": "Que veut dire le mot entre guillemets ? Attention aux faux amis. La règle est affichée.",
+  "shortInstruction": "Touche le sens du mot entre guillemets.",
   "items": [
     {
       "key": "lv2-3e-travel-es-connectives-2-0",

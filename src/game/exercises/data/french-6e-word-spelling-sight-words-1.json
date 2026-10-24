@@ -4,6 +4,7 @@
   "type": "sight-words",
   "level": 1,
   "instruction": "Écoute, puis choisis la bonne écriture. Ces mots-outils reviennent tout le temps : on les apprend par cœur.",
+  "shortInstruction": "Écoute, puis touche la bonne écriture.",
   "items": [
     {
       "key": "toujours",

@@ -39,6 +39,8 @@ import {
   Dumbbell,
   DraftingCompass,
   DoorOpen,
+  Minus,
+  Plus,
   Factory,
   Feather,
   Flag,
@@ -179,6 +181,9 @@ export const ICONS = {
   main: HandGrab,
   /** Un panier du geste « ranger » (monde ouvert, GD-20, point 8, relecture de L4). */
   panier: ShoppingBasket,
+  /** Un cran de plus, un cran de moins (le geste « régler », GD-26). */
+  plus: Plus,
+  moins: Minus,
   /** Kéo sur la Carte du monde ouvert (« Toi »). */
   toi: User,
   medal: Medal,

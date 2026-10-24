@@ -4,6 +4,7 @@
   "type": "reflexive-verbs",
   "level": 1,
   "instruction": "Choisis la bonne forme du verbe pronominal. La règle est affichée.",
+  "shortInstruction": "Touche la bonne forme du verbe pronominal.",
   "items": [
     {
       "key": "french-4e-agreement-reflexive-verbs-1-0",

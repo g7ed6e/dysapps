@@ -4,6 +4,7 @@
   "type": "nuances",
   "level": 1,
   "instruction": "Synonymes, antonymes, registres de langue : choisis le bon mot. Le rappel est affiché.",
+  "shortInstruction": "Touche le bon mot.",
   "items": [
     {
       "key": "french-4e-vocabulary-nuances-1-0",

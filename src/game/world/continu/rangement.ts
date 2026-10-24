@@ -49,6 +49,16 @@ export const complete = (s: Rangement, keys: readonly string[]): boolean => keys
 /** Le panier où l'objet `key` est rangé, ou `null`. */
 export const binOf = (s: Rangement, key: string): string | null => (Object.hasOwn(s.placed, key) ? s.placed[key] : null);
 
+/**
+ * Le dernier objet rangé dans le panier `bin`, ou `null` : `placed` garde l'ordre des dépôts (un objet repris en sort, il
+ * revient en dernier quand on le range de nouveau), sauf pour une clé faite de chiffres, que les objets JavaScript
+ * rangent avant les autres.
+ */
+export function lastIn(s: Rangement, bin: string): string | null {
+  const keys = Object.keys(s.placed).filter((k) => s.placed[k] === bin);
+  return keys.length > 0 ? keys[keys.length - 1] : null;
+}
+
 /** La correction d'une manche : un objet est juste quand son panier est sa réponse (comme l'Enclos de la grille). */
 export function rangementResults(s: Rangement, items: readonly { key: string; answer: unknown }[]): { key: string; correct: boolean }[] {
   return items.map((it) => ({ key: it.key, correct: binOf(s, it.key) === it.answer }));

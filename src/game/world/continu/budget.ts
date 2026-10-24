@@ -216,7 +216,7 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
   { place: 'ecluses', scene: { kind: 'sas', n: 12, d: 12 } },
   // Deux rives : deux sas de dix parts (le générateur s'arrête à dix) ; le sas au repos des autres missions (lot L2).
   { place: 'ecluses', scene: { kind: 'lockPair', a: [10, 10], b: [10, 10] } },
-  { place: 'ecluses', scene: { kind: 'lockIdle', column: false } },
+  { place: 'ecluses', scene: { kind: 'lockIdle' } },
   { place: 'quais', scene: { kind: 'quai', op: 'moitie', before: 98, after: 49 } },
   { place: 'quais', scene: { kind: 'quai', op: 'double', before: 49, after: 98 } },
   // Les Marais salants (lot L5) : la jauge du bassin (dix graduations), et le bassin au repos des autres missions.

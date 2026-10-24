@@ -5,6 +5,7 @@
   "level": 3,
   "target": "histoire",
   "instruction": "Tape les mots qui riment avec histoire : écoute la fin du mot, pas son orthographe. Puis valide.",
+  "shortInstruction": "Tape les mots qui riment avec histoire.",
   "items": [
     {
       "key": "mémoire",

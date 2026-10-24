@@ -5,6 +5,7 @@
   "level": 1,
   "target": "oi",
   "instruction": "Tape les mots où tu entends le son [oi], comme dans étoile. Puis valide.",
+  "shortInstruction": "Tape les mots du son [oi], puis valide.",
   "items": [
     {
       "key": "roi",

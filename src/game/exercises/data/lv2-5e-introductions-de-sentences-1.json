@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis et écoute la phrase en allemand. Choisis la phrase qui va avec. La règle est affichée.",
+  "shortInstruction": "Écoute en allemand, touche la bonne phrase.",
   "programme": [
     "c4.de.5e.langue.phrase"
   ],

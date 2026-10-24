@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Lis la question, puis la fiche en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis la fiche, puis touche la bonne réponse.",
   "items": [
     {
       "key": "english-6e-vocabulary-famous-people-1-0",

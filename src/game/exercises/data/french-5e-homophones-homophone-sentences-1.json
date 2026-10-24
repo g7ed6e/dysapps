@@ -4,6 +4,7 @@
   "type": "homophone-sentences",
   "level": 1,
   "instruction": "Deux trous dans la phrase : choisis la paire de mots qui convient, dans l’ordre.",
+  "shortInstruction": "Touche la paire de mots, dans l’ordre.",
   "items": [
     {
       "key": "french-5e-homophones-homophone-sentences-1-0",

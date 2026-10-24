@@ -4,6 +4,7 @@
   "type": "order-of-operations",
   "level": 2,
   "instruction": "Calcule, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Calcule, puis touche la bonne réponse.",
   "items": [
     {
       "key": "maths-5e-signed-numbers-order-of-operations-2-0",

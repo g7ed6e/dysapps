@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "de",
   "instruction": "Lis la question en allemand, ou appuie sur Écouter, puis choisis la bonne réponse. La règle est affichée.",
+  "shortInstruction": "Écoute en allemand, touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-3e-travel-de-connectives-1-0",

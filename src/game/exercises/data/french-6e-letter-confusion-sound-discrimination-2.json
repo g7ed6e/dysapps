@@ -4,6 +4,7 @@
   "type": "sound-discrimination",
   "level": 2,
   "instruction": "Écoute bien le mot dans sa phrase, puis choisis le bloc qui est écrit comme tu entends.",
+  "shortInstruction": "Écoute le mot, touche le bloc bien écrit.",
   "items": [
     {
       "key": "poire",

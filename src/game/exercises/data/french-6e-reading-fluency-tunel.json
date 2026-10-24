@@ -5,6 +5,7 @@
   "level": 1,
   "title": "La mine de Tunel",
   "instruction": "Lis « La mine de Tunel » à voix haute, paragraphe par paragraphe. Quand tu as lu, valide : un étage se construit.",
+  "shortInstruction": "Lis à voix haute, puis valide.",
   "items": [
     {
       "key": "p1",

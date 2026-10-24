@@ -4,6 +4,7 @@
   "type": "missing-letters",
   "level": 2,
   "instruction": "Écoute le mot, puis tape le bloc de lettres qui manque.",
+  "shortInstruction": "Écoute le mot, puis tape le bloc manquant.",
   "items": [
     {
       "key": "beaucoup",

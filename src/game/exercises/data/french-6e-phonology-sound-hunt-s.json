@@ -5,6 +5,7 @@
   "level": 2,
   "target": "s",
   "instruction": "Tape les mots où tu entends le son [s], comme dans soleil. Puis valide.",
+  "shortInstruction": "Tape les mots du son [s], puis valide.",
   "items": [
     {
       "key": "souris",

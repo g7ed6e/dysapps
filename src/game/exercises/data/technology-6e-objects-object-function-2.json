@@ -4,6 +4,7 @@
   "type": "object-function",
   "level": 2,
   "instruction": "Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.",
+  "shortInstruction": "Lis, puis touche la bonne réponse.",
   "items": [
     {
       "key": "technology-6e-objects-object-function-2-0",

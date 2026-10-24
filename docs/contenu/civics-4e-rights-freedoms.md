@@ -16,6 +16,7 @@ créature : Loquet
 - description : Les libertés individuelles et collectives, ce qui les limite (la liberté des autres et l’ordre public), en classe comme en ligne.
 - compétences : c4.emc.4e.etat-de-droit.libertes
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-4e-rights-freedoms
@@ -150,6 +151,7 @@ Pour tous les items :
 - description : L’État de droit, où l’État lui-même obéit au droit ; la Constitution au-dessus des lois ; une justice indépendante et son organisation.
 - compétences : c4.emc.4e.etat-de-droit.libertes
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-4e-rights-freedoms
@@ -283,6 +285,7 @@ Pour tous les items :
 - description : La sûreté, droit de la Déclaration de 1789 : les forces de sécurité intérieure, les armées qui défendent le pays, la cyberdéfense, la guerre de l’information et la police de l’environnement.
 - compétences : c4.emc.4e.defense.securite
 - consigne : Lis la phrase ou le document, puis choisis la bonne réponse. Le rappel est affiché.
+- consigne courte : Lis, puis touche la bonne réponse.
 - bravo : Bien vu !
 - erreur : {explanation}
 - bloc gagné : civics-4e-rights-freedoms

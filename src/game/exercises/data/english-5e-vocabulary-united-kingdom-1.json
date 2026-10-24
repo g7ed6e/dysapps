@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Lis la question, puis le document en anglais, et choisis la bonne réponse. Le lexique est affiché.",
+  "shortInstruction": "Lis le document, puis touche la bonne réponse.",
   "items": [
     {
       "key": "english-5e-vocabulary-united-kingdom-1-0",

@@ -4,6 +4,7 @@
   "type": "tense-choice",
   "level": 2,
   "instruction": "Choisis le verbe au temps demandé : plus-que-parfait ou futur antérieur. La règle est affichée.",
+  "shortInstruction": "Touche le verbe au temps demandé.",
   "items": [
     {
       "key": "french-5e-conjugation-tense-choice-2-0",

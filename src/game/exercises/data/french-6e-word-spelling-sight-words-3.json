@@ -4,6 +4,7 @@
   "type": "sight-words",
   "level": 3,
   "instruction": "Écoute, puis choisis la bonne écriture. Ces mots-outils s’apprennent par cœur.",
+  "shortInstruction": "Écoute, puis touche la bonne écriture.",
   "items": [
     {
       "key": "ailleurs",

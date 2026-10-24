@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "es",
   "instruction": "Lis ou écoute la question en espagnol, puis choisis la bonne réponse. La règle est affichée.",
+  "shortInstruction": "Écoute en espagnol, touche la bonne réponse.",
   "items": [
     {
       "key": "lv2-4e-daily-life-es-my-day-1-0",

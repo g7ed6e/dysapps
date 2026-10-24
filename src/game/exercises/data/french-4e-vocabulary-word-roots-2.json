@@ -4,6 +4,7 @@
   "type": "word-roots",
   "level": 2,
   "instruction": "Préfixes et suffixes : forme le mot ou retrouve son sens. La liste est affichée.",
+  "shortInstruction": "Forme le mot, ou touche son sens.",
   "items": [
     {
       "key": "french-4e-vocabulary-word-roots-2-0",

@@ -5,6 +5,7 @@
   "level": 1,
   "lang": "en",
   "instruction": "Écoute le nombre en anglais et choisis le bon nombre. La règle est affichée.",
+  "shortInstruction": "Écoute en anglais, touche le bon nombre.",
   "items": [
     {
       "key": "english-6e-vocabulary-numbers-1-0",

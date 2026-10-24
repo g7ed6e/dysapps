@@ -4,6 +4,7 @@
   "type": "participles",
   "level": 1,
   "instruction": "Choisis la forme qui complète la phrase : participe passé ou infinitif. La règle est affichée.",
+  "shortInstruction": "Touche le participe passé ou l’infinitif.",
   "items": [
     {
       "key": "french-5e-homophones-participles-1-0",

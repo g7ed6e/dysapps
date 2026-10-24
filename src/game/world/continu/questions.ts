@@ -48,10 +48,9 @@ export type ItemScene =
   | { kind: 'lockPair'; a: [number, number]; b: [number, number] }
   /**
    * Le sas au repos : la scène ne montre rien de l'item (les missions des Écluses jouées avec leurs items de référence,
-   * où l'opération posée, l'aide et le schéma restent exacts dans le panneau). `column` : les réponses restent dans la
-   * colonne, la scène fait le décor (Calculer avec des fractions, toute la mission, GD-20, point 8, lot L2).
+   * où l'opération posée, l'aide et le schéma restent exacts dans la bulle et le carnet).
    */
-  | { kind: 'lockIdle'; column: boolean }
+  | { kind: 'lockIdle' }
   /**
    * Le bassin des Marais salants au repos (GD-20, point 8, lot L5) : la scène ne montre rien de l'item (les missions
    * jouées avec leurs items de référence ; la figure, le tableau et la règle restent dans le panneau).
@@ -63,10 +62,9 @@ export type ItemScene =
    */
   | { kind: 'jauge'; start: number; d: number; n: number }
   /**
-   * Le C, scène de décor neutre (GD-20, point 8, lot L6a) : la scène ne montre rien de l'item, les réponses restent dans
-   * la colonne (la phrase, les réponses, le document, le rappel), aucun objet ne les porte ; le décor du lieu et son
-   * objet témoin, qui réagit après une bonne réponse (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, le Chantier
-   * naval, et les lieux qui suivent.
+   * Le décor neutre (GD-20, point 8, lot L6a) : la scène ne montre rien de l'item, aucun objet ne porte les réponses
+   * (leurs étiquettes sur la rangée, GD-26) ; le décor du lieu et son objet témoin, qui réagit après une bonne réponse
+   * (questionScene.ts, `COLUMN_DECOR`). Pour la Turbine, le Chantier naval, et les lieux qui suivent.
    */
   | { kind: 'column' }
   /**
@@ -94,6 +92,7 @@ export function isItemScene(v: unknown): v is ItemScene {
     case 'cloches':
     case 'enclos':
     case 'saline':
+    case 'lockIdle':
     case 'column':
     case 'rest':
     case 'restMark':
@@ -107,8 +106,6 @@ export function isItemScene(v: unknown): v is ItemScene {
       return 'n' in v && isCount(v.n) && 'd' in v && isCount(v.d) && v.d > 0;
     case 'lockPair':
       return 'a' in v && isPart(v.a) && 'b' in v && isPart(v.b);
-    case 'lockIdle':
-      return 'column' in v && typeof v.column === 'boolean';
     case 'quai':
       return 'op' in v && (v.op === 'moitie' || v.op === 'double' || v.op === 'calcul') && 'before' in v && isCount(v.before) && 'after' in v && isCount(v.after);
     default:
@@ -206,9 +203,28 @@ export function placeInstruction(anyPlace: AnyPlaceId, exerciseId: string, level
   if (place !== 'ecluses') return reference;
   if (missionIs(exerciseId, 'equivalence')) return !scene || scene.kind === 'lockPair' ? PAIR_INSTRUCTION : reference;
   if (!missionIs(exerciseId, 'number-line')) return reference;
-  return level >= 2
-    ? 'Sur l’échelle, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’à l’eau.'
-    : 'Regarde le sas : en bas, le nombre de parts égales ; en haut, le nombre de parts pleines d’eau.';
+  return SAS_INSTRUCTION[level >= 2 ? 1 : 0];
+}
+
+/** Les consignes des Nénuphars aux Écluses : le sas au niveau 1, l'échelle au niveau 2. */
+export const SAS_INSTRUCTION = [
+  'Regarde le sas : en bas, le nombre de parts égales ; en haut, le nombre de parts pleines d’eau.',
+  'Sur l’échelle, compte en combien de parts est coupée l’unité, puis compte les parts jusqu’à l’eau.',
+] as const;
+
+/**
+ * La consigne courte d'une consigne de lieu (GD-26), dans la bulle : la consigne entière reste dans « Vue simple », lue
+ * avec la question. Une consigne qui n'est pas celle d'un lieu n'en a pas ici (celle du niveau s'applique).
+ */
+export function placeShortInstruction(placed: string): string | undefined {
+  if (placed === ENCLOS_INSTRUCTION[0]) return 'Range chaque sujet dans son panier.';
+  if (placed === ENCLOS_INSTRUCTION[1]) return 'Range chaque sujet selon son verbe.';
+  if (placed.startsWith(PHARE_SYLLABLES)) return 'Écoute, touche la cloche.';
+  if (placed === PAIR_INSTRUCTION) return 'Touche la plus grande, ou « Elles sont égales ».';
+  if (placed === JAUGE_INSTRUCTION) return 'Lis le nombre où arrive l’eau.';
+  if (placed === SAS_INSTRUCTION[1]) return 'Compte les parts jusqu’à l’eau.';
+  if (placed === SAS_INSTRUCTION[0]) return 'Regarde le sas, puis compte les parts.';
+  return undefined;
 }
 
 /** Les items du lieu d'un exercice, dans un univers (aujourd'hui, Archipéo seul) : par clé de leur jumeau. */
@@ -357,18 +373,13 @@ function jaugeOf(item: QuestionItem): Extract<ItemScene, { kind: 'jauge' }> | nu
 export const SALINE: ItemScene = { kind: 'saline' };
 
 /** Le sas au repos : la scène des missions des Écluses qui gardent leur item de référence. */
-export const LOCK_IDLE: ItemScene = { kind: 'lockIdle', column: false };
-/** Le sas au repos, les réponses dans la colonne (Calculer avec des fractions). */
-export const LOCK_COLUMN: ItemScene = { kind: 'lockIdle', column: true };
-
-/** Le C neutre : la scène fait le décor, les réponses restent dans la colonne (la Turbine, lot L6a). */
-export const COLUMN: ItemScene = { kind: 'column' };
+export const LOCK_IDLE: ItemScene = { kind: 'lockIdle' };
 
 /**
- * Les réponses d'une scène restent-elles dans la colonne (aucun objet ne les porte dans la scène) ? Le C neutre, et le
- * sas au repos de Calculer avec des fractions aux Écluses.
+ * Le décor neutre : la scène fait le décor et son objet témoin réagit après une bonne réponse (la Turbine, lot L6a) ; les
+ * réponses sont sur la rangée, sous la scène, sans objet qui les porte (GD-26 : plus de réponses dans la colonne).
  */
-export const answersInColumn = (scene: ItemScene): boolean => scene.kind === 'column' || (scene.kind === 'lockIdle' && scene.column);
+export const COLUMN: ItemScene = { kind: 'column' };
 
 /** La phrase des Quais pour un item de Doubles et moitiés (clé `half-34` ou `dbl-23`) : une idée par phrase, un verbe. */
 export function quaiScene(key: string): { scene: Extract<ItemScene, { kind: 'quai' }>; prompt: string } | null {
@@ -517,8 +528,8 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
   // Gare maritime (deux malles pour Have ou has, au niveau 1 : l'item a deux choix). Ears garde son écoute : le mot dit à
   // l'ouverture, sans phrase écrite (`listenOnly`) ; Story time, l'histoire écrite après la réponse (`listenFirst`).
   if (place === 'beacons' || place === 'ferry') {
-    if (missionIs(exerciseId, 'story')) return items.map((it) => ({ ...it, listenFirst: true as const, placeScene: COLUMN }));
-    if (LARGE_COLUMN.some((m) => missionIs(exerciseId, m))) return items.map((it) => ({ ...it, placeScene: COLUMN }));
+    if (missionIs(exerciseId, 'story')) return items.map((it) => ({ ...it, listenFirst: true as const, placeScene: REST_MARK }));
+    if (LARGE_COLUMN.some((m) => missionIs(exerciseId, m))) return items.map((it) => ({ ...it, placeScene: REST_MARK }));
     if (missionIs(exerciseId, 'first-listening'))
       return items.map((it) => ({ ...it, listenOnly: true as const, spoken: String(it.word ?? ''), speakOnOpen: true, placeScene: REST_MARK }));
     return items.map((it) => ({ ...it, placeScene: REST_MARK }));
@@ -564,7 +575,7 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
     // Les Écluses (GD-20, point 8, lot L2) : toutes leurs missions au même sas, avec les mêmes leviers. Les Nénuphars et
     // Deux rives ont leur gabarit ; Partage du gâteau et Galets en colonnes gardent leur item de référence, le sas au
     // repos ; Calculer avec des fractions aussi, ses réponses dans la colonne (toute la mission).
-    if (missionIs(exerciseId, 'fraction-sums')) return items.map((it) => ({ ...it, placeScene: LOCK_COLUMN }));
+    if (missionIs(exerciseId, 'fraction-sums')) return items.map((it) => ({ ...it, placeScene: LOCK_IDLE }));
     if (missionIs(exerciseId, 'sharing') || missionIs(exerciseId, 'place-value')) return items.map((it) => ({ ...it, placeScene: LOCK_IDLE }));
     if (missionIs(exerciseId, 'equivalence'))
       return items.map((it) => {
@@ -684,6 +695,44 @@ export function rangeGesture(anyPlace: AnyPlaceId, exerciseId: string): readonly
   if (!isSixthPlace(anyPlace)) return null;
   const place = sixthPlace(anyPlace);
   return place === 'filets' && missionIs(exerciseId, 'word-classes') ? ENCLOS_BINS : null;
+}
+
+/**
+ * Le geste d'un item, écrit dans son Markdown (« geste : ranger », GD-26) ou posé par son générateur (la Forge) : ranger
+ * (une fiche dans sa caisse, par manches), placer (un objet devant sa porte, un item à la fois), régler (un nombre de
+ * crans, puis « Valider ») ; `null` pour toucher, le geste par défaut. Le geste est à l'item, jamais à la mission : une
+ * mission mêle des items qui s'y prêtent et d'autres non (directeur du contenu pédagogique, 24 octobre 2026).
+ */
+export type ItemGesture = 'ranger' | 'placer' | 'régler';
+
+export function itemGesture(item: object | undefined): ItemGesture | null {
+  const g = (item as { gesture?: unknown } | undefined)?.gesture;
+  return g === 'ranger' || g === 'placer' || g === 'régler' ? g : null;
+}
+
+/**
+ * Les caisses (ranger) ou les portes (placer) d'une manche : l'union des choix de ses items, dans l'ordre où ils
+ * apparaissent ; les choix de chaque item ne changent pas (avis du contenu, condition 5).
+ */
+export function gestureBins(items: readonly object[]): RangeBin[] {
+  const seen: string[] = [];
+  for (const { choices } of items as readonly { choices?: unknown }[]) for (const c of Array.isArray(choices) ? choices.map(String) : []) if (!seen.includes(c)) seen.push(c);
+  return seen.map((c) => ({ id: c, label: c }));
+}
+
+/**
+ * Les écrans d'une mission dont des items ont un geste : les items « ranger » de la partie en manches de `perRound`,
+ * posées à la place du premier d'entre eux ; les autres, un par écran, dans leur ordre.
+ */
+export function gestureScreens<T extends object>(items: readonly T[], perRound: number): T[][] {
+  const sorting = items.filter((it) => itemGesture(it) === 'ranger');
+  const rounds = sorting.length ? rangeRounds(sorting, perRound) : [];
+  const out: T[][] = [];
+  for (const it of items) {
+    if (itemGesture(it) !== 'ranger') out.push([it]);
+    else if (it === sorting[0]) out.push(...rounds);
+  }
+  return out;
 }
 
 /** Les manches du geste « ranger » : les items dans leur ordre, par quatre. */
