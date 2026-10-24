@@ -43,6 +43,7 @@ import {
   scenetteHidesPieces,
   scenetteTraces,
   scenettePose,
+  scenetteStartYaw,
   answerLeaves,
   scenetteDeck,
   LAND_DECK,
@@ -1531,5 +1532,35 @@ describe('La réplique de fin à la dernière pose (reste des Fabriques)', () =>
     expect(saysRestored('soute')).toBe(true);
     expect(saysRestored('etalon')).toBe(false);
     expect(saysRestored('lookout')).toBe(false);
+  });
+});
+
+describe('Le plan de scénette des 4e et 3e (GD-26, PR 2)', () => {
+  const LIEUX = ['forge', 'etalon', 'dynamo', 'fanal', 'coupole', 'maquette', 'belvedere', 'palais'] as const;
+
+  it('l’habitant se tient au tiers droit du cadre, Kéo au tiers gauche, un peu en retrait vers le fond', () => {
+    for (const place of LIEUX) {
+      const start = scenetteStartYaw(place);
+      const right = { x: Math.cos(start), z: -Math.sin(start) };
+      const front = { x: Math.sin(start), z: Math.cos(start) };
+      const keo = scenetteKeo(place).at;
+      const hab = scenetteHabitant(place);
+      const third = 1; // la demi-largeur cadrée est de 3,0
+      const along = (p: { x: number; z: number }, v: { x: number; z: number }) => (p.x - hab.x) * v.x + (p.z - hab.z) * v.z;
+      expect(along(keo, right), place).toBeCloseTo(-2 * third, 5);
+      expect(along(keo, front), place).toBeLessThan(0);
+    }
+  });
+
+  it('le cadre reste centré sur l’instrument, pas sur le milieu de Kéo et de l’habitant', () => {
+    const stage = { left: 0, right: 1024, top: 0, bottom: 768 };
+    for (const place of LIEUX) {
+      const { pose } = scenettePose(place, stage, 1024, 768);
+      expect(pose.target.x, place).toBeCloseTo(sceneSpot(place).x, 5);
+    }
+  });
+
+  it('les Roches gardent leur plan : le décor du toit interdit de déplacer la géologue', () => {
+    expect(distance(scenetteHabitant('roches'), scenetteKeo('roches').at)).toBeGreaterThan(3);
   });
 });

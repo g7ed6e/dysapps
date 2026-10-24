@@ -628,7 +628,7 @@ export const FANAL: PlaceArt = {
   model,
   traceStage: 0,
   // La scénette : Kéo et l'opticienne de part et d'autre de son milieu ; son sol, l'herbe grise du creux.
-  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 3.2, pitch: 4 }),
+  ...scene3e(SITE, { start: SCENE_START, spot: SCENE_SPOT, floor: planeY, top: 10, pitch: 4 }),
   decor(b, _floor, at, sphere: Sphere, body = true) {
     if (body) habitant3e(b, at, sphere, C.coat, 0x5d6470, 0x7a6450);
   },

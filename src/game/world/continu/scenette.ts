@@ -798,6 +798,11 @@ interface ScenetteSite {
   subject: { halfWidth: number; bottom: number; top: number; depth: number };
   pitch: number;
   /**
+   * Le décalage, depuis le sol, du milieu du cadre (en x) ; absent, le milieu de Kéo et de l'habitant. Aux 4e et 3e, 0 :
+   * le cadre reste centré sur l'instrument quand Kéo recule d'un pas.
+   */
+  frameDx?: number;
+  /**
    * Le cap de départ de la caméra, l'angle dont elle a déjà tourné autour du point visé quand la scénette s'ouvre et à
    * chaque nouvel item (comme à deux doigts, `orbitAround`) ; nul ou absent : de face, vue du sud.
    */
@@ -836,9 +841,43 @@ function quayFloor(): Vec3 {
   return { x: o.x, y: o.y, z: o.z + QUAY.depth / 2 - QUAY.strip / 2 };
 }
 
+/**
+ * Le plan de scénette des 4e et 3e (GD-26, PR 2, directeur artistique) : l'habitant à son poste, au tiers droit du cadre
+ * (`halfWidth / 3` du milieu), Kéo au tiers gauche, un peu en retrait vers le fond (`TIERS_RETRAIT`, en unités du monde),
+ * au lieu de la symétrie près des bords. L'écart se mesure le long de la droite de l'écran au cap de départ ; ce que
+ * chaque lieu règle de plus (la profondeur, le cap) reste à lui.
+ */
+const TIERS_RETRAIT = 0.5;
+
+/** Les lieux des 4e et 3e dont le décor interdit ce plan : leur habitant et Kéo restent où leur fichier les met. */
+const TIERS_EXCLUS: readonly PlaceId[] = ['roches'];
+
+/** Le site `site` (ses places depuis le sol) au plan de scénette : habitant au tiers droit, Kéo au tiers gauche, en retrait. */
+function tiersOf<S extends Pick<ScenetteSite, 'keo' | 'habitant' | 'subject' | 'start'>>(site: S): S & { frameDx: number } {
+  const start = site.start ?? 0;
+  const right = { x: Math.cos(start), z: -Math.sin(start) };
+  const front = { x: Math.sin(start), z: Math.cos(start) };
+  const third = site.subject.halfWidth / 3;
+  const along = (p: { dx: number; dz: number }) => p.dx * right.x + p.dz * right.z;
+  const to = (p: { dx: number; dz: number }, target: number, back = 0) => ({
+    dx: p.dx + right.x * (target - along(p)) - front.x * back,
+    dz: p.dz + right.z * (target - along(p)) - front.z * back,
+  });
+  return {
+    ...site,
+    keo: { ...site.keo, ...to(site.keo, -third, TIERS_RETRAIT) },
+    habitant: { ...site.habitant, ...to(site.habitant, third) },
+    frameDx: 0,
+  };
+}
+
+/** Les lieux des 4e et 3e : le plan de scénette leur est commun. */
+const TIERS_LIEUX = new Set<PlaceId>(['loge', 'terminus', 'orgues', 'dynamo', 'herbier', 'roches', 'jonction', 'veillee', 'basilique', 'forge', 'soute', 'porte', 'etalon', 'gabarit', 'chariot', 'manufacture', 'belvedere', 'grenier', 'abri', 'jardin', 'kiosque', 'maquette', 'tribune', 'douane', 'ermitage', 'standard', 'rampe', 'fanal', 'ondes', 'lutherie', 'coupole', 'palais']);
+
 /** La scénette d'un lieu du rivage nord (lot L7) : celle de son fichier (placeArt.ts), son sol au-dessus de la scène. */
 function northSite(place: PlaceId): ScenetteSite {
-  const { rise, ...site } = placeArt(place)!.site;
+  const { rise, ...art } = placeArt(place)!.site;
+  const site = TIERS_LIEUX.has(place) && !TIERS_EXCLUS.includes(place) ? tiersOf(art) : art;
   return {
     floor: () => {
       const s = sceneSpot(place);
@@ -1450,7 +1489,7 @@ export function exitView(pose: CameraPose, keep: Vec3, feet: Vec3, amount: numbe
 export function scenettePose(anyPlace: AnyPlaceId, stage: ScreenBox, width: number, height: number, posed = true): { pose: CameraPose; shift: { x: number; y: number } } {
   const place = scenePlace(anyPlace);
   const site = siteOf(place, posed);
-  return poseOfSubject(site, site.subject, site.floor().x + (site.keo.dx + site.habitant.dx) / 2, stage, width, height);
+  return poseOfSubject(site, site.subject, site.floor().x + (site.frameDx ?? (site.keo.dx + site.habitant.dx) / 2), stage, width, height);
 }
 
 /** La marge autour de l'aménagement dans le cadrage de la remise, en unités du monde. */
@@ -1470,7 +1509,7 @@ export function remisePose(anyPlace: AnyPlaceId, include: { min: readonly number
   const site = siteOf(place, posed);
   const S = site.subject;
   const f = site.floor();
-  const mid = f.x + (site.keo.dx + site.habitant.dx) / 2;
+  const mid = f.x + (site.frameDx ?? (site.keo.dx + site.habitant.dx) / 2);
   const left = Math.min(mid - S.halfWidth, include.min[0] - REMISE_MARGIN);
   const right = Math.max(mid + S.halfWidth, include.max[0] + REMISE_MARGIN);
   const subject = { ...S, halfWidth: (right - left) / 2, bottom: Math.min(S.bottom, include.min[1] - f.y - REMISE_MARGIN / 2), top: Math.max(S.top, include.max[1] - f.y + REMISE_MARGIN / 2) };
