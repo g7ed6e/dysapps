@@ -1167,7 +1167,7 @@ describe('Le geste « ranger » aux Filets (GD-20, point 8, lot L4)', () => {
     const placed = placeItems('filets', 'french-6e-grammar-spelling-word-classes-1', items);
     expect(placed.map((it) => it.key)).toEqual(items.map((it) => it.key));
     expect(placed.every((it) => it.placeScene === ENCLOS && it.answer === items.find((r) => r.key === it.key)!.answer)).toBe(true);
-    expect(rangeRounds(placed).map((r) => r.length)).toEqual(Array.from({ length: Math.ceil(items.length / 4) }, (_, i) => Math.min(4, items.length - 4 * i)));
+    expect(rangeRounds(placed).map((r) => r.length)).toEqual(Array.from({ length: Math.ceil(items.length / 3) }, (_, i) => Math.min(3, items.length - 3 * i)));
     // La Récolte (et le Tri des graines, au même écran) : la pêche du jour, la même pour tous les items (rien ne dit la
     // réponse).
     for (const id of ['french-6e-grammar-spelling-e-er-ez-1', 'french-6e-grammar-spelling-e-er-ez-2']) {

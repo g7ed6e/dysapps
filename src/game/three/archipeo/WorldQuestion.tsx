@@ -43,7 +43,7 @@ import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelP
 import { placePoseWords } from './constructionParts';
 import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_GRAND_WIDE_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { DialScreen } from './DialScreen';
@@ -477,13 +477,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     },
     [run, smallBells],
   );
-  // Le geste « ranger » : quatre sujets par manche, trois sur un écran bas, deux au plus grand texte sur un écran bas
-  // (relecture de L4 : la manche tient au-dessus de « Valider ») ; fixé de même au premier découpage.
+  // Le geste « ranger » : trois objets par manche (GD-26), deux au plus grand texte, un au plus grand texte sur un écran
+  // bas (relecture de L4 : la manche tient au-dessus de « Valider ») ; fixé de même au premier découpage.
   const sortCut = useRef<{ key: string; perRound: number } | null>(null);
   const sortsPerRound = useCallback(
     (seed: string): number => {
       const key = `${run}:${seed}`;
-      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: lowScreen ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : RANGE_PER_ROUND };
+      if (sortCut.current?.key !== key) sortCut.current = { key, perRound: lowScreen ? (grandTexte ? RANGE_PER_GRAND_ROUND : RANGE_PER_SMALL_ROUND) : grandTexte ? RANGE_PER_GRAND_WIDE_ROUND : RANGE_PER_ROUND };
       return sortCut.current.perRound;
     },
     [run, lowScreen, grandTexte],

@@ -671,8 +671,14 @@ export function agreedVerb(item: QuestionItem): string {
   return typeof verb === 'string' ? verb : '';
 }
 
-/** Le nombre d'objets à ranger par manche : quatre sujets, comme l'Enclos de la grille. */
-export const RANGE_PER_ROUND = 4;
+/**
+ * Le nombre d'objets à ranger par manche : trois au plus (GD-26 ; référent dys, PR 2 : l'Enclos en rangeait quatre). La
+ * manche ne regroupe que l'affichage : une réponse, une clé, un verdict par item.
+ */
+export const RANGE_PER_ROUND = 3;
+
+/** Au plus grand texte sur une tablette, deux par manche (GD-26). */
+export const RANGE_PER_GRAND_WIDE_ROUND = 2;
 
 /**
  * Sur un écran bas (un téléphone couché), trois sujets par manche : avec les deux paniers, la rangée de cinq étiquettes
