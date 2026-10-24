@@ -60,25 +60,24 @@ export function createTextureUploads(renderer: THREE.WebGLRenderer, rows = BAND_
     const bitmap = image(p.texture);
     const tops: number[] = [];
     for (let y = 0; y < bitmap.height; y += rows) tops.push(y);
-    void Promise.all(
-      tops.map((y) => createImageBitmap(bitmap, 0, y, bitmap.width, Math.min(rows, bitmap.height - y), { premultiplyAlpha: 'none', colorSpaceConversion: 'none' })),
-    ).then(
-      (bands) => {
-        if (queue.get(p.texture) === p) p.bands = bands;
-        else for (const b of bands) b.close();
-      },
-      () => {
-        if (queue.get(p.texture) === p) p.bands = 'failed';
-      },
-    );
+    const options: ImageBitmapOptions = { imageOrientation: 'none', premultiplyAlpha: 'none', colorSpaceConversion: 'none' };
+    void Promise.allSettled(tops.map((y) => createImageBitmap(bitmap, 0, y, bitmap.width, Math.min(rows, bitmap.height - y), options))).then((all) => {
+      const bands = all.flatMap((r) => (r.status === 'fulfilled' ? [r.value] : []));
+      if (queue.get(p.texture) === p && bands.length === all.length) return void (p.bands = bands);
+      for (const b of bands) b.close();
+      if (queue.get(p.texture) === p) p.bands = 'failed';
+    });
   };
 
   /** La texture réservée sans ses pixels : Three.js en fait la place (et ses mipmaps vides), rien n'est envoyé. */
   const allocate = (p: Pending) => {
     p.allocated = true;
     p.texture.source.dataReady = false;
-    renderer.initTexture(p.texture);
-    p.texture.source.dataReady = true;
+    try {
+      renderer.initTexture(p.texture);
+    } finally {
+      p.texture.source.dataReady = true;
+    }
   };
 
   /** Une bande copiée à sa place ; les mipmaps refaits à la dernière seulement. */

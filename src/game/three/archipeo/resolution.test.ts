@@ -38,8 +38,12 @@ describe('la finesse qui s’adapte', () => {
     expect(run(r, SETTLE_MS, WINDOW_FRAMES * 10, slowFast).out).toEqual([]);
   });
 
+  it('un écran bridé à 30 images par seconde (économie d’énergie) garde sa finesse', () => {
+    expect(run(createResolution(2, 0), SETTLE_MS, WINDOW_FRAMES * 10, () => 33.3).out).toEqual([]);
+  });
+
   it('un écran ×1 ou ×1,5 ne descend pas', () => {
-    expect(run(createResolution(1, 0), SETTLE_MS, WINDOW_FRAMES * 10, () => 30).out).toEqual([]);
-    expect(run(createResolution(1.5, 0), SETTLE_MS, WINDOW_FRAMES * 10, () => 30).out).toEqual([]);
+    expect(run(createResolution(1, 0), SETTLE_MS, WINDOW_FRAMES * 10, () => 25).out).toEqual([]);
+    expect(run(createResolution(1.5, 0), SETTLE_MS, WINDOW_FRAMES * 10, () => 25).out).toEqual([]);
   });
 });
