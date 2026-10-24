@@ -746,7 +746,7 @@ export function gestureScreens<T extends object>(items: readonly T[], perRound: 
  * Une fiche plus longue qu'un mot ou deux : une phrase (« Je viens pour chant… avec toi. »). Sur un écran bas, la bulle
  * n'en montre qu'une ligne : ces fiches s'y rangent une par manche (`RANGE_PER_LONG_LOW_ROUND`, GD-26, PR 2).
  */
-export const LONG_FICHE = 20;
+const LONG_FICHE = 20;
 export const RANGE_PER_LONG_LOW_ROUND = 1;
 
 /** Les manches du geste « ranger » : les items dans leur ordre, par trois. */

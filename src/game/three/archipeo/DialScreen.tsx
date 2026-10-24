@@ -39,13 +39,13 @@ export function dialOf(item: ExerciseItem | undefined): Dial | null {
 }
 
 /** La plus basse position du réglage : zéro coup à la Forge (on ne valide qu'à partir d'un), −10 à la Montée. */
-export const lowestOf = (dial: Dial): number => Math.min(dial.start, dial.min);
+const lowestOf = (dial: Dial): number => Math.min(dial.start, dial.min);
 
 /** La réponse réglée, écrite comme les choix de l'item (« 10⁴ ») : le début de sa valeur, avant « = ». */
 const chosenOf = (dial: Dial, count: number): string => (dial.values[count - lowestOf(dial)] ?? '').split(' = ')[0];
 
 /** Ce que dit le réglage, sans sa valeur : « 4 coups sur 7 », ou « 3 crans vers le bas » depuis le départ. */
-export function dialWords(dial: Dial, count: number): string {
+function dialWords(dial: Dial, count: number): string {
   if (dial.unit === 'coup') return `${count} coup${count > 1 ? 's' : ''} sur ${dial.max}`;
   const d = count - dial.start;
   if (d === 0) return 'Au départ';
