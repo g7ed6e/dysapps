@@ -86,6 +86,7 @@
     {
       "key": "technology-4e-modeling-information-chain-2-3",
       "prompt": "La carte du feu de circulation décide quand passer au vert : elle … l’information.",
+      "subject": "Carte du feu de circulation",
       "spoken": "La carte du feu de circulation décide quand passer au vert : elle  (mot manquant)  l’information.",
       "choices": [
         "acquiert",
@@ -95,6 +96,9 @@
       "answer": "traite",
       "hint": "Décider, c’est quelle fonction ?",
       "explanation": "Décider, selon le programme, c’est traiter l’information. Les lampes du feu, elles, communiquent aux voitures.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -137,6 +141,7 @@
     {
       "key": "technology-4e-modeling-information-chain-2-5",
       "prompt": "Quand le détecteur de fumée sonne fort, il … l’information.",
+      "subject": "Détecteur de fumée qui sonne",
       "spoken": "Quand le détecteur de fumée sonne fort, il  (mot manquant)  l’information.",
       "choices": [
         "communique",
@@ -146,6 +151,9 @@
       "answer": "communique",
       "hint": "Le son prévient les gens : quelle fonction ?",
       "explanation": "Sonner, c’est donner l’alerte aux gens : le détecteur communique l’information. Il l’avait d’abord acquise, en sentant la fumée.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

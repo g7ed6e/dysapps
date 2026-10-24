@@ -106,6 +106,9 @@ Pour tous les items :
    - indice : Lis la ligne qui commence par « Sainte-Sophie ».
    - explication : Sainte-Sophie est à Constantinople, la capitale de l’Empire byzantin. L’empereur Justinien l’a fait construire.
 2. énoncé : "Un événement\nAn 622\nMahomet quitte La Mecque pour Médine.\nC’est l’Hégire."
+   - geste : placer
+   - scène : 622 : l’Hégire
+   - consigne courte : Pose le panier devant sa porte.
    - question : En quel siècle a lieu l’Hégire ?
    - lu : Un événement. An six cent vingt-deux. Mahomet quitte La Mecque pour Médine. C’est l’Hégire.
    - choix : au VIe siècle · au VIIe siècle · au VIIIe siècle
@@ -141,6 +144,9 @@ Pour tous les items :
    - indice : Lis la ligne qui contient « dirigent ».
    - explication : Les comtes dirigent les régions au nom de l’empereur. Les envoyés, eux, vérifient leur travail.
 7. énoncé : "Le pape Urbain II, à Clermont\nAn 1095\nIl appelle les chrétiens à partir\npour prendre Jérusalem."
+   - geste : placer
+   - scène : 1095 : l’appel à la croisade
+   - consigne courte : Pose le panier devant sa porte.
    - question : En quel siècle le pape appelle-t-il à la croisade ?
    - lu : Le pape Urbain deux, à Clermont. An mille quatre-vingt-quinze. Il appelle les chrétiens à partir pour prendre Jérusalem.
    - choix : au Xe siècle · au XIe siècle · au XIIe siècle
@@ -273,6 +279,9 @@ Pour tous les items :
    - indice : Lis ce qui suit « donne des libertés ».
    - explication : Par la charte, le seigneur donne des libertés aux bourgeois : ils gouvernent un peu leur ville eux-mêmes.
 6. énoncé : "Description d’une photo\nNotre-Dame de Paris\nUne cathédrale de style gothique\nCommencée en 1163"
+   - geste : placer
+   - scène : 1163 : Notre-Dame de Paris
+   - consigne courte : Pose le panier devant sa porte.
    - question : En quel siècle commence la construction ?
    - lu : Description d’une photo. Notre-Dame de Paris. Une cathédrale de style gothique. Commencée en mille cent soixante-trois.
    - choix : au XIe siècle · au XIIe siècle · au XIIIe siècle
@@ -380,6 +389,9 @@ Pour tous les items :
   - Catholiques et protestants : deux façons d’être chrétien.
 
 1. énoncé : "D’après le journal de Christophe Colomb\nLe 12 octobre 1492\nNous arrivons sur une île.\nDes habitants viennent vers nous."
+   - geste : placer
+   - scène : 1492 : Colomb arrive en Amérique
+   - consigne courte : Pose le panier devant sa porte.
    - question : En quel siècle Colomb arrive-t-il en Amérique ?
    - lu : D’après le journal de Christophe Colomb. Le douze octobre mille quatre cent quatre-vingt-douze. Nous arrivons sur une île. Des habitants viennent vers nous.
    - choix : au XIVe siècle · au XVe siècle · au XVIe siècle

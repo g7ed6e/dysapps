@@ -109,18 +109,30 @@ Pour tous les items :
   - m’ont, t’ont = me + ont, te + ont : on peut dire « m’avaient », « t’avaient ».
 
 1. clé : leur-pretes
+   - sujet : Je … ai prêté mes feutres.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Je … ai prêté mes feutres.
    - choix : leur · leurs · l’heure
    - réponse : leur
    - indice : Devant un verbe, « leur » veut dire « à eux ».
    - explication : « Je leur ai prêté » = j’ai prêté à eux : « leur » est devant le verbe, il ne prend jamais de s.
 2. clé : leurs-chiens
+   - sujet : Les voisins promènent … chiens.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Les voisins promènent … chiens.
    - choix : leur · leurs · l’heure
    - réponse : leurs
    - indice : Devant un nom : un chien, ou plusieurs ?
    - explication : « chiens » est au pluriel : on écrit « leurs », avec un s.
 3. clé : leur-maison
+   - sujet : Mes cousins ont vendu … maison.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Mes cousins ont vendu … maison.
    - choix : leur · leurs · l’heure
    - réponse : leur
@@ -171,48 +183,80 @@ Pour tous les items :
   - là = à cet endroit : on peut dire « ici ».
 
 1. clé : la-lettre
+   - sujet : Cette lettre, Paul … écrite hier.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Cette lettre, Paul … écrite hier.
    - choix : la · l’a · là
    - réponse : l’a
    - indice : Remplace par « l’avait ».
    - explication : « Paul l’avait écrite » fonctionne : c’est « l’a ». « l’ », c’est la lettre : elle est placée avant, donc on écrit écrite, avec un e.
 2. clé : la-boite
+   - sujet : Pose … boîte sur la table.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Pose … boîte sur la table.
    - choix : la · l’a · là
    - réponse : la
    - indice : Le mot est devant un nom.
    - explication : « la boîte » : « la » est devant le nom boîte. On ne peut pas dire « pose l’avait boîte ».
 3. clé : la-sac
+   - sujet : Mon sac est …, sous la chaise.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Mon sac est …, sous la chaise.
    - choix : la · l’a · là
    - réponse : là
    - indice : Remplace par « ici ».
    - explication : « Mon sac est ici » fonctionne : c’est « là », l’endroit, avec un accent.
 4. clé : la-porte
+   - sujet : La porte ? Le vent … ouverte.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : La porte ? Le vent … ouverte.
    - choix : la · l’a · là
    - réponse : l’a
    - indice : Remplace par « l’avait ».
    - explication : « Le vent l’avait ouverte » fonctionne : c’est « l’a ». « l’ », c’est la porte : elle est placée avant, donc on écrit ouverte, avec un e.
 5. clé : la-chanson
+   - sujet : Cette chanson, Léa … chante souvent.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Cette chanson, Léa … chante souvent.
    - choix : la · l’a · là
    - réponse : la
    - indice : Remplace par « l’avait » : est-ce que ça marche ?
    - explication : « Léa l’avait chante » ne veut rien dire : c’est « la », devant le verbe chante. « la » remplace la chanson.
 6. clé : la-veste
+   - sujet : Ta veste ? Maman … lavée hier.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Ta veste ? Maman … lavée hier.
    - choix : la · l’a · là
    - réponse : l’a
    - indice : Remplace par « l’avait ».
    - explication : « Maman l’avait lavée » fonctionne : c’est « l’a ». « l’ », c’est ta veste : elle est placée avant, donc on écrit lavée, avec un e.
 7. clé : la-viens
+   - sujet : Viens …, près de moi.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Viens …, près de moi.
    - choix : la · l’a · là
    - réponse : là
    - indice : Remplace par « ici ».
    - explication : « Viens ici » fonctionne : c’est « là », l’endroit, avec un accent.
 8. clé : la-photo
+   - sujet : Cette photo, Inès … prise à la mer.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Cette photo, Inès … prise à la mer.
    - choix : la · l’a · là
    - réponse : l’a

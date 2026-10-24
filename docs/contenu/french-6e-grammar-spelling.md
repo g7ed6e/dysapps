@@ -177,34 +177,66 @@ Pour tous les items :
 - XP : 12
 
 1. clé : va-manger
+   - sujet : Il va mang… à midi.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Il va mang… à midi.
    - réponse : er
    - règle : Après « va », on peut dire « vendre » : c’est -er.
 2. clé : a-mange
+   - sujet : Il a mang… une pomme.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Il a mang… une pomme.
    - réponse : é
    - règle : Après « a », on peut dire « vendu » : c’est -é.
 3. clé : vous-mangez
+   - sujet : Vous mang… trop vite.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Vous mang… trop vite.
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
 4. clé : veut-jouer
+   - sujet : Elle veut jou… dehors.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Elle veut jou… dehors.
    - réponse : er
    - règle : Après « veut », on peut dire « vendre » : c’est -er.
 5. clé : est-tombe
+   - sujet : Le vase est tomb… par terre.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Le vase est tomb… par terre.
    - réponse : é
    - règle : Après « est », on peut dire « vendu » : c’est -é.
 6. clé : vous-chantez
+   - sujet : Vous chant… très bien.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Vous chant… très bien.
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
 7. clé : pour-chanter
+   - sujet : Je viens pour chant… avec toi.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Je viens pour chant… avec toi.
    - réponse : er
    - règle : Après « pour », on peut dire « vendre » : c’est -er.
 8. clé : ont-fini
+   - sujet : Ils ont termin… le travail.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Ils ont termin… le travail.
    - réponse : é
    - règle : Après « ont », on peut dire « vendu » : c’est -é.
@@ -217,34 +249,66 @@ Pour tous les items :
 - XP : 14
 
 1. clé : sans-parler
+   - sujet : Il sort sans parl….
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Il sort sans parl….
    - réponse : er
    - règle : Après « sans », on peut dire « vendre » : c’est -er.
 2. clé : avait-oublie
+   - sujet : Elle avait oubli… son sac.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Elle avait oubli… son sac.
    - réponse : é
    - règle : Après « avait », on peut dire « vendu » : c’est -é.
 3. clé : vous-arrivez
+   - sujet : Vous arriv… à quelle heure ?
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Vous arriv… à quelle heure ?
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
 4. clé : de-danser
+   - sujet : Il rêve de dans… sur scène.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Il rêve de dans… sur scène.
    - réponse : er
    - règle : Après « de », on peut dire « vendre » : c’est -er.
 5. clé : gateau-decore
+   - sujet : Un gâteau décor… de fraises.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Un gâteau décor… de fraises.
    - réponse : é
    - règle : On peut dire « vendu » : le gâteau est décoré, c’est -é.
 6. clé : vous-regardez
+   - sujet : Vous regard… le ciel.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Vous regard… le ciel.
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
 7. clé : faut-ranger
+   - sujet : Il faut rang… la chambre.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Il faut rang… la chambre.
    - réponse : er
    - règle : Après « faut », on peut dire « vendre » : c’est -er.
 8. clé : sont-arrives
+   - sujet : Il est arriv… en retard.
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - énoncé : Il est arriv… en retard.
    - réponse : é
    - règle : Après « est », on peut dire « vendu » : c’est -é.

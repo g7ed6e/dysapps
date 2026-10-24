@@ -9,6 +9,7 @@
     {
       "key": "french-4e-vocabulary-meaning-1-0",
       "prompt": "« Une pluie de cadeaux » : quel sens ?",
+      "subject": "Une pluie de cadeaux",
       "spoken": "« Une pluie de cadeaux » : quel sens ?",
       "choices": [
         "figuré",
@@ -17,6 +18,9 @@
       "answer": "figuré",
       "hint": "Des cadeaux ne tombent pas vraiment du ciel : image.",
       "explanation": "Image (beaucoup de cadeaux) : sens figuré.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -32,6 +36,7 @@
     {
       "key": "french-4e-vocabulary-meaning-1-1",
       "prompt": "« Il pleut depuis ce matin » : quel sens ?",
+      "subject": "Il pleut depuis ce matin",
       "spoken": "« Il pleut depuis ce matin » : quel sens ?",
       "choices": [
         "propre",
@@ -40,6 +45,9 @@
       "answer": "propre",
       "hint": "De la vraie pluie : sens concret.",
       "explanation": "Sens premier, concret : sens propre.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -103,6 +111,7 @@
     {
       "key": "french-4e-vocabulary-meaning-1-4",
       "prompt": "« La bouche du métro » : quel sens ?",
+      "subject": "La bouche du métro",
       "spoken": "« La bouche du métro » : quel sens ?",
       "choices": [
         "figuré",
@@ -111,6 +120,9 @@
       "answer": "figuré",
       "hint": "Le métro n’a pas de vraie bouche : image de l’entrée.",
       "explanation": "Image : l’entrée ressemble à une bouche, sens figuré.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -126,6 +138,7 @@
     {
       "key": "french-4e-vocabulary-meaning-1-5",
       "prompt": "« Il a cassé un verre » : quel sens ?",
+      "subject": "Il a cassé un verre",
       "spoken": "« Il a cassé un verre » : quel sens ?",
       "choices": [
         "propre",
@@ -134,6 +147,9 @@
       "answer": "propre",
       "hint": "On casse vraiment le verre.",
       "explanation": "Action réelle et concrète : sens propre.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -173,6 +189,7 @@
     {
       "key": "french-4e-vocabulary-meaning-1-7",
       "prompt": "« Le pied de la table » : quel sens ?",
+      "subject": "Le pied de la table",
       "spoken": "« Le pied de la table » : quel sens ?",
       "choices": [
         "figuré",
@@ -181,6 +198,9 @@
       "answer": "figuré",
       "hint": "La table n’a pas de vrai pied : image.",
       "explanation": "Image (ce qui porte, comme un pied) : sens figuré.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

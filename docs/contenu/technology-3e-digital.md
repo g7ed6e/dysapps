@@ -453,6 +453,10 @@ Pour tous les items :
    - indice : Relis la ligne « Un descripteur » du rappel.
    - explication : Le nombre de pages est une caractéristique du livre : c’est un descripteur. L’objet, c’est le livre lui-même.
 2. énoncé : Dans la colonne « Âge », la donnée 12 est de type …
+   - sujet : Âge : 12
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : mot · nombre · booléen
    - réponse : nombre
    - indice : Relis la ligne « Le type d’une donnée » du rappel.
@@ -465,6 +469,10 @@ Pour tous les items :
    - indice : Relis la ligne « Un booléen » du rappel.
    - explication : « Électrique » vaut vrai ou faux : c’est un booléen. La marque est un mot, le prix un nombre.
 4. énoncé : « Le casier est fermé : vrai » est une donnée de type …
+   - sujet : Le casier est fermé : vrai
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : mot · nombre · booléen
    - réponse : booléen
    - indice : Combien de valeurs peut prendre cette donnée ?

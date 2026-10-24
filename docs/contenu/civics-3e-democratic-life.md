@@ -45,11 +45,19 @@ Pour tous les items :
    - indice : Relis la troisième ligne du rappel.
    - explication : Le Parlement réunit l’Assemblée nationale et le Sénat. Le gouvernement, lui, fait partie du pouvoir exécutif.
 2. énoncé : Voter les lois est le rôle du pouvoir …
+   - sujet : Voter les lois
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : exécutif · judiciaire · législatif
    - réponse : législatif
    - indice : Relis la deuxième ligne du rappel.
    - explication : Le pouvoir législatif vote les lois : c’est le Parlement. L’exécutif les applique, le judiciaire juge.
 3. énoncé : Le pouvoir de juger appartient aux juges : c’est le pouvoir …
+   - sujet : Juger
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : judiciaire · législatif · exécutif
    - réponse : judiciaire
    - indice : Relis l’avant-dernière ligne du rappel.
@@ -62,6 +70,10 @@ Pour tous les items :
    - indice : La laïcité interdit-elle de croire ?
    - explication : Une République laïque : l’autorité politique est indépendante des religions, et chacun reste libre de croire ou de ne pas croire.
 5. énoncé : Le président de la République et le gouvernement forment le pouvoir …
+   - sujet : Le président et le gouvernement
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : législatif · judiciaire · exécutif
    - réponse : exécutif
    - indice : Relis la quatrième ligne du rappel.
@@ -176,16 +188,28 @@ Pour tous les items :
   - Une information se vérifie : qui, quand, d’où vient-elle ?
 
 1. énoncé : « L’eau bout à 100 degrés au niveau de la mer. » Cette phrase exprime …
+   - sujet : L’eau bout à 100 degrés
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : une opinion · un savoir · une croyance
    - réponse : un savoir
    - indice : Peut-on le vérifier par une expérience ?
    - explication : C’est un savoir : on peut le vérifier et le démontrer. Une opinion se discute, une croyance ne se prouve pas.
 2. énoncé : « Le meilleur sport, c’est le basket. » Cette phrase exprime …
+   - sujet : Le meilleur sport, c’est le basket
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : une opinion · un savoir · une croyance
    - réponse : une opinion
    - indice : Tout le monde est-il obligé d’être d’accord ?
    - explication : C’est une opinion : un avis personnel, qui se discute. D’autres préfèrent le foot ou la danse, et aucun n’a tort.
 3. énoncé : « Ce porte-clés me porte bonheur. » Cette phrase exprime …
+   - sujet : Ce porte-clés me porte bonheur
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : un savoir · une opinion · une croyance
    - réponse : une croyance
    - indice : Peut-on prouver qu’un objet porte bonheur ?

@@ -310,11 +310,19 @@ Pour tous les items :
   - Range tes fichiers dans des dossiers, avec un nom clair.
 
 1. énoncé : Le détecteur de présence repère qu’une personne arrive : c’est un …
-   - choix : capteur · actionneur · générateur
+   - sujet : Détecteur de présence
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
+   - choix : capteur · actionneur · programme
    - réponse : capteur
    - indice : Relis la ligne « Un capteur » du rappel.
    - explication : Le détecteur prend une information : quelqu’un arrive. C’est un capteur. Un actionneur, lui, agit, comme un moteur.
 2. énoncé : Le robot avance grâce à son moteur : le moteur est un …
+   - sujet : Moteur du robot
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : capteur · actionneur · programme
    - réponse : actionneur
    - indice : Le moteur prend-il une information, ou fait-il bouger le robot ?

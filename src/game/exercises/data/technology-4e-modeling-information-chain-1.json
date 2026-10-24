@@ -34,6 +34,7 @@
     {
       "key": "technology-4e-modeling-information-chain-1-1",
       "prompt": "Le capteur du thermostat mesure la température de la pièce : il … l’information.",
+      "subject": "Capteur du thermostat",
       "spoken": "Le capteur du thermostat mesure la température de la pièce : il  (mot manquant)  l’information.",
       "choices": [
         "traite",
@@ -43,6 +44,9 @@
       "answer": "acquiert",
       "hint": "Relis la ligne « Acquérir » du rappel.",
       "explanation": "Mesurer la température, c’est prendre l’information : le capteur l’acquiert.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -85,6 +89,7 @@
     {
       "key": "technology-4e-modeling-information-chain-1-3",
       "prompt": "L’écran de la montre affiche le nombre de pas : il … l’information.",
+      "subject": "Écran de la montre",
       "spoken": "L’écran de la montre affiche le nombre de pas : il  (mot manquant)  l’information.",
       "choices": [
         "acquiert",
@@ -94,6 +99,9 @@
       "answer": "communique",
       "hint": "L’écran montre l’information à la personne.",
       "explanation": "Afficher, c’est donner l’information à la personne : l’écran la communique.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -10,6 +10,7 @@
     {
       "key": "english-6e-grammar-to-be-1-0",
       "prompt": "I … eleven years old.",
+      "subject": "I … eleven years old.",
       "spoken": "I blank eleven years old.",
       "choices": [
         "am",
@@ -19,6 +20,9 @@
       "answer": "am",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "I am : avec I, toujours am.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -36,6 +40,7 @@
     {
       "key": "english-6e-grammar-to-be-1-1",
       "prompt": "She … my sister.",
+      "subject": "She … my sister.",
       "spoken": "She blank my sister.",
       "choices": [
         "am",
@@ -45,6 +50,9 @@
       "answer": "is",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "She is : avec he, she, it, c’est is.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -62,6 +70,7 @@
     {
       "key": "english-6e-grammar-to-be-1-2",
       "prompt": "We … in the same class.",
+      "subject": "We … in the same class.",
       "spoken": "We blank in the same class.",
       "choices": [
         "am",
@@ -71,6 +80,9 @@
       "answer": "are",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "We are : avec we, you, they, c’est are.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -88,6 +100,7 @@
     {
       "key": "english-6e-grammar-to-be-1-3",
       "prompt": "My dog … very funny.",
+      "subject": "My dog … very funny.",
       "spoken": "My dog blank very funny.",
       "choices": [
         "am",
@@ -97,6 +110,9 @@
       "answer": "is",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "My dog = it : it is.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -114,6 +130,7 @@
     {
       "key": "english-6e-grammar-to-be-1-4",
       "prompt": "They … from London.",
+      "subject": "They … from London.",
       "spoken": "They blank from London.",
       "choices": [
         "am",
@@ -123,6 +140,9 @@
       "answer": "are",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "They are : avec they, c’est are.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -140,6 +160,7 @@
     {
       "key": "english-6e-grammar-to-be-1-5",
       "prompt": "You … my best friend.",
+      "subject": "You … my best friend.",
       "spoken": "You blank my best friend.",
       "choices": [
         "am",
@@ -149,6 +170,9 @@
       "answer": "are",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "You are : avec you, c’est are.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -166,6 +190,7 @@
     {
       "key": "english-6e-grammar-to-be-1-6",
       "prompt": "It … a big house.",
+      "subject": "It … a big house.",
       "spoken": "It blank a big house.",
       "choices": [
         "am",
@@ -175,6 +200,9 @@
       "answer": "is",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "It is : avec it, c’est is.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -192,6 +220,7 @@
     {
       "key": "english-6e-grammar-to-be-1-7",
       "prompt": "Tom and Lina … at school.",
+      "subject": "Tom and Lina … at school.",
       "spoken": "Tom and Lina blank at school.",
       "choices": [
         "am",
@@ -201,6 +230,9 @@
       "answer": "are",
       "hint": "Remplace le sujet par I, he, she, it, we, you ou they.",
       "explanation": "Tom and Lina = they : they are.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

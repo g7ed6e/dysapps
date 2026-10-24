@@ -9,6 +9,7 @@
     {
       "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-0",
       "prompt": "Dans la guirlande, une lampe grille et tout s’éteint : les lampes sont en …",
+      "subject": "Une lampe grille, tout s’éteint",
       "spoken": "Dans la guirlande, une lampe grille et tout s’éteint : les lampes sont en  (mot manquant) ",
       "choices": [
         "série",
@@ -18,6 +19,9 @@
       "answer": "série",
       "hint": "Relis la ligne « En série : une seule boucle » du rappel.",
       "explanation": "Une seule boucle : si une lampe grille, la boucle est coupée et tout s’éteint. Les lampes sont en série.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -36,6 +40,7 @@
     {
       "key": "physics-chemistry-4e-signals-circuits-electric-circuits-1-1",
       "prompt": "À la maison, une lampe grille et les autres restent allumées : elles sont en …",
+      "subject": "Une lampe grille, les autres brillent",
       "spoken": "À la maison, une lampe grille et les autres restent allumées : elles sont en  (mot manquant) ",
       "choices": [
         "série",
@@ -45,6 +50,9 @@
       "answer": "dérivation",
       "hint": "Relis la ligne « En dérivation » du rappel.",
       "explanation": "Chaque lampe a sa boucle : si l’une grille, les autres brillent encore. Les lampes de la maison sont en dérivation.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -9,6 +9,7 @@
     {
       "key": "french-4e-sentence-passive-reported-1-0",
       "prompt": "« Le match est arbitré par une jeune femme. » Quelle voix ?",
+      "subject": "Le match est arbitré par Léa.",
       "spoken": "Le match est arbitré par une jeune femme. Quelle voix ?",
       "choices": [
         "active",
@@ -17,6 +18,9 @@
       "answer": "passive",
       "hint": "Le match fait-il l’action, ou la subit-il ?",
       "explanation": "Le match ne fait rien, il est arbitré : voix passive, avec être et le participe « arbitré ». « Par une jeune femme » dit qui arbitre.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -33,6 +37,7 @@
     {
       "key": "french-4e-sentence-passive-reported-1-1",
       "prompt": "« Les élèves préparent une exposition. » Quelle voix ?",
+      "subject": "Les élèves préparent une exposition.",
       "spoken": "Les élèves préparent une exposition. Quelle voix ?",
       "choices": [
         "passive",
@@ -41,6 +46,9 @@
       "answer": "active",
       "hint": "Qui prépare ? Le sujet fait-il l’action ?",
       "explanation": "Les élèves font l’action de préparer : voix active. Au passif, on dirait : une exposition est préparée par les élèves.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

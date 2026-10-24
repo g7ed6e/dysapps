@@ -9,6 +9,7 @@
     {
       "key": "sans-parler",
       "prompt": "Il sort sans parl….",
+      "subject": "Il sort sans parl….",
       "spoken": "Il sort sans parl(terminaison).",
       "choices": [
         "é",
@@ -17,6 +18,9 @@
       ],
       "answer": "er",
       "rule": "Après « sans », on peut dire « vendre » : c’est -er.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -32,6 +36,7 @@
     {
       "key": "avait-oublie",
       "prompt": "Elle avait oubli… son sac.",
+      "subject": "Elle avait oubli… son sac.",
       "spoken": "Elle avait oubli(terminaison) son sac.",
       "choices": [
         "é",
@@ -40,6 +45,9 @@
       ],
       "answer": "é",
       "rule": "Après « avait », on peut dire « vendu » : c’est -é.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -55,6 +63,7 @@
     {
       "key": "vous-arrivez",
       "prompt": "Vous arriv… à quelle heure ?",
+      "subject": "Vous arriv… à quelle heure ?",
       "spoken": "Vous arriv(terminaison) à quelle heure ?",
       "choices": [
         "é",
@@ -63,6 +72,9 @@
       ],
       "answer": "ez",
       "rule": "Avec « vous », le verbe finit par -ez.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -78,6 +90,7 @@
     {
       "key": "de-danser",
       "prompt": "Il rêve de dans… sur scène.",
+      "subject": "Il rêve de dans… sur scène.",
       "spoken": "Il rêve de dans(terminaison) sur scène.",
       "choices": [
         "é",
@@ -86,6 +99,9 @@
       ],
       "answer": "er",
       "rule": "Après « de », on peut dire « vendre » : c’est -er.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -101,6 +117,7 @@
     {
       "key": "gateau-decore",
       "prompt": "Un gâteau décor… de fraises.",
+      "subject": "Un gâteau décor… de fraises.",
       "spoken": "Un gâteau décor(terminaison) de fraises.",
       "choices": [
         "é",
@@ -109,6 +126,9 @@
       ],
       "answer": "é",
       "rule": "On peut dire « vendu » : le gâteau est décoré, c’est -é.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -124,6 +144,7 @@
     {
       "key": "vous-regardez",
       "prompt": "Vous regard… le ciel.",
+      "subject": "Vous regard… le ciel.",
       "spoken": "Vous regard(terminaison) le ciel.",
       "choices": [
         "é",
@@ -132,6 +153,9 @@
       ],
       "answer": "ez",
       "rule": "Avec « vous », le verbe finit par -ez.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -147,6 +171,7 @@
     {
       "key": "faut-ranger",
       "prompt": "Il faut rang… la chambre.",
+      "subject": "Il faut rang… la chambre.",
       "spoken": "Il faut rang(terminaison) la chambre.",
       "choices": [
         "é",
@@ -155,6 +180,9 @@
       ],
       "answer": "er",
       "rule": "Après « faut », on peut dire « vendre » : c’est -er.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -170,6 +198,7 @@
     {
       "key": "sont-arrives",
       "prompt": "Il est arriv… en retard.",
+      "subject": "Il est arriv… en retard.",
       "spoken": "Il est arriv(terminaison) en retard.",
       "choices": [
         "é",
@@ -178,6 +207,9 @@
       ],
       "answer": "é",
       "rule": "Après « est », on peut dire « vendu » : c’est -é.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

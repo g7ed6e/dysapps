@@ -180,6 +180,10 @@ Pour tous les items :
    - indice : Il repère quelqu’un qui passe.
    - explication : Le détecteur repère un mouvement : c’est un capteur. La lampe qui s’allume ensuite est l’actionneur.
 2. énoncé : Le capteur du thermostat mesure la température de la pièce : il … l’information.
+   - sujet : Capteur du thermostat
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : traite · acquiert · communique
    - réponse : acquiert
    - indice : Relis la ligne « Acquérir » du rappel.
@@ -192,6 +196,10 @@ Pour tous les items :
    - indice : Qui décide d’ouvrir ?
    - explication : La carte programmable décide d’ouvrir : elle traite l’information. Le capteur l’a seulement acquise.
 4. énoncé : L’écran de la montre affiche le nombre de pas : il … l’information.
+   - sujet : Écran de la montre
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : acquiert · traite · communique
    - réponse : communique
    - indice : L’écran montre l’information à la personne.
@@ -250,6 +258,10 @@ Pour tous les items :
    - indice : La pompe agit : elle pousse le gel.
    - explication : La pompe est un actionneur : elle agit, dans la chaîne d’énergie. Le capteur et la carte sont dans la chaîne d’information.
 4. énoncé : La carte du feu de circulation décide quand passer au vert : elle … l’information.
+   - sujet : Carte du feu de circulation
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : acquiert · traite · communique
    - réponse : traite
    - indice : Décider, c’est quelle fonction ?
@@ -262,6 +274,10 @@ Pour tous les items :
    - indice : Comparer et décider : quelle fonction ?
    - explication : La carte compare deux heures et décide d’allumer : elle traite l’information. C’est la pile ou la prise qui alimente la lampe.
 6. énoncé : Quand le détecteur de fumée sonne fort, il … l’information.
+   - sujet : Détecteur de fumée qui sonne
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : communique · acquiert · traite
    - réponse : communique
    - indice : Le son prévient les gens : quelle fonction ?

@@ -109,6 +109,7 @@
     {
       "key": "french-4e-sentence-relative-clauses-3-4",
       "prompt": "« Je sais que tu dis vrai. » Cette subordonnée est-elle une relative ou une conjonctive ?",
+      "subject": "Je sais que tu dis vrai.",
       "spoken": "Je sais que tu dis vrai. Cette subordonnée est-elle une relative ou une conjonctive ?",
       "choices": [
         "une relative",
@@ -117,6 +118,9 @@
       "answer": "une conjonctive",
       "hint": "« Que » suit-il un nom, ou un verbe ?",
       "explanation": "« Que » suit le verbe « sais » et ne remplace aucun nom : c’est une conjonctive, qui complète le verbe. Je sais quoi ? Que tu dis vrai.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -133,6 +137,7 @@
     {
       "key": "french-4e-sentence-relative-clauses-3-5",
       "prompt": "« L’histoire que tu racontes est vraie. » Cette subordonnée est-elle une relative ou une conjonctive ?",
+      "subject": "L’histoire que tu racontes est vraie.",
       "spoken": "L’histoire que tu racontes est vraie. Cette subordonnée est-elle une relative ou une conjonctive ?",
       "choices": [
         "une relative",
@@ -141,6 +146,9 @@
       "answer": "une relative",
       "hint": "« Que » suit-il un nom ? Remets ce nom à sa place.",
       "explanation": "« Que » suit le nom « histoire » et le remplace : tu racontes l’histoire. C’est une relative, qui complète ce nom.",
+      "gesture": "ranger",
+      "shows": "",
+      "shortInstruction": "Range chaque fiche dans sa caisse.",
       "aid": {
         "kind": "rule-card",
         "props": {

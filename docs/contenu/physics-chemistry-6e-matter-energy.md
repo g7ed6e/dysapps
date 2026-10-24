@@ -41,11 +41,19 @@ Pour tous les items :
   - La glace fond à 0 degré. L’eau bout à 100 degrés.
 
 1. énoncé : Le glaçon sorti du congélateur devient de l’eau liquide : c’est la …
+   - sujet : Un glaçon devient liquide
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : solidification · fusion · vaporisation
    - réponse : fusion
    - indice : Il était solide, il devient liquide.
    - explication : Un solide qui devient liquide, c’est la fusion : la glace fond. La solidification, c’est l’inverse.
 2. énoncé : Le jus de fruit, mis au congélateur, devient solide : c’est la …
+   - sujet : Un jus devient solide
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : fusion · liquéfaction · solidification
    - réponse : solidification
    - indice : Il était liquide, il devient solide.
@@ -70,6 +78,10 @@ Pour tous les items :
    - indice : Regarde les deux lignes où la glace fond.
    - explication : Pendant toute la fusion, le tableau dit 0 degré : la température de la glace qui fond ne change pas. Elle remonte quand tout est liquide.
 6. énoncé : Sur le miroir de la salle de bains, la vapeur d’eau redevient liquide : c’est la …
+   - sujet : La vapeur devient liquide
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : liquéfaction · fusion · solidification
    - réponse : liquéfaction
    - indice : Elle était gaz, elle devient liquide.

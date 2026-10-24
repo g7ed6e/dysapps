@@ -393,48 +393,80 @@ Pour tous les items :
   - Juge toujours le mot dans sa phrase.
 
 1. énoncé : « Le vieux bâtiment était devenu une bicoque où personne n’entrait plus. » Quelle image donne le mot « bicoque » ?
+   - sujet : une bicoque
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : Le vieux bâtiment était devenu une bicoque où personne n’entrait plus. Quelle image donne le mot « bicoque » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : péjoratif
    - indice : Aurais-tu envie d’entrer dans une bicoque ?
    - explication : « Bicoque » désigne une maison, avec une image de maison pauvre et mal tenue : il est péjoratif. Le mot neutre serait « maison ».
 2. énoncé : « Au fond du jardin se dressait une demeure élégante, aux volets bleus. » Quelle image donne le mot « demeure » ?
+   - sujet : une demeure
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : Au fond du jardin se dressait une demeure élégante, aux volets bleus. Quelle image donne le mot « demeure » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : mélioratif
    - indice : Le mot va avec « élégante » : quelle image en ressort ?
    - explication : « Demeure » désigne une maison, avec une image de grande et belle maison : il est mélioratif.
 3. énoncé : « La maison a trois chambres et un garage. » Quelle image donne le mot « maison » ?
+   - sujet : la maison
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : La maison a trois chambres et un garage. Quelle image donne le mot « maison » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : neutre
    - indice : La phrase décrit-elle, ou juge-t-elle ?
    - explication : Ici, « maison » donne son sens sans rien ajouter : la phrase décrit, elle ne juge pas. Le mot est neutre.
 4. énoncé : « Un chauffard a traversé le carrefour sans s’arrêter au feu rouge. » Quelle image donne le mot « chauffard » ?
+   - sujet : un chauffard
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : Un chauffard a traversé le carrefour sans s’arrêter au feu rouge. Quelle image donne le mot « chauffard » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : péjoratif
    - indice : Compare avec « un conducteur ».
    - explication : « Chauffard » désigne un conducteur, avec un jugement : il conduit mal et met les autres en danger. Il est péjoratif.
 5. énoncé : « Le chevalier sauta sur son destrier et partit au galop. » Quelle image donne le mot « destrier » ?
+   - sujet : un destrier
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : Le chevalier sauta sur son destrier et partit au galop. Quelle image donne le mot « destrier » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : mélioratif
    - indice : Compare avec « un cheval » : lequel fait plus noble ?
    - explication : « Destrier » désigne un cheval, avec l’image d’un noble cheval de chevalier : il est mélioratif.
 6. énoncé : « Le conducteur s’arrête au feu rouge et laisse passer les piétons. » Quelle image donne le mot « conducteur » ?
+   - sujet : le conducteur
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : Le conducteur s’arrête au feu rouge et laisse passer les piétons. Quelle image donne le mot « conducteur » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : neutre
    - indice : Le mot ajoute-t-il un jugement à son sens ?
    - explication : « Conducteur » dit seulement qui conduit : il n’ajoute aucune image. Il est neutre.
 7. énoncé : « Un relent de poisson flottait dans la cuisine. » Quelle image donne le mot « relent » ?
+   - sujet : un relent
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : Un relent de poisson flottait dans la cuisine. Quelle image donne le mot « relent » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : péjoratif
    - indice : Compare avec « une odeur ».
    - explication : « Relent » désigne une odeur, avec l’image d’une odeur mauvaise qui reste : il est péjoratif.
 8. énoncé : « Un parfum de lilas montait du jardin. » Quelle image donne le mot « parfum » ?
+   - sujet : un parfum
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - lu : Un parfum de lilas montait du jardin. Quelle image donne le mot « parfum » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : mélioratif

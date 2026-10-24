@@ -177,11 +177,19 @@ Pour tous les items :
   - Trop d’intensité fait chauffer les fils : le fusible coupe le courant.
 
 1. énoncé : Dans la guirlande, une lampe grille et tout s’éteint : les lampes sont en …
+   - sujet : Une lampe grille, tout s’éteint
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : série · dérivation · court-circuit
    - réponse : série
    - indice : Relis la ligne « En série : une seule boucle » du rappel.
    - explication : Une seule boucle : si une lampe grille, la boucle est coupée et tout s’éteint. Les lampes sont en série.
 2. énoncé : À la maison, une lampe grille et les autres restent allumées : elles sont en …
+   - sujet : Une lampe grille, les autres brillent
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : série · court-circuit · dérivation
    - réponse : dérivation
    - indice : Relis la ligne « En dérivation » du rappel.
@@ -312,16 +320,28 @@ Pour tous les items :
   - L’eau de chaux se trouble : il y a du dioxyde de carbone.
 
 1. énoncé : Le bois brûle et donne de la cendre et des fumées : c’est …
+   - sujet : Le bois brûle
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : un changement d’état · un mélange · une transformation chimique
    - réponse : une transformation chimique
    - indice : La cendre, c’était là avant ?
    - explication : La cendre et les fumées sont de nouvelles espèces chimiques : le bois a subi une transformation chimique, une combustion.
 2. énoncé : Le chocolat fond au soleil : c’est …
+   - sujet : Le chocolat fond
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : un changement d’état · une transformation chimique · un mélange
    - réponse : un changement d’état
    - indice : Relis la ligne « Fondre » du rappel.
    - explication : Le chocolat passe de solide à liquide : c’est toujours du chocolat. C’est un changement d’état, la fusion.
 3. énoncé : Le sucre se dissout dans le lait : c’est …
+   - sujet : Le sucre dans le lait
+   - geste : ranger
+   - scène : ""
+   - consigne courte : Range chaque fiche dans sa caisse.
    - choix : une transformation chimique · un mélange · un changement d’état
    - réponse : un mélange
    - indice : Relis la ligne « Fondre » du rappel.
