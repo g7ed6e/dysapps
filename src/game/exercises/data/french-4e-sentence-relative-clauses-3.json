@@ -120,7 +120,7 @@
       "explanation": "« Que » suit le verbe « sais » et ne remplace aucun nom : c’est une conjonctive, qui complète le verbe. Je sais quoi ? Que tu dis vrai.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -148,7 +148,7 @@
       "explanation": "« Que » suit le nom « histoire » et le remplace : tu racontes l’histoire. C’est une relative, qui complète ce nom.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

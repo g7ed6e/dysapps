@@ -21,7 +21,7 @@
       "explanation": "Registre familier : « ne » oublié, « à la bourre » (en courant : en retard).",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -50,7 +50,7 @@
       "explanation": "Registre courant : le « ne » est là, et les mots sont ceux de tous les jours.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -79,7 +79,7 @@
       "explanation": "Registre soutenu : des mots recherchés, qu’on trouve surtout à l’écrit.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

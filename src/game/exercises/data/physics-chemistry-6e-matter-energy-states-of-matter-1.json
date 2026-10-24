@@ -21,7 +21,7 @@
       "explanation": "Un solide qui devient liquide, c’est la fusion : la glace fond. La solidification, c’est l’inverse.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -51,7 +51,7 @@
       "explanation": "Un liquide qui devient solide, c’est la solidification. La fusion, c’est l’inverse.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -161,7 +161,7 @@
       "explanation": "Un gaz qui devient liquide, c’est la liquéfaction : la buée se forme.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

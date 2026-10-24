@@ -628,11 +628,11 @@ function zeroRepainted(b: FacetBuilder, c: Vec3): void {
 
 /**
  * L'échelle graduée du geste « régler » (GD-26, Plus et moins) : dressée entre Kéo et la
- * fontainière, au fond du plancher, un échelon par nombre de −10 à 10 (`step` entre deux) ; seuls le zéro (crème, large) et les dizaines
- * (bronze) se distinguent, sans rien d'écrit. `back` : son recul derrière le milieu de la scène ; `foot` : la hauteur du
+ * fontainière, au-devant du plancher (avis du directeur artistique : au moins 40 % de la hauteur), un échelon par nombre de −10 à 10 (`step` entre deux) ; seuls le zéro (crème, large) et les dizaines
+ * (bronze) se distinguent, sans rien d'écrit. `back` : son recul derrière le milieu de la scène (négatif : en avant) ; `foot` : la hauteur du
  * premier échelon au-dessus du plancher ; `half` : la demi-largeur entre ses montants.
  */
-const LADDER = { back: 0.6, foot: 0.12, step: 0.16, half: 0.42, bucket: 1 } as const;
+const LADDER = { back: -1.15, foot: -0.35, step: 0.21, half: 0.55, bucket: 1.3 } as const;
 
 /**
  * Le réglage de la Montée : l'échelle, la cheville d'ocre au départ, et le godet posé sur l'échelon réglé (sa forme

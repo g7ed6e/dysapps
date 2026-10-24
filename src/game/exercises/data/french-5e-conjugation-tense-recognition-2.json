@@ -20,7 +20,7 @@
       "explanation": "Le sujet « tu » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -47,7 +47,7 @@
       "explanation": "Pas de sujet écrit, et un ordre : c’est l’impératif présent, avec tu.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -74,7 +74,7 @@
       "explanation": "Le sujet « nous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -101,7 +101,7 @@
       "explanation": "Pas de sujet écrit : on se donne un ordre à nous-mêmes. C’est l’impératif présent, avec nous.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -128,7 +128,7 @@
       "explanation": "Pas de sujet écrit : c’est un conseil donné à vous. C’est l’impératif présent.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -155,7 +155,7 @@
       "explanation": "Le sujet « vous » est écrit : on dit ce qui se passe, c’est l’indicatif présent.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -182,7 +182,7 @@
       "explanation": "On parle à Léo, sans sujet écrit : c’est un ordre, l’impératif présent. « Léo » n’est pas le sujet, c’est celui qu’on appelle.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -209,7 +209,7 @@
       "explanation": "Le sujet « Léo » est écrit devant le verbe : on dit ce qui se passe, c’est l’indicatif présent.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

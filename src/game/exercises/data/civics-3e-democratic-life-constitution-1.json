@@ -48,7 +48,7 @@
       "explanation": "Le pouvoir législatif vote les lois : c’est le Parlement. L’exécutif les applique, le judiciaire juge.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -79,7 +79,7 @@
       "explanation": "Le pouvoir judiciaire appartient aux juges. Il est séparé des deux autres pouvoirs : la justice est indépendante.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -138,7 +138,7 @@
       "explanation": "Le président de la République et le gouvernement forment le pouvoir exécutif : ils dirigent le pays et font appliquer les lois.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

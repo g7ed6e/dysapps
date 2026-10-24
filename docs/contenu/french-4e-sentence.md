@@ -185,7 +185,7 @@ Pour tous les items :
    - sujet : Je sais que tu dis vrai.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Je sais que tu dis vrai. Cette subordonnée est-elle une relative ou une conjonctive ?
    - choix : une relative · une conjonctive
    - réponse : une conjonctive
@@ -195,7 +195,7 @@ Pour tous les items :
    - sujet : L’histoire que tu racontes est vraie.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : L’histoire que tu racontes est vraie. Cette subordonnée est-elle une relative ou une conjonctive ?
    - choix : une relative · une conjonctive
    - réponse : une relative
@@ -368,7 +368,7 @@ Pour tous les items :
    - sujet : Je me demande si le car est arrivé.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Je me demande si le car est arrivé. Totale ou partielle ?
    - choix : totale · partielle
    - réponse : totale
@@ -378,7 +378,7 @@ Pour tous les items :
    - sujet : Dis-moi pourquoi tu ris.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Dis-moi pourquoi tu ris. Totale ou partielle ?
    - choix : totale · partielle
    - réponse : partielle
@@ -388,7 +388,7 @@ Pour tous les items :
    - sujet : Il ne sait pas quand le cours commence.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Il ne sait pas quand le cours commence. Totale ou partielle ?
    - choix : partielle · totale
    - réponse : partielle
@@ -454,7 +454,7 @@ Pour tous les items :
    - sujet : Le match est arbitré par Léa.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Le match est arbitré par une jeune femme. Quelle voix ?
    - choix : active · passive
    - réponse : passive
@@ -464,7 +464,7 @@ Pour tous les items :
    - sujet : Les élèves préparent une exposition.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Les élèves préparent une exposition. Quelle voix ?
    - choix : passive · active
    - réponse : active

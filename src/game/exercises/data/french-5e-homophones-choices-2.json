@@ -26,7 +26,7 @@
       "explanation": "« Je leur ai prêté » = j’ai prêté à eux : « leur » est devant le verbe, il ne prend jamais de s.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -55,7 +55,7 @@
       "explanation": "« chiens » est au pluriel : on écrit « leurs », avec un s.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -84,7 +84,7 @@
       "explanation": "Ils ont une seule maison : « leur maison », au singulier, sans s. Les cousins sont plusieurs, mais c’est le nom qui commande.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

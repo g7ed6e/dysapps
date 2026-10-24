@@ -151,7 +151,7 @@
       "explanation": "L’an 1163 est entre l’an 1101 et l’an 1200 : c’est le XIIe siècle. Le 11 du début ne donne pas le siècle.",
       "gesture": "placer",
       "shows": "1163 : Notre-Dame de Paris",
-      "shortInstruction": "Pose le panier devant sa porte.",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

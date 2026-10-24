@@ -21,7 +21,7 @@
       "explanation": "Les mots sont rangés comme pour raconter, mais le point d’interrogation montre qu’on pose une question : la phrase est interrogative.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -52,7 +52,7 @@
       "explanation": "« Range » n’a pas de sujet et donne un ordre : la phrase est impérative. Elle finit par un point, comme beaucoup de phrases impératives.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -83,7 +83,7 @@
       "explanation": "La phrase parle d’une question, mais elle ne la pose pas : pas de point d’interrogation, elle finit par un point. Elle est déclarative.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -114,7 +114,7 @@
       "explanation": "Le verbe « cours » n’a pas de sujet écrit et donne un ordre : la phrase est impérative. Avec « Ne » et « pas », elle est aussi négative, et le point d’exclamation la rend exclamative.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -145,7 +145,7 @@
       "explanation": "« Où » et le point d’interrogation montrent qu’on pose une question : la phrase est interrogative. Le sujet « tu » est placé après le verbe.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

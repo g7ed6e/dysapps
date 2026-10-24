@@ -167,7 +167,7 @@ Pour tous les items :
    - sujet : Une pluie de cadeaux
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Une pluie de cadeaux » : quel sens ?
    - choix : figuré · propre
    - réponse : figuré
@@ -177,7 +177,7 @@ Pour tous les items :
    - sujet : Il pleut depuis ce matin
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Il pleut depuis ce matin » : quel sens ?
    - choix : propre · figuré
    - réponse : propre
@@ -197,7 +197,7 @@ Pour tous les items :
    - sujet : La bouche du métro
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « La bouche du métro » : quel sens ?
    - choix : figuré · propre
    - réponse : figuré
@@ -207,7 +207,7 @@ Pour tous les items :
    - sujet : Il a cassé un verre
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Il a cassé un verre » : quel sens ?
    - choix : propre · figuré
    - réponse : propre
@@ -222,7 +222,7 @@ Pour tous les items :
    - sujet : Le pied de la table
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Le pied de la table » : quel sens ?
    - choix : figuré · propre
    - réponse : figuré
@@ -496,7 +496,7 @@ Pour tous les items :
    - sujet : J’étais à la bourre.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « J’ai pas vu le bus, j’étais à la bourre. » Quel est le registre ?
    - choix : familier · courant · soutenu
    - réponse : familier
@@ -506,7 +506,7 @@ Pour tous les items :
    - sujet : J’étais en retard.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Je n’ai pas vu le bus, j’étais en retard. » Quel est le registre ?
    - choix : soutenu · courant · familier
    - réponse : courant
@@ -516,7 +516,7 @@ Pour tous les items :
    - sujet : J’accusais un retard.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Je n’ai point aperçu l’autobus, car j’accusais un retard. » Quel est le registre ?
    - choix : courant · familier · soutenu
    - réponse : soutenu

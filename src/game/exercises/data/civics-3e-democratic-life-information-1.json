@@ -21,7 +21,7 @@
       "explanation": "C’est un savoir : on peut le vérifier et le démontrer. Une opinion se discute, une croyance ne se prouve pas.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -52,7 +52,7 @@
       "explanation": "C’est une opinion : un avis personnel, qui se discute. D’autres préfèrent le foot ou la danse, et aucun n’a tort.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -83,7 +83,7 @@
       "explanation": "C’est une croyance : une conviction qu’on ne peut pas prouver. On peut y tenir, mais ce n’est pas un savoir.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

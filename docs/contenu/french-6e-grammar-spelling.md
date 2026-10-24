@@ -180,7 +180,7 @@ Pour tous les items :
    - sujet : Il va mang… à midi.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Il va mang… à midi.
    - réponse : er
    - règle : Après « va », on peut dire « vendre » : c’est -er.
@@ -188,7 +188,7 @@ Pour tous les items :
    - sujet : Il a mang… une pomme.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Il a mang… une pomme.
    - réponse : é
    - règle : Après « a », on peut dire « vendu » : c’est -é.
@@ -196,7 +196,7 @@ Pour tous les items :
    - sujet : Vous mang… trop vite.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Vous mang… trop vite.
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
@@ -204,7 +204,7 @@ Pour tous les items :
    - sujet : Elle veut jou… dehors.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Elle veut jou… dehors.
    - réponse : er
    - règle : Après « veut », on peut dire « vendre » : c’est -er.
@@ -212,7 +212,7 @@ Pour tous les items :
    - sujet : Le vase est tomb… par terre.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Le vase est tomb… par terre.
    - réponse : é
    - règle : Après « est », on peut dire « vendu » : c’est -é.
@@ -220,7 +220,7 @@ Pour tous les items :
    - sujet : Vous chant… très bien.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Vous chant… très bien.
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
@@ -228,7 +228,7 @@ Pour tous les items :
    - sujet : Je viens pour chant… avec toi.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Je viens pour chant… avec toi.
    - réponse : er
    - règle : Après « pour », on peut dire « vendre » : c’est -er.
@@ -236,7 +236,7 @@ Pour tous les items :
    - sujet : Ils ont termin… le travail.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Ils ont termin… le travail.
    - réponse : é
    - règle : Après « ont », on peut dire « vendu » : c’est -é.
@@ -252,7 +252,7 @@ Pour tous les items :
    - sujet : Il sort sans parl….
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Il sort sans parl….
    - réponse : er
    - règle : Après « sans », on peut dire « vendre » : c’est -er.
@@ -260,7 +260,7 @@ Pour tous les items :
    - sujet : Elle avait oubli… son sac.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Elle avait oubli… son sac.
    - réponse : é
    - règle : Après « avait », on peut dire « vendu » : c’est -é.
@@ -268,7 +268,7 @@ Pour tous les items :
    - sujet : Vous arriv… à quelle heure ?
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Vous arriv… à quelle heure ?
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
@@ -276,7 +276,7 @@ Pour tous les items :
    - sujet : Il rêve de dans… sur scène.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Il rêve de dans… sur scène.
    - réponse : er
    - règle : Après « de », on peut dire « vendre » : c’est -er.
@@ -284,7 +284,7 @@ Pour tous les items :
    - sujet : Un gâteau décor… de fraises.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Un gâteau décor… de fraises.
    - réponse : é
    - règle : On peut dire « vendu » : le gâteau est décoré, c’est -é.
@@ -292,7 +292,7 @@ Pour tous les items :
    - sujet : Vous regard… le ciel.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Vous regard… le ciel.
    - réponse : ez
    - règle : Avec « vous », le verbe finit par -ez.
@@ -300,7 +300,7 @@ Pour tous les items :
    - sujet : Il faut rang… la chambre.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Il faut rang… la chambre.
    - réponse : er
    - règle : Après « faut », on peut dire « vendre » : c’est -er.
@@ -308,7 +308,7 @@ Pour tous les items :
    - sujet : Il est arriv… en retard.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Il est arriv… en retard.
    - réponse : é
    - règle : Après « est », on peut dire « vendu » : c’est -é.

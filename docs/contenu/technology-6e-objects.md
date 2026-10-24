@@ -313,7 +313,7 @@ Pour tous les items :
    - sujet : Détecteur de présence
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : capteur · actionneur · programme
    - réponse : capteur
    - indice : Relis la ligne « Un capteur » du rappel.
@@ -322,7 +322,7 @@ Pour tous les items :
    - sujet : Moteur du robot
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : capteur · actionneur · programme
    - réponse : actionneur
    - indice : Le moteur prend-il une information, ou fait-il bouger le robot ?

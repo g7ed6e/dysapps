@@ -195,7 +195,7 @@ Pour tous les items :
    - sujet : Il fuit la guerre
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : réfugié · touriste · saisonnier
    - réponse : réfugié
    - indice : Elle cherche un refuge, un endroit sûr.
@@ -204,7 +204,7 @@ Pour tous les items :
    - sujet : Il travaille une saison puis rentre
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : saisonnier · réfugié · touriste
    - réponse : saisonnier
    - indice : Une saison : l’été, ou le temps des vendanges.

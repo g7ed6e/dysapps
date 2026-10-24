@@ -21,7 +21,7 @@
       "explanation": "La cendre et les fumées sont de nouvelles espèces chimiques : le bois a subi une transformation chimique, une combustion.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -52,7 +52,7 @@
       "explanation": "Le chocolat passe de solide à liquide : c’est toujours du chocolat. C’est un changement d’état, la fusion.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -83,7 +83,7 @@
       "explanation": "Le sucre est toujours là, le lait est sucré : rien de nouveau n’apparaît. C’est un mélange.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

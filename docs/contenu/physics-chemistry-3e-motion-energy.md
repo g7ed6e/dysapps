@@ -314,7 +314,7 @@ Pour tous les items :
    - sujet : Le jus de citron, pH 2
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Le jus de citron a un pé-ache de 2, il est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : acide
@@ -324,7 +324,7 @@ Pour tous les items :
    - sujet : L’eau pure, pH 7
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : L’eau pure a un pé-ache de 7, elle est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : neutre
@@ -334,7 +334,7 @@ Pour tous les items :
    - sujet : L’eau savonneuse, pH 10
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : L’eau savonneuse a un pé-ache de 10, elle est (mot manquant).
    - choix : acide · neutre · basique
    - réponse : basique

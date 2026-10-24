@@ -98,7 +98,7 @@
       "explanation": "Décider, selon le programme, c’est traiter l’information. Les lampes du feu, elles, communiquent aux voitures.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -153,7 +153,7 @@
       "explanation": "Sonner, c’est donner l’alerte aux gens : le détecteur communique l’information. Il l’avait d’abord acquise, en sentant la fumée.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -243,7 +243,7 @@ Pour tous les items :
    - sujet : Tu viens au foot samedi ?
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : interrogative · déclarative · impérative
    - réponse : interrogative
@@ -253,7 +253,7 @@ Pour tous les items :
    - sujet : Range ton sac avant de partir.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : impérative · déclarative · interrogative
    - réponse : impérative
@@ -263,7 +263,7 @@ Pour tous les items :
    - sujet : Je me demande où est mon stylo.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : déclarative · interrogative · impérative
    - réponse : déclarative
@@ -273,7 +273,7 @@ Pour tous les items :
    - sujet : Ne cours pas dans le couloir !
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : impérative · déclarative · interrogative
    - réponse : impérative
@@ -283,7 +283,7 @@ Pour tous les items :
    - sujet : Où as-tu rangé la télécommande ?
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Quel est le type de cette phrase ?
    - choix : interrogative · impérative · déclarative
    - réponse : interrogative
@@ -404,7 +404,7 @@ Pour tous les items :
    - sujet : Il pleut, nous restons à la maison.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : juxtaposition · coordination · subordination
    - réponse : juxtaposition
@@ -414,7 +414,7 @@ Pour tous les items :
    - sujet : J’ai faim, mais le repas tarde.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : coordination · juxtaposition · subordination
    - réponse : coordination
@@ -424,7 +424,7 @@ Pour tous les items :
    - sujet : Je mets mon manteau parce qu’il gèle.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : subordination · coordination · juxtaposition
    - réponse : subordination
@@ -434,7 +434,7 @@ Pour tous les items :
    - sujet : Le chien aboie quand le facteur passe.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : subordination · juxtaposition · coordination
    - réponse : subordination
@@ -444,7 +444,7 @@ Pour tous les items :
    - sujet : Tu viens avec nous ou tu restes ici ?
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : coordination · subordination · juxtaposition
    - réponse : coordination
@@ -454,7 +454,7 @@ Pour tous les items :
    - sujet : Le réveil sonne ; je saute du lit.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - question : Comment les deux propositions sont-elles reliées ?
    - choix : juxtaposition · subordination · coordination
    - réponse : juxtaposition

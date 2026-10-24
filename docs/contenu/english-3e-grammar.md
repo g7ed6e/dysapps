@@ -43,7 +43,7 @@ Pour tous les items :
    - sujet : I have lived here … ten years.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : for · since · ago
    - réponse : for
    - explication : ten years est une durée → for.
@@ -51,7 +51,7 @@ Pour tous les items :
    - sujet : She has been ill … Monday.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : since · for · ago
    - réponse : since
    - explication : Monday est un point de départ → since.
@@ -59,7 +59,7 @@ Pour tous les items :
    - sujet : We have known each other … 2019.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : since · for · ago
    - réponse : since
    - explication : 2019 est un point de départ → since.
@@ -67,7 +67,7 @@ Pour tous les items :
    - sujet : They have been married … a long time.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : for · since · ago
    - réponse : for
    - explication : a long time est une durée → for.
@@ -75,7 +75,7 @@ Pour tous les items :
    - sujet : I saw him two days … .
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : ago · for · since
    - réponse : ago
    - explication : two days ago = il y a deux jours (avec le prétérit saw).
@@ -83,7 +83,7 @@ Pour tous les items :
    - sujet : He has played the guitar … he was six.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : since · for · ago
    - réponse : since
    - explication : he was six est un point de départ → since.
@@ -91,7 +91,7 @@ Pour tous les items :
    - sujet : I have waited … twenty minutes!
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : for · since · ago
    - réponse : for
    - explication : twenty minutes est une durée → for.
@@ -99,7 +99,7 @@ Pour tous les items :
    - sujet : She moved to London three years … .
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : ago · for · since
    - réponse : ago
    - explication : three years ago = il y a trois ans (avec le prétérit moved).

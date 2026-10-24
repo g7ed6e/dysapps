@@ -73,7 +73,7 @@
       "explanation": "Rien que la virgule entre « Il pleut » et « nous restons à la maison » : les propositions sont juxtaposées.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -104,7 +104,7 @@
       "explanation": "Il y a une virgule, mais aussi le mot « mais », qui relie les deux propositions : c’est une coordination. La juxtaposition, c’est une virgule seule.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -135,7 +135,7 @@
       "explanation": "Les mots « parce que » (ici « parce qu’ ») relient les propositions : c’est une subordination. Le mot « car » dirait aussi la cause, mais avec « car », ce serait une coordination.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -166,7 +166,7 @@
       "explanation": "Le mot « quand » relie les deux propositions, « Le chien aboie » et « le facteur passe » : c’est une subordination.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -197,7 +197,7 @@
       "explanation": "Le mot « ou » relie les deux propositions, « Tu viens avec nous » et « tu restes ici » : c’est une coordination, comme avec et, mais, donc, car.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -228,7 +228,7 @@
       "explanation": "Un point-virgule sépare « Le réveil sonne » et « je saute du lit », sans mot pour les relier : les propositions sont juxtaposées.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -20,7 +20,7 @@
       "explanation": "Le car est-il arrivé ? On répond oui ou non : la question est totale. Elle commence par « si ».",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -48,7 +48,7 @@
       "explanation": "Pourquoi ris-tu ? On ne répond pas par oui ou non, mais par une raison : la question est partielle, et porte sur la cause.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -76,7 +76,7 @@
       "explanation": "Quand le cours commence-t-il ? On répond par un moment : la question est partielle.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

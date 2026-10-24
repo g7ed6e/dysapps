@@ -46,7 +46,7 @@
       "explanation": "Le Sahara couvre le nord de l’Afrique. Le désert de Gobi, lui, est en Asie.",
       "gesture": "placer",
       "shows": "le Sahara",
-      "shortInstruction": "Pose le panier devant sa porte.",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

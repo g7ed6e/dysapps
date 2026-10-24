@@ -47,7 +47,7 @@
       "explanation": "12 est un nombre : on peut le comparer ou faire un calcul avec. Un booléen ne vaut que vrai ou faux.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -104,7 +104,7 @@
       "explanation": "Le casier est fermé ou ne l’est pas : la donnée vaut vrai ou faux, c’est un booléen. Même écrit en lettres, « vrai » est ici une des deux valeurs d’un booléen.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

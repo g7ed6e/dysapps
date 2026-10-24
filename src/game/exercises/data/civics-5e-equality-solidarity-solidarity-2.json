@@ -104,7 +104,7 @@
       "explanation": "L’Union européenne et des secouristes d’autres pays aident : c’est une solidarité à l’échelle européenne.",
       "gesture": "placer",
       "shows": "l’argent de l’Union européenne pour reconstruire après un séisme",
-      "shortInstruction": "Pose le panier devant sa porte.",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

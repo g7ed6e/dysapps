@@ -26,7 +26,7 @@
       "explanation": "« Paul l’avait écrite » fonctionne : c’est « l’a ». « l’ », c’est la lettre : elle est placée avant, donc on écrit écrite, avec un e.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -55,7 +55,7 @@
       "explanation": "« la boîte » : « la » est devant le nom boîte. On ne peut pas dire « pose l’avait boîte ».",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -84,7 +84,7 @@
       "explanation": "« Mon sac est ici » fonctionne : c’est « là », l’endroit, avec un accent.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -113,7 +113,7 @@
       "explanation": "« Le vent l’avait ouverte » fonctionne : c’est « l’a ». « l’ », c’est la porte : elle est placée avant, donc on écrit ouverte, avec un e.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -142,7 +142,7 @@
       "explanation": "« Léa l’avait chante » ne veut rien dire : c’est « la », devant le verbe chante. « la » remplace la chanson.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -171,7 +171,7 @@
       "explanation": "« Maman l’avait lavée » fonctionne : c’est « l’a ». « l’ », c’est ta veste : elle est placée avant, donc on écrit lavée, avec un e.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -200,7 +200,7 @@
       "explanation": "« Viens ici » fonctionne : c’est « là », l’endroit, avec un accent.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -229,7 +229,7 @@
       "explanation": "« Inès l’avait prise » fonctionne : c’est « l’a ». « l’ », c’est la photo : elle est placée avant, donc on écrit prise.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

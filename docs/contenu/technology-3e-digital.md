@@ -456,7 +456,7 @@ Pour tous les items :
    - sujet : Âge : 12
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : mot · nombre · booléen
    - réponse : nombre
    - indice : Relis la ligne « Le type d’une donnée » du rappel.
@@ -472,7 +472,7 @@ Pour tous les items :
    - sujet : Le casier est fermé : vrai
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : mot · nombre · booléen
    - réponse : booléen
    - indice : Combien de valeurs peut prendre cette donnée ?

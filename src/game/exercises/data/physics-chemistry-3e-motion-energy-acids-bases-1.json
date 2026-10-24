@@ -21,7 +21,7 @@
       "explanation": "Le pH 2 est plus petit que 7 : le jus de citron est acide.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -53,7 +53,7 @@
       "explanation": "Un pH égal à 7, c’est une solution neutre, ni acide ni basique.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -85,7 +85,7 @@
       "explanation": "Le pH 10 est plus grand que 7 : l’eau savonneuse est basique.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

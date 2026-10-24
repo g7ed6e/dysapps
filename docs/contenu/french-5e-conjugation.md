@@ -319,7 +319,7 @@ Pour tous les items :
    - sujet : Tu ranges ta chambre.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Tu ranges ta chambre. »
    - choix : indicatif · impératif
    - réponse : indicatif
@@ -329,7 +329,7 @@ Pour tous les items :
    - sujet : Range ta chambre !
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Range ta chambre ! »
    - choix : indicatif · impératif
    - réponse : impératif
@@ -339,7 +339,7 @@ Pour tous les items :
    - sujet : Nous partons tôt.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Nous partons tôt. »
    - choix : indicatif · impératif
    - réponse : indicatif
@@ -349,7 +349,7 @@ Pour tous les items :
    - sujet : Partons tôt !
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Partons tôt ! »
    - choix : indicatif · impératif
    - réponse : impératif
@@ -359,7 +359,7 @@ Pour tous les items :
    - sujet : Écoutez bien la consigne.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Écoutez bien la consigne. »
    - choix : indicatif · impératif
    - réponse : impératif
@@ -369,7 +369,7 @@ Pour tous les items :
    - sujet : Vous écoutez la radio.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Vous écoutez la radio. »
    - choix : indicatif · impératif
    - réponse : indicatif
@@ -379,7 +379,7 @@ Pour tous les items :
    - sujet : Va au tableau, Léo.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Va au tableau, Léo. »
    - choix : indicatif · impératif
    - réponse : impératif
@@ -389,7 +389,7 @@ Pour tous les items :
    - sujet : Léo va au tableau.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : « Léo va au tableau. »
    - choix : indicatif · impératif
    - réponse : indicatif
@@ -533,7 +533,7 @@ Pour tous les items :
    - sujet : Un triangle a trois côtés.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Un triangle a trois côtés. Que dit ce présent ?
    - choix : toujours vrai · maintenant · habitude
    - réponse : toujours vrai
@@ -543,7 +543,7 @@ Pour tous les items :
    - sujet : Chut, le bébé dort !
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Chut, le bébé dort ! Que dit ce présent ?
    - choix : maintenant · habitude · toujours vrai
    - réponse : maintenant
@@ -553,7 +553,7 @@ Pour tous les items :
    - sujet : Le mercredi, je vais au judo.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Le mercredi, je vais au judo. Que dit ce présent ?
    - choix : habitude · toujours vrai · maintenant
    - réponse : habitude

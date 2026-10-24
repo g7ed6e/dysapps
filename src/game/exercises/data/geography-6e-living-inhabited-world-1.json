@@ -101,7 +101,7 @@
       "explanation": "Rotterdam est le premier port d’Europe, au bord de la mer du Nord.",
       "gesture": "placer",
       "shows": "Rotterdam",
-      "shortInstruction": "Pose le panier devant sa porte.",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

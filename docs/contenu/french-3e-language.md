@@ -396,7 +396,7 @@ Pour tous les items :
    - sujet : une bicoque
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Le vieux bâtiment était devenu une bicoque où personne n’entrait plus. Quelle image donne le mot « bicoque » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : péjoratif
@@ -406,7 +406,7 @@ Pour tous les items :
    - sujet : une demeure
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Au fond du jardin se dressait une demeure élégante, aux volets bleus. Quelle image donne le mot « demeure » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : mélioratif
@@ -416,7 +416,7 @@ Pour tous les items :
    - sujet : la maison
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : La maison a trois chambres et un garage. Quelle image donne le mot « maison » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : neutre
@@ -426,7 +426,7 @@ Pour tous les items :
    - sujet : un chauffard
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Un chauffard a traversé le carrefour sans s’arrêter au feu rouge. Quelle image donne le mot « chauffard » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : péjoratif
@@ -436,7 +436,7 @@ Pour tous les items :
    - sujet : un destrier
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Le chevalier sauta sur son destrier et partit au galop. Quelle image donne le mot « destrier » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : mélioratif
@@ -446,7 +446,7 @@ Pour tous les items :
    - sujet : le conducteur
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Le conducteur s’arrête au feu rouge et laisse passer les piétons. Quelle image donne le mot « conducteur » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : neutre
@@ -456,7 +456,7 @@ Pour tous les items :
    - sujet : un relent
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Un relent de poisson flottait dans la cuisine. Quelle image donne le mot « relent » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : péjoratif
@@ -466,7 +466,7 @@ Pour tous les items :
    - sujet : un parfum
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - lu : Un parfum de lilas montait du jardin. Quelle image donne le mot « parfum » ?
    - choix : mélioratif · péjoratif · neutre
    - réponse : mélioratif

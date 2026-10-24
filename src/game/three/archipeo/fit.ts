@@ -14,9 +14,12 @@ export function overflows(box: Measured): boolean {
   return box.scrollHeight > box.clientHeight + 1 || box.scrollWidth > box.clientWidth + 1;
 }
 
-/** Un mot est coupé quand une étiquette de réponse affichée est plus étroite que son texte. */
-export function wordsCut(labels: ArrayLike<Pick<Measured, 'clientWidth' | 'scrollWidth'>>): boolean {
-  return Array.from(labels).some((l) => l.clientWidth > 0 && l.scrollWidth > l.clientWidth + 1);
+/**
+ * Un mot est coupé quand une étiquette de réponse affichée est plus étroite que son texte, ou, pour une étiquette qui
+ * passe à la ligne (une caisse à ranger, GD-26), plus basse que ses lignes.
+ */
+export function wordsCut(labels: ArrayLike<Pick<Measured, 'clientWidth' | 'scrollWidth'> & Partial<Pick<Measured, 'clientHeight' | 'scrollHeight'>>>): boolean {
+  return Array.from(labels).some((l) => l.clientWidth > 0 && (l.scrollWidth > l.clientWidth + 1 || (l.scrollHeight ?? 0) > (l.clientHeight ?? 0) + 1));
 }
 
 /**

@@ -44,7 +44,7 @@ Pour tous les items :
    - sujet : Un glaçon devient liquide
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : solidification · fusion · vaporisation
    - réponse : fusion
    - indice : Il était solide, il devient liquide.
@@ -53,7 +53,7 @@ Pour tous les items :
    - sujet : Un jus devient solide
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : fusion · liquéfaction · solidification
    - réponse : solidification
    - indice : Il était liquide, il devient solide.
@@ -81,7 +81,7 @@ Pour tous les items :
    - sujet : La vapeur devient liquide
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : liquéfaction · fusion · solidification
    - réponse : liquéfaction
    - indice : Elle était gaz, elle devient liquide.

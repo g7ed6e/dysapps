@@ -46,7 +46,7 @@
       "explanation": "Mesurer la température, c’est prendre l’information : le capteur l’acquiert.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -101,7 +101,7 @@
       "explanation": "Afficher, c’est donner l’information à la personne : l’écran la communique.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

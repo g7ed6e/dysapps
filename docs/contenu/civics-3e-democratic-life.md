@@ -48,7 +48,7 @@ Pour tous les items :
    - sujet : Voter les lois
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : exécutif · judiciaire · législatif
    - réponse : législatif
    - indice : Relis la deuxième ligne du rappel.
@@ -57,7 +57,7 @@ Pour tous les items :
    - sujet : Juger
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : judiciaire · législatif · exécutif
    - réponse : judiciaire
    - indice : Relis l’avant-dernière ligne du rappel.
@@ -73,7 +73,7 @@ Pour tous les items :
    - sujet : Le président et le gouvernement
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : législatif · judiciaire · exécutif
    - réponse : exécutif
    - indice : Relis la quatrième ligne du rappel.
@@ -191,7 +191,7 @@ Pour tous les items :
    - sujet : L’eau bout à 100 degrés
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : une opinion · un savoir · une croyance
    - réponse : un savoir
    - indice : Peut-on le vérifier par une expérience ?
@@ -200,7 +200,7 @@ Pour tous les items :
    - sujet : Le meilleur sport, c’est le basket
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : une opinion · un savoir · une croyance
    - réponse : une opinion
    - indice : Tout le monde est-il obligé d’être d’accord ?
@@ -209,7 +209,7 @@ Pour tous les items :
    - sujet : Ce porte-clés me porte bonheur
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : un savoir · une opinion · une croyance
    - réponse : une croyance
    - indice : Peut-on prouver qu’un objet porte bonheur ?

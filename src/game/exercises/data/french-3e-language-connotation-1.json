@@ -21,7 +21,7 @@
       "explanation": "« Bicoque » désigne une maison, avec une image de maison pauvre et mal tenue : il est péjoratif. Le mot neutre serait « maison ».",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -50,7 +50,7 @@
       "explanation": "« Demeure » désigne une maison, avec une image de grande et belle maison : il est mélioratif.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -79,7 +79,7 @@
       "explanation": "Ici, « maison » donne son sens sans rien ajouter : la phrase décrit, elle ne juge pas. Le mot est neutre.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -108,7 +108,7 @@
       "explanation": "« Chauffard » désigne un conducteur, avec un jugement : il conduit mal et met les autres en danger. Il est péjoratif.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -137,7 +137,7 @@
       "explanation": "« Destrier » désigne un cheval, avec l’image d’un noble cheval de chevalier : il est mélioratif.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -166,7 +166,7 @@
       "explanation": "« Conducteur » dit seulement qui conduit : il n’ajoute aucune image. Il est neutre.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -195,7 +195,7 @@
       "explanation": "« Relent » désigne une odeur, avec l’image d’une odeur mauvaise qui reste : il est péjoratif.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -224,7 +224,7 @@
       "explanation": "« Parfum » désigne une odeur, avec l’image d’une odeur agréable : il est mélioratif.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

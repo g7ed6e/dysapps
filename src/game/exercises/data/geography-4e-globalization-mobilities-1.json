@@ -75,7 +75,7 @@
       "explanation": "Un réfugié fuit la guerre ou les persécutions : il cherche un refuge dans un autre pays.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -106,7 +106,7 @@
       "explanation": "Le travailleur saisonnier vient pour une saison, puis repart. Le touriste voyage pour ses loisirs ; le réfugié fuit la guerre.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

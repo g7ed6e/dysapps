@@ -20,7 +20,7 @@
       "explanation": "Le match ne fait rien, il est arbitré : voix passive, avec être et le participe « arbitré ». « Par une jeune femme » dit qui arbitre.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -48,7 +48,7 @@
       "explanation": "Les élèves font l’action de préparer : voix active. Au passif, on dirait : une exposition est préparée par les élèves.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

@@ -47,7 +47,7 @@
       "explanation": "Tokyo est au Japon, en Asie : c’est sa capitale.",
       "gesture": "placer",
       "shows": "Tokyo",
-      "shortInstruction": "Pose le panier devant sa porte.",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -77,7 +77,7 @@
       "explanation": "Mumbai est en Inde, en Asie du Sud. C’est l’une des plus grandes métropoles du monde.",
       "gesture": "placer",
       "shows": "Mumbai",
-      "shortInstruction": "Pose le panier devant sa porte.",
+      "shortInstruction": "Pose le panier à sa porte.",
       "aid": {
         "kind": "rule-card",
         "props": {

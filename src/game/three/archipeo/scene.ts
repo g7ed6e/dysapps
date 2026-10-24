@@ -3599,7 +3599,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // La scène de l'item et les objets des réponses : un seul maillage.
     const merged = new FacetBuilder();
     merged.append(facets.still);
-    if (!q.answersOut)
+    // Pendant un réglage (GD-26), aucun objet de réponse : trois objets semblables se liraient comme trois choix.
+    if (!q.answersOut && !item.dial)
       merged.append(
         facingAnswerObjects(
           place,

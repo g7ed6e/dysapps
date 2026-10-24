@@ -303,7 +303,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // Une scénette dont le panneau déborderait s'ouvre en « Vue simple », une fois (sur un écran bas, après l'avoir
     // essayée en pleine largeur) : la consigne y est entière, et c'est le panneau qui défile (« Valider » reste dans sa
     // bande, en bas). Revenu à la scène, l'élève garde son choix et les crans d'avant jusqu'à la fin de la visite.
-    const opensSimple = grandTexte || !layout.low;
+    // Dans la bulle (GD-26), sur un téléphone aussi : « Vue simple » ouverte d'emblée plutôt que son offre seule, une
+    // bulle sans fiche ni caisse (relecture UX UI de la PR 2).
+    const opensSimple = grandTexte || !layout.low || bulle;
     const triedFullWidth = !layout.low || !intro || widen >= WIDEN_FULL;
     if (opensSimple && !autoSimple.current && !column.classList.contains('has-sheet') && triedFullWidth) {
       autoSimple.current = true;

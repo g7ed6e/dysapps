@@ -180,7 +180,7 @@ Pour tous les items :
    - sujet : Une lampe grille, tout s’éteint
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : série · dérivation · court-circuit
    - réponse : série
    - indice : Relis la ligne « En série : une seule boucle » du rappel.
@@ -189,7 +189,7 @@ Pour tous les items :
    - sujet : Une lampe grille, les autres brillent
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : série · court-circuit · dérivation
    - réponse : dérivation
    - indice : Relis la ligne « En dérivation » du rappel.
@@ -323,7 +323,7 @@ Pour tous les items :
    - sujet : Le bois brûle
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : un changement d’état · un mélange · une transformation chimique
    - réponse : une transformation chimique
    - indice : La cendre, c’était là avant ?
@@ -332,7 +332,7 @@ Pour tous les items :
    - sujet : Le chocolat fond
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : un changement d’état · une transformation chimique · un mélange
    - réponse : un changement d’état
    - indice : Relis la ligne « Fondre » du rappel.
@@ -341,7 +341,7 @@ Pour tous les items :
    - sujet : Le sucre dans le lait
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : une transformation chimique · un mélange · un changement d’état
    - réponse : un mélange
    - indice : Relis la ligne « Fondre » du rappel.

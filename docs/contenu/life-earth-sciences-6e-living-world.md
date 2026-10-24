@@ -45,7 +45,7 @@ Pour tous les items :
    - sujet : la chauve-souris
    - geste : ranger
    - scène : ailes, poils
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : oiseau · mammifère · insecte
    - réponse : mammifère
    - indice : Regarde ce qu’elle a sur le corps : des poils ou des plumes ?
@@ -54,7 +54,7 @@ Pour tous les items :
    - sujet : le manchot
    - geste : ranger
    - scène : plumes, ailes courtes
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : poisson · mammifère · oiseau
    - réponse : oiseau
    - indice : Quel groupe a des plumes ?
@@ -63,7 +63,7 @@ Pour tous les items :
    - sujet : la baleine
    - geste : ranger
    - scène : mamelles, nageoires
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : poisson · oiseau · mammifère
    - réponse : mammifère
    - indice : Le lieu de vie ne compte pas. Que possède-t-elle ?

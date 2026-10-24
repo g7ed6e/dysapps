@@ -21,7 +21,7 @@
       "explanation": "Une seule boucle : si une lampe grille, la boucle est coupée et tout s’éteint. Les lampes sont en série.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {
@@ -52,7 +52,7 @@
       "explanation": "Chaque lampe a sa boucle : si l’une grille, les autres brillent encore. Les lampes de la maison sont en dérivation.",
       "gesture": "ranger",
       "shows": "",
-      "shortInstruction": "Range chaque fiche dans sa caisse.",
+      "shortInstruction": "Range chaque fiche.",
       "aid": {
         "kind": "rule-card",
         "props": {

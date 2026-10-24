@@ -50,7 +50,7 @@ Pour tous les items :
 2. énoncé : Tokyo est la grande métropole du … .
    - geste : placer
    - scène : Tokyo
-   - consigne courte : Pose le panier devant sa porte.
+   - consigne courte : Pose le panier à sa porte.
    - choix : Japon · Brésil · Chine
    - réponse : Japon
    - indice : Tokyo est la capitale de ce pays.
@@ -58,7 +58,7 @@ Pour tous les items :
 3. énoncé : Mumbai est une grande métropole. Elle est en … .
    - geste : placer
    - scène : Mumbai
-   - consigne courte : Pose le panier devant sa porte.
+   - consigne courte : Pose le panier à sa porte.
    - choix : Inde · Égypte · Brésil
    - réponse : Inde
    - indice : Son ancien nom est Bombay. Cherche le pays d’Asie.
@@ -192,7 +192,7 @@ Pour tous les items :
 2. énoncé : Le Sahara, le plus grand désert chaud du monde, se trouve en … .
    - geste : placer
    - scène : le Sahara
-   - consigne courte : Pose le panier devant sa porte.
+   - consigne courte : Pose le panier à sa porte.
    - choix : Asie · Amérique · Afrique
    - réponse : Afrique
    - indice : Il touche le Maroc, l’Algérie, l’Égypte.
@@ -342,7 +342,7 @@ Pour tous les items :
 4. énoncé : Rotterdam, aux Pays-Bas, est le premier port … .
    - geste : placer
    - scène : Rotterdam
-   - consigne courte : Pose le panier devant sa porte.
+   - consigne courte : Pose le panier à sa porte.
    - choix : d’Europe · d’Afrique · d’Asie
    - réponse : d’Europe
    - indice : Les Pays-Bas sont au nord de la France.

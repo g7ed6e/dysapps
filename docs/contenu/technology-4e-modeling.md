@@ -183,7 +183,7 @@ Pour tous les items :
    - sujet : Capteur du thermostat
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : traite · acquiert · communique
    - réponse : acquiert
    - indice : Relis la ligne « Acquérir » du rappel.
@@ -199,7 +199,7 @@ Pour tous les items :
    - sujet : Écran de la montre
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : acquiert · traite · communique
    - réponse : communique
    - indice : L’écran montre l’information à la personne.
@@ -261,7 +261,7 @@ Pour tous les items :
    - sujet : Carte du feu de circulation
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : acquiert · traite · communique
    - réponse : traite
    - indice : Décider, c’est quelle fonction ?
@@ -277,7 +277,7 @@ Pour tous les items :
    - sujet : Détecteur de fumée qui sonne
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - choix : communique · acquiert · traite
    - réponse : communique
    - indice : Le son prévient les gens : quelle fonction ?

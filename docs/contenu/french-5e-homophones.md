@@ -112,7 +112,7 @@ Pour tous les items :
    - sujet : Je … ai prêté mes feutres.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Je … ai prêté mes feutres.
    - choix : leur · leurs · l’heure
    - réponse : leur
@@ -122,7 +122,7 @@ Pour tous les items :
    - sujet : Les voisins promènent … chiens.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Les voisins promènent … chiens.
    - choix : leur · leurs · l’heure
    - réponse : leurs
@@ -132,7 +132,7 @@ Pour tous les items :
    - sujet : Mes cousins ont vendu … maison.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Mes cousins ont vendu … maison.
    - choix : leur · leurs · l’heure
    - réponse : leur
@@ -186,7 +186,7 @@ Pour tous les items :
    - sujet : Cette lettre, Paul … écrite hier.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Cette lettre, Paul … écrite hier.
    - choix : la · l’a · là
    - réponse : l’a
@@ -196,7 +196,7 @@ Pour tous les items :
    - sujet : Pose … boîte sur la table.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Pose … boîte sur la table.
    - choix : la · l’a · là
    - réponse : la
@@ -206,7 +206,7 @@ Pour tous les items :
    - sujet : Mon sac est …, sous la chaise.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Mon sac est …, sous la chaise.
    - choix : la · l’a · là
    - réponse : là
@@ -216,7 +216,7 @@ Pour tous les items :
    - sujet : La porte ? Le vent … ouverte.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : La porte ? Le vent … ouverte.
    - choix : la · l’a · là
    - réponse : l’a
@@ -226,7 +226,7 @@ Pour tous les items :
    - sujet : Cette chanson, Léa … chante souvent.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Cette chanson, Léa … chante souvent.
    - choix : la · l’a · là
    - réponse : la
@@ -236,7 +236,7 @@ Pour tous les items :
    - sujet : Ta veste ? Maman … lavée hier.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Ta veste ? Maman … lavée hier.
    - choix : la · l’a · là
    - réponse : l’a
@@ -246,7 +246,7 @@ Pour tous les items :
    - sujet : Viens …, près de moi.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Viens …, près de moi.
    - choix : la · l’a · là
    - réponse : là
@@ -256,7 +256,7 @@ Pour tous les items :
    - sujet : Cette photo, Inès … prise à la mer.
    - geste : ranger
    - scène : ""
-   - consigne courte : Range chaque fiche dans sa caisse.
+   - consigne courte : Range chaque fiche.
    - énoncé : Cette photo, Inès … prise à la mer.
    - choix : la · l’a · là
    - réponse : l’a

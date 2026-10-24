@@ -32,7 +32,7 @@ Pour tous les items :
 ### Niveau 1 · `english-6e-grammar-to-be-1`
 
 Pour tous les items :
-- consigne courte : Range chaque fiche dans sa caisse.
+- consigne courte : Range chaque fiche.
 - geste : ranger
 - scène : ""
 - choix : am · is · are
@@ -125,7 +125,7 @@ Pour tous les items :
 ### Niveau 1 · `english-6e-grammar-have-got-1`
 
 Pour tous les items :
-- consigne courte : Range chaque fiche dans sa caisse.
+- consigne courte : Range chaque fiche.
 - geste : ranger
 - scène : ""
 - choix : have · has
