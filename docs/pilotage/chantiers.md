@@ -86,8 +86,8 @@ Demandé par le mainteneur le 12 octobre 2026 : challenger l'univers d'Archipéo
 
 | Étape | État | Suite |
 | --- | --- | --- |
-| Les quatre niveaux en monde continu | Construits derrière `?monde=ouvert` (GD-20, GD-22, GD-24, GD-25) : habitants à métier en 3D, sans Gardien ni Veilleur ; Zia et Malo guides des scénettes du 6e (GD-23, lot 1) ; le Rafiot au quai de la Crique (4e), le zeppelin au 3e, les pièces rendues au Fanal | Le Rafiot à quai au 6e et au 5e, les veillées, l'équipage qui marche (GD-23, lots 2 à 4) ; la radio et le naturaliste en 3D |
-| La fiche du cœur du lieu | À écrire | Ce que l'élève voit de la pièce qui manque, et le repère de la prochaine action ; le premier visage d'un Ferrailleur |
+| Les quatre niveaux en monde continu | En grande partie construits derrière `?monde=ouvert` (GD-20, GD-22, GD-24, GD-25) : habitants à métier en 3D, sans Gardien ni Veilleur ; Zia et Malo guides des scénettes du 6e (GD-23, lot 1) ; le Rafiot au quai de la Crique (4e), le zeppelin au 3e, les pièces rendues au Fanal | Le Rafiot à quai au 6e et au 5e, les veillées, l'équipage qui marche (GD-23, lots 2 à 4) ; la radio et le naturaliste en 3D |
+| La fiche du cœur du lieu | À écrire | Consigner le signe de l'absence déjà construit au 5e et au 4e, décider ce qu'il devient au 6e, et le repère de la prochaine action ; le premier visage d'un Ferrailleur |
 | Inscrire l'équipage, le cœur du lieu et les Ferrailleurs au cadrage d'Archipéo (la grille d'Archipéo garde d'ici là ses créatures et ses Gardiens) | Attend le mainteneur | Après la fiche du cœur du lieu |
 
 ### Les nuages qui ne cachent rien
