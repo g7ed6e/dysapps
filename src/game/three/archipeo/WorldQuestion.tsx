@@ -195,6 +195,11 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const [finished, setFinished] = useState(false);
   // La réussite de la mission (une étoile au moins) : dans une scénette posée, l'objet de la réussite va à sa place.
   const [success, setSuccess] = useState(false);
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : le nombre de bonnes réponses de la scénette, que la scène traduit en
+  // objets posés sur le monument ; jamais sauvegardé, jamais affiché, jamais dit ; remis à zéro à « Rejouer » et à
+  // chaque mission ; une révision ne pose rien (comme elle ne remet rien en marche).
+  const [responded, setResponded] = useState(0);
+  useEffect(() => setResponded(0), [place, mission]);
   // Un mot de réponse coupé dans son étiquette (les cloches en grand texte) : on ne répond que dans « Vue simple »,
   // proposé d'emblée, la voix gardée ; les étiquettes ne passent jamais sur deux rangées.
   const [answersOut, setAnswersOut] = useState(false);
@@ -441,7 +446,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   }, [simple, finished, loaded]);
   useEffect(() => {
     if (plain || !size.w || !size.h || !item || finished) return;
-    const shown = world.question({ place, mission, layout, item, answersOut: objectsOut || framing });
+    const shown = world.question({ place, mission, layout, item, answersOut: objectsOut || framing, responded: revision ? 0 : responded });
     // Un repère dont le point sort de la scène visible (sous le panneau, au bord de l'écran) ne se montre pas.
     const r = box.current?.querySelector('.quiz.in-world')?.getBoundingClientRect();
     const origin = box.current?.getBoundingClientRect();
@@ -453,7 +458,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // cachés jusqu'à la première réponse, lot L5).
     // La caméra tournée à deux doigts pendant la scénette (« caméra libre ») : les repères suivent le décor.
     return world.onSceneTurn((labels) => setLabels(visible(labels)));
-  }, [world, place, mission, plain, layout, item, size, finished, intro, objectsOut, framing]);
+  }, [world, place, mission, plain, layout, item, size, finished, intro, objectsOut, framing, revision, responded]);
   // Un repère de la scène ne passe jamais sous les boutons du haut (« Vue simple », la pause, à droite d'elle) : sur un
   // téléphone couché, l'entier du haut de la jauge les touchait (relecture du lot L5, consultant UX UI). Il descend alors
   // sous son point, ou se cache ; mesuré une fois par pose des repères, jamais à chaque image.
@@ -844,9 +849,13 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
                 setSuccess(!revision && completion.stars >= 1);
                 setFinished(true);
               }}
+              onRound={(round) => {
+                if (round.correct && !revision) setResponded((n) => n + 1);
+              }}
               onReplay={() => {
                 setFinished(false);
                 setSuccess(false);
+                setResponded(0);
                 setIntroDone(false);
                 setWiden(0);
                 setSheetWide(false);

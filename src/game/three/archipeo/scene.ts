@@ -60,6 +60,7 @@ import { PAPER_COLOR } from '../../world/continu/printworks';
 import { assemblyScene, portFacets, portHeading, portMapPoint, portRooflines, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { HELD_LIFT, SALT_PUMP, answerScale, facingAnswerObjects, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
 import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
+import { RESPOND_MAX, RESPOND_SECONDS, type RespondMove, respondMove, respondPlaced, responds } from '../../world/continu/respond';
 import {
   EXIT_VIEW,
   LANTERN,
@@ -413,6 +414,12 @@ interface QuestionRequest {
    * lot 5 du 5e : les miches du Hameau en portrait).
    */
   answersOut?: boolean;
+  /**
+   * Le monde qui répond (GD-28, lot 4 de GD-27) : le nombre de bonnes réponses de la scénette en cours. Quand il monte
+   * d'un cran, l'objet de plus descend sur le monument dès « Valider », à la place de la réaction du témoin de l'item,
+   * en un mouvement lent, et reste jusqu'à la sortie de la scénette ; un lieu sans objet (`responds`) ne montre rien.
+   */
+  responded?: number;
 }
 
 /** Ce que la pose d'un pont dit à la page : le toc (toutes ses parties posées), puis sa fin (la brume levée : la phrase). */
@@ -3308,6 +3315,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   reactionMesh.visible = false;
   scene.add(still(itemMesh), reactionMesh);
   let reaction: { r: Reaction; start: number } | null = null;
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : les objets posés sont dans le maillage de l'item, et celui qui se pose
+  // descend dans le maillage de la réaction, libre là où le lieu a son objet (l'objet remplace la réaction du témoin,
+  // directeur artistique) : aucun appel de plus. Si une réaction joue quand même (le tri), l'objet se pose d'un coup.
+  // `itemFacets` : la scène de l'item sans les objets posés, pour y remettre le prochain.
+  let respond: { place: PlaceId; mission: string; count: number; shown: number; move: { start: number; m: RespondMove } | null } | null = null;
+  let itemFacets: Facets | null = null;
   function setGeometry(mesh: THREE.Mesh, f: Facets) {
     mesh.geometry.dispose();
     mesh.geometry = geometryOf(f);
@@ -3329,6 +3342,60 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     projected.set(p.x, p.y, p.z).project(camera);
     top3.set(p.x, p.y + h, p.z).project(camera);
     return ((top3.y - projected.y) / 2) * viewH;
+  };
+  /** Les objets posés du monde qui répond, avec la scène de l'item, dans son maillage. */
+  const showResponded = () => {
+    if (!itemFacets) return;
+    const posed = respond && respond.shown > 0 ? respondPlaced(respond.place, respond.shown) : null;
+    setGeometry(itemMesh, posed && posed.triangles ? mergeFacets([itemFacets, posed]) : itemFacets);
+    if (descent.active) itemMesh.visible = false;
+  };
+  /** L'objet en vol se pose d'un coup (un autre item, « Suivant » avant la fin, la sortie, le bilan) ; rien en vol : rien. */
+  const finishRespond = () => {
+    if (!respond?.move) return;
+    respond.move = null;
+    reactionMesh.visible = false;
+    respond.shown = respond.count;
+    showResponded();
+  };
+  /** L'objet qui se pose, à l'instant `t` : il descend dans le maillage de la réaction, puis rejoint les objets posés. */
+  const stepRespond = (t: number) => {
+    const move = respond?.move;
+    if (!move) return;
+    if (t < move.start) return;
+    const u = reduceMotion ? 1 : Math.min(1, (t - move.start) / RESPOND_SECONDS);
+    // Une descente droite qui ralentit à la fin (directeur artistique) : jamais un arc, qui est le geste des réactions.
+    const e = 1 - (1 - u) ** 3;
+    const { from, to, arc } = move.m;
+    reactionMesh.visible = true;
+    reactionMesh.position.set(from.x + (to.x - from.x) * e, from.y + (to.y - from.y) * e + arc * Math.sin(Math.PI * e), from.z + (to.z - from.z) * e);
+    if (u >= 1) finishRespond();
+  };
+  /**
+   * Le compte des bonnes réponses de la scénette (`QuestionRequest.responded`) : un cran de plus, l'objet suivant part
+   * (dès « Valider », pendant l'écran du résultat ; d'un coup avec « Réduire les animations ») ; une autre mission ou un compte qui retombe
+   * (« Rejouer »), tout s'efface ; le même compte, rien ne bouge.
+   */
+  const countResponded = (place: PlaceId, mission: string, responded: number | undefined) => {
+    const wanted = responds(place) ? Math.max(0, Math.min(RESPOND_MAX, Math.floor(responded ?? 0))) : 0;
+    if (!respond || respond.place !== place || respond.mission !== mission || wanted < respond.count) {
+      finishRespond();
+      respond = { place, mission, count: wanted, shown: wanted, move: null };
+      return;
+    }
+    if (wanted === respond.count) return;
+    finishRespond();
+    respond.count = wanted;
+    const m = respondMove(place, wanted - 1);
+    if (!m || reduceMotion || reaction) {
+      respond.shown = wanted;
+      return;
+    }
+    setGeometry(reactionMesh, m.facets);
+    reactionMesh.rotation.set(0, 0, 0);
+    reactionMesh.position.set(m.from.x, m.from.y, m.from.z);
+    respond.shown = wanted - 1;
+    respond.move = { start: performance.now() / 1000, m };
   };
   /** La réaction à l'instant `t` (en secondes) : sa place sur son arc ; finie, elle reste ou s'efface (elle reste toujours avec « Réduire les animations »). */
   const placeReaction = (t: number) => {
@@ -3530,6 +3597,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       itemShown = false;
       itemMesh.visible = false;
       reactionMesh.visible = false;
+      respond = null;
+      itemFacets = null;
       leaveScenette();
       keo.visible = true;
       ring.visible = true;
@@ -3639,10 +3708,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const seen = screenHeight(points[0] ?? spot, height);
     if (seen > 1) height *= layout.objectHeight / seen;
     const scale = answerScale(place, points, height);
+    // Le monde qui répond remplace l'objet témoin du C neutre là où il a son objet (la pirogue de la Mangrove reste au
+    // repos : deux mouvements à la suite se liraient comme deux réponses, directeur artistique, 30 octobre 2026).
+    const witness = item.answered && !(item.scene.kind === 'column' && responds(place));
     const facets = itemScene(
       place,
       item.scene,
-      item.answered,
+      witness,
       item.right.map((k) => points[k]).filter(Boolean),
       scale,
       posed,
@@ -3681,8 +3753,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const dialArt = item.dial ? placeArt(place)?.dial : undefined;
     const dialFoot = feet.get(place);
     if (item.dial && dialArt && dialFoot) merged.append(dialArt(dialFoot, item.dial));
-    setGeometry(itemMesh, merged.build());
-    itemShown = itemMesh.visible;
+    // Le monde qui répond : la scène de l'item, sans ses objets encore ; ils s'y posent une fois la réaction réglée. Un
+    // autre item (« Suivant » avant la fin du mouvement) : l'objet en vol se pose d'un coup.
+    itemFacets = merged.build();
+    if (!asked || asked.place !== place || asked.itemKey !== itemKey) finishRespond();
     if (descent.active) itemMesh.visible = false;
     const before = asked && asked.place === place && asked.itemKey === itemKey ? asked : null;
     const bin = moving !== null && sort ? sort.placed[moving] : null;
@@ -3721,6 +3795,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reaction = { r: facets.reaction, start: before?.answered ? -Infinity : performance.now() / 1000 };
       placeReaction(performance.now() / 1000);
     }
+    // Le monde qui répond : les objets déjà posés, avec la scène de l'item ; un cran de plus, le prochain part dans le
+    // maillage de la réaction, s'il est libre.
+    countResponded(place, q.mission, q.responded);
+    showResponded();
+    itemShown = itemMesh.visible;
     asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered, scene: item.scene, scale, sort };
     const labels = facets.labels.map((l) => {
       projected.set(l.at.x, l.at.y, l.at.z).project(camera);
@@ -3832,6 +3911,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const stepRemise = (t: number) => remiseRun.step(t);
   const scenetteEnd = (lit: boolean) => {
     if (!asked || !scenette) return;
+    // Le monde qui répond : l'objet en vol se pose ; les objets restent derrière le panneau du bilan, jusqu'à la sortie.
+    finishRespond();
     // Une scénette posée (les Quais, les Filets, les Écluses) : la scène reste ; à la réussite, le décor change, un
     // objet va à sa place, puis une lumière s'allume (environ 1,5 s ; l'état final tout de suite avec « Réduire les
     // animations »).
@@ -4541,6 +4622,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume.
       stepDescent(t);
       placeReaction(t);
+      stepRespond(t);
       stepFinale(t);
       stepLamp(t);
       if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);

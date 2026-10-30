@@ -25,6 +25,7 @@ import { rafiot6eFacets } from './rafiot6e';
 import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
+import { respondTriangles } from './respond';
 import type { ItemScene } from './questions';
 import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_3E, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
@@ -282,7 +283,9 @@ function scenetteCost(): { triangles: number; calls: number } {
   // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST);
   const guide = (p: PlaceId) => (guideOf(p) ? EQUIPIER_TRIANGLES + GUIDE_SHADOW_TRIANGLES : 0);
-  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES + guide(p)), assembly.pieces.triangles, assembly.made.triangles);
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés, huit au plus, dans le maillage de l'item ; celui qui
+  // se pose vole dans le maillage de la réaction, libre à sa place : aucun appel de plus.
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES + guide(p) + respondTriangles(p)), assembly.pieces.triangles, assembly.made.triangles);
   return { triangles, calls: 3 };
 }
 
@@ -574,7 +577,9 @@ function scenetteCost5e(): { triangles: number; calls: number } {
     const full = scenetteDecor(place, open).triangles;
     return hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_5E : full;
   };
-  const worst = Math.max(...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés dans le maillage de l'item, celui qui vole dans celui
+  // de la réaction, libre à sa place : aucun appel de plus.
+  const worst = Math.max(...places.map((p) => Math.max(decor(p, false), decor(p, true)) + respondTriangles(p)));
   // La scénette d'assemblage de la Lisière (lot 4), jamais en même temps qu'une autre : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST, LISIERE_SITE);
   return { triangles: Math.max(worst, assembly.pieces.triangles, assembly.made.triangles), calls: places.some(hasHabitantModel) ? 2 : 1 };
@@ -767,7 +772,9 @@ function questionCost4e(): { triangles: number; calls: number } {
 function scenetteCost4e(): { triangles: number; calls: number } {
   const places = PLAN_4E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
   const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E : scenetteDecor(place, open).triangles);
-  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés dans le maillage de l'item, celui qui vole dans celui
+  // de la réaction, libre à sa place : aucun appel de plus.
+  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true)) + respondTriangles(p)));
   return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
@@ -931,7 +938,9 @@ function questionCost3e(): { triangles: number; calls: number } {
 function scenetteCost3e(): { triangles: number; calls: number } {
   const places = PLAN_3E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
   const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_3E : scenetteDecor(place, open).triangles);
-  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés dans le maillage de l'item, celui qui vole dans celui
+  // de la réaction, libre à sa place : aucun appel de plus.
+  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true)) + respondTriangles(p)));
   return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 

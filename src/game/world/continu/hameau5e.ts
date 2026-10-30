@@ -23,6 +23,7 @@ import type { Vec2, Vec3 } from './geometry';
 import { rootArch } from './monteeSurroundings';
 import type { AddPiece, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_5E } from './plan5e';
+import { placeFrame, registerResponder } from './respond';
 import { tuft } from './surroundingsKit';
 import { standingHeight } from './terrain';
 import { heightAt5e } from './terrain5e';
@@ -796,3 +797,49 @@ export const HAMEAU: PlaceArt = {
 
 /** Le plus haut du Hameau : le haut du mât de racine, au-dessus de son pied (il reste sous la canopée). */
 export const HAMEAU_MAST_TOP = MAST.top;
+
+// ---------- Le monde qui répond : le Hameau (GD-28, lot 4 de GD-27) ----------
+
+/**
+ * Les bûches du four commun, l'objet que pose chaque bonne réponse (décision du directeur artistique du 30 octobre
+ * 2026) : une bûche d'une unité de long, assez grosse pour se lire de la caméra de la scénette, couchée le bout vers
+ * elle (ses cernes clairs se lisent), en un bûcher serré, trois par rang, deux rangs pleins et deux bûches en haut (le
+ * directeur artistique voulait un tas en triangle, quatre, trois, une : trop large entre la bouche et le boulanger une
+ * fois les bûches grossies), contre le tambour à l'est de la bouche, sous le linteau ; rien du côté ouest,
+ * où se pose la trace des pelles, rien dans la bouche (ce serait un contenant à remplir), jamais une miche (les miches
+ * sont les réponses) ni une lanterne (la trace de la guirlande). Chacun apporte sa bûche au four commun. Elle descend
+ * d'en haut sur la pile.
+ */
+const LOG = { r: 0.22, length: 1.0, z: FRONT_Z + 0.55 } as const;
+/** Les huit bûches, rangées en bûcher (trois par rang, deux rangs pleins, deux en haut) : leur place `[x, rang]`. */
+const LOG_PILE: readonly (readonly [number, number])[] = [
+  [0.9, 0],
+  [1.35, 0],
+  [1.8, 0],
+  [0.9, 1],
+  [1.35, 1],
+  [1.8, 1],
+  [1.12, 2],
+  [1.58, 2],
+];
+
+/** Une bûche, à l'origine, couchée le long de z, son milieu en 0 : six pans, ses deux bouts clairs. */
+function log(b: FacetBuilder): void {
+  b.drum({ x: 0, y: 0, z: -LOG.length / 2, pitch: Math.PI / 2 }, LOG.r, LOG.length, 6, C.log, C.logEnd);
+}
+
+registerResponder('hameau', () => {
+  const frame = placeFrame('hameau');
+  const c = frame(0, 0, 0);
+  const ground = groundNear(c, 1.4, LOG.z);
+  return {
+    spot(i) {
+      const [x, row] = LOG_PILE[i];
+      const at = frame(x, ground + LOG.r + row * (2 * LOG.r - 0.03), LOG.z);
+      return { at, from: { x: at.x, y: at.y + 0.8, z: at.z }, arc: 0 };
+    },
+    object(b) {
+      log(b);
+    },
+  };
+});

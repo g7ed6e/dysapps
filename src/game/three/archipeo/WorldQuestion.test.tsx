@@ -650,6 +650,26 @@ describe('Les lieux au décor neutre, dans la bulle (GD-26)', () => {
     await vi.waitFor(() => expect(last().item.answered).toBe(true));
   });
 
+  it('le monde qui répond compte une bonne réponse (GD-28, lot 4) ; jamais une correction après deux essais faux', async () => {
+    const user = await start('engine', 'energy-circuits');
+    expect(last().responded).toBe(0);
+    const { shown, answer } = await rightAnswer();
+    await user.click(answers()[shown.indexOf(answer)]);
+    await vi.waitFor(() => expect(last().responded).toBe(1));
+    expect(document.querySelector('.quiz-counter, .world-responded')).toBeNull();
+    // L'item suivant : le compte reste ; deux essais faux n'y ajoutent rien.
+    await user.click(document.querySelector<HTMLButtonElement>('.next-button')!);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    const next = await rightAnswer();
+    const wrong = next.shown.map((s, i) => (s === next.answer ? -1 : i)).filter((i) => i >= 0);
+    for (const i of wrong) {
+      if (document.querySelector('.next-button')) break;
+      await user.click(answers()[i]);
+    }
+    await vi.waitFor(() => expect(document.querySelector('.next-button')).not.toBeNull());
+    expect(last().responded).toBe(1);
+  });
+
   it('le témoin reste au repos après deux essais faux (la correction)', async () => {
     const user = await start('engine', 'energy-circuits');
     const { shown, answer } = await rightAnswer();
