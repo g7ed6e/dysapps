@@ -3,7 +3,7 @@
 // parties posées (`world.log`) ne garde que cent lignes : sans ce souvenir, deux lieux sortis du journal ne se
 // départageraient plus, et l'équipier changerait de lieu au chargement, ce que le référent dys écarte (un repère fixe).
 /** Les prénoms des équipiers qui ont un lieu dans le monde. */
-export const EQUIPAGE_SAVED_IDS = ['zia', 'malo'] as const;
+const EQUIPAGE_SAVED_IDS = ['zia', 'malo'] as const;
 export type EquipageSavedId = (typeof EQUIPAGE_SAVED_IDS)[number];
 
 /** Les lieux retenus, par équipier : des identifiants de lieu (le monde dit s'ils valent encore), rien d'autre. */
