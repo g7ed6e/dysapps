@@ -19,12 +19,13 @@ const ENTRAIDE = [
 ];
 const REVISION = ['- entrée : Tu revois {questions}.', '- fin : Tu as revu {questions}.', '- rappel : On revoit quelques questions ensemble.'];
 const VEILLEES = ['- feu éteint : {Feu} est éteint.', '- feu allumé : {Feu} est allumé.', '- embarquement : {Équipier} monte à bord.'];
-const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, '', '## L’entraide', '', ...ENTRAIDE, '', '## La révision', '', ...REVISION, '', '## Les veillées', '', ...VEILLEES, ''].join('\n');
+const EQUIPAGE = ['- Zia : Je serre un écrou.', '- Malo : Je range le registre.'];
+const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, '', '## L’entraide', '', ...ENTRAIDE, '', '## La révision', '', ...REVISION, '', '## Les veillées', '', ...VEILLEES, '', '## L’équipage', '', ...EQUIPAGE, ''].join('\n');
 const lire = (...l) => () => lireMondeOuvert(md(...l), 'monde-ouvert.md');
 const remplacer = (avant, apres) => BONNES.map((l) => (l.startsWith(`- ${avant} :`) ? apres : l));
 
 describe('docs/contenu/monde-ouvert.md', () => {
-  it('lit les seize formes de ses quatre sections, dans l’ordre du jeu', () => {
+  it('lit les dix-huit formes de ses cinq sections, dans l’ordre du jeu', () => {
     expect(lire(...BONNES)()).toEqual({
       ask: 'Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.',
       askAssembled: 'Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.',
@@ -42,6 +43,8 @@ describe('docs/contenu/monde-ouvert.md', () => {
       fireOut: '{Feu} est éteint.',
       fireLit: '{Feu} est allumé.',
       boarding: '{Équipier} monte à bord.',
+      equipageZia: 'Je serre un écrou.',
+      equipageMalo: 'Je range le registre.',
     });
   });
 

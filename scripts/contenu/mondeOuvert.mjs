@@ -26,6 +26,7 @@
 //   - rappel : On revoit quelques questions ensemble.
 //
 //   ## Les veillées
+//   ## L’équipage (la ligne fixe de Zia et de Malo près de l'habitant du premier lieu rallumé qu'ils ont guidé, GD-27, lot 5)
 //
 //   - feu éteint : {Feu} est éteint.
 //   - feu allumé : {Feu} est allumé.
@@ -84,6 +85,13 @@ export const SECTIONS = [
       ['feu éteint', 'fireOut', ['Feu']],
       ['feu allumé', 'fireLit', ['Feu']],
       ['embarquement', 'boarding', ['Équipier']],
+    ],
+  ],
+  [
+    '## L’équipage',
+    [
+      ['Zia', 'equipageZia', []],
+      ['Malo', 'equipageMalo', []],
     ],
   ],
 ];

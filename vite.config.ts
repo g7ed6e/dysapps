@@ -132,7 +132,8 @@ export default defineConfig({
         // ni leur version de loin, près de leur porte (`habitant-loin-*.glb`, 3 Mo) : ils se gardent à la demande
         // (`runtimeCaching`), hors ligne seuls les lieux déjà vus ont leur modèle, les autres leur pion ; seuls les niveaux
         // déjà ouverts ont leurs habitants près de leur porte. Les deux équipiers
-        // qui guident les scénettes (`equipier-*.glb`, 0,9 Mo, GD-23) de même : hors ligne, Kéo seul tant qu'ils n'ont pas été vus.
+        // qui guident les scénettes (`equipier-*.glb`, 0,9 Mo, GD-23) de même, et leur version de loin dans le monde du 6e
+        // (`equipier-loin-*.glb`, GD-27, lot 5) : hors ligne, Kéo seul tant qu'ils n'ont pas été vus.
         globIgnores: ['splash/**', 'assets/habitant-*.glb', 'assets/equipier-*.glb'],
         // Un habitant chargé une fois (son lieu approché) reste servi du cache, sans réseau ; le nom de son fichier change
         // à chaque nouvelle version, l'ancien sort par le nombre (les cent vingt-six, habitants de près et de loin et équipiers, et la marge d'une version) ou par l'âge ;

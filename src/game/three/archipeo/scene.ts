@@ -12,8 +12,10 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { createHabitantModels } from './habitantModels';
 import { createWorldHabitantModels } from './worldHabitantModels';
+import { createWorldEquipageModels } from './worldEquipageModels';
 import { createEquipierModels } from './equipierModels';
-import { guideOf } from '../../world/continu/equipage';
+import { guideOf, type Equipier } from '../../world/continu/equipage';
+import { equipageInWorld, type EquipierInWorld, type EquipierPlaces } from '../../world/continu/equipageMonde';
 import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { blendPose, nefArrivingParts, nefAtBerth, nefModelFacets, nefSheetPose, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
@@ -107,7 +109,7 @@ import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { TOUCH_HALF, seatedHeight } from '../../world/continu/corps';
 import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight } from '../../world/continu/worldHabitants';
-import { GESTE_SETTLE, activeGeste, gesteCandidates, gestePhase, moveMobile, worldGestes, type GesteCandidate, type MobilePiece } from '../../world/continu/gestes';
+import { GESTE_SETTLE, activeGeste, gesteCandidates, gesteSlot, moveMobile, worldGestes, type GesteCandidate, type MobilePiece } from '../../world/continu/gestes';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
@@ -163,6 +165,8 @@ export interface OpenWorldOptions {
    * une ligne ; Kéo ne bouge pas.
    */
   onHabitant?(place: PlaceId): void;
+  /** Un équipier touché près de l'habitant qu'il a aidé (GD-27, lot 5, piste B ; le 6e) : la page lui fait dire sa ligne ; Kéo ne bouge pas. */
+  onEquipier?(equipier: Equipier): void;
   /**
    * À l'Escale (GD-20, lot 2) : Kéo est devant une porte de l'école, la galerie ou le lieu d'assemblage (la page en ouvre
    * le panneau), ou l'on a touché le reste du Port (`fiche`, la page ouvre sa fiche).
@@ -403,6 +407,8 @@ interface PlacesState {
   traces: Readonly<Record<PlaceId, readonly string[]>>;
   /** Les aménagements posés de chaque lieu (GD-20, point 4, lot L0 : les petites constructions livrées, `world.parts`). */
   amenagements?: Readonly<Partial<Record<PlaceId, readonly string[]>>>;
+  /** Le lieu de chaque équipier dans le monde (GD-27, lot 5, piste B ; le 6e : ../../world/continu/equipageMonde.ts). */
+  equipage?: EquipierPlaces;
 }
 
 /**
@@ -1294,6 +1300,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les habitants près de leur porte, hors de leur scénette (choix du mainteneur, 23 octobre 2026 : en modèle 3D, aux
   // quatre niveaux ; ./worldHabitantModels.ts) : leurs versions de loin, un maillage texturé à part, un appel.
   const worldHabitants = createWorldHabitantModels(scene, PLACES.map((p) => p.id), ground, (t) => renderer.initTexture(t));
+  // L'équipage dans le monde (GD-27, lot 5, piste B ; ./worldEquipageModels.ts) : au 6e, Zia et Malo près de l'habitant
+  // du premier lieu rallumé qu'ils ont guidé (la page le dit, `PlacesState.equipage`), dans un maillage texturé à part.
+  const worldEquipage = createWorldEquipageModels(scene, ground, (t) => renderer.initTexture(t), sixth);
   // Le geste du métier (GD-27, lot 5, piste A « l'outil qui travaille » ; ../../world/continu/gestes.ts) : les outils des
   // habitants montrés, dans un maillage à part (un appel), montré et caché avec eux ; la pièce mobile d'un seul, celui
   // du lieu rallumé le plus proche de Kéo arrêté, tournée sommet par sommet quand le monde est calme.
@@ -1310,39 +1319,53 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   /** La pièce mobile de `gesteActive`, retenue au changement ; `gesteStart`, l'instant `t` (en secondes) de son départ. */
   let gesteMobile: MobilePiece | null = null;
   let gesteStart = 0;
+  /** L'équipier qui partage le geste du lieu actif, sa pièce mobile, et qui bouge à cet instant (`null` : l'habitant). */
+  let gesteShared: Equipier | undefined;
+  let gesteMobileEq: MobilePiece | null = null;
+  let gesteWho: Equipier | null = null;
+  let gesteLastPhase = 0;
   let gesteHeld = false;
   /** La place de Kéo au dernier choix de l'habitant : le choix ne se refait que si elle a changé. */
   const gesteHere = { x: NaN, z: NaN };
   /** Le dernier instant `now` (en millisecondes, `performance.now()`) où Kéo bougeait (en marchant, dans la cabine) : le
    * geste attend `GESTE_SETTLE` secondes après. */
   let keoMovedAt = 0;
-  const showGestes = (places: readonly PlaceId[]) => {
+  const showGestes = (places: readonly PlaceId[], equipage: readonly EquipierInWorld[]) => {
     // Dans la ruine, ni outil ni support (directeur artistique) : l'outil paraît avec la première partie posée.
     const withTool = (p: PlaceId) => posedOf(p).length > 0;
-    const k = places.map((p) => `${p}${withTool(p) ? '+' : ''}`).join(',');
+    const k = `${places.map((p) => `${p}${withTool(p) ? '+' : ''}`).join(',')}|${equipage.map((e) => `${e.equipier}@${e.place}`).join(',')}`;
     if (k === gestesKey) return;
     gestesKey = k;
     gesteActive = null;
-    // Le corps de l'habitant actif aussi : les outils se refont sans que le maillage des habitants se refasse.
+    // Le corps de l'habitant actif aussi, et celui de l'équipier : les outils se refont sans que leurs maillages se refassent.
     worldHabitants.work(null, 0);
+    worldEquipage.work(null, 0);
     gesteMobile = null;
+    gesteMobileEq = null;
+    gesteWho = null;
     gesteHere.x = NaN;
-    const g = worldGestes(places, ground, withTool);
+    const g = worldGestes(places, ground, withTool, undefined, equipage);
     gestesRest = g.facets.positions.slice();
     gestesMobiles = g.mobiles;
     setGeometry(gestesMesh, g.facets);
     // Les sommets de la pièce mobile sont réécrits à chaque image.
     (gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute).setUsage(THREE.DynamicDrawUsage);
   };
-  /** Remet la pièce mobile de l'habitant `place`, et son corps, au repos. */
-  const restGeste = (place: ScenePlaceId) => {
-    worldHabitants.work(place, 0);
-    const m = gestesMobiles.find((x) => x.place === place);
-    if (!m || !gestesRest) return;
+  /** Une pièce mobile des outils à la part `phase` de son geste. */
+  const movePiece = (m: MobilePiece, phase: number) => {
+    if (!gestesRest) return;
     const attr = gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-    moveMobile(gestesRest, attr.array as Float32Array, m, 0);
+    moveMobile(gestesRest, attr.array as Float32Array, m, phase);
     attr.addUpdateRange(m.start * 3, m.count * 3);
     attr.needsUpdate = true;
+  };
+  /** Remet au repos les pièces mobiles du lieu `place` (l'outil de l'habitant, celui de l'équipier à côté) et leurs corps. */
+  const restGeste = (place: ScenePlaceId) => {
+    worldHabitants.work(place, 0);
+    worldEquipage.work(null, 0);
+    for (const m of gestesMobiles) if (m.place === place) movePiece(m, 0);
+    gesteWho = null;
+    gesteLastPhase = 0;
   };
   /**
    * Le geste de l'image : `calm`, rien d'autre ne se joue (ni question, ni scénette, ni Carte, ni script, ni voile, ni
@@ -1363,17 +1386,37 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (next !== gesteActive) {
       if (gesteActive) restGeste(gesteActive);
       gesteActive = next;
-      gesteMobile = next ? (gestesMobiles.find((x) => x.place === next) ?? null) : null;
+      gesteShared = next ? gesteCandidatesShown.find((c) => c.place === next)?.shared : undefined;
+      gesteMobile = next ? (gestesMobiles.find((x) => x.place === next && !x.who) ?? null) : null;
+      gesteMobileEq = next && gesteShared ? (gestesMobiles.find((x) => x.place === next && x.who === gesteShared) ?? null) : null;
       gesteStart = t;
     }
     if (!gesteMobile || !gestesRest) return;
-    const phase = gestePhase(t - gesteStart);
-    // Le corps qui travaille (piste B) : le buste et le bras droit de l'habitant actif, au même rythme que son outil.
-    worldHabitants.work(gesteMobile.place, phase);
-    const attr = gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-    moveMobile(gestesRest, attr.array as Float32Array, gesteMobile, phase);
-    attr.addUpdateRange(gesteMobile.start * 3, gesteMobile.count * 3);
-    attr.needsUpdate = true;
+    // À qui est le geste (l'habitant seul ; ou à tour de rôle avec l'équipier à côté, un repos entre les deux) et sa part.
+    const slot = gesteSlot(t - gesteStart, gesteShared);
+    const who = slot.who ?? null;
+    if (who !== gesteWho) {
+      // Celui qui bougeait revient au repos avant que l'autre commence : jamais deux corps en mouvement (référent dys).
+      if (gesteWho) {
+        worldEquipage.work(null, 0);
+        if (gesteMobileEq) movePiece(gesteMobileEq, 0);
+      } else {
+        worldHabitants.work(gesteMobile.place, 0);
+        movePiece(gesteMobile, 0);
+      }
+      gesteWho = who;
+    }
+    // Au repos entre deux tours, rien à réécrire.
+    if (slot.phase === 0 && gesteLastPhase === 0) return;
+    gesteLastPhase = slot.phase;
+    // Le corps qui travaille (piste B) : le buste et le bras droit de celui qui bouge, au même rythme que son outil.
+    if (who) {
+      worldEquipage.work(who, slot.phase);
+      if (gesteMobileEq) movePiece(gesteMobileEq, slot.phase);
+    } else {
+      worldHabitants.work(gesteMobile.place, slot.phase);
+      movePiece(gesteMobile, slot.phase);
+    }
   };
   /** Les habitants montrés près de leur porte à la dernière pose des lieux : ceux qu'un toucher peut atteindre. */
   let habitantsOnShow: readonly PlaceId[] = [];
@@ -2230,7 +2273,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}p${paruresDrop ? paruresDrop.from : paruresNow}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}${colOpen ? 'g' : ''}|${restoring?.place ?? ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${placesState?.equipage ? JSON.stringify(placesState.equipage) : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}p${paruresDrop ? paruresDrop.from : paruresNow}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}${colOpen ? 'g' : ''}|${restoring?.place ?? ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -2282,8 +2325,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     // Dans la ruine, l'habitant est assis sur son bloc (le corps qui travaille, ../../world/continu/corps.ts).
     worldHabitants.show(habitantsShown, (p) => posedOf(p).length === 0);
-    showGestes(habitantsShown);
-    gesteCandidatesShown = gesteCandidates(habitantsShown.filter((p): p is ScenePlaceId => hasScenette(p) && isWhole(posedOf(p))), ground);
+    // L'équipage (piste B) : chaque équipier près de l'habitant de son lieu, s'il est montré et le lieu entier.
+    const equipageShown = equipageInWorld(placesState?.equipage ?? {}).filter((e) => habitantsShown.includes(e.place) && isWhole(posedOf(e.place)));
+    worldEquipage.show(equipageShown);
+    showGestes(habitantsShown, equipageShown);
+    gesteCandidatesShown = gesteCandidates(habitantsShown.filter((p): p is ScenePlaceId => hasScenette(p) && isWhole(posedOf(p))), ground, equipageShown);
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
     for (const land of LINKED_LANDS) {
@@ -2964,6 +3010,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // L'habitant d'un lieu, près de sa porte (GD-27) : Kéo déjà près de lui, il dit une ligne et Kéo reste où il est.
     const habitant = habitantAt(e.clientX, e.clientY);
     if (habitant && options.onHabitant) return options.onHabitant(habitant);
+    // Un équipier près de lui (piste B) : sa ligne, Kéo reste où il est.
+    const equipier = equipierAt(e.clientX, e.clientY);
+    if (equipier && options.onEquipier) return options.onEquipier(equipier);
     // Un aménagement posé (GD-20, point 4, lot L1) : son lieu, toujours le sien, par son dessin ou le disque autour de lui ;
     // Kéo y marche, puis son panneau s'ouvre ; d'une terre fermée, la fiche de la terre.
     const object = objectAt(e.clientX, e.clientY);
@@ -3003,16 +3052,33 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // De loin, le toucher garde son sens : Kéo marche vers le lieu (consultant UX UI, référent dys).
       if (!at || distance(here, at) > HABITANT_REACH) continue;
       const { height: h, half } = habitantBodyNow(place);
-      const points: { x: number; y: number }[] = [];
-      let behind = false;
-      for (const x of [at.x - half, at.x + half])
-        for (const y of [at.y, at.y + h])
-          for (const z of [at.z - half, at.z + half]) {
-            corner.set(x, y, z).project(camera);
-            behind ||= corner.z >= 1;
-            points.push({ x: sx(corner), y: sy(corner) });
-          }
-      if (!behind) targets.push({ place, rect: screenRect(points) });
+      const rect = bodyRect(at, h, half);
+      if (rect) targets.push({ place, rect });
+    }
+    const r = renderer.domElement.getBoundingClientRect();
+    return touchedObject(clientX - r.left, clientY - r.top, targets);
+  };
+  /** La boîte d'un corps (ses pieds `at`, sa hauteur, sa demi-largeur) projetée à l'écran ; rien si un coin est derrière la caméra. */
+  const bodyRect = (at: { x: number; y: number; z: number }, h: number, half: number): ObjectTarget['rect'] | null => {
+    const points: { x: number; y: number }[] = [];
+    for (const x of [at.x - half, at.x + half])
+      for (const y of [at.y, at.y + h])
+        for (const z of [at.z - half, at.z + half]) {
+          corner.set(x, y, z).project(camera);
+          if (corner.z >= 1) return null;
+          points.push({ x: sx(corner), y: sy(corner) });
+        }
+    return screenRect(points);
+  };
+  /** L'équipier montré sous un toucher, comme un habitant (sa boîte, debout, à portée de Kéo). */
+  const equipierAt = (clientX: number, clientY: number): Equipier | null => {
+    if (!options.onEquipier || !worldEquipage.mesh.visible) return null;
+    const targets: ObjectTarget<Equipier>[] = [];
+    for (const e of equipageInWorld(placesState?.equipage ?? {})) {
+      const f = worldEquipage.frameOf(e.equipier);
+      if (!f || distance(here, f.at) > HABITANT_REACH) continue;
+      const rect = bodyRect(f.at, f.height, TOUCH_HALF.standing);
+      if (rect) targets.push({ place: e.equipier, rect });
     }
     const r = renderer.domElement.getBoundingClientRect();
     return touchedObject(clientX - r.left, clientY - r.top, targets);
@@ -4989,6 +5055,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       body.dispose();
       habitants.dispose();
       worldHabitants.dispose();
+      worldEquipage.dispose();
       equipiers.dispose();
       for (const g of geometries) g.dispose();
       for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh, nefMesh, bancMesh, gestesMesh]) m.geometry.dispose();

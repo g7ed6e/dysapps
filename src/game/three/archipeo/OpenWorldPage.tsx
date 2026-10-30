@@ -55,11 +55,13 @@ import { traceDone } from '../../world/continu/questions';
 import { REVISION_PHRASES } from '../../world/continu/remise';
 import { hasWorldHabitant } from '../../world/continu/worldHabitants';
 import { habitantLine, type PlaceMood } from '../../world/continu/paroles';
+import { EQUIPIER_ROLE, equipierLine, equipierPlaces } from '../../world/continu/equipageMonde';
 import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkActionLabel, linkableLabel } from './ClosedLandSheet';
 import { constructionState, fanalRestored, placeConstruction, posedShapes, restoredLine } from './constructionParts';
+import { plansFor } from '../../world/plans';
 import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
@@ -214,6 +216,20 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // autant de lieux achevés que la grille demande de Gardiens (le monde continu n'en a pas) ; son temps, montré sur le ber.
   const nefStage = nefStageOf(level);
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
+  // L'équipage dans le monde (GD-27, lot 5, piste B ; le 6e) : chaque équipier près de l'habitant du premier lieu rallumé
+  // qu'il a guidé, selon le journal des parties posées (ailleurs qu'au 6e, aucun lieu guidé : personne).
+  const equipage = useMemo(
+    () =>
+      equipierPlaces(
+        plan.places.filter((p) => constructionState(constructions[p.id]) === 'restauree').map((p) => p.id),
+        state.world.log,
+        (id) => {
+          const biome = getIle(placeById(id).island);
+          return biome ? plansFor(biome.id).map((p) => p.id) : [];
+        },
+      ),
+    [plan, constructions, state.world.log],
+  );
   const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
   // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni départ ; sa fiche pose ses trois
   // parures (GD-25), les feux arrivant avec deux lieux restaurés.
@@ -575,6 +591,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         habitantSaid.current = { place: placeId, line, at: Date.now() };
         const role = hasScenette(placeId) ? scenetteOf(placeId).role : null;
         setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0, label: role ?? undefined, voice: role ? `${role}. ${line}` : undefined }));
+      },
+      // Un équipier touché près de l'habitant qu'il a aidé (piste B) : sa ligne fixe, sous son rôle, écrite et lue.
+      onEquipier: (equipier) => {
+        const line = equipierLine(equipier);
+        const role = EQUIPIER_ROLE[equipier];
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0, label: role, voice: `${role}. ${line}` }));
       },
       // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
       onClosed: (land) => {
@@ -1306,9 +1328,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     shownBuilt.current = built;
     askedPlace.current = null;
     const fresh = before && place ? built[place].filter((s) => !before[place].includes(s)) : [];
-    placesNow.current = { built, traces, amenagements };
+    placesNow.current = { built, traces, amenagements, equipage };
     if (!w.setPlaces(placesNow.current, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
-  }, [plan, constructions, traces, amenagements, asking, ready]);
+  }, [plan, constructions, traces, amenagements, equipage, asking, ready]);
   // L'état de chaque lieu sur la Carte, en icône et en mot (les mots d'état de l'univers).
   const states = useMemo(
     () => placeRecord(plan, (id) => constructionState(constructions[id])),

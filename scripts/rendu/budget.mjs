@@ -170,7 +170,8 @@ try {
         const pose = h.find((p) => p.poste === 'pose');
         const habitants = h.find((p) => p.poste === 'habitants');
         const gestes = h.find((p) => p.poste === 'gestes');
-        console.log(`Hors scénette (la pose ou la caisse qui roule, les habitants près de leur porte et leurs outils, à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}${habitants ? ` (habitants : ${n(habitants.triangles)} triangles, ${habitants.calls} appel)` : ''}${gestes ? ` (gestes : ${n(gestes.triangles)} triangles, ${gestes.calls} appel)` : ''}.`);
+        const equipage = h.find((p) => p.poste === 'équipage');
+        console.log(`Hors scénette (la pose ou la caisse qui roule, les habitants près de leur porte et leurs outils, l'équipage au 6e, à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}${habitants ? ` (habitants : ${n(habitants.triangles)} triangles, ${habitants.calls} appel)` : ''}${gestes ? ` (gestes : ${n(gestes.triangles)} triangles, ${gestes.calls} appel)` : ''}${equipage ? ` (équipage : ${n(equipage.triangles)} triangles, ${equipage.calls} appel)` : ''}.`);
       }
       if (monde.depart) {
         const d = monde.depart;

@@ -164,7 +164,8 @@ describe('les outils des habitants', () => {
       });
 
       it('compté au budget : un maillage, sous l’enveloppe du niveau hors scénette, rien pendant une scénette', () => {
-        expect(worldGestesCost(level)).toEqual({ triangles: places.length * GESTE_TRIANGLES, calls: 1 });
+        // Au 6e, les deux outils des équipiers dans le monde en plus (piste B, ./equipageMonde.test.ts).
+        expect(worldGestesCost(level)).toEqual({ triangles: (places.length + (level === '6e' ? 2 : 0)) * GESTE_TRIANGLES, calls: 1 });
         const views = level === '6e' ? [openWorldCost(0, 'monde')] : level === '5e' ? [openWorldCost5e('monde'), openWorldCost5e('depart')] : level === '4e' ? [openWorldCost4e('monde'), openWorldCost4e('depart')] : [openWorldCost3e('monde'), openWorldCost3e('depart')];
         const scenette = level === '6e' ? openWorldCost(0) : level === '5e' ? openWorldCost5e('scenette') : level === '4e' ? openWorldCost4e('scenette') : openWorldCost3e('scenette');
         expect(scenette.some((c) => c.poste === 'gestes')).toBe(false);

@@ -54,3 +54,10 @@
 > - `{Équipier}` : l’équipier qui monte à bord, par son rôle, avec son article (au 6e, « L’équipière radio », à la Gare maritime ; au 5e, « Le naturaliste », aux Fumerolles ; au 4e et au 3e, personne n’embarque) ; un rôle qui désigne une personne, jamais un objet (« La radio » se lisait comme l’appareil), jamais un prénom.
 >
 > Dix mots au plus, un point à la fin, jamais « ! » ; ni « vite », ni « merci », ni le Rafiot, ni « veillée » dans la ligne elle-même (le mot est celui d’un lieu du 4e ; le manuel, lui, peut dire « les veillées »).
+
+## L’équipage
+
+- Zia : Je serre un écrou avec ma clé.
+- Malo : Je range les feuilles dans le registre.
+
+> La ligne de chaque équipier dans le monde ouvert du 6e ([GD-27](../gameplay/propositions/GD-27.md), lot 5, « L’équipage dans le monde » ; [GD-23](../gameplay/propositions/GD-23.md)) : après avoir guidé une scénette, Zia ou Malo se tient près de l’habitant du premier lieu rallumé qu’il a guidé, et y fait son geste (Zia resserre un écrou à la clé, Malo range une feuille dans un registre). Un toucher sur lui écrit et dit sa ligne sous son rôle (« La mécanicienne », « L’archiviste »), comme celle d’un habitant. Une seule ligne par équipier, **fixe** : elle ne change jamais, ni au toucher, ni avec les erreurs, ni en révision (référent dys : l’équipier est un repère immobile). À la première personne, le ton d’un ado de treize ans, sans « tu », sans nom de lieu (elle reste vraie partout où il se tient), sans Kéo ni Rafiot ; dix mots au plus, un point à la fin, jamais « ! ». Le mot avant les deux-points est la clé de la ligne, jamais lu.

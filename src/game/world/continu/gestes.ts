@@ -9,8 +9,12 @@
 // (directeur artistique, avec le consultant d'Archipéo). Tous dans un seul maillage par niveau (un appel, comme les
 // habitants), que la vue montre et cache avec eux ; la pièce mobile de l'habitant actif est déplacée sommet par sommet
 // (`moveMobile`), quelques dizaines de sommets par image. Rien n'est annoncé : le mouvement est décoratif, l'état du lieu
-// reste porté par l'écrit (référent dys). Code pur.
-import { SEAT_COLOR, seatFacets } from './corps';
+// reste porté par l'écrit (référent dys). L'équipage dans le monde (piste B, GD-23 lot 4 ; ./equipageMonde.ts) : près de
+// l'habitant du premier lieu rallumé qu'il a guidé, l'équipier a son propre outil (`EQUIPIER_TOOL`), et le geste s'y fait
+// à tour de rôle (`gesteSlot`) : l'habitant, un repos, l'équipier, un repos ; jamais les deux à la fois. Code pur.
+import { SEAT_COLOR, seatFacets, type BodyFrame } from './corps';
+import type { Equipier } from './equipage';
+import { equipierFrame, type EquipierInWorld } from './equipageMonde';
 import { FacetBuilder, type Facets } from './facets';
 import { distance, type Vec3 } from './geometry';
 import type { PlaceId, ScenePlaceId } from './levelPlan';
@@ -62,6 +66,8 @@ export const gestePhase = (t: number): number => (1 - Math.cos((2 * Math.PI * t)
 /** La pièce mobile d'un habitant dans le maillage des outils : ses sommets de `start` à `start + count` (trois nombres chacun), son mouvement dans le monde. */
 export interface MobilePiece {
   place: ScenePlaceId;
+  /** L'équipier dont c'est l'outil, près de l'habitant de `place` ; absent, c'est l'outil de l'habitant. */
+  who?: Equipier;
   start: number;
   count: number;
   pivot: Vec3;
@@ -84,16 +90,15 @@ const unit = (v: Vec3): Vec3 => {
 const rad = (deg: number) => (deg * Math.PI) / 180;
 
 /**
- * Le repère de l'habitant d'un lieu dans le monde : ses pieds, son cap (le visage vers +z au cap nul). Sa main droite
- * est à −x dans son repère (il fait face à +z, y en haut) : le kit, coté x vers la droite, est retourné (`mirror`).
+ * Le repère d'un corps (un habitant, un équipier) dans le monde : ses pieds, son cap (le visage vers +z au cap nul), sa
+ * hauteur. Sa main droite est à −x dans son repère (il fait face à +z, y en haut) : le kit, coté x vers la droite, est
+ * retourné.
  */
-function habitantFrame(place: ScenePlaceId, ground: (x: number, z: number) => number): ((p: Vec3) => Vec3) | null {
-  const at = worldHabitantAt(place, ground);
-  if (!at) return null;
-  const yaw = worldHabitantYaw(place);
-  const c = Math.cos(yaw),
-    s = Math.sin(yaw);
-  const k = worldHabitantHeight(place) / KIT_HEIGHT;
+function frameAt(frame: BodyFrame): (p: Vec3) => Vec3 {
+  const c = Math.cos(frame.yaw),
+    s = Math.sin(frame.yaw);
+  const k = frame.height / KIT_HEIGHT;
+  const { at } = frame;
   return (p) => ({ x: at.x + k * (-p.x * c + p.z * s), y: at.y + k * p.y, z: at.z + k * (p.x * s + p.z * c) });
 }
 
@@ -102,10 +107,31 @@ function habitantFrame(place: ScenePlaceId, ground: (x: number, z: number) => nu
  * assis à la place), à leur place dans le monde, dans un seul maillage ; la pièce mobile de chacun au repos, repérée. L'ordre des sommets : pour chaque lieu, sa pièce fixe puis
  * sa pièce mobile. `toolOf` ne sert qu'aux tests, pour poser une forme du kit à un lieu donné ; la scène garde `gesteToolOf`.
  */
-export function worldGestes(places: readonly PlaceId[], ground: (x: number, z: number) => number, withTool: (place: ScenePlaceId) => boolean = () => true, toolOf: (place: ScenePlaceId) => ToolShape | null = gesteToolOf): WorldGestes {
+export function worldGestes(places: readonly PlaceId[], ground: (x: number, z: number) => number, withTool: (place: ScenePlaceId) => boolean = () => true, toolOf: (place: ScenePlaceId) => ToolShape | null = gesteToolOf, equipage: readonly EquipierInWorld[] = []): WorldGestes {
   const b = new FacetBuilder();
   const mobiles: MobilePiece[] = [];
   let vertices = 0;
+  /** Un outil posé dans le repère d'un corps : sa pièce fixe, puis sa pièce mobile, repérée. */
+  const placeTool = (tool: ToolShape, frame: BodyFrame, piece: { place: ScenePlaceId; who?: Equipier }) => {
+    const put = frameAt(frame);
+    const { yaw } = frame;
+    const k = frame.height / KIT_HEIGHT;
+    const fixed = new FacetBuilder();
+    tool.fixed(fixed);
+    const mobile = new FacetBuilder();
+    tool.mobile(mobile);
+    const f = placeIn(fixed.build(), put, yaw);
+    const m = placeIn(mobile.build(), put, yaw);
+    b.append(f);
+    vertices += f.positions.length / 3;
+    b.append(m);
+    const turn = (v: Vec3): Vec3 => ({ x: -v.x * Math.cos(yaw) + v.z * Math.sin(yaw), y: v.y, z: v.x * Math.sin(yaw) + v.z * Math.cos(yaw) });
+    const a = unit(turn(tool.axis));
+    // Un repère retourné (x vers la droite devient −x) renverse le sens des rotations : l'amplitude change de signe.
+    const sh = tool.shift ? turn(tool.shift) : undefined;
+    mobiles.push({ ...piece, start: vertices, count: m.positions.length / 3, pivot: put(tool.pivot), axis: a, amplitude: -tool.amplitude, ...(sh ? { shift: { x: sh.x * k, y: sh.y * k, z: sh.z * k } } : {}) });
+    vertices += m.positions.length / 3;
+  };
   for (const place of places) {
     if (!hasWorldHabitant(place)) continue;
     if (!withTool(place)) {
@@ -120,25 +146,15 @@ export function worldGestes(places: readonly PlaceId[], ground: (x: number, z: n
       continue;
     }
     const tool = toolOf(place);
-    const frame = tool && habitantFrame(place, ground);
-    if (!tool || !frame) continue;
-    const yaw = worldHabitantYaw(place);
-    const k = worldHabitantHeight(place) / KIT_HEIGHT;
-    const fixed = new FacetBuilder();
-    tool.fixed(fixed);
-    const mobile = new FacetBuilder();
-    tool.mobile(mobile);
-    const f = placeIn(fixed.build(), frame, yaw);
-    const m = placeIn(mobile.build(), frame, yaw);
-    b.append(f);
-    vertices += f.positions.length / 3;
-    b.append(m);
-    const turn = (v: Vec3): Vec3 => ({ x: -v.x * Math.cos(yaw) + v.z * Math.sin(yaw), y: v.y, z: v.x * Math.sin(yaw) + v.z * Math.cos(yaw) });
-    const a = unit(turn(tool.axis));
-    // Un repère retourné (x vers la droite devient −x) renverse le sens des rotations : l'amplitude change de signe.
-    const sh = tool.shift ? turn(tool.shift) : undefined;
-    mobiles.push({ place, start: vertices, count: m.positions.length / 3, pivot: frame(tool.pivot), axis: a, amplitude: -tool.amplitude, ...(sh ? { shift: { x: sh.x * k, y: sh.y * k, z: sh.z * k } } : {}) });
-    vertices += m.positions.length / 3;
+    const at = tool && worldHabitantAt(place, ground);
+    if (!tool || !at) continue;
+    placeTool(tool, { at, yaw: worldHabitantYaw(place), height: worldHabitantHeight(place) }, { place });
+  }
+  // L'outil de chaque équipier, à sa place près de l'habitant (hors ruine, comme lui), après tous ceux des habitants.
+  for (const { equipier, place } of equipage) {
+    if (!places.includes(place) || !withTool(place)) continue;
+    const frame = equipierFrame(place, ground);
+    if (frame) placeTool(TOOL_KIT[EQUIPIER_TOOL[equipier]](), frame, { place, who: equipier });
   }
   return { facets: b.build(), mobiles };
 }
@@ -231,16 +247,40 @@ export interface GesteCandidate {
   place: ScenePlaceId;
   x: number;
   z: number;
+  /** L'équipier qui partage le geste à ce lieu, à tour de rôle avec l'habitant (`gesteSlot`) ; absent, l'habitant seul. */
+  shared?: Equipier;
 }
 
-/** Les candidats du geste, dans l'ordre de `places` (celui du niveau : l'égalité se départage par lui). */
-export function gesteCandidates(places: readonly ScenePlaceId[], ground: (x: number, z: number) => number): GesteCandidate[] {
+/** Les candidats du geste, dans l'ordre de `places` (celui du niveau : l'égalité se départage par lui) ; `equipage`, les équipiers à leur lieu. */
+export function gesteCandidates(places: readonly ScenePlaceId[], ground: (x: number, z: number) => number, equipage: readonly EquipierInWorld[] = []): GesteCandidate[] {
   const out: GesteCandidate[] = [];
   for (const place of places) {
     const at = worldHabitantAt(place, ground);
-    if (at) out.push({ place, x: at.x, z: at.z });
+    if (!at) continue;
+    const shared = equipage.find((e) => e.place === place)?.equipier;
+    out.push({ place, x: at.x, z: at.z, ...(shared ? { shared } : {}) });
   }
   return out;
+}
+
+/** À qui est le geste à cet instant, et sa part : à l'habitant (`who` absent) ou à l'équipier ; `phase` 0 au repos. */
+export interface GesteSlot {
+  who?: Equipier;
+  phase: number;
+}
+
+/**
+ * Le geste à `t` secondes du début, au lieu d'un candidat : seul, l'habitant le fait sans fin ; partagé avec un
+ * équipier, à tour de rôle, un cycle chacun (`GESTE_CYCLE`) séparé d'un repos (`GESTE_SETTLE`), l'habitant d'abord ;
+ * jamais deux corps qui bougent ensemble (référent dys).
+ */
+export function gesteSlot(t: number, shared: Equipier | undefined): GesteSlot {
+  if (!shared) return { phase: gestePhase(t) };
+  const turn = GESTE_CYCLE + GESTE_SETTLE;
+  const n = Math.floor(t / turn);
+  const u = t - n * turn;
+  const phase = u < GESTE_CYCLE ? gestePhase(u) : 0;
+  return n % 2 === 0 ? { phase } : { who: shared, phase };
 }
 
 /** Une face fine dressée dans le plan xy (un fil, une toile), vue des deux côtés, centrée en `c`, de `w` sur `h`. */
@@ -273,7 +313,7 @@ const Y: Vec3 = v(0, 1, 0);
 const Z: Vec3 = v(0, 0, 1);
 
 /**
- * Le kit : quatorze formes et leurs variantes (directeur artistique, avec le consultant d'Archipéo, 30 octobre 2026 ; retouchées à sa relecture : cloche au large, cadre au large, billot bas, instruments tournés vers le large), boîtes et prismes,
+ * Le kit : quatorze formes et leurs variantes, puis les deux outils des équipiers (directeur artistique, avec le consultant d'Archipéo, 30 octobre 2026 ; retouchées à sa relecture : cloche au large, cadre au large, billot bas, instruments tournés vers le large), boîtes et prismes,
  * de 24 à 60 triangles. L'axe et le sens de chaque mouvement sont choisis pour que la pièce bouge comme le geste le
  * veut (la tête du marteau monte, la clé tourne sur le boulon) ; la pose de repos est l'outil en position de travail.
  */
@@ -487,7 +527,38 @@ export const TOOL_KIT = {
     axis: Z,
     amplitude: rad(-25),
   }),
+  /** 15. L'écrou (Zia) : un poteau de fer coiffé d'un écrou de laiton, la clé posée dessus, qui tourne de 25° autour de l'écrou. */
+  ecrou: (): ToolShape => ({
+    fixed: (b) => {
+      b.box(STAND, [0.36, 0.9, 0.36], IRON);
+      b.box(v(STAND.x, 0.9, STAND.z), [0.16, 0.12, 0.16], BRASS);
+    },
+    mobile: (b) => {
+      beam(b, v(STAND.x, 1.02, STAND.z), v(0.3, 1.25, STAND.z), 0.06, IRON);
+      b.box(v(STAND.x, 1.0, STAND.z), [0.18, 0.08, 0.14], IRON);
+    },
+    pivot: v(STAND.x, 1.02, STAND.z),
+    axis: Y,
+    amplitude: rad(25),
+  }),
+  /** 16. Le registre (Malo) : un pupitre bas au plateau de cuir, deux feuilles posées ; une feuille tenue, qui descend vers la pile, sans la toucher. */
+  registre: (): ToolShape => ({
+    fixed: (b) => {
+      b.box(STAND, [0.7, 0.85, 0.5], WOOD);
+      b.box(v(STAND.x, 0.85, STAND.z), [0.6, 0.04, 0.42], LEATHER);
+      b.box(v(0.6, 0.89, STAND.z), [0.27, 0.02, 0.38], LINEN);
+      b.box(v(0.9, 0.89, STAND.z), [0.27, 0.02, 0.38], LINEN);
+    },
+    mobile: (b) => b.box({ x: 0.9, y: 1.25, z: STAND.z, pitch: rad(-35) }, [0.26, 0.02, 0.36], LINEN),
+    pivot: v(0.9, 1.25, STAND.z),
+    axis: X,
+    amplitude: 0,
+    shift: v(0, -0.32, 0),
+  }),
 } satisfies Record<string, (...args: never[]) => ToolShape>;
+
+/** L'outil de chaque équipier dans le monde (directeur artistique, avec le consultant d'Archipéo : la mécanicienne serre un écrou, l'archiviste range ses feuilles). */
+export const EQUIPIER_TOOL: Readonly<Record<Equipier, ToolKind>> = { zia: 'ecrou', malo: 'registre' };
 
 /** Un outil tenu à long manche, incliné de 25° vers l'avant, la tête au sol (`head`, au pied du manche). */
 function longHandle(head: (b: FacetBuilder, foot: Vec3) => void): ToolShape {
@@ -519,7 +590,7 @@ function tripod(top: (b: FacetBuilder) => void): ToolShape {
   };
 }
 
-/** Les sortes d'outil du kit. */
+/** Les sortes d'outil du kit (les deux dernières, celles des équipiers). */
 export type ToolKind = keyof typeof TOOL_KIT;
 
 /** L'outil de chaque habitant (directeur artistique, avec le consultant d'Archipéo, 30 octobre 2026 ; `docs/gameplay/propositions/GD-27.md`). */

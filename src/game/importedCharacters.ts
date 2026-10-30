@@ -140,6 +140,22 @@ export function loadEquipier(nom: string): Promise<ModeleTexture | null> {
   return loadTextured(nom, EQUIPIERS[`../../docs/univers/archipeo/personnages/modeles/${nom}/equipier.glb`]);
 }
 
+/**
+ * L'adresse de la version de loin de chaque équipier (`equipier-loin.glb`, à côté de son modèle : 1 500 triangles, une
+ * image de 256, par la chaîne des habitants), qui se tient près de l'habitant d'un lieu qu'il a guidé (GD-27, lot 5,
+ * ./world/continu/equipageMonde.ts).
+ */
+const EQUIPIERS_LOIN = import.meta.glob('../../docs/univers/archipeo/personnages/modeles/6e-equipage-*/equipier-loin.glb', {
+  query: '?url',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+/** Charge la version de loin d'un équipier (son dossier, « 6e-equipage-<nom> ») : lue, ou rien. */
+export function loadEquipierFar(nom: string): Promise<ModeleTexture | null> {
+  return loadTextured(`${nom}/loin`, EQUIPIERS_LOIN[`../../docs/univers/archipeo/personnages/modeles/${nom}/equipier-loin.glb`]);
+}
+
 /** Lit un modèle texturé (un habitant, un équipier) à son adresse : lu, ou rien ; ne rejette jamais. */
 function loadTextured(nom: string, url: string | undefined): Promise<ModeleTexture | null> {
   const deja = texturedLoads.get(nom);

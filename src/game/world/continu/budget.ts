@@ -32,6 +32,7 @@ import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
 import { farArchipelagos3e } from './finalView3e';
 import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { WORLD_HABITANT_TRIANGLES, hasWorldHabitant } from './worldHabitants';
+import { EQUIPIERS, equipageCost } from './equipageMonde';
 import { GESTE_TRIANGLES, TOOL_OF } from './gestes';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
@@ -206,7 +207,7 @@ export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly tria
 };
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef' | 'habitants' | 'gestes';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef' | 'habitants' | 'gestes' | 'équipage';
   triangles: number;
   calls: number;
 }
@@ -432,7 +433,7 @@ export function openWorldCost(amenagements: number, view: 'scenette' | 'monde' =
     // Pendant une scénette, la question et le décor de près ; hors scénette (`monde`), les habitants près de leur porte
     // à leur place (choix du mainteneur, 23 octobre 2026), cachés pendant une scénette.
     ...(view === 'monde'
-      ? [{ poste: 'habitants' as const, ...worldHabitantsCost('6e') }, { poste: 'gestes' as const, ...worldGestesCost('6e') }]
+      ? [{ poste: 'habitants' as const, ...worldHabitantsCost('6e') }, { poste: 'gestes' as const, ...worldGestesCost('6e') }, { poste: 'équipage' as const, ...equipageCost() }]
       : [
           { poste: 'question' as const, ...questionCost() },
           { poste: 'scénette' as const, ...scenetteCost() },
@@ -489,7 +490,9 @@ export function worldHabitantsCost(level: OpenWorldLevel): { triangles: number; 
  */
 export function worldGestesCost(level: OpenWorldLevel): { triangles: number; calls: number } {
   const count = planFor(level).places.filter((p) => hasWorldHabitant(p.id) && TOOL_OF[p.id as keyof typeof TOOL_OF]).length;
-  return { triangles: count * GESTE_TRIANGLES, calls: count ? 1 : 0 };
+  // Au 6e, les outils des équipiers dans le monde (piste B), dans le même maillage.
+  const equipage = level === '6e' ? EQUIPIERS.length : 0;
+  return { triangles: (count + equipage) * GESTE_TRIANGLES, calls: count ? 1 : 0 };
 }
 
 /** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
