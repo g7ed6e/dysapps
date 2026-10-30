@@ -546,7 +546,8 @@ export const TOOL_KIT = {
       b.box(v(EQUIPIER_STAND.x, 1.45, EQUIPIER_STAND.z), [0.24, 0.12, 0.24], BRASS);
     },
     mobile: (b) => {
-      beam(b, v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z), v(EQUIPIER_STAND.x + 0.2, 1.57, EQUIPIER_STAND.z - 0.46), 0.08, IRON);
+      // Le manche part vers le large et vers qui arrive, pour se voir hors de la main (directeur artistique, 2e passe).
+      beam(b, v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z), v(EQUIPIER_STAND.x + 0.42, 1.57, EQUIPIER_STAND.z - 0.25), 0.08, IRON);
       b.box(v(EQUIPIER_STAND.x, 1.56, EQUIPIER_STAND.z), [0.2, 0.08, 0.16], IRON);
     },
     pivot: v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z),
@@ -574,7 +575,7 @@ export const TOOL_KIT = {
       pivot: v(c.x + 0.13, 1.62, c.z),
       axis: X,
       amplitude: 0,
-      shift: v(0, -0.2, 0),
+      shift: v(0, -0.17, 0),
     };
   },
 } satisfies Record<string, (...args: never[]) => ToolShape>;

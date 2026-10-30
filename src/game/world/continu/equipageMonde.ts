@@ -37,7 +37,7 @@ export const EQUIPIER_OFFSET = { left: 0.52, back: 0.11 } as const;
  */
 export const EQUIPIER_SPOT_OF: Readonly<Partial<Record<PlaceId6e, { side: number; back: number }>>> = {
   quais: { side: 0.8, back: 0.25 },
-  ecluses: { side: 0.8, back: EQUIPIER_OFFSET.back },
+  ecluses: { side: 0.5, back: 0.4 },
 };
 
 /** Un équipier à un lieu du monde. */
