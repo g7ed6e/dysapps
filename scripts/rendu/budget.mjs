@@ -169,7 +169,8 @@ try {
         const hc = h.reduce((s, p) => s + p.calls, 0);
         const pose = h.find((p) => p.poste === 'pose');
         const habitants = h.find((p) => p.poste === 'habitants');
-        console.log(`Hors scénette (la pose ou la caisse qui roule, et les habitants près de leur porte, à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}${habitants ? ` (habitants : ${n(habitants.triangles)} triangles, ${habitants.calls} appel)` : ''}.`);
+        const gestes = h.find((p) => p.poste === 'gestes');
+        console.log(`Hors scénette (la pose ou la caisse qui roule, les habitants près de leur porte et leurs outils, à la place de la question et de la scénette) : ${n(ht)} triangles, ${hc} appels${alerte(ht, hc)}${pose ? ` (pose : ${n(pose.triangles)} triangles, ${pose.calls} appel)` : ''}${habitants ? ` (habitants : ${n(habitants.triangles)} triangles, ${habitants.calls} appel)` : ''}${gestes ? ` (gestes : ${n(gestes.triangles)} triangles, ${gestes.calls} appel)` : ''}.`);
       }
       if (monde.depart) {
         const d = monde.depart;

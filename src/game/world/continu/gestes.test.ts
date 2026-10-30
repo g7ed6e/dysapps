@@ -9,7 +9,7 @@ import { COMMON_DETOUR_VIEW, followPose, lookUp, occlusionLift, screenOf } from 
 import { doorOf } from './construction';
 import { FacetBuilder } from './facets';
 import { linearRgb } from './geometry';
-import { GESTE_CYCLE, GESTE_REACH, GESTE_SLACK, GESTE_TRIANGLES, TOOL_KIT, TOOL_OF, activeGeste, gestePhase, gesteToolOf, moveMobile, worldGestes, type MobilePiece } from './gestes';
+import { GESTE_CYCLE, GESTE_REACH, GESTE_SLACK, GESTE_TRIANGLES, TOOL_KIT, TOOL_OF, activeGeste, gesteCandidates, gestePhase, gesteToolOf, moveMobile, worldGestes, type MobilePiece } from './gestes';
 import { OPEN_WORLD_LEVELS, hasScenette, levelOfPlace, planFor, type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
 import { levelWorld } from './levelWorld';
 import { arrivalViewOf, doorViewOf } from './northShore';
@@ -98,9 +98,9 @@ describe('le kit du directeur artistique', () => {
 });
 
 describe('les outils des habitants', () => {
-  it('cinquante-huit habitants ont un outil du kit : chacun un lieu à scénette, avec un habitant près de sa porte', () => {
+  it('soixante-deux habitants ont un outil du kit : chacun un lieu à scénette, avec un habitant près de sa porte', () => {
     const places = Object.keys(TOOL_OF) as ScenePlaceId[];
-    expect(places.length).toBe(58);
+    expect(places.length).toBe(62);
     for (const p of places) {
       expect(hasScenette(p), p).toBe(true);
       expect(hasWorldHabitant(p), p).toBe(true);
@@ -227,16 +227,20 @@ describe('le mouvement', () => {
     const ground = groundOf('6e');
     const a = worldHabitantAt('shipyard', ground)!;
     const b = worldHabitantAt('phare', ground)!;
-    const candidates: ScenePlaceId[] = ['phare', 'shipyard'];
-    expect(activeGeste({ x: a.x + 1, z: a.z }, candidates, null, ground)).toBe('shipyard');
-    expect(activeGeste({ x: a.x + GESTE_REACH + 1, z: a.z + 500 }, candidates, null, ground)).toBeNull();
+    const candidates = gesteCandidates(['phare', 'shipyard'], ground);
+    expect(candidates.map((c) => c.place)).toEqual(['phare', 'shipyard']);
+    expect(candidates[1]).toEqual({ place: 'shipyard', x: a.x, z: a.z });
+    expect(activeGeste({ x: a.x + 1, z: a.z }, candidates, null)).toBe('shipyard');
+    expect(activeGeste({ x: a.x + GESTE_REACH + 1, z: a.z + 500 }, candidates, null)).toBeNull();
     // À la limite : celui d'avant reste tant qu'il est sous la portée élargie, même si l'autre est aussi loin.
-    expect(activeGeste({ x: a.x + GESTE_REACH * 1.1, z: a.z }, candidates, 'shipyard', ground)).toBe('shipyard');
-    expect(activeGeste({ x: a.x + GESTE_REACH * GESTE_SLACK + 0.5, z: a.z }, candidates, 'shipyard', ground)).toBeNull();
+    expect(activeGeste({ x: a.x + GESTE_REACH * 1.1, z: a.z }, candidates, 'shipyard')).toBe('shipyard');
+    expect(activeGeste({ x: a.x + GESTE_REACH * GESTE_SLACK + 0.5, z: a.z }, candidates, 'shipyard')).toBeNull();
+    // Un ancien actif qui n'est plus candidat (lieu caché) ne garde pas la main.
+    expect(activeGeste({ x: a.x + 1, z: a.z }, candidates.slice(0, 1), 'shipyard')).toBeNull();
     // À égalité exacte, le premier de la liste.
     const mid = { x: (a.x + b.x) / 2, z: (a.z + b.z) / 2 };
     const da = Math.hypot(mid.x - a.x, mid.z - a.z);
-    if (da < GESTE_REACH) expect(activeGeste(mid, candidates, null, ground)).toBe('phare');
+    if (da < GESTE_REACH) expect(activeGeste(mid, candidates, null)).toBe('phare');
     const m: MobilePiece = { place: 'phare', start: 0, count: 0, pivot: { x: 0, y: 0, z: 0 }, axis: { x: 1, y: 0, z: 0 }, amplitude: 1 };
     expect(() => moveMobile(new Float32Array(0), new Float32Array(0), m, 1)).not.toThrow();
   });

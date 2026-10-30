@@ -3,7 +3,7 @@
 // cuvette, les rails, ses couleurs (jamais presque noires), la marche libre, et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { EPAULE_BRIDGE_TRIANGLES, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, RAVIN_BRIDGE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e, worldHabitantsCost } from './budget';
+import { EPAULE_BRIDGE_TRIANGLES, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_4E, RAVIN_BRIDGE_TRIANGLES_MAX_4E, mapCost4e, openWorldCost4e, worldGestesCost, worldHabitantsCost } from './budget';
 import { BRIDGE, bridgeSite } from './bridges';
 import { CRIQUE_SITE, NEF_4E, criqueDecorFacets, nef4eFlight } from './crique4e';
 import { DALLE_BUDGET } from './dalle4e';
@@ -317,9 +317,10 @@ describe('Le budget du 4e', () => {
     const env = OPEN_WORLD_BUDGETS['4e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     // Hors scénette et au départ, les habitants près de leur porte en plus (choix du mainteneur, 23 octobre 2026 : en
-    // modèle 3D, aux quatre niveaux ; `worldHabitantsCost`, un maillage, un appel) ; ni dans la scénette, ni sur la Carte.
-    const habitants = worldHabitantsCost('4e');
+    // modèle 3D, aux quatre niveaux ; `worldHabitantsCost`, un maillage, un appel), et leur outil (le geste du métier,
+    // GD-27 lot 5 ; `worldGestesCost`, un maillage, un appel) ; ni dans la scénette, ni sur la Carte.
     const none = { triangles: 0, calls: 0 };
+    const habitants = [worldHabitantsCost('4e'), worldGestesCost('4e')].reduce((a, c) => ({ triangles: a.triangles + c.triangles, calls: a.calls + c.calls }), none);
     for (const [cost, added] of [
       [total(openWorldCost4e('monde')), habitants],
       [total(openWorldCost4e('scenette')), none],

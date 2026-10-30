@@ -3,7 +3,7 @@
 // presque noires) et son budget. Sans Three.js.
 import { describe, expect, it } from 'vitest';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { FOREST_REWORK_MAX_5E, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e, worldHabitantsCost } from './budget';
+import { FOREST_REWORK_MAX_5E, OPEN_WORLD_BUDGETS, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e, worldGestesCost, worldHabitantsCost } from './budget';
 import { bridgeFacets, bridgeFloor, bridgeSite, clampToOpen, isCabin } from './bridges';
 import { closestOnSegment, distance, distanceToPolyline, linearRgb, signedDistance, type Vec2 } from './geometry';
 import { bridgeEdge, landOf, landPrice, linkedLands, nodeLands } from './lands';
@@ -553,6 +553,8 @@ describe('Le budget du 5e', () => {
       const v = openWorldCost5e(view);
       const habitants = v.find((c) => c.poste === 'habitants')!;
       expect(habitants).toEqual({ poste: 'habitants', ...worldHabitantsCost('5e') });
+      // Et leur outil (le geste du métier, GD-27 lot 5), un maillage, un appel, aux mêmes vues.
+      expect(v.find((c) => c.poste === 'gestes')).toEqual({ poste: 'gestes', ...worldGestesCost('5e') });
       expect(v.reduce((s, c) => s + c.triangles, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].triangles);
       expect(v.reduce((s, c) => s + c.calls, 0)).toBeLessThanOrEqual(OPEN_WORLD_BUDGETS['5e'].calls - 3);
     }

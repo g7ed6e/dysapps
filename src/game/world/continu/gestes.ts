@@ -99,7 +99,7 @@ function habitantFrame(place: ScenePlaceId, ground: (x: number, z: number) => nu
 /**
  * Les outils des habitants de `places` (ceux qui en ont un, hors ruine : `withTool`), à leur place dans le monde, dans un
  * seul maillage ; la pièce mobile de chacun au repos, repérée. L'ordre des sommets : pour chaque lieu, sa pièce fixe puis
- * sa pièce mobile.
+ * sa pièce mobile. `toolOf` ne sert qu'aux tests, pour poser une forme du kit à un lieu donné ; la scène garde `gesteToolOf`.
  */
 export function worldGestes(places: readonly PlaceId[], ground: (x: number, z: number) => number, withTool: (place: ScenePlaceId) => boolean = () => true, toolOf: (place: ScenePlaceId) => ToolShape | null = gesteToolOf): WorldGestes {
   const b = new FacetBuilder();
@@ -199,22 +199,43 @@ export function moveMobile(rest: Float32Array, out: Float32Array, m: MobilePiece
  * niveau, qui départage à égalité), le plus proche de Kéo (`here`) à portée ; celui d'avant (`previous`) garde la main
  * tant qu'il reste à portée élargie (pas d'alternance à la limite, ni d'une image à l'autre). Rien hors de portée.
  */
-export function activeGeste(here: { x: number; z: number }, candidates: readonly ScenePlaceId[], previous: ScenePlaceId | null, ground: (x: number, z: number) => number): ScenePlaceId | null {
-  const far = (place: ScenePlaceId): number => {
-    const at = worldHabitantAt(place, ground);
-    return at ? distance(here, at) : Infinity;
-  };
-  if (previous && candidates.includes(previous) && far(previous) <= GESTE_REACH * GESTE_SLACK) return previous;
+export function activeGeste(here: { x: number; z: number }, candidates: readonly GesteCandidate[], previous: ScenePlaceId | null): ScenePlaceId | null {
+  const kept = previous && candidates.find((c) => c.place === previous);
+  if (kept && distance(here, kept) <= GESTE_REACH * GESTE_SLACK) return previous;
   let best: ScenePlaceId | null = null;
   let bestD = GESTE_REACH;
-  for (const place of candidates) {
-    const d = far(place);
+  for (const c of candidates) {
+    const d = distance(here, c);
     if (d < bestD) {
-      best = place;
+      best = c.place;
       bestD = d;
     }
   }
   return best;
+}
+
+/** Un habitant dont l'outil peut bouger, à la place de ses pieds, posée une fois (`gesteCandidates`), pas à chaque image. */
+export interface GesteCandidate {
+  place: ScenePlaceId;
+  x: number;
+  z: number;
+}
+
+/** Les candidats du geste, dans l'ordre de `places` (celui du niveau : l'égalité se départage par lui). */
+export function gesteCandidates(places: readonly ScenePlaceId[], ground: (x: number, z: number) => number): GesteCandidate[] {
+  const out: GesteCandidate[] = [];
+  for (const place of places) {
+    const at = worldHabitantAt(place, ground);
+    if (at) out.push({ place, x: at.x, z: at.z });
+  }
+  return out;
+}
+
+/** Une face fine dressée dans le plan xy (un fil, une toile), vue des deux côtés, centrée en `c`, de `w` sur `h`. */
+function sheet(b: FacetBuilder, c: Vec3, w: number, h: number, color: number): void {
+  const x0 = c.x - w / 2, x1 = c.x + w / 2, y0 = c.y - h / 2, y1 = c.y + h / 2;
+  b.quad([x0, y0, c.z], [x1, y0, c.z], [x1, y1, c.z], [x0, y1, c.z], color);
+  b.quad([x0, y0, c.z], [x0, y1, c.z], [x1, y1, c.z], [x1, y0, c.z], color);
 }
 
 /** Un pavé posé d'un point à un autre (une poutre, un manche), de section `w` carrée. */
@@ -232,47 +253,53 @@ const STAND = v(0.75, 0, 0.35);
 /** La main qui tient un outil. */
 const HAND = v(0.55, 1.6, 0.3);
 
+/** Le côté où pointent la longue-vue et le pavillon : à 60° de qui arrive, vers le large, pour que leur longueur se voie. */
+const ASIDE_YAW = rad(60);
+const ASIDE = v(Math.sin(ASIDE_YAW), 0, Math.cos(ASIDE_YAW));
 const X: Vec3 = v(1, 0, 0);
 const Y: Vec3 = v(0, 1, 0);
 const Z: Vec3 = v(0, 0, 1);
 
 /**
- * Le kit : quatorze formes (directeur artistique, avec le consultant d'Archipéo, 30 octobre 2026), boîtes et prismes,
+ * Le kit : quatorze formes et leurs variantes (directeur artistique, avec le consultant d'Archipéo, 30 octobre 2026 ; retouchées à sa relecture : cloche au large, cadre au large, billot bas, instruments tournés vers le large), boîtes et prismes,
  * de 24 à 60 triangles. L'axe et le sens de chaque mouvement sont choisis pour que la pièce bouge comme le geste le
  * veut (la tête du marteau monte, la clé tourne sur le boulon) ; la pose de repos est l'outil en position de travail.
  */
 export const TOOL_KIT = {
-  /** 1. Le marteau sur le billot : la tête monte de 30° depuis 0,05 au-dessus du billot, sans jamais le toucher. */
-  marteau: (): ToolShape => ({
-    fixed: (b) => b.box(STAND, [0.6, 0.9, 0.6], DARK_WOOD),
+  /** 1. Le marteau sur le billot (bas, `block` : bois sombre, ou fer à la Forge) : la tête monte de 30° depuis 0,05 au-dessus du billot, sans jamais le toucher. */
+  marteau: (block = DARK_WOOD): ToolShape => ({
+    fixed: (b) => b.box(STAND, [0.6, 0.6, 0.6], block),
     mobile: (b) => {
-      beam(b, v(0.3, 1.03, 0.35), v(0.9, 1.03, 0.35), 0.08, WOOD);
-      b.box(v(0.75, 0.95, 0.35), [0.14, 0.14, 0.3], IRON);
+      beam(b, v(0.3, 0.73, 0.35), v(0.9, 0.73, 0.35), 0.08, WOOD);
+      b.box(v(0.75, 0.65, 0.35), [0.18, 0.18, 0.4], IRON);
     },
-    pivot: v(0.3, 1.03, 0.35),
+    pivot: v(0.3, 0.73, 0.35),
     axis: Z,
     amplitude: rad(30),
   }),
   /** 2. L'outil à long manche (la pelle, la bêche), tenu, la tête posée au sol, qui avance et recule de 12°. */
   pelle: (): ToolShape => longHandle((b, foot) => b.box({ ...foot, pitch: rad(25) }, [0.35, 0.05, 0.4], IRON)),
-  /** 2 bis. Le râteau (à sel) : une barre et trois dents. */
+  /** 2 bis. La pelle à four (le Hameau) : une pale large et plate, en bois clair. */
+  pelleAFour: (): ToolShape => longHandle((b, foot) => b.box({ ...foot, pitch: rad(25) }, [0.4, 0.05, 0.5], WOOD)),
+  /** 2 ter. Le râteau (à sel) : une barre et trois dents. */
   rateau: (): ToolShape =>
     longHandle((b, foot) => {
       b.box(foot, [0.6, 0.1, 0.1], WOOD);
       for (const dx of [-0.2, 0, 0.2]) b.box(v(foot.x + dx, foot.y - 0.12, foot.z), [0.04, 0.12, 0.04], WOOD);
     }),
-  /** 2 ter. La brosse à long manche. */
+  /** 2 quater. La brosse à long manche. */
   brosse: (): ToolShape => longHandle((b, foot) => b.box(v(foot.x, foot.y - 0.1, foot.z), [0.5, 0.1, 0.15], LINEN)),
-  /** 3. La gaffe ou la perche, tenue, penchée vers l'eau, qui va et vient de côté de 10°. */
-  gaffe: (): ToolShape => {
+  /** 3. La gaffe (`hook` : son crochet au pied de la perche, côté eau) ou la perche de sonde, tenue, penchée vers l'eau, qui va et vient de côté de 10°. */
+  gaffe: (hook = true): ToolShape => {
     // Tenue près de sa tête : elle descend devant et au large de l'habitant, sans repasser devant son corps.
     const d = unit(v(0.5, -0.87, 0.5));
     const top = v(HAND.x - d.x * 0.25, HAND.y - d.y * 0.25, HAND.z - d.z * 0.25);
+    const foot = v(HAND.x + d.x * 2.15, HAND.y + d.y * 2.15, HAND.z + d.z * 2.15);
     return {
       fixed: () => {},
       mobile: (b) => {
-        beam(b, v(HAND.x + d.x * 2.15, HAND.y + d.y * 2.15, HAND.z + d.z * 2.15), top, 0.07, WOOD);
-        b.box({ ...top, pitch: rad(25) }, [0.05, 0.25, 0.15], IRON);
+        beam(b, foot, top, 0.07, WOOD);
+        if (hook) b.box({ x: foot.x, y: foot.y + 0.05, z: foot.z, pitch: rad(-60) }, [0.05, 0.22, 0.12], IRON);
       },
       pivot: HAND,
       axis: Z,
@@ -309,13 +336,13 @@ export const TOOL_KIT = {
     amplitude: rad(20),
   }),
   /** 6. L'instrument sur trépied (la longue-vue, la lunette), tourné vers le large, qui pivote de 20°. */
-  trepied: (): ToolShape => tripod((b) => beam(b, v(0.75, 1.75, 0.0), v(0.75, 1.75, 0.7), 0.15, BRASS)),
+  trepied: (): ToolShape => tripod((b) => beam(b, v(0.75 - 0.35 * ASIDE.x, 1.75, 0.35 - 0.35 * ASIDE.z), v(0.75 + 0.35 * ASIDE.x, 1.75, 0.35 + 0.35 * ASIDE.z), 0.15, BRASS)),
   /** 6 bis. L'appareil sur trépied. */
   appareil: (): ToolShape => tripod((b) => b.box(v(0.75, 1.65, 0.35), [0.35, 0.3, 0.3], LEATHER)),
   /** 6 ter. La girouette sur trépied : une ailette. */
   girouette: (): ToolShape => tripod((b) => b.box(v(0.75, 1.65, 0.5), [0.02, 0.2, 0.3], SIGNAL)),
-  /** 6 quater. Le pavillon (le cornet) sur trépied. */
-  pavillon: (): ToolShape => tripod((b) => b.prism({ x: 0.75, y: 1.7, z: 0.25, pitch: rad(90) }, 0.05, 0.16, 0.4, 6, BRASS)),
+  /** 6 quater. Le pavillon (le cornet) sur trépied, l'embouchure vers le côté. */
+  pavillon: (): ToolShape => tripod((b) => b.prism({ x: 0.75 - 0.25 * ASIDE.x, y: 1.7, z: 0.35 - 0.25 * ASIDE.z, pitch: rad(90), yaw: ASIDE_YAW }, 0.05, 0.22, 0.5, 6, BRASS)),
   /** 7. La manivelle sur son bâti (le treuil, la meule, le rouet, le volant) : le bras tourne de −20° à +20°, sans tour complet. */
   manivelle: (): ToolShape => {
     const hub = v(1.03, 0.93, 0.35);
@@ -349,31 +376,33 @@ export const TOOL_KIT = {
     axis: Z,
     amplitude: rad(25),
   }),
-  /** 9. Le levier sur socle (l'aiguillage, la presse, le manipulateur) : penché vers l'habitant, il va de 25° en avant. `l` : sa longueur. */
-  levier: (l = 0.9): ToolShape => {
-    const foot = v(0.75, 0.5, 0.35);
+  /** 9. Le levier sur socle (l'aiguillage, la presse ; le manipulateur du Standard, court, sur une table, au pommeau de laiton) : penché vers l'habitant, il va de 25° en avant. `l` : sa longueur ; `base` : la hauteur du socle. */
+  levier: (l = 0.9, base = 0.5, knob = SIGNAL): ToolShape => {
+    const foot = v(0.75, base, 0.35);
     const top = v(foot.x, foot.y + l * Math.cos(rad(25)), foot.z - l * Math.sin(rad(25)));
     return {
-      fixed: (b) => b.box(STAND, [0.4, 0.5, 0.4], DARK_WOOD),
+      fixed: (b) => b.box(STAND, [0.4, base, 0.4], DARK_WOOD),
       mobile: (b) => {
         beam(b, foot, top, 0.07, IRON);
-        b.box(v(top.x, top.y - 0.06, top.z), [0.12, 0.12, 0.12], SIGNAL);
+        b.box(v(top.x, top.y - 0.06, top.z), [0.12, 0.12, 0.12], knob);
       },
       pivot: foot,
       axis: X,
       amplitude: rad(25),
     };
   },
-  /** 10. La navette sur le cadre (le métier, le cadre à filet) : elle glisse de 0,4 le long des fils. */
-  navette: (): ToolShape => ({
+  /** 10. La navette sur le cadre (le métier, le cadre à filet ; `cloth` : une toile pleine à la Loge, au lieu des trois fils) : elle glisse de 0,4 le long des fils, au large du corps. */
+  navette: (cloth = false): ToolShape => ({
     fixed: (b) => {
-      beam(b, v(0.3, 0, 0.35), v(0.3, 1.8, 0.35), 0.06, WOOD);
-      beam(b, v(1.2, 0, 0.35), v(1.2, 1.8, 0.35), 0.06, WOOD);
-      b.box(v(0.75, 1.8, 0.35), [1.0, 0.06, 0.06], WOOD);
-      b.box(v(0.75, 1.2, 0.35), [0.9, 0.03, 0.02], LINEN);
+      beam(b, v(0.6, 0, 0.35), v(0.6, 1.8, 0.35), 0.06, WOOD);
+      beam(b, v(1.5, 0, 0.35), v(1.5, 1.8, 0.35), 0.06, WOOD);
+      b.box(v(1.05, 1.8, 0.35), [1.0, 0.06, 0.06], WOOD);
+      // Les fils et la toile en faces fines à deux côtés (pas en pavés) : le cadre tient dans les 60 triangles.
+      if (cloth) sheet(b, v(1.05, 0.6, 0.35), 0.84, 0.55, LINEN);
+      else for (const y of [1.0, 1.2, 1.4]) sheet(b, v(1.05, y, 0.35), 0.9, 0.03, LINEN);
     },
-    mobile: (b) => b.box({ x: 0.45, y: 1.17, z: 0.4, pitch: rad(90), yaw: rad(90) }, [0.07, 0.3, 0.07], WOOD),
-    pivot: v(0.45, 1.2, 0.4),
+    mobile: (b) => b.box({ x: 0.75, y: 1.17, z: 0.4, pitch: rad(90), yaw: rad(90) }, [0.07, 0.3, 0.07], WOOD),
+    pivot: v(0.75, 1.2, 0.4),
     axis: X,
     amplitude: 0,
     shift: v(0.4, 0, 0),
@@ -396,18 +425,18 @@ export const TOOL_KIT = {
   cloche: (): ToolShape => ({
     // La potence au large de l'habitant, la cloche sous le bout de son bras, hors de son manteau.
     fixed: (b) => {
-      b.box(v(1.25, 0, 0.35), [0.1, 1.9, 0.1], DARK_WOOD);
-      b.box(v(1.0, 1.8, 0.35), [0.5, 0.1, 0.1], DARK_WOOD);
+      b.box(v(0.75, 0, 0.35), [0.1, 1.9, 0.1], DARK_WOOD);
+      b.box(v(0.975, 1.8, 0.35), [0.55, 0.1, 0.1], DARK_WOOD);
     },
-    mobile: (b) => b.prism(v(0.8, 1.45, 0.35), 0.18, 0.07, 0.35, 6, BRASS),
-    pivot: v(0.8, 1.8, 0.35),
+    mobile: (b) => b.prism(v(1.15, 1.45, 0.35), 0.18, 0.07, 0.35, 6, BRASS),
+    pivot: v(1.15, 1.8, 0.35),
     axis: X,
     amplitude: rad(12),
   }),
   /** 12 bis. Le gong, un disque octogonal sous la potence. */
   gong: (): ToolShape => ({
     ...TOOL_KIT.cloche(),
-    mobile: (b) => b.prism({ x: 0.8, y: 1.3, z: 0.33, pitch: rad(90) }, 0.25, 0.25, 0.04, 8, BRASS),
+    mobile: (b) => b.prism({ x: 1.15, y: 1.3, z: 0.33, pitch: rad(90) }, 0.25, 0.25, 0.04, 8, BRASS),
   }),
   /** 13. La balance : le fléau penche de 10° d'un côté puis de l'autre, ses plateaux avec lui. */
   balance: (): ToolShape => ({
@@ -498,18 +527,21 @@ export const TOOL_OF: Readonly<Partial<Record<ScenePlaceId, ToolKind>>> = {
   ruins: 'brosse',
   observatory: 'appareil',
   commons: 'marteau',
-  beacons: 'gaffe',
+  beacons: 'gaffe', // La perche de sonde, sans crochet (directeur artistique) ; le crochet reste aux Quais.
   ferry: 'drapeau',
   // Le 5e.
   montee: 'manivelle',
-  croisee: 'manivelle',
+  croisee: 'navette',
+  radeaux: 'balance',
+  instants: 'marteau',
+  etuve: 'manivelle',
   semaphore: 'drapeau',
   gaillard: 'chevalet',
   donjon: 'marteau',
   terrasses: 'manivelle',
   fumerolles: 'girouette',
   nacelles: 'cle',
-  hameau: 'pelle',
+  hameau: 'pelleAFour',
   auberge: 'louche',
   oracle: 'chevalet',
   // Le 4e.
@@ -519,14 +551,15 @@ export const TOOL_OF: Readonly<Partial<Record<ScenePlaceId, ToolKind>>> = {
   etalon: 'balance',
   gabarit: 'pupitre',
   manufacture: 'navette',
-  loge: 'navette',
+  loge: 'navette', // Une toile pleine : la couture, pas le tissage de la Manufacture.
   chariot: 'cle',
+  dynamo: 'cle',
   herbier: 'arrosoir',
-  roches: 'marteau',
+  roches: 'pupitre',
   jonction: 'levier',
   veillee: 'balance',
   basilique: 'marteau',
-  terminus: 'marteau',
+  terminus: 'manivelle',
   orgues: 'marteau',
   // Le 3e.
   belvedere: 'trepied',
@@ -547,11 +580,19 @@ export const TOOL_OF: Readonly<Partial<Record<ScenePlaceId, ToolKind>>> = {
   palais: 'gong',
 };
 
-/** L'outil de l'habitant d'un lieu, ou rien (un lieu sans habitant, ou dont le métier n'a pas d'outil décidé). `standard` : le manipulateur, un levier court ; `maquette` : un plan bleu sur le pupitre. */
+/**
+ * L'outil de l'habitant d'un lieu, ou rien (un lieu sans habitant, ou dont le métier n'a pas d'outil décidé). Les
+ * variantes (directeur artistique) : au Standard, le manipulateur, un levier court sur une table, au pommeau de laiton ;
+ * à la Maquette et au Gabarit, un plan bleu sur le pupitre ; à la Forge, le billot de fer ; aux Balises, la perche sans
+ * crochet ; à la Loge, la toile pleine sur le cadre.
+ */
 export function gesteToolOf(place: ScenePlaceId): ToolShape | null {
   const kind = TOOL_OF[place];
   if (!kind) return null;
-  if (kind === 'levier') return TOOL_KIT.levier(place === 'standard' ? 0.4 : 0.9);
+  if (kind === 'levier') return place === 'standard' ? TOOL_KIT.levier(0.4, 1.0, BRASS) : TOOL_KIT.levier();
   if (kind === 'pupitre') return TOOL_KIT.pupitre(place === 'maquette' || place === 'gabarit' ? LAGOON : LINEN);
+  if (kind === 'marteau') return TOOL_KIT.marteau(place === 'forge' ? IRON : DARK_WOOD);
+  if (kind === 'gaffe') return TOOL_KIT.gaffe(place !== 'beacons');
+  if (kind === 'navette') return TOOL_KIT.navette(place === 'loge');
   return TOOL_KIT[kind]();
 }

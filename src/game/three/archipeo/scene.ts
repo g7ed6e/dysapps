@@ -106,7 +106,7 @@ import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight } from '../../world/continu/worldHabitants';
-import { GESTE_SETTLE, activeGeste, gestePhase, moveMobile, worldGestes, type MobilePiece } from '../../world/continu/gestes';
+import { GESTE_SETTLE, activeGeste, gesteCandidates, gestePhase, moveMobile, worldGestes, type GesteCandidate, type MobilePiece } from '../../world/continu/gestes';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
@@ -1303,13 +1303,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let gestesKey = '';
   let gestesRest: Float32Array | null = null;
   let gestesMobiles: readonly MobilePiece[] = [];
-  /** Les lieux rallumés dont l'habitant est montré : ceux dont l'outil peut bouger. */
-  let gesteCandidates: ScenePlaceId[] = [];
+  /** Les lieux rallumés dont l'habitant est montré, à la place de ses pieds : ceux dont l'outil peut bouger. */
+  let gesteCandidatesShown: readonly GesteCandidate[] = [];
   let gesteActive: ScenePlaceId | null = null;
+  /** La pièce mobile de `gesteActive`, retenue au changement ; `gesteStart`, l'instant `t` (en secondes) de son départ. */
+  let gesteMobile: MobilePiece | null = null;
   let gesteStart = 0;
   let gesteHeld = false;
-  /** Le dernier instant où Kéo bougeait (en marchant, dans la cabine) : le geste attend `GESTE_SETTLE` après.
-   */
+  /** La place de Kéo au dernier choix de l'habitant : le choix ne se refait que si elle a changé. */
+  const gesteHere = { x: NaN, z: NaN };
+  /** Le dernier instant `now` (en millisecondes, `performance.now()`) où Kéo bougeait (en marchant, dans la cabine) : le
+   * geste attend `GESTE_SETTLE` secondes après. */
   let keoMovedAt = 0;
   const showGestes = (places: readonly PlaceId[]) => {
     // Dans la ruine, ni outil ni support (directeur artistique) : l'outil paraît avec la première partie posée.
@@ -1317,11 +1321,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const k = places.map((p) => `${p}${withTool(p) ? '+' : ''}`).join(',');
     if (k === gestesKey) return;
     gestesKey = k;
-    if (gesteActive) gesteActive = null;
+    gesteActive = null;
+    gesteMobile = null;
+    gesteHere.x = NaN;
     const g = worldGestes(places, ground, withTool);
     gestesRest = g.facets.positions.slice();
     gestesMobiles = g.mobiles;
     setGeometry(gestesMesh, g.facets);
+    // Les sommets de la pièce mobile sont réécrits à chaque image.
+    (gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute).setUsage(THREE.DynamicDrawUsage);
   };
   /** Remet la pièce mobile de l'habitant `place` au repos. */
   const restGeste = (place: ScenePlaceId) => {
@@ -1338,18 +1346,26 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * au repos. Le choix de l'habitant ne dépend que de Kéo, jamais de la caméra.
    */
   const stepGestes = (t: number, now: number, calm: boolean) => {
-    const next = calm && gestesMobiles.length && now - keoMovedAt >= GESTE_SETTLE * 1000 ? activeGeste(here, gesteCandidates, gesteActive, ground) : null;
+    let next: ScenePlaceId | null = null;
+    if (calm && gestesMobiles.length && now - keoMovedAt >= GESTE_SETTLE * 1000) {
+      // Kéo arrêté au même endroit : le choix d'avant tient, sans refaire les distances.
+      if (here.x === gesteHere.x && here.z === gesteHere.z) next = gesteActive;
+      else {
+        next = activeGeste(here, gesteCandidatesShown, gesteActive);
+        gesteHere.x = here.x;
+        gesteHere.z = here.z;
+      }
+    } else gesteHere.x = NaN; // Le calme revenu refait le choix, même sans que Kéo ait bougé.
     if (next !== gesteActive) {
       if (gesteActive) restGeste(gesteActive);
       gesteActive = next;
+      gesteMobile = next ? (gestesMobiles.find((x) => x.place === next) ?? null) : null;
       gesteStart = t;
     }
-    if (!gesteActive || !gestesRest) return;
-    const m = gestesMobiles.find((x) => x.place === gesteActive);
-    if (!m) return;
+    if (!gesteMobile || !gestesRest) return;
     const attr = gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-    moveMobile(gestesRest, attr.array as Float32Array, m, gestePhase(t - gesteStart));
-    attr.addUpdateRange(m.start * 3, m.count * 3);
+    moveMobile(gestesRest, attr.array as Float32Array, gesteMobile, gestePhase(t - gesteStart));
+    attr.addUpdateRange(gesteMobile.start * 3, gesteMobile.count * 3);
     attr.needsUpdate = true;
   };
   /** Les habitants montrés près de leur porte à la dernière pose des lieux : ceux qu'un toucher peut atteindre. */
@@ -2251,7 +2267,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     worldHabitants.show(habitantsShown);
     showGestes(habitantsShown);
-    gesteCandidates = habitantsShown.filter((p): p is ScenePlaceId => hasScenette(p) && isWhole(posedOf(p)));
+    gesteCandidatesShown = gesteCandidates(habitantsShown.filter((p): p is ScenePlaceId => hasScenette(p) && isWhole(posedOf(p))), ground);
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
     for (const land of LINKED_LANDS) {
@@ -4668,7 +4684,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!reduceMotion && !asked && !scenette && !mapView) rotorAngle.value = (rotorAngle.value + dt * ROTOR.turn) % (2 * Math.PI);
     // Le geste du métier : seulement quand le monde est calme et Kéo arrêté (référent dys) ; sinon l'outil au repos.
     if (walk || carRolling) keoMovedAt = now;
-    stepGestes(t, now, !reduceMotion && !asked && !scenette && !mapView && !scriptRun && !nefTrip && !poseRun.active && !remise && !assembly && !walk && !carRolling && !gesteHeld && veilShown === 0);
+    // Le monde est calme : rien ne se joue (ni question, ni scénette, ni Carte, ni script, ni voyage de la Nef, ni pose,
+    // ni remise, ni assemblage, ni trajet, ni voile, ni retenue de la page), et sans « Réduire les animations ».
+    const worldIsCalm = !reduceMotion && !asked && !scenette && !mapView && !scriptRun && !nefTrip && !poseRun.active && !remise && !assembly && !walk && !carRolling && !gesteHeld && veilShown === 0;
+    stepGestes(t, now, worldIsCalm);
     let moving = false;
     if (walk) {
       const state = walkAt(walk, now, reduceMotion);
