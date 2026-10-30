@@ -444,7 +444,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je parle au nom du village. · Je sonne la cloche avant le débat. · Je compte les jetons sur le tableau.
-- lieu : Ici, le village débat et vote. · Les gradins regardent le pic.
+- lieu : Ici, le village débat et vote. · Les gradins sont tournés vers le pic.
 - ruine : Deux gradins sont tombés. · L’auvent est tombé. · La cloche est posée au sol.
 - chantier : Les gradins du bout sont posés. · La cloche pend sous l’auvent.
 - rallumé : La cloche sonne sous l’auvent. · Les jetons sont sur le tableau.
@@ -455,7 +455,7 @@ Pour tous les items :
 | --- | --- | --- |
 | `constitution` | Les gradins sont tournés vers l’estrade. | L’estrade est dégagée. |
 | `information` | La cloche sonne avant chaque débat. | La cloche est sous l’auvent. |
-| `civic-engagement` | Les jetons ronds sont sur leurs chevilles. | Le tableau des votes est garni. |
+| `civic-engagement` | Chaque électeur a un jeton rond. | Le tableau des votes est garni. |
 
 ## Les plans
 

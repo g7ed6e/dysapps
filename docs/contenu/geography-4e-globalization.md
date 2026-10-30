@@ -452,7 +452,7 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `urbanization` | Les caisses partent vers les grandes villes. | Les villes sont servies. |
-| `mobilities` | Le quai voit passer des voyageurs. | Les voyageurs sont partis. |
+| `mobilities` | Des voyageurs passent sur le quai. | Les voyageurs sont partis. |
 | `globalization` | Les navires chargent les conteneurs à la halle. | Les conteneurs sont embarqués. |
 
 ## Les plans

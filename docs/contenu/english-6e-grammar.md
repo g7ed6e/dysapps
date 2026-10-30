@@ -467,9 +467,9 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je ferme les malles. · Je regarde partir les bateaux. · Je range le quai.
+- métier : Je ferme les malles. · Je donne le départ aux bateaux. · Je range le quai.
 - lieu : Ici, les voyageurs embarquent pour le large. · L’auvent abrite le quai.
-- ruine : Les colonnes de l’auvent sont couchées. · Le pavillon n’a plus de toit.
+- ruine : Les colonnes de l’auvent sont couchées. · Le toit du pavillon est tombé.
 - chantier : Le quai de pierre est réparé. · Le toit du pavillon est posé.
 - rallumé : L’auvent couvre le quai. · Les bateaux partent vers le large.
 
@@ -477,10 +477,10 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `to-be` | Les voyageurs se présentent au chef de gare. | Les voyageurs sont sur le quai. |
-| `have-got` | Chaque voyageur porte une malle. | Les malles sont rangées. |
-| `present-simple` | Les bateaux partent du quai chaque jour. | Le quai est libre. |
-| `story` | Le chef de gare raconte un voyage. | Le récit est fini. |
+| `to-be` | Les voyageurs se présentent au chef de quai. | Les voyageurs sont sur le quai. |
+| `have-got` | Chaque voyageur porte une malle. | Chaque voyageur range sa malle. |
+| `present-simple` | Les bateaux partent du quai. | Le quai est libre. |
+| `story` | Le chef de quai raconte un voyage. | Le chef de quai finit son récit. |
 
 ## Les plans
 

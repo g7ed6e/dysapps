@@ -731,7 +731,7 @@ Pour tous les items :
 
 - métier : Je redresse les pierres de la chaussée. · Je taille les dalles du chemin. · Je grave le demi-soleil.
 - lieu : Ici, une chaussée traverse le marais. · Les pierres levées guident vers la brume.
-- ruine : Les pierres sont couchées dans l’eau. · Une pierre est cassée en deux. · La chaussée se perd dans la brume.
+- ruine : Les pierres sont couchées dans l’eau. · Une pierre est cassée en deux. · La chaussée est coupée par la brume.
 - chantier : Les premières pierres sont debout. · Le chemin de dalles est posé.
 - rallumé : La chaussée traverse le marais. · Le demi-soleil se lit sur chaque pierre.
 
@@ -739,11 +739,11 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `past-tenses` | La chaussée longe la rive du marais. | La rive est dallée. |
-| `future-tense` | La chaussée file vers la brume. | La chaussée est tracée jusqu’au bout. |
-| `tense-recognition` | Chaque pierre porte un demi-soleil gravé. | Les pierres sont gravées. |
+| `past-tenses` | La chaussée longe la rive du marais. | Le tailleur dalle la rive. |
+| `future-tense` | La chaussée va jusqu’à la brume. | Le tailleur trace la chaussée jusqu’au bout. |
+| `tense-recognition` | Le tailleur choisit un signe pour chaque pierre. | Le tailleur grave chaque pierre. |
 | `tense-choice` | Le tailleur dresse les pierres une à une. | Les pierres sont debout. |
-| `sentence-grammar` | Le tailleur grave des signes sur les dalles. | Les dalles sont gravées. |
+| `sentence-grammar` | Le tailleur grave des signes sur les dalles. | Les signes restent sur les dalles. |
 
 ## Les plans
 

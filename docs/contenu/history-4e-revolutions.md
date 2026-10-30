@@ -458,7 +458,7 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `enlightenment` | Les ballots de coton arrivent par bateau. | Les ballots sont déchargés. |
-| `industrial-europe` | Les machines tournent du matin au soir. | La toile est coupée. |
+| `industrial-europe` | Les machines tournent dans la halle. | La toile est coupée. |
 | `french-society` | Les ouvriers entrent par la grande porte. | Les ouvriers sont à leur poste. |
 
 ## Les plans

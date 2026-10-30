@@ -849,12 +849,12 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `la-founding` | Le conteur raconte la fondation d’une première cité. | Le récit est dit. |
-| `la-gods` | Des dieux sont peints sur le fond de la paroi. | Les dieux sont repeints. |
+| `la-founding` | Le conteur raconte la fondation d’une première cité. | Le conteur dit le récit. |
+| `la-gods` | Des dieux sont peints sur le fond de la paroi. | Le conteur repeint les dieux. |
 | `la-cases` | La frise de losanges court sur la paroi. | La frise est repeinte. |
-| `gr-founding` | Le conteur raconte la fondation des cités voisines. | Les récits sont dits. |
+| `gr-founding` | Le conteur raconte la fondation des cités voisines. | Le conteur finit ses récits. |
 | `gr-gods` | Des héros sont peints sur les côtés de la paroi. | Les héros sont repeints. |
-| `gr-alphabet` | Le conteur trace ses signes au pied de la paroi. | Les signes sont tracés. |
+| `gr-alphabet` | Le conteur trace ses signes au pied de la paroi. | Les signes courent sur la paroi. |
 
 ## La voix
 

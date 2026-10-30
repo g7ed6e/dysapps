@@ -569,10 +569,10 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je tends les câbles entre les aiguilles. · Je graisse les rouages de la gare. · Je range les nacelles au quai.
-- lieu : Ici, deux câbles partent vers deux aiguilles. · Les nacelles passaient d’un sommet à l’autre.
+- lieu : Ici, deux câbles partent vers deux aiguilles. · Les nacelles vont d’un sommet à l’autre.
 - ruine : Les câbles sont détendus. · Un rouage est tombé. · Les nacelles sont au quai.
 - chantier : Un câble est retendu. · Le mât et ses poulies tiennent.
-- rallumé : Les deux câbles sont tendus. · Les nacelles sont au quai.
+- rallumé : Les deux câbles sont tendus. · Les nacelles passent d’un sommet à l’autre.
 
 ### Les missions
 
@@ -580,8 +580,8 @@ Pour tous les items :
 | --- | --- | --- |
 | `specifications` | La gare est adossée au piton. | La gare est debout. |
 | `technical-solutions` | Chaque rouage a sa place dans la machinerie. | Les rouages sont en place. |
-| `life-cycle` | Les nacelles sont faites de bois et de fer. | Les nacelles sont réparées. |
-| `project-management` | La câbliste monte la gare pièce après pièce. | La gare est remontée. |
+| `life-cycle` | Les nacelles sont faites de bois et de fer. | Les nacelles repartent sur les câbles. |
+| `project-management` | La câbliste monte la gare pièce après pièce. | La gare se dresse de nouveau. |
 
 ## Les plans
 

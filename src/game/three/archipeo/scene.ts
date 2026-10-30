@@ -453,6 +453,8 @@ export interface LabelOnScreen {
   center?: boolean;
 }
 
+/** La distance (en unités du monde) en deçà de laquelle toucher l'habitant d'un lieu le fait parler (GD-27). */
+const HABITANT_REACH = 8;
 /** La marge de la flèche au bord de l'écran, en pixels : hors des boutons des coins. */
 const MARK_MARGIN = 56;
 /** La pastille d'un habitant, à tant d'unités au-dessus de ses pieds (au-dessus de sa tête, de Kéo près de lui). */
@@ -2836,7 +2838,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (cabinBusy()) return;
     manualView = null;
     if (carTouched(e.clientX, e.clientY)) return touchCar();
-    // L'habitant d'un lieu, près de sa porte (GD-27) : il dit une ligne, Kéo reste où il est.
+    // L'habitant d'un lieu, près de sa porte (GD-27) : Kéo déjà près de lui, il dit une ligne et Kéo reste où il est.
     const habitant = habitantAt(e.clientX, e.clientY);
     if (habitant && options.onHabitant) return options.onHabitant(habitant);
     // Un aménagement posé (GD-20, point 4, lot L1) : son lieu, toujours le sien, par son dessin ou le disque autour de lui ;
@@ -2875,7 +2877,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const targets: ObjectTarget[] = [];
     for (const place of habitantsOnShow) {
       const at = worldHabitantAt(place, ground);
-      if (!at || distance(here, at) > FOG.far) continue;
+      // De loin, le toucher garde son sens : Kéo marche vers le lieu (consultant UX UI, référent dys).
+      if (!at || distance(here, at) > HABITANT_REACH) continue;
       const h = worldHabitantHeight(place);
       const points: { x: number; y: number }[] = [];
       let behind = false;

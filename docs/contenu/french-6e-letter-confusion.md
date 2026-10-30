@@ -238,7 +238,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `sound-discrimination` | Deux feuilles sèchent sur la corde. | Les feuilles sont sèches. |
+| `sound-discrimination` | L’imprimeur écoute chaque mot avant de composer. | L’imprimeur compose les mots. |
 
 ## Les plans
 

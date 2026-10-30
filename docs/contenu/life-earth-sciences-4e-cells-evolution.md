@@ -416,7 +416,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `cells-nutrition` | Les plantes boivent l’eau de la citerne. | Les bacs sont arrosés. |
+| `cells-nutrition` | Les plantes ont besoin d’eau et de lumière. | Les bacs sont arrosés. |
 | `heredity` | Les graines sont semées dans les bacs. | Les graines sont en terre. |
 | `species-evolution` | Les plantes de la serre viennent de loin. | Les plantes sont étiquetées. |
 

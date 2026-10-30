@@ -444,7 +444,7 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `population` | Le village vit de ses rizières. | Les rizières nourrissent le village. |
-| `resources` | L’eau du canal se partage entre les gradins. | L’eau est partagée. |
+| `resources` | L’eau du canal se partage entre les gradins. | L’eau coule d’un gradin à l’autre. |
 | `risks` | La pluie tombe parfois fort sur les gradins. | Les murets tiennent. |
 
 ## Les plans

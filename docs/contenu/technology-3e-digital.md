@@ -572,7 +572,7 @@ Pour tous les items :
 
 - métier : Je branche les cordons sur le tableau. · Je mets le casque pour écouter les fils. · Je surveille les lampes témoins.
 - lieu : Ici, les fils relient le Fanal aux archipels. · Le tableau fait passer chaque message.
-- ruine : Le toit est ouvert sur le devant. · Les cordons pendent en boucles. · Les poteaux sont penchés.
+- ruine : Le toit du standard est ouvert. · Les cordons pendent en boucles. · Les poteaux sont penchés.
 - chantier : Le toit est refermé. · Les poteaux portent les fils.
 - rallumé : Les lampes brillent sur le tableau. · Les fils portent les messages.
 
@@ -583,7 +583,7 @@ Pour tous les items :
 | `computer-networks` | Les fils vont de poteau en poteau. | Les poteaux portent les fils jusqu’au bout. |
 | `connected-objects` | Chaque lampe témoin répond à un cordon. | Les lampes répondent aux cordons. |
 | `algorithms` | La télégraphiste branche les cordons un par un. | Les cordons sont branchés. |
-| `data-tables` | Le tableau garde chaque fiche dans sa douille. | Les fiches sont rangées dans leurs douilles. |
+| `data-tables` | Chaque fiche entre dans un trou du tableau. | Les fiches sont rangées dans leurs douilles. |
 
 ## Les plans
 

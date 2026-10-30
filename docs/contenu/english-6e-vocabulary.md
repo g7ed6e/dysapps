@@ -707,9 +707,9 @@ Pour tous les items :
 
 - métier : Je guide les bateaux dans le chenal. · Je plante les mâts sur les roches. · Je regarde la mer.
 - lieu : Ici, cinq mâts marquent le passage sûr. · La cale descend vers le chenal.
-- ruine : Les perches sont couchées sur la grève. · La station n’a plus de toit.
+- ruine : Les perches sont couchées sur la plage. · Le toit de la station est tombé.
 - chantier : Les murs de la station sont montés. · La cale est dégagée.
-- rallumé : Les mâts portent leurs voyants. · Les bateaux suivent le chenal.
+- rallumé : Les mâts portent leurs signaux. · Les bateaux suivent le chenal.
 
 ### Les missions
 
@@ -717,8 +717,8 @@ Pour tous les items :
 | --- | --- | --- |
 | `hello` | Les bateaux saluent la station en passant. | La station répond aux bateaux. |
 | `numbers` | Les mâts se suivent dans la mer. | Les mâts sont alignés. |
-| `first-listening` | Le pilote écoute les bateaux du chenal. | Les bateaux sont passés. |
-| `signs` | Les bouées flottent au pied de la cale. | Les bouées sont amarrées. |
+| `first-listening` | Le pilote écoute les bateaux du chenal. | Le pilote voit passer les bateaux. |
+| `signs` | Les bouées flottent au pied de la cale. | Les bouées tiennent à leur amarre. |
 | `famous-people` | Des visiteurs de loin passent par le chenal. | Les visiteurs sont au quai. |
 
 ## Les plans

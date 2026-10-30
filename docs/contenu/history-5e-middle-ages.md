@@ -462,9 +462,9 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `christendoms-islam` | Les grandes pierres du bas sont les plus anciennes. | Les grandes pierres sont posées. |
-| `feudal-west` | Les pierres du milieu portent de hautes fentes. | Les fentes de jour sont taillées. |
-| `new-worlds` | La brique du parapet couronne la tour. | Le parapet est posé. |
+| `christendoms-islam` | Les grandes pierres du bas sont les plus anciennes. | Le bâtisseur pose les grandes pierres. |
+| `feudal-west` | Les pierres du milieu portent de hautes fentes. | Les fentes de jour s’ouvrent dans le mur. |
+| `new-worlds` | La brique du parapet est tout en haut. | Le parapet est posé. |
 
 ## Les plans
 

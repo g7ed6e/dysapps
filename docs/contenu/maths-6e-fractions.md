@@ -213,10 +213,10 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `number-line` | Des nénuphars flottent sur le bassin. | Les nénuphars sont à leur place. |
-| `equivalence` | Deux rives bordent le canal. | Les deux rives sont reliées. |
-| `sharing` | Le gâteau de l’éclusier est sur la table. | Les parts sont servies. |
-| `place-value` | Les galets du fond sont ramassés par tas. | Les tas de galets sont posés. |
-| `fraction-sums` | L’éclusier note le niveau de chaque bassin. | Le niveau est inscrit. |
+| `equivalence` | Deux rives bordent le canal. | Une planche relie les deux rives. |
+| `sharing` | Le gâteau de l’éclusier est sur la table. | L’éclusier sert les parts. |
+| `place-value` | Les galets du fond sont ramassés par tas. | L’éclusier pose les tas de galets. |
+| `fraction-sums` | L’éclusier note le niveau de chaque bassin. | L’éclusier inscrit le niveau. |
 
 ## Les plans
 

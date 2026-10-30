@@ -755,7 +755,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je pèse les sacs sur la bascule. · Je trie les grains par taille. · Je note chaque poids.
-- lieu : Ici, les poids se comparent à un modèle. · La bascule dit le poids de chaque chose.
+- lieu : Ici, les poids se comparent à un modèle. · La bascule montre le poids de chaque chose.
 - ruine : La bascule est de travers. · Le tonneau est tombé de ses chevalets. · Le toit laisse passer la pluie.
 - chantier : La bascule est à plat. · Le tonneau est sur ses chevalets.
 - rallumé : La bascule pèse juste. · Les cuves sont pleines. · La trieuse tourne de nouveau.
@@ -768,7 +768,7 @@ Pour tous les items :
 | `events` | La trieuse envoie les grains dans les cuves. | Les cuves sont remplies. |
 | `proportional-reasoning` | Le tonneau se remplit sac après sac. | Le tonneau est plein. |
 | `calculation-programs` | La peseuse répète les mêmes gestes pour chaque sac. | Chaque sac est pesé. |
-| `translations` | Les cuves sont alignées dans la cour. | La cour est rangée. |
+| `translations` | Chaque cuve glisse sans tourner dans la cour. | La cour est rangée. |
 
 ## Les plans
 

@@ -378,7 +378,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je garde la lanterne. · Je frotte les vitres de la tour. · Je sonne la cloche.
-- lieu : Ici, la tour montre la côte aux bateaux. · La cloche sonne quand la brume monte.
+- lieu : Ici, le Phare montre la côte aux bateaux. · La cloche sonne quand la brume monte.
 - ruine : Les pierres de la tour sont tombées. · La cloche est couchée sur le socle.
 - chantier : Le fût de la tour est monté. · La porte tient dans le mur.
 - rallumé : La lanterne brille sur la mer. · La cloche sonne de nouveau.
@@ -387,8 +387,8 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `syllables` | La cloche sonne par petits coups. | La cloche est raccrochée. |
-| `sound-hunt` | La gardienne écoute les bruits de la côte. | Les bruits sont notés. |
+| `syllables` | La cloche sonne par petits coups. | La gardienne raccroche la cloche. |
+| `sound-hunt` | La gardienne écoute les bruits de la côte. | La gardienne note les bruits. |
 | `rhymes` | Une échelle monte à la cabane. | L’échelle tient contre le mur. |
 
 ## Les plans

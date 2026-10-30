@@ -429,9 +429,9 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `changes-of-state` | Le four chauffe le verre puis le laisse refroidir. | Le verre est refroidi. |
+| `changes-of-state` | Le four chauffe le verre puis le laisse refroidir. | Le verre refroidit sur l’établi. |
 | `mixtures-density` | Les fioles se dosent et se pèsent sur l’établi. | Les fioles sont rangées. |
-| `universe-atoms` | La lentille sert à regarder le ciel. | La lentille est sur son chevalet. |
+| `universe-atoms` | La lentille sert à regarder le ciel. | La lentille vise le ciel. |
 
 ## Les plans
 

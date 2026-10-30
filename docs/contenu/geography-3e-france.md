@@ -441,7 +441,7 @@ Pour tous les items :
 | --- | --- | --- |
 | `territories` | Les villes sont de petits cubes de bois clair. | Les villes sont posées sur le relief. |
 | `planning` | Les routes se tendent entre les villes. | Le relief porte ses routes. |
-| `france-eu` | Les fleuves du relief vont jusqu’à la côte. | Les fleuves sont recollés au relief. |
+| `france-eu` | Les fleuves du relief traversent des frontières. | Les frontières sont posées sur le relief. |
 
 ## Les plans
 

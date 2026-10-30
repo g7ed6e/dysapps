@@ -535,7 +535,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je reçois les messagers sur la terrasse. · Je frappe le gong à l’arrivée. · Je pose les messages sur les plateaux.
-- lieu : Ici, les messagers montent le grand escalier. · Les salons se suivent en enfilade.
+- lieu : Ici, les messagers montent le grand escalier. · Les salons se suivent l’un après l’autre.
 - ruine : Le toit est ouvert d’un côté. · Le gong est décroché. · Les plateaux sont renversés.
 - chantier : Les marches sont dégagées. · Le gong est dans son portique.
 - rallumé : Le gong résonne sous le portique. · Les plateaux sont sur leurs pieds.
@@ -544,7 +544,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `for-since` | Le gong sonne à l’arrivée des messagers. | Le gong est dans son portique. |
+| `for-since` | Le gong sonne à l’arrivée des messagers. | Les messagers entrent sous le portique. |
 | `if` | Les portes des salons sont alignées. | Les portes sont ouvertes. |
 | `passive` | Les plateaux portent les messages de chaque archipel. | Les messages sont sur les plateaux. |
 | `messages` | Les plateaux sont de part et d’autre de l’allée. | L’allée est libre. |

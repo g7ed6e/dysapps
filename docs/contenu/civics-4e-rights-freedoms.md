@@ -418,7 +418,7 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je défends ceux qui viennent me voir. · Je lis les lois aux gens. · Je plaide dans la salle.
+- métier : Je parle pour les gens dans la salle. · Je lis les lois aux gens. · J’explique leur cas devant le juge.
 - lieu : Ici, la salle est ouverte à tous. · Les gens viennent régler leurs affaires.
 - ruine : Les battants sont sortis de leurs gonds. · Les bancs sont dispersés. · Le toit de la salle est troué.
 - chantier : Un battant est remis en place. · Les bancs sont rangés.
@@ -428,9 +428,9 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `freedoms` | Les gens se réunissent dans la salle. | Les bancs sont occupés. |
-| `justice` | La salle accueille les procès. | Le jugement est rendu. |
-| `security-defence` | Les gardes tiennent les portes de la ville. | Les portes sont fermées pour la nuit. |
+| `freedoms` | Les gens se réunissent dans la salle. | Les bancs sont pleins de monde. |
+| `justice` | Le juge reçoit les gens dans la salle. | Le juge a dit son avis. |
+| `security-defence` | Les gardes ouvrent les portes aux passants. | Les portes sont fermées pour la nuit. |
 
 ## Les plans
 

@@ -415,7 +415,7 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je greffe une branche sur un arbre. · Je soigne les arbres contre le mur. · Je sèche les plantes sur les claies.
+- métier : Je greffe une branche sur un arbre. · Je soigne les arbres contre le mur. · Je sèche les plantes sur les grilles.
 - lieu : Ici, les plantes poussent en carrés bordés de granit. · Le mur garde la chaleur du soleil.
 - ruine : La moitié du mur est écroulée. · L’herbe sèche déborde des carrés. · Le séchoir est couché.
 - chantier : Le mur est relevé. · Les carrés sont bordés.
@@ -425,7 +425,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `effort-brain` | Le greffeur marche sur le sentier entre les carrés. | Les carrés sont arrosés. |
+| `effort-brain` | Le greffeur porte l’eau d’un carré à l’autre. | Les carrés sont arrosés. |
 | `digestion-microbes` | La terre des carrés se nourrit de feuilles sèches. | La terre est nourrie. |
 | `puberty-reproduction` | Les arbres greffés grandissent contre le mur. | Les arbres sont palissés sur le mur. |
 

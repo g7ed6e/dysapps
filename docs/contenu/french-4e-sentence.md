@@ -843,8 +843,8 @@ Pour tous les items :
 ### L’habitant
 
 - métier : J’entretiens la voie. · Je graisse les leviers du poste. · Je tourne la plaque.
-- lieu : Ici, les trains changent de voie. · Le poste commande les aiguillages.
-- ruine : Le poste est sans toit. · La plaque tournante est rouillée. · Les rails sont tordus.
+- lieu : Ici, les trains changent de voie. · Dans le poste, je change la voie des trains.
+- ruine : Le toit du poste est tombé. · La plaque tournante est rouillée. · Les rails sont tordus.
 - chantier : Les leviers sont graissés. · Les rails sont redressés.
 - rallumé : Les trains passent d’une voie à l’autre. · La plaque tourne. · Les leviers répondent.
 
@@ -854,8 +854,8 @@ Pour tous les items :
 | --- | --- | --- |
 | `relative-clauses` | Les wagons s’accrochent à la locomotive. | Le convoi est formé. |
 | `subordinate-clauses` | Chaque voie de service part du poste. | Les voies sont ouvertes. |
-| `passive-reported` | Le chef de gare transmet les messages de voie. | Les messages sont reçus. |
-| `compound-tenses` | Le poste garde le carnet des trains passés. | Le carnet est à jour. |
+| `passive-reported` | Le cantonnier transmet les messages de voie. | Les messages sont reçus. |
+| `compound-tenses` | Le poste garde le carnet des trains passés. | Chaque ligne du carnet porte une heure. |
 | `moods` | Le poste prépare les trains du jour. | Les trains sont aiguillés. |
 
 ## Les plans

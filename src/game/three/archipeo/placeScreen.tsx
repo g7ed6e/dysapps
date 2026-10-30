@@ -50,6 +50,8 @@ export interface QuestionContextValue {
   show(item: ItemShown | null): void;
   /** Un écran bas (un téléphone couché), même quand la scénette y prend la bulle de la tablette (GD-26). */
   lowScreen: boolean;
+  /** Le cadre de la mission (GD-27) à l'écran : rien d'autre ne se dit tant qu'il est là. */
+  quiet: boolean;
 }
 
 export const QuestionContext = createContext<QuestionContextValue | null>(null);

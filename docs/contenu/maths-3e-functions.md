@@ -336,7 +336,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je taille les verres de la lanterne. · Je polis chaque verre à la main. · Je tourne la manivelle du contrepoids.
-- lieu : Ici, la lanterne envoie sa lumière au large. · La tour domine la mer de nuages.
+- lieu : Ici, le Fanal envoie sa lumière au large. · Le Fanal domine la mer de nuages.
 - ruine : Le socle est fendu. · Deux blocs sont tombés. · La lanterne est éteinte.
 - chantier : Le socle tient de nouveau. · Le contrepoids pend à sa chaîne.
 - rallumé : La lanterne brille au sommet. · Les verres portent la lumière.
@@ -349,7 +349,7 @@ Pour tous les items :
 | `linear` | Les rayons partent droit de la lanterne. | Les rayons sont alignés. |
 | `graphs` | Le faisceau sort de la lanterne vers les nuages. | Le faisceau passe au-dessus des nuages. |
 | `proportions` | Chaque verre est taillé à la mesure de la lanterne. | Les verres tiennent dans leur cage de fer. |
-| `coordinates` | La tour sert de repère à tous les archipels. | La carte des archipels porte la tour. |
+| `coordinates` | Le Fanal sert de repère à tous les archipels. | La carte des archipels porte la tour. |
 
 ## Les plans
 

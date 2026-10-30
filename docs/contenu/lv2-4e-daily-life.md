@@ -1577,9 +1577,9 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `es-time` | La pendule de l’épicerie marque les heures. | La pendule est remontée. |
-| `es-my-day` | Les mineurs passent à l’épicerie chaque matin. | Les mineurs sont partis à la mine. |
-| `es-timetable` | L’épicier affiche le menu de la semaine. | Le menu est affiché. |
+| `es-time` | La pendule de l’épicerie marque les heures. | La pendule donne l’heure juste. |
+| `es-my-day` | Les mineurs passent à l’épicerie avant la mine. | Les mineurs sont partis à la mine. |
+| `es-timetable` | L’épicier affiche le menu du jour. | Le menu est affiché. |
 | `es-ser-estar` | L’épicier compte les pots du garde-manger. | Les pots sont rangés. |
 | `es-signs` | Les panneaux de l’épicerie sont repeints. | Les panneaux sont accrochés. |
 | `de-time` | La pendule marque l’heure du repas. | Les mineurs sont à table. |

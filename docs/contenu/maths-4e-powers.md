@@ -191,7 +191,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je façonne le métal en grandes feuilles. · Je frappe la tôle sur l’enclume. · Je trempe les pièces dans l’eau.
-- lieu : Ici, le métal de la montagne devient des pièces. · Le fourneau chauffe toute la forge.
+- lieu : Ici, le métal de la montagne devient des pièces. · Le fourneau chauffe toute la Forge.
 - ruine : Le fourneau est froid et fendu. · Le grand marteau est couché. · La suie couvre les roues dentées.
 - chantier : Le fourneau tient debout. · Le marteau est remis sur son axe.
 - rallumé : Le fourneau est chaud. · La lave coule dans la rigole. · Le marteau frappe de nouveau.
@@ -203,8 +203,8 @@ Pour tous les items :
 | `powers` | Les étincelles jaillissent de la tôle chaude. | Les étincelles éclairent la forge. |
 | `square-roots` | L’enclume reçoit les pièces chaudes. | Les pièces sont forgées. |
 | `scientific-notation` | Les pièces chaudes plongent dans l’eau. | Le métal est durci. |
-| `subtracting` | Le fourneau garde la chaleur de la lave. | Le fourneau est chargé. |
-| `volumes` | Chaque pièce a sa forme et son moule. | Les moules sont posés sur l’établi. |
+| `subtracting` | Le forgeron note le chaud et le froid. | Le fourneau est chargé. |
+| `volumes` | Chaque pièce a sa forme et son moule. | Les formes à couler sont posées sur l’établi. |
 
 ## Les plans
 

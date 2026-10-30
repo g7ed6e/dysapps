@@ -338,19 +338,19 @@ Pour tous les items :
 
 - métier : Je pèse les marchandises sur ma balance. · Je range mes étals sur le radeau. · Je compare les poids avant l’échange.
 - lieu : Ici, les radeaux sont amarrés au chenal. · Le marché se tient sur l’eau.
-- ruine : Un radeau est couché à plat. · Les amarres sont rompues. · Le toit de la cabane est tombé.
-- chantier : Le radeau du quai est remis à flot. · Les amarres sont tendues.
+- ruine : Un radeau est couché à plat. · Les cordes sont cassées. · Le toit de la cabane est tombé.
+- chantier : Le radeau du quai est remis à flot. · Les cordes sont tendues.
 - rallumé : Les balances sont en place. · Le marché reprend sur l’eau.
 
 ### Les missions
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `proportion-tables` | Les étals se garnissent sur les radeaux. | Les étals sont garnis. |
-| `percentages` | Les prix changent d’un radeau à l’autre. | Les prix sont affichés. |
+| `proportion-tables` | Les étals se garnissent sur les radeaux. | Le marchand garnit ses étals. |
+| `percentages` | Les prix changent d’un radeau à l’autre. | Le marchand affiche les prix. |
 | `ratios` | Les barques font la traversée du chenal. | Les barques sont à quai. |
-| `formulas` | Le marchand note ses comptes sur la toile. | Les comptes sont écrits. |
-| `statistics` | Le marchand tient le registre des ventes. | Le registre est à jour. |
+| `formulas` | Le marchand note ses comptes sur la toile. | Les comptes tombent juste. |
+| `statistics` | Le marchand tient le registre des ventes. | Le marchand inscrit les ventes au registre. |
 
 ## Les plans
 

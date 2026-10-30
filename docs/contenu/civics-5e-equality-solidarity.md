@@ -444,7 +444,7 @@ Pour tous les items :
 | --- | --- | --- |
 | `gender-equality` | Chaque maison a sa place au four. | Toutes les maisons ont du pain. |
 | `discrimination` | Les passerelles relient toutes les maisons. | Les passerelles tiennent. |
-| `solidarity` | Le village partage le four et le pain. | Le pain est partagé. |
+| `solidarity` | Le village partage le four et le pain. | Chaque maison reçoit sa part de pain. |
 
 ## Les plans
 

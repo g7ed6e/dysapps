@@ -642,7 +642,7 @@ Pour tous les items :
 
 - métier : J’envoie le minerai vers la Forge. · Je charge la caisse à minerai. · Je contrôle les rails.
 - lieu : Ici, les wagons se chargent de minerai. · Les rails descendent jusqu’à la Forge.
-- ruine : Le quai est fendu. · La remise n’a plus de toit. · La caisse à minerai est renversée.
+- ruine : Le quai est fendu. · Le toit de la remise est tombé. · La caisse à minerai est renversée.
 - chantier : Le quai est balayé. · La caisse est remise sur ses pieds.
 - rallumé : Les wagons partent chargés. · Le minerai descend vers la Forge. · Les entrées de la mine sont ouvertes.
 
@@ -652,7 +652,7 @@ Pour tous les items :
 | --- | --- | --- |
 | `future` | Le prochain train part vers la Forge. | Le train est parti. |
 | `modals` | Le cheminot contrôle les wagons au départ. | Les wagons sont contrôlés. |
-| `present-perfect` | Le cheminot tient le registre des trains. | Le registre est à jour. |
+| `present-perfect` | Le cheminot tient le registre des trains. | Les départs sont écrits dans le registre. |
 | `traditions` | Des voyageurs descendent sur le quai. | Les voyageurs sont montés dans le train. |
 | `forms` | Le cheminot remplit les fiches des wagons. | Les fiches sont classées. |
 

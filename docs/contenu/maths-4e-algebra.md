@@ -206,7 +206,7 @@ Pour tous les items :
 | `expanding` | Les grandes pièces se découpent en morceaux. | Les morceaux sont taillés. |
 | `equations` | Les deux pièces se posent sur la balance. | La balance est rangée. |
 | `rationals` | Les pièces se rangent selon leur longueur. | Les pièces sont alignées. |
-| `pythagorean-theorem` | L’équerre contrôle chaque angle droit. | Les angles sont tracés. |
+| `pythagorean-theorem` | L’équerre contrôle chaque angle droit. | Les angles droits sont contrôlés. |
 
 ## Les plans
 

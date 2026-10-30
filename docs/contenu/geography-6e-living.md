@@ -452,9 +452,9 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `metropolises` | Les photos des grandes villes sont étalées. | Les photos sont accrochées. |
+| `metropolises` | Les photos des grandes villes sont étalées. | Les photos couvrent un pan du mur. |
 | `low-density` | Les photos des déserts et des monts sont au mur. | Les photos sont classées. |
-| `inhabited-world` | Les photos des ports et des plages sont au mur. | Le mur de photos est garni. |
+| `inhabited-world` | Les photos des ports et des plages sont au mur. | Le mur de photos se remplit. |
 
 ## Les plans
 

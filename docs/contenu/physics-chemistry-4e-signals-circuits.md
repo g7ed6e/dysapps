@@ -442,7 +442,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je relie la dynamo aux lampes. · Je sonne la cloche du poste. · Je contrôle les fils.
-- lieu : Ici, la dynamo fait la lumière. · Les fils portent le courant à l’usine.
+- lieu : Ici, la dynamo donne du courant aux lampes. · Les fils portent le courant à l’usine.
 - ruine : Les fils sont tombés. · La cloche est couchée. · La dynamo est sans socle.
 - chantier : La dynamo est huilée. · Le poteau porte ses fils.
 - rallumé : La lampe brille. · La cloche sonne. · Le courant passe dans les fils.
@@ -451,7 +451,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `light-sound` | La lampe et la cloche parlent à l’usine. | Les signaux sont envoyés. |
+| `light-sound` | La lampe et la cloche préviennent l’usine. | Les signaux sont envoyés. |
 | `electric-circuits` | Les fils relient les lampes de l’usine. | Les lampes sont branchées. |
 | `chemical-reactions` | Le charbon brûle sous la chaudière. | La cendre est balayée. |
 

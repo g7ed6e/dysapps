@@ -426,7 +426,7 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je pose les tuiles vernissées. · Je monte la charpente de chêne. · Je scelle les dalles.
+- métier : Je pose les tuiles brillantes. · Je monte la charpente de chêne. · Je scelle les dalles.
 - lieu : Ici, les gens du village se réunissent sous le toit. · Les piliers portent la toiture.
 - ruine : Le toit de la halle est tombé. · Les piliers tiennent sur le dallage.
 - chantier : La charpente de chêne est montée. · Les tuiles couvrent un pan.
@@ -436,7 +436,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `representatives` | Les gens du village se réunissent sous le toit. | Les bancs sont alignés. |
+| `representatives` | Les gens du village se réunissent sous le toit. | Les gens s’assoient sur les bancs alignés. |
 | `school-secularism` | La halle est ouverte à tous les gens du village. | La halle reste ouverte. |
 | `private-life` | Chaque maison du village a sa porte. | Les portes ferment bien. |
 

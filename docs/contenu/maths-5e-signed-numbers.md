@@ -343,11 +343,11 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `thermometer` | Le rail porte des encoches du bas en haut. | Le godet est accroché à son encoche. |
+| `thermometer` | Le rail porte des encoches du bas en haut. | Le godet tient dans son encoche. |
 | `adding` | Les godets montent et descendent le long du rail. | Les godets sont revenus sur le rail. |
 | `fractions` | Le bassin se remplit godet après godet. | Le bassin garde son eau. |
-| `order-of-operations` | La fontainière règle ses poulies une à une. | Les poulies sont réglées. |
-| `conversions-angles` | Le rail se mesure en cordes. | Le rail est mesuré. |
+| `order-of-operations` | La fontainière règle ses poulies une à une. | Les poulies tournent sans bruit. |
+| `conversions-angles` | Le rail se mesure en mètres et en centimètres. | Le rail est mesuré. |
 
 ## Les plans
 

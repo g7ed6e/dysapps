@@ -415,19 +415,19 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je plante mes sondes dans le sol. · Je lis la girouette et le récipient de pluie. · Je note ce que disent les bouches.
+- métier : Je plante mes sondes dans le sol. · Je lis la girouette et le récipient de pluie. · Je note la chaleur des bouches.
 - lieu : Ici, des sources chaudes sortent de la roche. · Les instruments lisent la terre et le ciel.
-- ruine : Les sondes sont couchées côte à côte. · Le mât de la girouette est couché. · La margelle est tombée en blocs.
-- chantier : Les sondes sont replantées. · La margelle est refaite.
+- ruine : Les sondes sont couchées côte à côte. · Le mât de la girouette est couché. · Le bord du bassin est tombé en blocs.
+- chantier : Les sondes sont replantées. · Le bord du bassin est refait.
 - rallumé : Les trois bouches fument. · Les instruments sont en place.
 
 ### Les missions
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `active-earth` | Les bouches chaudes sortent de la roche. | Les bouches ont leur margelle. |
-| `weather-climate` | La girouette tourne sur son mât. | La girouette est dressée. |
-| `human-impact` | Le récipient de pluie est posé sur la dalle. | Le récipient est relevé. |
+| `active-earth` | Les bouches chaudes sortent de la roche. | Les bouches ont leur bord de pierre. |
+| `weather-climate` | La girouette tourne sur son mât. | La girouette se dresse sur son mât. |
+| `human-impact` | Les gens puisent l’eau des sources chaudes. | Le niveau de l’eau est noté. |
 
 ## Les plans
 

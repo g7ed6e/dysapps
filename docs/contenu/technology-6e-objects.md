@@ -571,7 +571,7 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je rabote les planches. · Je pose le bordé sur la quille. · Je goudronne la coque.
+- métier : Je rabote les planches. · Je pose les planches sur la quille. · Je goudronne la coque.
 - lieu : Ici, on construit et on répare les bateaux. · La cale descend vers l’eau.
 - ruine : La cale est couverte de sable. · La quille est couchée sur les rails.
 - chantier : Les rails de la cale sont dégagés. · La quille est posée.
@@ -581,9 +581,9 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `object-function` | Le charpentier regarde la coque sur la cale. | La coque est vérifiée. |
-| `materials` | Les planches sont empilées dans l’atelier. | Les planches sont triées. |
-| `information-networks` | Le charpentier tient un registre des bateaux. | Le registre est à jour. |
+| `object-function` | Le charpentier regarde la coque sur la cale. | Le charpentier juge la coque solide. |
+| `materials` | Les planches sont empilées dans l’atelier. | Le charpentier trie les planches. |
+| `information-networks` | Le charpentier tient un registre des bateaux. | Les bateaux sont inscrits au registre. |
 | `solve-program` | La coque glisse sur les rails de la cale. | La coque est sur ses rails. |
 
 ## Les plans

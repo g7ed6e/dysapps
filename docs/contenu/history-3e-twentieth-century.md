@@ -446,16 +446,16 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je raconte les nouvelles du monde. · Je plie les feuilles sur les présentoirs. · Je relève le courrier de la boîte.
-- lieu : Ici, les nouvelles arrivent par la radio et la poste. · Le kiosque s’ouvre sur les alpages.
+- lieu : Ici, les nouvelles arrivent par la radio et le courrier. · Le kiosque s’ouvre sur les alpages.
 - ruine : La coupole est glissée dans l’herbe. · Les présentoirs sont couchés. · Deux poteaux penchent.
 - chantier : La coupole est reposée. · Les présentoirs sont debout.
-- rallumé : Le poste de radio parle sur le comptoir. · Les feuilles sont sur les présentoirs.
+- rallumé : La radio donne les nouvelles sur le comptoir. · Les feuilles sont sur les présentoirs.
 
 ### Les missions
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `total-wars` | Les cadres sous l’avant-toit montrent les nouvelles anciennes. | Les cadres sont accrochés. |
+| `total-wars` | Les cadres sous l’avant-toit montrent d’anciens journaux. | Les cadres sont accrochés. |
 | `world-since-1945` | Le poste de radio apporte les nouvelles d’ailleurs. | Le poste de radio est allumé. |
 | `republic` | La boîte aux lettres reçoit le courrier du village. | Le courrier est trié sur le comptoir. |
 

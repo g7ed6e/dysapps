@@ -895,7 +895,7 @@ Pour tous les items :
 - métier : Je monte les sacs au grenier. · Je mouds le grain sous la meule. · Je range les mesures sur la longue table.
 - lieu : Ici, on garde les provisions de la montagne. · Les casiers partagent les sacs.
 - ruine : Le toit est ouvert au-dessus de la porte. · Les sacs sont éboulés au pied du mur. · Les mesures sont couchées dans l’herbe.
-- chantier : Le toit est refermé. · Les sacs sont en tas.
+- chantier : Le toit du grenier est refermé. · Les sacs sont en tas.
 - rallumé : La meule tourne sous son petit toit. · Les casiers sont garnis.
 
 ### Les missions
@@ -903,10 +903,10 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `power-rules` | Les mesures vont de la grande à la petite. | Les mesures sont sur la longue table. |
-| `square-equations` | Les sacs se posent en carré au pied du mur. | Le carré de sacs est posé. |
-| `prime-factors` | Les sacs se partagent entre les casiers. | Les casiers sont garnis. |
-| `identities` | Les sacs s’empilent en cube sur la plate-forme. | La plate-forme porte son cube de sacs. |
-| `zero-product` | La poulie monte les sacs sous le faîte. | Les sacs sont montés au grenier. |
+| `square-equations` | Les sacs sont rangés en rangées égales. | Les rangées sont égales. |
+| `prime-factors` | Les sacs se partagent entre les casiers. | Les sacs trouvent leur casier. |
+| `identities` | Les sacs forment un grand carré sur la plate-forme. | La plate-forme porte son carré de sacs. |
+| `zero-product` | La poulie monte les sacs un par un. | Les sacs sont montés au grenier. |
 
 ## Les plans
 

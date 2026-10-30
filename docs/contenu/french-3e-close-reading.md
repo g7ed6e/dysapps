@@ -966,10 +966,10 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `inference` | Les livres ont des dos sans titre. | Les livres sont sur les rayonnages. |
+| `inference` | Les livres ont des dos lisses. | Les livres sont sur les rayonnages. |
 | `figures-of-speech` | Les six fenêtres sont hautes et en arc. | Les fenêtres sont vitrées. |
 | `text-connectives` | Les pupitres sont alignés autour de la table. | Les pupitres sont remis droit. |
-| `voices` | La lampe éclaire la grande table. | La lampe est sur la grande table. |
+| `voices` | La lampe éclaire la grande table. | La lampe est allumée pour les lecteurs. |
 | `literary-eras` | Les rayonnages montent jusqu’à la coupole. | Les rayonnages sont garnis. |
 
 ## Les plans

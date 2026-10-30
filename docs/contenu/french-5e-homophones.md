@@ -661,10 +661,10 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `pairs` | Deux passerelles partent ensemble du tronc. | Les passerelles sont tendues. |
-| `choices` | Une corde est nouée à chaque palier. | Les nœuds sont serrés. |
+| `pairs` | Deux passerelles partent ensemble du tronc. | Les passerelles tiennent sans bruit. |
+| `choices` | Une corde est nouée à chaque palier. | Les nœuds serrent bien les cordes. |
 | `homophone-sentences` | Deux cordes se nouent au même palier. | Le palier tient par ses cordes. |
-| `participles` | La cordière tresse ses cordes au bord de l’eau. | Les cordes sont tressées. |
+| `participles` | La cordière tresse ses cordes au bord de l’eau. | Les cordes tressées tiennent le pont. |
 | `word-meaning` | La cordière nomme chaque corde selon son usage. | Chaque corde a son nom. |
 
 ## Les plans

@@ -622,8 +622,8 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `comprehension` | Le guetteur lit le ciel et la mer. | Le guetteur a noté ce qu’il voit. |
-| `sentence-order` | Les vitraux de la chambre sont sur le banc. | Les vitraux sont montés. |
-| `tense-values` | Le guetteur tient le journal de la tour. | Le journal est à jour. |
+| `sentence-order` | Les vitraux de la chambre sont sur le banc. | Le guetteur monte les vitraux. |
+| `tense-values` | Le guetteur tient le journal de la tour. | Le journal a une page de plus. |
 
 ## Les plans
 

@@ -94,8 +94,11 @@ export interface WorldRevisionPart {
 
 /** La scénette d'un lieu qui n'en a pas (le 5e, GD-22, lot 2) : ni rôle ni phrase d'accueil. */
 const NO_SCENETTE: Scenette = { role: '', greeting: null, placement: 'rangee' };
-// Le cadre d'une mission (GD-27) se lève seul après ce délai, si ni un toucher ni la fin de la voix ne l'ont levé.
-const FRAME_MS = 7000;
+// Le cadre d'une mission (GD-27), lu à voix haute : il se lève un temps après la fin de la voix (le lecteur lent finit
+// après elle), et au plus tard après le délai de secours, si la voix ne finit jamais. Sans lecture automatique, seul un
+// toucher le lève : jamais de durée imposée (référent dys, consultant UX UI).
+const FRAME_AFTER_VOICE_MS = 1500;
+const FRAME_FALLBACK_MS = 15000;
 
 export function WorldQuestion({ place, mission, plain = false, world, onClose, revision }: Props) {
   const { state, completeRevision } = useBlocland();
@@ -237,25 +240,39 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const bulle = !plain && !simple && !finished && hasScenette(place);
   const intro = !bulle && layout.low && !introDone && !finished && !offer && !simple;
   // La raison du lieu (GD-27, lot 2) : à l'entrée d'une scénette, l'habitant dit en une phrase pourquoi il a besoin de
-  // l'élève (le cadre), avant la première bulle de consigne ; la scène est là, sans ses objets. Un toucher sur la bulle
-  // passe à la consigne ; la voix qui finit de la lire aussi ; sinon, la bulle se lève seule après quelques secondes.
-  // Jamais en révision (sa consigne commence par « Tu revois… »), ni sur l'écran habituel. La suite se dit au bilan.
+  // l'élève (le cadre), avant la première bulle de consigne ; la scène est là, sans ses objets. Un toucher sur la phrase
+  // passe à la consigne ; avec la lecture automatique, la voix qui finit de la lire aussi, un temps après ; sans elle,
+  // le cadre reste jusqu'au toucher. Jamais en révision (sa consigne commence par « Tu revois… »), ni sur l'écran
+  // habituel. La suite se dit au bilan.
   const words = useMemo(() => (plain || revision ? null : missionWords(place, mission)), [plain, revision, place, mission]);
   const [framed, setFramed] = useState(false);
-  const framing = bulle && Boolean(item) && words !== null && !framed;
+  const framing = bulle && words !== null && !framed;
+  // Le focus clavier posé sur le cadre quand il se lève revient sur la ligne de consigne qui le remplace.
+  const frameFocused = useRef(false);
   const passFrame = useCallback(() => {
+    frameFocused.current = document.activeElement?.classList.contains('world-scenette-cadre') ?? false;
     stopSpeaking();
     setFramed(true);
   }, []);
   useEffect(() => {
-    if (!framing || !words) return;
-    const timer = window.setTimeout(passFrame, FRAME_MS);
-    if (settings.autoRead) speak(frenchTypography(words.frame), 0.9, passFrame);
+    if (!framing || !words || !settings.autoRead) return;
+    // Un rappel d'une phrase déjà coupée (la scénette fermée pendant le cadre) ne lève rien.
+    let live = true;
+    const timers: number[] = [];
+    const later = (ms: number) => timers.push(window.setTimeout(() => live && passFrame(), ms));
+    later(FRAME_FALLBACK_MS);
+    speak(frenchTypography(words.frame), 0.9, () => later(FRAME_AFTER_VOICE_MS));
     return () => {
-      window.clearTimeout(timer);
+      live = false;
+      timers.forEach((t) => window.clearTimeout(t));
       stopSpeaking();
     };
   }, [framing, words, settings.autoRead, passFrame]);
+  useEffect(() => {
+    if (!framed || !frameFocused.current) return;
+    frameFocused.current = false;
+    box.current?.querySelector<HTMLElement>('.world-scenette-head')?.focus();
+  }, [framed]);
   // La phrase de l'habitant, à la première rencontre : au premier item sur tablette ; sur un écran bas, avec
   // « Commencer » seulement (consultant UX UI) ; jamais dans la ligne repliée. Comptée comme vue une fois affichée.
   const greeting = scenette.greeting && greetItem === itemKey && (!layout.low || intro) ? scenette.greeting : null;
@@ -486,7 +503,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     [revision, completeRevision],
   );
   const Done = revision?.Done ?? WorldDone;
-  const context = useMemo(() => ({ place, layout, show, instruction, simple, lowScreen }), [place, layout, show, instruction, simple, lowScreen]);
+  const context = useMemo(() => ({ place, layout, show, instruction, simple, lowScreen, quiet: framing }), [place, layout, show, instruction, simple, lowScreen, framing]);
 
   const exerciseId = ready?.def.id;
   const readyLevel = ready?.level ?? 1;
@@ -588,17 +605,19 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     const rule = ranges && grandTexte && simpleLow ? placeRuleLine(place, exerciseId, readyLevel) : null;
     const line = bulle ? bubbleLine : instruction;
     const head: ReactNode = frame ? (
-        <div className="world-scenette-head world-scenette-cadre-ligne">
+        <div className="world-scenette-head world-scenette-cadre-ligne" tabIndex={-1}>
           <p className="world-scenette-role">
             <RoleName role={scenette.role} />
           </p>
+          {/* Toute la phrase se touche ; le chevron dit qu'elle mène à la consigne (un signe, pas un bouton de plus). */}
           <button type="button" className="world-scenette-cadre" onClick={passFrame} aria-label={`${frame} Continuer.`}>
             <Syllabified text={frame} />
+            <Icon name="chevronRight" />
           </button>
           <SpeakButton text={frame} compact />
         </div>
       ) : tight ? (
-        <div className="world-scenette-head world-consigne-line">
+        <div className="world-scenette-head world-consigne-line" tabIndex={-1}>
           <p className="world-consigne-fold" id="consigne-ligne">
             <strong className="world-scenette-role">
               <RoleName role={scenette.role} />
@@ -956,7 +975,7 @@ function GestureScreen(props: ScreenProps) {
 }
 
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
-  const { layout, show, simple } = useQuestion();
+  const { layout, show, simple, quiet } = useQuestion();
   useStopOnLeave();
   const { settings, speak } = useSettings();
   const item = items[0];
@@ -1025,10 +1044,11 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
   // Les dictées (le Coffre à mots, l'Oreille du mineur) : le mot ou sa phrase dits à l'ouverture de l'item, comme sur
   // leur écran de référence, si la lecture automatique est choisie.
   // Une lecture par item : la voix, la phrase et le réglage du moment, lus sans relancer la lecture quand ils changent.
+  // Pendant le cadre de la mission (GD-27), la phrase attend qu'il soit levé.
   const readOnOpen = useEffectEvent(() => {
-    if (speakOnOpen && settings.autoRead) speak(spoken, undefined, lang);
+    if (speakOnOpen && settings.autoRead && !quiet) speak(spoken, undefined, lang);
   });
-  useEffect(() => readOnOpen(), [itemKeyOf, speakOnOpen]);
+  useEffect(() => readOnOpen(), [itemKeyOf, speakOnOpen, quiet]);
   if (!item || !scene) return null;
   // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière (ou le mot sous elle, `gapWord`).
   const gap = question || gapWord ? null : filledGap(prompt, answer, answered?.results);

@@ -39,7 +39,7 @@ it('au Donjon, le panier de l’Hégire se pose devant la porte de son siècle (
   const onAnswer = vi.fn();
   render(
     <SettingsProvider>
-      <QuestionContext.Provider value={{ place: 'donjon' as never, layout, show: () => {}, instruction: '', simple: true, lowScreen: false }}>
+      <QuestionContext.Provider value={{ place: 'donjon' as never, layout, show: () => {}, instruction: '', simple: true, lowScreen: false, quiet: false }}>
         <SortScreen items={[{ ...item, placeScene: { kind: 'column' } }]} answered={null} onAnswer={onAnswer} onHelp={() => {}} level={2} exerciseId="history-5e-middle-ages-christendoms-islam-2" />
       </QuestionContext.Provider>
     </SettingsProvider>,

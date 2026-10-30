@@ -334,11 +334,11 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je mesure le terrain et je le dessine. · Je suis l’ombre du gnomon sur le dallage. · Je vise le Fanal depuis la terrasse.
+- métier : Je mesure le terrain et je le dessine. · Je marque l’ombre du gnomon sur le dallage. · Je vise le Fanal depuis la terrasse.
 - lieu : Ici, on mesure la montagne depuis la terrasse. · La terrasse regarde la mer de nuages.
 - ruine : Le gnomon est couché le long du muret. · Deux dalles sont soulevées. · La boule a roulé contre le muret.
 - chantier : Le gnomon est debout. · Le cercle de visée est sur son pied.
-- rallumé : L’ombre du gnomon court sur le dallage. · Le cercle de visée regarde vers le Fanal.
+- rallumé : L’ombre du gnomon court sur le dallage. · Le cercle de visée est tourné vers le Fanal.
 
 ### Les missions
 
@@ -348,7 +348,7 @@ Pour tous les items :
 | `thales` | Le gnomon jette son ombre sur le dallage. | L’ombre est tracée sur le dallage. |
 | `trigonometry` | Le cercle de visée se tourne vers le Fanal. | La visée est notée dans l’abri. |
 | `scaling` | La topographe dessine le terrain en plus petit. | Le dessin est rangé dans l’abri. |
-| `transformations` | Les flèches de fer montrent toutes le même sens. | Les flèches restent dans le même sens. |
+| `transformations` | Les flèches de fer montrent toutes le même sens. | Les flèches sont clouées au mur de l’abri. |
 
 ## Les plans
 

@@ -539,20 +539,20 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je lis les nouvelles au poste. · Je règle les cadrans sur la longue table. · Je tourne le pavillon vers le large.
-- lieu : Ici, le mât porte les ondes au large. · L’auvent abrite les postes.
-- ruine : Les postes sont renversés. · Les haubans du mât pendent. · Le pavillon est tourné vers le sol.
-- chantier : Les postes sont sur la table. · Le mât est haubané.
-- rallumé : Le pavillon écoute le large. · Les cadrans sont réglés.
+- métier : Je lis les nouvelles à la radio. · Je règle les cadrans sur la longue table. · Je tourne le pavillon vers le large.
+- lieu : Ici, le mât envoie les messages au large. · L’auvent abrite les radios.
+- ruine : Les radios sont renversées. · Les haubans du mât pendent. · Le pavillon est tourné vers le sol.
+- chantier : Les radios sont sur la table. · Le mât est tenu par ses câbles.
+- rallumé : Le pavillon est tourné vers le large. · Les cadrans sont réglés.
 
 ### Les missions
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `understanding` | Les postes sont alignés sur la longue table. | Les postes sont réglés. |
+| `understanding` | Les radios sont alignées sur la longue table. | Les radios sont réglées. |
 | `linking-words` | Le mât tient avec ses haubans. | Les haubans sont tendus. |
 | `false-friends` | Le pavillon se tourne vers le large. | Le pavillon est orienté. |
-| `media` | L’auvent abrite les postes de la pluie. | Les postes sont au sec. |
+| `media` | L’auvent abrite les radios de la pluie. | Les radios sont au sec. |
 
 ## Les plans
 

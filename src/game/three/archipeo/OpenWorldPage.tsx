@@ -479,8 +479,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
 
   // L'état des lieux lu au toucher d'un habitant (le monde est créé une fois), et le rang du prochain toucher par lieu.
   const constructionsRef = useRef(constructions);
-  constructionsRef.current = constructions;
+  useEffect(() => {
+    constructionsRef.current = constructions;
+  }, [constructions]);
   const habitantTurns = useRef(new Map<PlaceId, number>());
+  // La dernière ligne dite par un habitant : un second toucher pendant qu'elle s'affiche la redit, sans avancer.
+  const habitantSaid = useRef<{ place: PlaceId; line: string; at: number } | null>(null);
   useEffect(() => {
     const el = host.current;
     if (!el) return;
@@ -530,17 +534,22 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         if (needleRef.current) needleRef.current.style.transform = `rotate(${yaw.toFixed(3)}rad)`;
         setTurned(Math.abs(yaw) > 0.01);
       },
-      // L'habitant d'un lieu touché près de sa porte (GD-27, la parole du lieu) : une ligne de dix mots au plus, écrite
-      // dans la phrase du monde et lue, qui tourne à chaque toucher (son métier, son lieu, l'état du lieu) ; la rotation
-      // n'est pas sauvegardée. Kéo ne bouge pas.
+      // L'habitant d'un lieu touché près de sa porte (GD-27, la parole du lieu) : son rôle puis une ligne de dix mots au
+      // plus, écrits dans la phrase du monde et lus, qui tourne à chaque toucher (son métier, son lieu, l'état du lieu) ;
+      // la rotation n'est pas sauvegardée. Un second toucher pendant que la ligne s'affiche la redit (référent dys).
+      // Kéo ne bouge pas.
       onHabitant: (placeId) => {
         const state = constructionState(constructionsRef.current[placeId]);
         const mood: PlaceMood = state === 'restauree' ? 'rallume' : state === 'en-chantier' ? 'chantier' : 'ruine';
+        const last = habitantSaid.current;
+        const again = last?.place === placeId && Date.now() - last.at < SAID_MS * 2 ? last.line : null;
         const n = habitantTurns.current.get(placeId) ?? 0;
-        const line = habitantLine(placeId, mood, n);
+        const line = again ?? habitantLine(placeId, mood, n);
         if (!line) return;
-        habitantTurns.current.set(placeId, n + 1);
-        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0 }));
+        if (!again) habitantTurns.current.set(placeId, n + 1);
+        habitantSaid.current = { place: placeId, line, at: Date.now() };
+        const role = hasScenette(placeId) ? scenetteOf(placeId).role : null;
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: role ? [role, line] : [line], after: 0, voice: role ? `${role}. ${line}` : undefined }));
       },
       // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
       onClosed: (land) => {

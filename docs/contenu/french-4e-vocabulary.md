@@ -760,7 +760,7 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je connais chaque pierre de la montagne. · Je classe les pierres par case. · Je note le nom de chaque pierre.
+- métier : Je ramasse les pierres de la montagne. · Je classe les pierres par case. · Je note le nom de chaque pierre.
 - lieu : Ici, les pierres sont triées et nommées. · Les étagères portent toutes les pierres.
 - ruine : Les murs sont écroulés. · Les pierres sont mêlées au sol. · La pluie entre dans la salle.
 - chantier : Les étagères sont fixées au mur. · Le seuil est balayé.

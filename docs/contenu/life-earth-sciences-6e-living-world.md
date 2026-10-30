@@ -569,19 +569,19 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je note les plantes de la rive. · Je marche sur la passerelle. · Je suis les racines dans la vase.
-- lieu : Ici, les palétuviers poussent dans l’eau. · Le carbet sur pilotis domine la rive.
+- lieu : Ici, les palétuviers poussent dans l’eau. · La cabane sur pilotis domine la rive.
 - ruine : La passerelle est tombée dans la vase. · Les pieux sont penchés.
-- chantier : Le platelage de la rive est posé. · La passerelle mène au carbet.
-- rallumé : Les palétuviers font de l’ombre. · Le carbet tient sur ses pilotis.
+- chantier : Le plancher de la rive est posé. · La passerelle mène à la cabane.
+- rallumé : Les palétuviers font de l’ombre. · La cabane tient sur ses pilotis.
 
 ### Les missions
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `living-groups` | Les plantes de la rive poussent en groupes. | Les groupes sont notés. |
+| `living-groups` | Les plantes de la rive poussent en groupes. | La botaniste note les groupes. |
 | `food-growth` | Les palétuviers nourrissent les oiseaux de la rive. | Les oiseaux nichent dans les branches. |
 | `planet-earth` | L’eau monte et descend avec la mer. | Le niveau de l’eau est noté. |
-| `life-enquiry` | La botaniste observe une feuille de près. | La feuille est dessinée. |
+| `life-enquiry` | La botaniste observe une feuille de près. | La botaniste dessine la feuille. |
 
 ## Les plans
 

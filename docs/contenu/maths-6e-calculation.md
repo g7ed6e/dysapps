@@ -211,7 +211,7 @@ Pour tous les items :
 | `times-tables` | La barge prend des caisses par rangées. | Les rangées sont comptées. |
 | `make-ten` | Chaque caisse prend dix sacs. | Les caisses sont pleines. |
 | `doubles-halves` | Les sacs se partagent en deux tas. | Les deux tas sont égaux. |
-| `word-problems` | Le passeur note les chargements. | Le carnet est rempli. |
+| `word-problems` | Le docker note les chargements. | Le docker remplit son carnet. |
 | `measures` | Les cordes se mesurent avant la coupe. | Les cordes sont à la bonne longueur. |
 
 ## Les plans

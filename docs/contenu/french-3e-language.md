@@ -912,10 +912,10 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `verb-moods` | Les instruments se rangent du plus grand au plus petit. | Le rang des instruments est complet. |
-| `complex-agreements` | Les cordes de chaque instrument sont tendues pareil. | Les cordes sont tendues. |
+| `verb-moods` | Chaque instrument a son rang dans l’atelier. | Le rang des instruments est complet. |
+| `complex-agreements` | Les cordes d’un même instrument se tendent ensemble. | Les cordes sont accordées. |
 | `connotation` | Chaque instrument a sa voix. | Chaque instrument est au râtelier. |
-| `emphasis-punctuation` | Le diapason est posé sur l’établi. | Le diapason est rangé. |
+| `emphasis-punctuation` | Le diapason est posé sur l’établi. | Le diapason est prêt sur l’établi. |
 | `verb-stems` | Les bobines de corde sont rangées sur l’établi. | Les bobines sont au complet. |
 
 ## Les plans

@@ -1547,7 +1547,7 @@ Pour tous les items :
 | `es-connectives` | Les malles se lient avec des sangles. | Les malles sont sanglées. |
 | `es-media` | Le mur porte les affiches du col. | Les affiches sont collées. |
 | `de-past` | Le chemin de dalles mène à la barrière. | Le chemin est dégagé. |
-| `de-stories` | Le porteur écoute les récits des voyageurs. | Les récits ont fait le tour du col. |
+| `de-stories` | Le porteur écoute les récits des voyageurs. | Les récits sont connus de tout le col. |
 | `de-on-the-road` | Les voyageurs marchent sur le chemin du col. | Les voyageurs ont passé la barrière. |
 | `de-connectives` | La barrière tient sur ses deux poteaux. | Le contrepoids retient la barrière. |
 | `de-media` | Les cartes du col s’affichent au mur. | Les cartes sont fixées au mur. |

@@ -1453,26 +1453,26 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je sers les repas aux voyageurs. · Je prépare les lits de l’étage. · Je mets le couvert sur la grande table.
+- métier : Je sers les repas aux voyageurs. · Je prépare les lits de l’étage. · Je pose les assiettes sur la grande table.
 - lieu : Ici, les voyageurs posent leurs bagages. · La grande table réunit tout le monde.
-- ruine : Le toit est crevé à l’est. · Le balcon penche sur le parvis. · Les bancs sont renversés.
+- ruine : Le toit a un trou. · Le balcon penche sur le parvis. · Les bancs sont renversés.
 - chantier : Le toit est refait. · La grande table est remise droite.
-- rallumé : La grande table est mise. · Les lits sont faits.
+- rallumé : La grande table est prête. · Les lits sont faits.
 
 ### Les missions
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `es-greetings` | Un voyageur s’assoit à la grande table. | La table est servie. |
-| `es-numbers` | L’aubergiste compte les couverts et les lits. | Les lits sont comptés. |
-| `es-family` | Des familles dorment à l’étage. | Les lits sont faits. |
+| `es-greetings` | Un voyageur s’assoit à la grande table. | L’aubergiste sert la table. |
+| `es-numbers` | L’aubergiste compte les couverts et les lits. | L’aubergiste connaît le nombre de lits. |
+| `es-family` | Des familles dorment à l’étage. | L’aubergiste fait les lits. |
 | `es-articles` | Chaque chose a sa place dans l’auberge. | Tout est rangé. |
-| `es-sentences` | Les voyageurs se parlent autour de la table. | Le repas est fini. |
-| `de-greetings` | Un voyageur pose ses bagages sur le parvis. | Les bagages sont montés. |
-| `de-numbers` | L’aubergiste note les chambres sur son carnet. | Le carnet est à jour. |
-| `de-family` | Une famille dort à l’étage. | Le lit est fait. |
-| `de-articles` | Les bancs sont rangés autour de la table. | Les bancs sont en ligne. |
-| `de-sentences` | Le courrier des voyageurs arrive à l’auberge. | Le courrier est trié. |
+| `es-sentences` | Les voyageurs se parlent autour de la table. | Les voyageurs finissent le repas. |
+| `de-greetings` | Un voyageur pose ses bagages sur le parvis. | Le voyageur monte ses bagages. |
+| `de-numbers` | L’aubergiste note les chambres sur son carnet. | Chaque chambre a sa ligne dans le carnet. |
+| `de-family` | Une famille dort à l’étage. | La famille a un lit prêt. |
+| `de-articles` | Les bancs sont rangés autour de la table. | Les bancs sont prêts pour la classe. |
+| `de-sentences` | Le courrier des voyageurs arrive à l’auberge. | L’aubergiste trie le courrier. |
 
 ## Les plans
 

@@ -208,9 +208,9 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `ordering` | Les bassins sont alignés en rangs. | Les bassins sont en eau. |
-| `operations` | Deux tas de sel sont posés côte à côte. | Les tas sont rangés dans le hangar. |
-| `scale` | La saunière pose des repères le long du muret. | Les repères sont plantés. |
-| `large-numbers` | Le hangar à sel est grand. | Le hangar est rempli de sacs. |
+| `operations` | Deux tas de sel sont posés côte à côte. | La saunière range les tas dans le hangar. |
+| `scale` | La saunière pose des repères le long du muret. | La saunière plante les repères. |
+| `large-numbers` | Le hangar à sel est grand. | Le hangar se remplit de sacs. |
 | `rounding-products` | La saunière pèse le sel avant la vente. | Les sacs sont prêts pour la vente. |
 
 ## Les plans

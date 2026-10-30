@@ -439,11 +439,11 @@ Pour tous les items :
 
 ### L’habitant
 
-- métier : Je mène les pierres sur la pente. · Je charge le traîneau sur ses rouleaux. · Je tourne le cabestan.
+- métier : Je mène les pierres sur la pente. · Je charge le traîneau sur ses rouleaux. · Je tourne le treuil.
 - lieu : Ici, la pente monte jusqu’au socle du Fanal. · Le traîneau glisse sur les rouleaux.
 - ruine : Le dallage est fendu. · Les rouleaux sont épars dans l’herbe. · Le traîneau est de travers.
 - chantier : Le portique est debout. · Les rouleaux sont alignés.
-- rallumé : Le traîneau monte la pente. · Le contrepoids pend à sa chaîne.
+- rallumé : Le traîneau monte la pente. · Le contrepoids tire la chaîne du portique.
 
 ### Les missions
 
@@ -451,7 +451,7 @@ Pour tous les items :
 | --- | --- | --- |
 | `motion-forces` | Le traîneau glisse sur ses rouleaux. | Le traîneau arrive en haut de la pente. |
 | `energy-power` | Le contrepoids tire sur la chaîne du portique. | La chaîne est tendue. |
-| `acids-bases` | Le fer du portique brunit sous la pluie. | Le fer est huilé. |
+| `acids-bases` | Le fer du portique devient brun sous la pluie. | Le fer est huilé. |
 
 ## Les plans
 

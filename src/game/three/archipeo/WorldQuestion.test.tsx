@@ -710,23 +710,33 @@ describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot
     lang = '';
     rate = 1;
     voice = null;
-    onend: (() => void) | null = null;
-    onerror: (() => void) | null = null;
+    onend: ((e: SpeechSynthesisEvent) => void) | null = null;
+    onerror: ((e: SpeechSynthesisErrorEvent) => void) | null = null;
     constructor(public text: string) {}
   }
-  const start = async () => {
+  const start = async (keepFrame = false) => {
     const user = userEvent.setup();
     const go = screen.queryByRole('button', { name: /Commencer/ });
     if (go) await user.click(go);
     await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    // Le cadre de la mission (GD-27, lot 2) : un toucher sur la phrase de l'habitant passe à la consigne.
+    const cadre = document.querySelector<HTMLElement>('.world-scenette-cadre');
+    if (cadre && !keepFrame) await user.click(cadre);
   };
 
   it('Familles-craft aux Archives : le sens, la racine trouée, les affixes écrits avec leur trait d’union', async () => {
     renderPlace('archives', 'word-families');
     expect(await screen.findByText('La copiste')).toBeInTheDocument();
     // La bulle (GD-26) : la consigne repliée et la phrase de l'item, jamais la phrase d'accueil de la copiste.
-    await start();
+    await start(true);
     expect(document.querySelector('.world-scenette-greeting')).toBeNull();
+    // Sans lecture automatique, le cadre (GD-27) reste jusqu'au toucher : aucune durée imposée.
+    const cadre = document.querySelector<HTMLElement>('.world-scenette-cadre');
+    expect(cadre).not.toBeNull();
+    await new Promise((r) => setTimeout(r, 200));
+    expect(document.querySelector('.world-scenette-cadre')).not.toBeNull();
+    await userEvent.setup().click(cadre!);
+    expect(document.querySelector('.world-scenette-cadre')).toBeNull();
     expect(document.querySelector('.world-gap-word')?.textContent).toMatch(/^…|…$/);
     for (const a of answers()) expect(a.textContent?.trim()).toMatch(/^-|-$/);
   });
@@ -738,16 +748,26 @@ describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot
     localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
     renderPlace('printworks', 'sound-discrimination');
     expect(await screen.findByText('L’imprimeur')).toBeInTheDocument();
-    await start();
-    // Le cadre de la mission (GD-27, lot 2) s'écrit et se dit d'abord ; un toucher sur la phrase passe à la consigne.
+    await start(true);
+    // Le cadre de la mission (GD-27, lot 2) s'écrit et se dit d'abord. Une voix coupée (le haut-parleur du cadre, une
+    // autre phrase) ne le lève pas ; la voix finie le lève un temps après, et la consigne se dit ensuite seulement.
     const cadre = await vi.waitFor(() => {
       const el = document.querySelector<HTMLElement>('.world-scenette-cadre');
       expect(el).not.toBeNull();
       return el!;
     });
     expect(cadre.textContent).toMatch(/\.$/);
-    await userEvent.setup().click(cadre);
-    expect(document.querySelector('.world-scenette-cadre')).toBeNull();
+    const frameText = cadre.textContent ?? '';
+    await vi.waitFor(() => expect(speak).toHaveBeenCalled());
+    const frameUtterance = speak.mock.calls[speak.mock.calls.length - 1][0] as FakeUtterance;
+    expect(frameText).toContain(frameUtterance.text);
+    expect(speak.mock.calls.map((c) => (c[0] as FakeUtterance).text)).toEqual([frameUtterance.text]);
+    frameUtterance.onerror?.({ error: 'interrupted' } as SpeechSynthesisErrorEvent);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(document.querySelector('.world-scenette-cadre')).not.toBeNull();
+    frameUtterance.onend?.({} as SpeechSynthesisEvent);
+    await vi.waitFor(() => expect(document.querySelector('.world-scenette-cadre')).toBeNull(), { timeout: 4000 });
+    await vi.waitFor(() => expect(speak.mock.calls.length).toBeGreaterThan(1));
     expect(screen.getByRole('button', { name: /Réécouter/ })).toBeInTheDocument();
     await vi.waitFor(() => expect(speak).toHaveBeenCalled());
     const spoken = speak.mock.calls.map((c) => (c[0] as { text?: string }).text ?? '');
@@ -786,15 +806,18 @@ describe('Le large (GD-20, point 8, lot L9)', () => {
     lang = '';
     rate = 1;
     voice = null;
-    onend: (() => void) | null = null;
-    onerror: (() => void) | null = null;
+    onend: ((e: SpeechSynthesisEvent) => void) | null = null;
+    onerror: ((e: SpeechSynthesisErrorEvent) => void) | null = null;
     constructor(public text: string) {}
   }
-  const start = async () => {
+  const start = async (keepFrame = false) => {
     const user = userEvent.setup();
     const go = screen.queryByRole('button', { name: /Commencer/ });
     if (go) await user.click(go);
     await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    // Le cadre de la mission (GD-27, lot 2) : un toucher sur la phrase de l'habitant passe à la consigne.
+    const cadre = document.querySelector<HTMLElement>('.world-scenette-cadre');
+    if (cadre && !keepFrame) await user.click(cadre);
   };
 
   /** Le texte de la page, sans les noms des boutons (le mot dit n'y est pas écrit). */

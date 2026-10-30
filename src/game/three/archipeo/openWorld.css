@@ -834,11 +834,16 @@
 /* La suite de la mission (GD-27, lot 2) : la phrase de l'habitant après le résultat et la partie posée, lue après eux. */
 .world-question .world-done-follow {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem;
   margin: 0.4rem 0 0;
+  text-align: left;
   overflow-wrap: break-word;
   hyphens: none;
+}
+.world-question .world-done-follow > :first-child {
+  flex: 1 1 12rem;
 }
 .world-question .world-done-detail {
   min-height: 48px;
@@ -1268,11 +1273,15 @@
   flex-basis: 100%;
 }
 .world-scenette-cadre {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   flex: 1 1 12rem;
   min-height: 48px;
   margin: 0;
-  padding: 0.3rem 0;
+  padding: 0.3rem 0.2rem;
   border: 0;
+  border-radius: 0.5rem;
   background: none;
   color: inherit;
   font: inherit;
@@ -1280,6 +1289,16 @@
   cursor: pointer;
   overflow-wrap: break-word;
   hyphens: none;
+}
+.world-scenette-cadre .icon {
+  flex: 0 0 auto;
+}
+.world-scenette-cadre:focus-visible {
+  outline: 3px solid var(--focus, currentColor);
+  outline-offset: 2px;
+}
+.world-scenette-head:focus {
+  outline: none;
 }
 /* Sur un téléphone, la phrase d'accueil prend toute la largeur du panneau et le haut-parleur passe dessous, comme sous
    les phrases de Kéo : à côté de lui, un mot plus long que la colonne restante se coupait (« signaleu / r » en
