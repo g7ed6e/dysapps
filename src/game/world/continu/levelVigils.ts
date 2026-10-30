@@ -43,10 +43,11 @@ export interface LevelVigils {
   readonly departure: boolean;
   /**
    * Le départ commence par la lueur du niveau d'avant, vue du quai (à partir du 5e, GD-27, lot 5) : ses plans, le feu
-   * éteint ou allumé, et le lieu de la lueur, nommé pendant ses `until` premières secondes. Sinon, le départ cadre le feu
-   * seul, comme l'arrivée (au 6e : son propre feu seulement).
+   * éteint ou allumé, et le lieu de la lueur, nommé (son icône, son nom, dit une fois) de la seconde `shown`, quand la
+   * caméra se pose sur elle, à la seconde `until`, la coupe sur le feu. Sinon, le départ cadre le feu seul, comme
+   * l'arrivée (au 6e : son propre feu seulement).
    */
-  readonly beyond?: { readonly place: PlaceId; readonly until: number; readonly vigil: Vigil; readonly vigilLit?: Vigil };
+  readonly beyond?: { readonly place: PlaceId; readonly shown: number; readonly until: number; readonly vigil: Vigil; readonly vigilLit?: Vigil };
 }
 
 const BY_LEVEL: Readonly<Record<OpenWorldLevel, LevelVigils>> = { '6e': VIGILS_6E, '5e': VIGILS_5E, '4e': VIGILS_4E, '3e': VIGILS_3E };

@@ -109,8 +109,11 @@ export function farArchipelagos3e(): Facets {
   b.prism({ x: fourth.x + 2, y: 28, z: fourth.z }, 6, 8, 12, 6, FAR_ISLES_3E.smoke);
   b.prism({ x: fourth.x + 6, y: 39, z: fourth.z - 2, yaw: 0.5 }, 8, 10, 11, 6, FAR_ISLES_3E.smoke);
   b.prism({ x: fourth.x + 12, y: 49, z: fourth.z - 4, yaw: 1 }, 10, 6, 9, 6, FAR_ISLES_3E.smoke);
-  b.prism({ x: fourth.x + 30, y: -1, z: fourth.z - 10 }, 4.2, 3, 9, 6, FAR_ISLES_3E.stoneShade, FAR_ISLES_3E.stone);
-  b.box({ x: fourth.x + 30, y: 2.6, z: fourth.z - 13.4 }, [3.4, 2.8, 1.6], FAR_ISLES_3E.light);
+  // Le fourneau hors du cône, sur son socle clair, sa gueule deux fois plus grande que la lanterne du phare : elle se
+  // lit de la tablette au téléphone (directeur artistique, relecture du lot 5).
+  b.prism({ x: fourth.x + 34, y: -1, z: fourth.z - 16 }, 9, 7, 3, 6, FAR_ISLES_3E.stone, FAR_ISLES_3E.tower);
+  b.prism({ x: fourth.x + 34, y: 2, z: fourth.z - 16 }, 5.5, 4, 13, 6, FAR_ISLES_3E.stoneShade, FAR_ISLES_3E.stone);
+  b.box({ x: fourth.x + 34, y: 5, z: fourth.z - 20.6 }, [6.8, 5.6, 2.2], FAR_ISLES_3E.light);
   return b.build();
 }
 

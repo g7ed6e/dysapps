@@ -42,8 +42,9 @@ export function vigilCutTimes(v: Vigil): number[] {
  * niveau) et chacun cède `trim` secondes, pour que la veillée reste courte.
  */
 export function glanceFirst(glance: VigilShot, v: Vigil, trim = 1): Vigil {
+  // Un plan qui glissait garde un trajet d'une seconde au moins : jamais une coupe de plus que celle voulue.
   return {
-    shots: [glance, ...v.shots.map((shot, i) => ({ ...shot, travel: i === 0 ? 0 : Math.max(0, shot.travel - trim), hold: Math.max(1, shot.hold - trim) }))],
+    shots: [glance, ...v.shots.map((shot, i) => ({ ...shot, travel: i === 0 ? 0 : Math.max(1, shot.travel - trim), hold: Math.max(1, shot.hold - trim) }))],
     still: v.still,
   };
 }

@@ -125,7 +125,10 @@ describe('La vue finale du 3e', () => {
     }
     expect(Math.min(...lights.sixth)).toBeGreaterThan(15);
     expect(Math.min(...lights.fifth)).toBeGreaterThan(40);
-    expect(Math.max(...lights.fourth)).toBeLessThan(6);
-    expect(Math.min(...lights.fourth)).toBeGreaterThan(0);
+    expect(Math.max(...lights.fourth)).toBeLessThan(12);
+    expect(Math.min(...lights.fourth)).toBeGreaterThan(1);
+    // La gueule de la Forge, deux fois la lanterne du phare : elle se lit de loin (directeur artistique).
+    const span = (ys: number[]) => Math.max(...ys) - Math.min(...ys);
+    expect(span(lights.fourth)).toBeGreaterThanOrEqual(1.8 * span(lights.sixth));
   });
 });

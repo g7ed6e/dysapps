@@ -857,7 +857,7 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
   };
   // La clé du programme, une par niveau (`key` : celle du 5e reste « archipeo-hauteur », le 4e a la sienne) : Three.js
   // réutilise le programme compilé de toute matière qui porte la même clé, sans relire `onBeforeCompile`, et chaque
-  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (15 au 5e, 19 au 4e : comparées par sommet depuis la mesure iPad du 24 octobre 2026) sont
+  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (15 au 5e, 21 au 4e depuis la lanterne du Sémaphore du lot 5 de GD-27 : comparées par sommet depuis la mesure iPad du 24 octobre 2026) sont
   // loin de toute autre couleur du 5e (world/continu/thinFog.test.ts).
   m.customProgramCacheKey = () => key;
   return m;

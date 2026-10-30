@@ -11,7 +11,7 @@ import { BloclandProvider, useBlocland } from '../../BloclandContext';
 import { getArchipelago, voyageId } from '../../world/archipelago';
 import type { LinkedLand } from '../../world/continu/lands';
 import { vigilSeconds, type Vigil } from '../../world/continu/vigil';
-import { SEMAPHORE_VIGIL_5E } from '../../world/continu/vigils5e';
+import { DEPARTURE_LIT_VIGIL_5E, DEPARTURE_VIGIL_5E, PHARE_GLANCE_5E, SEMAPHORE_VIGIL_5E } from '../../world/continu/vigils5e';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import { LEVEL_PICKER_FOLD_MS } from './LevelPicker';
 import OpenWorldPage from './OpenWorldPage';
@@ -348,6 +348,62 @@ test('la scène refuse la veillée après le voile : le voile se lève, rien n�
     expect(document.querySelector('.open-world-fondu')).not.toHaveClass('on');
     const saved = JSON.parse(localStorage.getItem('dysapps:game') ?? '{}') as { world?: { vigils?: string[] } };
     expect(saved.world?.vigils ?? []).toEqual([]);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+// Le départ du 5e commence par la lueur du niveau d'avant (GD-27, lot 5) : la caméra glisse depuis Kéo sans voile ; posée
+// sur la lumière du Phare, la boîte écrit « Le Phare », son icône, sans phrase (« Réécouter » n'existe qu'avec une voix,
+// absente ici) ; le voile couvre la
+// coupe sur le Sémaphore, où la ligne s'écrit ; le voile revient pour le retour.
+test('au départ du 5e : rien d’écrit pendant le glissement, « Le Phare » posé, le voile autour de la coupe, « Le Sémaphore est éteint. » après, le voile avant le retour', async () => {
+  scene.playVigils = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port, vigils: ['5e-arrival'] } }));
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    const veil = () => document.querySelector('.open-world-fondu')!;
+    const box = () => document.querySelector('.open-world-veillee')!;
+    let started = false;
+    act(() => {
+      started = window.__dysappsMondeOuvert!.veillee('departure');
+    });
+    expect(started).toBe(true);
+    expect(scene.vigils).toHaveLength(1);
+    expect(scene.vigils[0].vigil).toBe(DEPARTURE_VIGIL_5E);
+    // Aucune coupe au début : la caméra glisse à découvert, la boîte est vide, sans « Passer » (le toucher passe).
+    expect(scene.vigils[0].veiled).toBe(false);
+    expect(box()).toHaveAttribute('data-shown', 'non');
+    expect(box().querySelector('[role="status"]')).toHaveTextContent('');
+    expect(screen.queryByRole('button', { name: 'Passer' })).toBeNull();
+    // La caméra posée sur la lumière : « Le Phare », hors de l'annonce, avec « Passer ».
+    act(() => vi.advanceTimersByTime(PHARE_GLANCE_5E.travel * 1000 + 50));
+    expect(box()).toHaveAttribute('data-shown', 'oui');
+    expect(box().querySelector('.open-world-veillee-beyond')).toHaveTextContent('Le Phare');
+    expect(box().querySelector('[role="status"]')).toHaveTextContent('');
+    expect(screen.getByRole('button', { name: 'Passer' })).toBeInTheDocument();
+    expect(veil()).not.toHaveClass('on');
+    // Un quart de seconde avant la coupe, le voile ; à la coupe, la ligne ; un quart de seconde après, le voile se lève.
+    const cut = (PHARE_GLANCE_5E.travel + PHARE_GLANCE_5E.hold) * 1000;
+    act(() => vi.advanceTimersByTime(cut - 250 - PHARE_GLANCE_5E.travel * 1000));
+    expect(veil()).toHaveClass('on');
+    act(() => vi.advanceTimersByTime(300));
+    expect(box().querySelector('.open-world-veillee-beyond')).toBeNull();
+    expect(box().querySelector('[role="status"]')).toHaveTextContent('Le Sémaphore est éteint.');
+    act(() => vi.advanceTimersByTime(300));
+    expect(veil()).not.toHaveClass('on');
+    // Avant le retour, le voile.
+    act(() => vi.advanceTimersByTime(vigilSeconds(DEPARTURE_VIGIL_5E) * 1000 - cut - 400));
+    expect(veil()).toHaveClass('on');
+    act(() => scene.vigils[0].done());
+    expect(screen.queryByText('Le Sémaphore est éteint.')).toBeNull();
+    act(() => vi.advanceTimersByTime(300));
+    expect(veil()).not.toHaveClass('on');
+    const saved = JSON.parse(localStorage.getItem('dysapps:game') ?? '{}') as { world?: { vigils?: string[] } };
+    expect(saved.world?.vigils).toEqual(['5e-arrival', '5e-departure']);
+    expect(DEPARTURE_LIT_VIGIL_5E.shots[0]).toBe(PHARE_GLANCE_5E);
   } finally {
     vi.useRealTimers();
   }

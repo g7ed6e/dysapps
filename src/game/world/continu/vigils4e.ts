@@ -31,8 +31,8 @@ export const FORGE_VIGIL_4E: Vigil = {
   still: STILL,
 };
 
-/** Le coup d'œil à la lueur : glisser depuis Kéo, puis la tenir ; le Sémaphore nommé pendant ces secondes. */
-const GLANCE = { travel: 4, hold: 3 } as const;
+/** Le coup d'œil à la lueur : glisser depuis Kéo, puis la tenir, la lanterne un peu au-dessus du milieu de l'image (Kéo se lit au bas) ; le Sémaphore nommé une fois posé. */
+const GLANCE = { travel: 4, hold: 3, below: 12 } as const;
 
 /**
  * La lanterne du Sémaphore, vue du quai de la Crique : la caméra qui suit, tournée vers elle (son pied derrière Kéo, du
@@ -42,7 +42,8 @@ export const SEMAPHORE_GLANCE_4E: VigilShot = (() => {
   const keo = { x: DEPARTURE_4E.at.x, y: CRIQUE_LEVEL, z: DEPARTURE_4E.at.z };
   const yaw = Math.atan2(-(SEMAPHORE_LIGHT_4E.x - keo.x), -(SEMAPHORE_LIGHT_4E.z - keo.z));
   const { position } = followPose(keo, 0, undefined, yaw);
-  return { position, target: { ...SEMAPHORE_LIGHT_4E }, travel: GLANCE.travel, hold: GLANCE.hold };
+  // Le regard vise `below` sous la lanterne : elle monte vers 45 % du haut de l'image, Kéo paraît au bas (directeur artistique).
+  return { position, target: { x: SEMAPHORE_LIGHT_4E.x, y: SEMAPHORE_LIGHT_4E.y - GLANCE.below, z: SEMAPHORE_LIGHT_4E.z }, travel: GLANCE.travel, hold: GLANCE.hold };
 })();
 
 /** Le départ : la lanterne du Sémaphore d'abord, puis la Forge telle qu'elle est. */
@@ -55,5 +56,5 @@ export const VIGILS_4E: LevelVigils = {
   fireVigil: FORGE_VIGIL_4E,
   boarding: null,
   departure: true,
-  beyond: { place: 'semaphore', until: GLANCE.travel + GLANCE.hold, vigil: DEPARTURE_VIGIL_4E },
+  beyond: { place: 'semaphore', shown: GLANCE.travel, until: GLANCE.travel + GLANCE.hold, vigil: DEPARTURE_VIGIL_4E },
 };

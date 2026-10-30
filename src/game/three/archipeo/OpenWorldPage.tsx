@@ -322,9 +322,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // Un script de caméra se joue (la vue finale du 3e, une veillée) : la scène seule, comme pendant une question.
   const [scriptPlaying, setScriptPlaying] = useState(false);
   // La veillée en cours (GD-23, GD-27, lot 3) : sa ligne, écrite sur fond uni et lue, relançable, le temps des plans.
-  // La ligne d'une veillée ; `beyond` : le lieu de la lueur du niveau d'avant, nommé par son icône et son nom à la place
-  // de la ligne pendant le coup d'œil qui ouvre le départ du 5e et du 4e (GD-27, lot 5), puis la ligne, sous le voile.
-  const [vigil, setVigil] = useState<{ n: number; line: string; beyond?: PlaceId } | null>(null);
+  // La ligne d'une veillée ; au départ du 5e et du 4e (GD-27, lot 5), le coup d'œil à la lueur du niveau d'avant la
+  // précède : pendant le glissement, rien n'est écrit (`glide`) ; la caméra posée, le lieu de la lueur, son icône et son
+  // nom, à la place de la ligne, dit une fois avec la lecture automatique (`beyond`) ; puis la ligne, sous le voile.
+  const [vigil, setVigil] = useState<{ n: number; line: string; glide?: boolean; beyond?: PlaceId } | null>(null);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
   // revient) ; pour un lieu d'une terre fermée, la fiche de sa terre ; jamais en même temps qu'un panneau de l'Escale.
   const [lieu, setLieu] = useState<{ place: PlaceId; focus: string | null } | null>(null);
@@ -1146,13 +1147,18 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         }
         veiledRun.current = veiled;
         seeVigil(`${level}-${kind}`);
-        setVigil((was) => ({ n: (was?.n ?? 0) + 1, line, beyond: beyond?.place }));
-        if (beyond)
+        setVigil((was) => ({ n: (was?.n ?? 0) + 1, line, glide: Boolean(beyond) }));
+        if (beyond) {
+          const { place, shown, until } = beyond;
+          veilLater(() => {
+            setVigil((was) => (was ? { n: was.n, line: was.line, beyond: place } : was));
+            if (settings.autoRead) speak(placeById(place).name);
+          }, shown * 1000);
           veilLater(() => {
             setVigil((was) => (was ? { n: was.n, line: was.line } : was));
             if (settings.autoRead) speak(line);
-          }, beyond.until * 1000);
-        else if (settings.autoRead) speak(line);
+          }, until * 1000);
+        } else if (settings.autoRead) speak(line);
         if (veiled) for (const { at, on } of vigilVeils(vigil, LEVEL_FADE_MS / 2000)) veilLater(() => setFondu(on), at * 1000);
         return true;
       };
@@ -1534,17 +1540,18 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               lecture automatique, à réentendre d'un toucher ; jamais nécessaire pour avancer. La zone reste dans la page,
               vide le reste du temps, pour que les lecteurs d'écran annoncent la ligne (référent dys). « Passer » écrit
               que la veillée se passe (le toucher n'importe où le fait aussi) : 48 px, discret (consultant UX UI). */}
-          <div className="open-world-said open-world-veillee" data-shown={vigil ? 'oui' : 'non'}>
-            {/* Le lieu de la lueur, pendant le coup d'œil : son icône et son nom, sans phrase, dans la même boîte, hors de
-                l'annonce (une seule annonce, la ligne ; consultant UX UI, référent dys) ; ni voix ni « Réécouter » pour lui. */}
+          <div className="open-world-said open-world-veillee" data-shown={vigil && !vigil.glide ? 'oui' : 'non'}>
+            {/* Le lieu de la lueur, la caméra posée dessus : son icône et son nom, sans phrase, dans la même boîte, hors de
+                l'annonce (une seule annonce, la ligne ; consultant UX UI, référent dys) ; dit une fois avec la lecture
+                automatique, sans « Réécouter » (directeur artistique). Pendant le glissement, la boîte est vide. */}
             {vigil?.beyond && (
               <p className="open-world-veillee-beyond" aria-hidden="true">
                 <Icon name={getBiome(placeById(vigil.beyond).island)?.icon ?? 'map'} /> {placeById(vigil.beyond).name}
               </p>
             )}
-            <p role="status">{vigil && !vigil.beyond ? vigil.line : ''}</p>
-            {vigil && !vigil.beyond && <SpeakButton text={vigil.line} label="Réécouter" compact />}
-            {vigil && (
+            <p role="status">{vigil && !vigil.glide && !vigil.beyond ? vigil.line : ''}</p>
+            {vigil && !vigil.glide && !vigil.beyond && <SpeakButton text={vigil.line} label="Réécouter" compact />}
+            {vigil && !vigil.glide && (
               <button type="button" className="open-world-veillee-pass" onClick={() => passVigilRef.current()}>
                 Passer
               </button>

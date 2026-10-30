@@ -275,8 +275,11 @@ describe('La lueur du niveau d’avant, au départ (GD-27, lot 5)', () => {
       expect(Math.hypot(glance.position.x - from.position.x, glance.position.z - from.position.z)).toBeLessThan(25);
       const s = screenOf({ ...glance, fov: 56, lens: 0 }, light, 1024, 768);
       expect(Math.abs(s.x - 512)).toBeLessThan(8);
-      expect(Math.abs(s.y - 384)).toBeLessThan(60);
+      // Au milieu, ou un peu au-dessus (au 4e, vers 45 % du haut : Kéo se lit au bas de l'image).
+      expect(s.y).toBeGreaterThan(0.4 * 768);
+      expect(s.y).toBeLessThanOrEqual(0.5 * 768 + 1);
       expect(vigilCutTimes(v)).toEqual([glance.travel + glance.hold]);
+      expect(beyond.shown).toBe(glance.travel);
       expect(beyond.until).toBe(glance.travel + glance.hold);
       expect(v.shots.length).toBe(3);
       slow(v, from);
@@ -300,6 +303,9 @@ describe('La lueur du niveau d’avant, au départ (GD-27, lot 5)', () => {
     expect(v.shots[2].travel).toBe(SEMAPHORE_LIT_VIGIL_5E.shots[1].travel - 1);
     expect(v.shots[2].hold).toBe(SEMAPHORE_LIT_VIGIL_5E.shots[1].hold - 1);
     expect(v.still).toBe(SEMAPHORE_LIT_VIGIL_5E.still);
+    // Une seule coupe, celle voulue : un plan au trajet court garde une seconde de trajet.
+    const short = glanceFirst(PHARE_GLANCE_5E, { shots: [{ ...PHARE_GLANCE_5E, travel: 0, hold: 2 }, { ...PHARE_GLANCE_5E, travel: 1, hold: 2 }], still: 6 });
+    expect(vigilCutTimes(short)).toEqual([PHARE_GLANCE_5E.travel + PHARE_GLANCE_5E.hold]);
   });
 
   it('le voile du fondu : levé après la coupe du début, ou posé puis levé autour d’une coupe en route, et posé avant le retour ; rien sans coupe', () => {

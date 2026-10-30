@@ -65,7 +65,7 @@ export const FUMEROLLES_VIGIL_5E: Vigil = {
   still: STILL,
 };
 
-/** Le coup d'œil à la lueur : glisser depuis Kéo, puis la tenir ; le Phare nommé pendant ces secondes. */
+/** Le coup d'œil à la lueur : glisser depuis Kéo, puis la tenir ; le Phare nommé une fois posé. */
 const GLANCE = { travel: 4, hold: 3 } as const;
 
 /**
@@ -94,5 +94,5 @@ export const VIGILS_5E: LevelVigils = {
   fireVigilLit: SEMAPHORE_LIT_VIGIL_5E,
   boarding: { place: 'fumerolles', who: BOARDING_5E, vigil: FUMEROLLES_VIGIL_5E },
   departure: true,
-  beyond: { place: 'phare', until: GLANCE.travel + GLANCE.hold, vigil: DEPARTURE_VIGIL_5E, vigilLit: DEPARTURE_LIT_VIGIL_5E },
+  beyond: { place: 'phare', shown: GLANCE.travel, until: GLANCE.travel + GLANCE.hold, vigil: DEPARTURE_VIGIL_5E, vigilLit: DEPARTURE_LIT_VIGIL_5E },
 };
