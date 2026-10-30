@@ -1192,11 +1192,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     }
     if (whole && !was && !vigilSeen(state.world, `${level}-boarding`)) setBoardingPending(true);
   }, [ready, level, vigils, constructions, state.world, seeVigil]);
-  // Elle attend aussi la Carte fermée ; refusée par la scène (la Nef en route), elle reste à jouer (expert frontend).
+  // Elle attend aussi la Carte fermée et la Nef à quai ; refusée par la scène, elle reste à jouer (expert frontend ;
+  // `departing` dans les gardes, pour qu'un refus sous voile ne la relance pas en boucle, consultant UX UI).
   useEffect(() => {
-    if (!boardingPending || posePending || asking || scriptPlaying || Boolean(remise) || mapOpen) return;
+    if (!boardingPending || posePending || asking || scriptPlaying || Boolean(remise) || mapOpen || departing) return;
     if (playVigil('boarding', undefined, () => setBoardingPending(true))) setBoardingPending(false);
-  }, [boardingPending, posePending, asking, scriptPlaying, remise, mapOpen, playVigil]);
+  }, [boardingPending, posePending, asking, scriptPlaying, remise, mapOpen, departing, playVigil]);
   // Quand le monde est prêt, après un voyage entre niveaux : à la première arrivée par la Nef, le carillon, une fois ;
   // après un retour, le nom du niveau, dans la zone du lecteur d'écran et à la voix (référent dys). Puis l'adresse
   // oublie le voyage : un rechargement ne le rejoue pas (expert frontend).
