@@ -1210,16 +1210,16 @@ export const FORGE_LAYOUT = {
  * complet quel que soit le nombre) ; jamais derrière la flamme du foyer de « régler » ni derrière Kéo. Il descend d'en
  * haut sur l'établi, sous la tôle du toit.
  */
-const CAULDRON = { r0: 0.14, r1: 0.19, h: 0.26, rim: 0.21 } as const;
+const CAULDRON = { r0: 0.16, r1: 0.22, h: 0.3, rim: 0.24 } as const;
 const CAULDRONS: readonly (readonly [number, number])[] = [
-  [SHED.x1 - 0.8, 4.25],
-  [SHED.x1 - 0.35, 4.47],
-  [SHED.x1 - 0.8, 4.69],
-  [SHED.x1 - 0.35, 4.91],
-  [SHED.x1 - 0.8, 5.13],
-  [SHED.x1 - 0.35, 5.35],
-  [SHED.x1 - 0.8, 5.57],
-  [SHED.x1 - 0.35, 5.79],
+  [SHED.x1 - 0.83, 4.86],
+  [SHED.x1 - 0.35, 5.08],
+  [SHED.x1 - 0.83, 4.64],
+  [SHED.x1 - 0.35, 5.3],
+  [SHED.x1 - 0.83, 4.42],
+  [SHED.x1 - 0.35, 5.52],
+  [SHED.x1 - 0.83, 4.2],
+  [SHED.x1 - 0.35, 5.74],
 ];
 
 /** Un chaudron, à l'origine, son fond en 0 : la panse en six pans, le bord de fer, le dedans sombre. */

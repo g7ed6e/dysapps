@@ -1,8 +1,9 @@
 // Le monde qui répond (GD-27, axe 3, piste B ; GD-28, « Le monde qui répond, sur le monument » ; lot 4 du chantier
 // « Rendre le monde ouvert vivant », 30 octobre 2026) : pendant une mission, chaque bonne réponse pose un objet de plus
 // dans la scène, fixe et cumulatif jusqu'au bilan, sur le monument, jamais sur l'instrument ni parmi les réponses,
-// jamais sur le signe de l'absence, loin de la bulle. L'objet se pose après « Valider », une fois la réaction de l'item
-// finie, en un seul mouvement lent (`RESPOND_SECONDS`) ; d'un coup avec « Réduire les animations ». Rien pour une
+// jamais sur le signe de l'absence, loin de la bulle. L'objet part dès « Valider », pendant l'écran du résultat, à la
+// place de la réaction du témoin de l'item (décision du directeur artistique), en un seul mouvement lent
+// (`RESPOND_SECONDS`), une descente droite ; d'un coup avec « Réduire les animations » ou à « Suivant ». Rien pour une
 // erreur ; ni compteur, ni jauge, ni emplacement vide : les objets qui ne sont pas encore posés ne se dessinent pas, et
 // rien ne dit combien il en manque. Le bilan n'en parle jamais ; en quittant la scénette, la scène revient à l'état du
 // lieu (le maillage de l'item s'efface avec elle). Ce fichier tient le registre des lieux qui répondent (un objet par

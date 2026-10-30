@@ -3313,13 +3313,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const reactionMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
   itemMesh.visible = false;
   reactionMesh.visible = false;
+  // Nommés pour les tests de la scène (le monde qui répond), rien d'autre ne lit ces noms.
+  itemMesh.name = 'item';
+  reactionMesh.name = 'reaction';
   scene.add(still(itemMesh), reactionMesh);
   let reaction: { r: Reaction; start: number } | null = null;
   // Le monde qui répond (GD-28, lot 4 de GD-27) : les objets posés sont dans le maillage de l'item, et celui qui se pose
   // descend dans le maillage de la réaction, libre là où le lieu a son objet (l'objet remplace la réaction du témoin,
   // directeur artistique) : aucun appel de plus. Si une réaction joue quand même (le tri), l'objet se pose d'un coup.
   // `itemFacets` : la scène de l'item sans les objets posés, pour y remettre le prochain.
-  let respond: { place: PlaceId; mission: string; count: number; shown: number; move: { start: number; m: RespondMove } | null } | null = null;
+  let respond: { place: PlaceId; mission: string; item: string; count: number; shown: number; move: { start: number; m: RespondMove } | null } | null = null;
   let itemFacets: Facets | null = null;
   function setGeometry(mesh: THREE.Mesh, f: Facets) {
     mesh.geometry.dispose();
@@ -3376,13 +3379,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
    * (dès « Valider », pendant l'écran du résultat ; d'un coup avec « Réduire les animations ») ; une autre mission ou un compte qui retombe
    * (« Rejouer »), tout s'efface ; le même compte, rien ne bouge.
    */
-  const countResponded = (place: PlaceId, mission: string, responded: number | undefined) => {
+  const countResponded = (place: PlaceId, mission: string, item: string, responded: number | undefined) => {
     const wanted = responds(place) ? Math.max(0, Math.min(RESPOND_MAX, Math.floor(responded ?? 0))) : 0;
     if (!respond || respond.place !== place || respond.mission !== mission || wanted < respond.count) {
       finishRespond();
-      respond = { place, mission, count: wanted, shown: wanted, move: null };
+      respond = { place, mission, item, count: wanted, shown: wanted, move: null };
       return;
     }
+    respond.item = item;
     if (wanted === respond.count) return;
     finishRespond();
     respond.count = wanted;
@@ -3754,13 +3758,16 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const dialFoot = feet.get(place);
     if (item.dial && dialArt && dialFoot) merged.append(dialArt(dialFoot, item.dial));
     // Le monde qui répond : la scène de l'item, sans ses objets encore ; ils s'y posent une fois la réaction réglée. Un
-    // autre item (« Suivant » avant la fin du mouvement) : l'objet en vol se pose d'un coup.
+    // autre item (« Suivant » avant la fin du mouvement ; sa clé, pas sa scène, que deux items peuvent partager) : l'objet
+    // en vol se pose d'un coup.
     itemFacets = merged.build();
-    if (!asked || asked.place !== place || asked.itemKey !== itemKey) finishRespond();
+    if (respond && (respond.place !== place || respond.item !== item.key)) finishRespond();
     if (descent.active) itemMesh.visible = false;
     const before = asked && asked.place === place && asked.itemKey === itemKey ? asked : null;
     const bin = moving !== null && sort ? sort.placed[moving] : null;
     if (sort && moving !== null && bin !== null && points[moving] && points[bin]) {
+      // Le maillage de la réaction est repris : l'objet du monde qui répond encore en vol se pose d'un coup (expert frontend).
+      finishRespond();
       const f = new FacetBuilder();
       const scales = sortScales(points, scale, sort.low ?? true);
       sortPrise(f, { x: 0, y: 0, z: 0 }, scales.inBasket);
@@ -3772,8 +3779,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeReaction(performance.now() / 1000);
     } else if (!item.answered || !facets.reaction) {
       reaction = null;
-      reactionMesh.visible = false;
+      // Le maillage reste à l'objet du monde qui répond s'il est en vol (un cadrage refait pendant la descente).
+      if (!respond?.move) reactionMesh.visible = false;
     } else if (!before?.answered || before.objectsKey !== objectsKey) {
+      finishRespond();
       const f = facets.reaction.facets;
       const swing = facets.reaction.swing;
       // Des battants : leurs sommets tournent en place, dans des copies (jamais les tableaux de la scène de l'item) ; la
@@ -3797,7 +3806,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     // Le monde qui répond : les objets déjà posés, avec la scène de l'item ; un cran de plus, le prochain part dans le
     // maillage de la réaction, s'il est libre.
-    countResponded(place, q.mission, q.responded);
+    countResponded(place, q.mission, item.key ?? itemKey, q.responded);
     showResponded();
     itemShown = itemMesh.visible;
     asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered, scene: item.scene, scale, sort };

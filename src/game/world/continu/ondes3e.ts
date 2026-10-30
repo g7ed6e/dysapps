@@ -705,23 +705,26 @@ export const ONDES_LAYOUT = {
  * feuille descend de sous l'auvent et se plaque contre le mur. Son papier est clair et chaud, un cran plus chaud que les
  * cadrans ; son épingle, de fer.
  */
-const SHEET = { w: 0.38, h: 0.42, paper: 0xe8dcc0 } as const;
-/** Chaque feuille : sa place le long de la façade, sa hauteur ; les deux lignes décalées, chacune un peu plus ou moins haut. */
+const SHEET = { w: 0.46, h: 0.46, edge: 0.03, paper: 0xe8dcc0 } as const;
+/** Chaque feuille : sa place le long de la façade, la hauteur de son haut ; deux lignes en quinconce, remplies en alternance. */
 const SHEETS: readonly (readonly [number, number])[] = [
-  [2.15, 1.95],
-  [3.55, 2.4],
-  [2.95, 1.93],
-  [2.75, 2.42],
-  [3.35, 1.97],
-  [2.35, 2.38],
-  [2.55, 1.91],
-  [3.15, 2.4],
+  [2.15, 1.94],
+  [3.65, 2.42],
+  [2.95, 1.94],
+  [2.85, 2.42],
+  [3.35, 1.94],
+  [2.45, 2.42],
+  [2.55, 1.94],
+  [3.25, 2.42],
 ];
 
 /** Une feuille épinglée, à l'origine (le haut de son milieu, contre un mur dont le devant regarde +z), son épingle. */
 function pinnedSheet(b: FacetBuilder): void {
+  // Un liseré de fer sombre déborde de la feuille : le papier clair se détache de la pierre claire de la façade
+  // (référent dys, consultant d'Archipéo : jamais par la seule couleur), sans assombrir le papier.
+  b.box({ x: 0, y: -SHEET.h - SHEET.edge, z: -0.004 }, [SHEET.w + 2 * SHEET.edge, SHEET.h + 2 * SHEET.edge, 0.012], C3E.iron, C3E.iron);
   b.box({ x: 0, y: -SHEET.h, z: 0 }, [SHEET.w, SHEET.h, 0.02], SHEET.paper, SHEET.paper);
-  b.box({ x: 0, y: -0.06, z: 0.012 }, [0.05, 0.05, 0.03], C3E.iron, C3E.iron);
+  b.box({ x: 0, y: -0.08, z: 0.012 }, [0.07, 0.07, 0.03], C3E.iron, C3E.iron);
 }
 
 registerResponder('ondes', () => {

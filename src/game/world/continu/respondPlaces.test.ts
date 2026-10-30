@@ -31,10 +31,15 @@ const boxOf = (positions: Float32Array) => {
   return { lo, hi };
 };
 
-/** Les écrans d'essai : une tablette et un téléphone en paysage, trois réponses en rangée (la disposition commune). */
-const SCREENS: readonly (readonly [number, number])[] = [
-  [1180, 820],
-  [844, 390],
+/**
+ * Les écrans d'essai : une tablette et un téléphone en paysage, trois réponses en rangée (la disposition commune), au
+ * texte réglé puis au plus grand texte (le panneau descend plus bas, la scène est plus courte ; consultant UX UI).
+ */
+const SCREENS: readonly (readonly [number, number, boolean])[] = [
+  [1180, 820, false],
+  [1180, 820, true],
+  [844, 390, false],
+  [844, 390, true],
 ];
 
 describe('Le monde qui répond, lieu par lieu', () => {
@@ -85,8 +90,8 @@ describe('Le monde qui répond, lieu par lieu', () => {
   });
 
   it.each(PLACES)('%s : le groupe est dans le cadre de la scénette, à l’écran, sous la bulle et hors de la rangée des réponses, jamais sur Kéo ni sur l’habitant', (place) => {
-    for (const [W, H] of SCREENS) {
-      const L = scenetteLayout({ count: 3 }, W, H, questionLayout({ count: 3 }, W, H));
+    for (const [W, H, grand] of SCREENS) {
+      const L = scenetteLayout({ count: 3, grand }, W, H, questionLayout({ count: 3 }, W, H));
       const { pose, shift } = scenettePose(place, L.scenette.stage, W, H);
       const at = (p: { x: number; y: number; z: number }) => {
         const s = screenOf(pose, p, W, H);
@@ -103,14 +108,16 @@ describe('Le monde qui répond, lieu par lieu', () => {
       const keo = body(scenetteKeo(place).at);
       const hab = body(scenetteHabitant(place));
       const rowTop = Math.min(...L.slots.map((b) => b.hit.top)) / H;
+      // Le haut de la scène (`stage`) : sous le panneau de la question, au texte réglé comme au plus grand.
+      const stageTop = L.scenette.stage.top / H;
       for (let i = 0; i < RESPOND_MAX; i++) {
         const to = respondMove(place, i)!.to;
         const s = at(to);
-        const tag = `${place} ${i} (${W}×${H}) ${s.x.toFixed(2)},${s.y.toFixed(2)}`;
-        // Dans l'image, avec une marge, sous la bulle (le quart haut) et au-dessus de la rangée des réponses.
+        const tag = `${place} ${i} (${W}×${H}${grand ? ', grand texte' : ''}) ${s.x.toFixed(2)},${s.y.toFixed(2)}`;
+        // Dans l'image, avec une marge, sous le panneau de la question et au-dessus de la rangée des réponses.
         expect(s.x, tag).toBeGreaterThan(0.06);
         expect(s.x, tag).toBeLessThan(0.94);
-        expect(s.y, tag).toBeGreaterThan(0.28);
+        expect(s.y, tag).toBeGreaterThan(stageTop);
         expect(s.y, tag).toBeLessThan(rowTop);
         // Jamais sur Kéo ni sur l'habitant (leur corps au-dessus de leurs pieds) : hors de leur corps, ou nettement
         // au-dessus de leur tête.
