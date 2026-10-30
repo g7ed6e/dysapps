@@ -105,7 +105,7 @@ import { ringHeights, standingHeight, tileRings } from '../../world/continu/terr
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
-import { seatedHeight } from '../../world/continu/corps';
+import { TOUCH_HALF, seatedHeight } from '../../world/continu/corps';
 import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight } from '../../world/continu/worldHabitants';
 import { GESTE_SETTLE, activeGeste, gesteCandidates, gestePhase, moveMobile, worldGestes, type GesteCandidate, type MobilePiece } from '../../world/continu/gestes';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
@@ -1375,8 +1375,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
   /** Les habitants montrés près de leur porte à la dernière pose des lieux : ceux qu'un toucher peut atteindre. */
   let habitantsOnShow: readonly PlaceId[] = [];
-  /** La hauteur de l'habitant d'un lieu telle qu'il se tient : assis dans la ruine (le corps qui travaille), debout sinon. */
-  const habitantHeightNow = (place: ScenePlaceId): number => (posedOf(place).length === 0 ? seatedHeight(worldHabitantHeight(place)) : worldHabitantHeight(place));
+  /**
+   * Le corps de l'habitant d'un lieu tel qu'il se tient (le corps qui travaille) : assis dans la ruine, debout sinon ;
+   * sa hauteur et la demi-largeur de sa boîte du toucher (la seule source, pour la boîte comme pour son panneau).
+   */
+  const habitantBodyNow = (place: ScenePlaceId): { height: number; half: number } => {
+    const seated = posedOf(place).length === 0;
+    return { height: seated ? seatedHeight(worldHabitantHeight(place)) : worldHabitantHeight(place), half: seated ? TOUCH_HALF.seated : TOUCH_HALF.standing };
+  };
   // L'équipier qui guide le lieu (GD-23, lot 1, ./equipierModels.ts) : préparé avec l'habitant, montré dans la scénette.
   const equipiers = createEquipierModels(scene, prepareLater);
   habitants.mesh.onBeforeRender = finishShown;
@@ -2656,7 +2662,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Au-dessus de l'habitant près de sa porte (à sa taille dans le monde), sinon de sa place dans la scénette,
       // là où se joue la remise ; autant au-dessus de sa tête que dans la scénette.
       const w = worldHabitantAt(place, ground);
-      if (w && hasWorldHabitant(place)) return { x: w.x, y: w.y + habitantHeightNow(place) + SIGN_LIFT - HABITANT_HEIGHT, z: w.z };
+      if (w && hasWorldHabitant(place)) return { x: w.x, y: w.y + habitantBodyNow(place).height + SIGN_LIFT - HABITANT_HEIGHT, z: w.z };
       const h = scenetteHabitant(place, remisePosed(place));
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },
@@ -2994,9 +3000,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const at = worldHabitantAt(place, ground);
       // De loin, le toucher garde son sens : Kéo marche vers le lieu (consultant UX UI, référent dys).
       if (!at || distance(here, at) > HABITANT_REACH) continue;
-      const h = habitantHeightNow(place);
-      // Assis, les jambes avancent : la boîte s'élargit d'autant.
-      const half = h < worldHabitantHeight(place) ? 0.8 : 0.5;
+      const { height: h, half } = habitantBodyNow(place);
       const points: { x: number; y: number }[] = [];
       let behind = false;
       for (const x of [at.x - half, at.x + half])

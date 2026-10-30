@@ -35,8 +35,11 @@ interface Placed {
 export interface WorldHabitantModels {
   /** Montre les habitants de ces lieux, et eux seuls, assis ceux dont `seated` dit vrai (la ruine) ; rien ne se refait si rien n'a changé. */
   show(places: readonly PlaceId[], seated?: (place: PlaceId) => boolean): void;
-  /** Le corps de l'habitant de `place` à la part `phase` de son geste (0 : au repos), s'il est montré debout. */
-  work(place: ScenePlaceId, phase: number): void;
+  /**
+   * Le corps de l'habitant de `place` à la part `phase` de son geste (0 : au repos), s'il est montré debout ; l'habitant
+   * travaillé avant lui revient au repos. `null` remet au repos sans en travailler un autre.
+   */
+  work(place: ScenePlaceId | null, phase: number): void;
   readonly mesh: THREE.Mesh;
   dispose(): void;
 }
@@ -60,6 +63,7 @@ function placeModel(place: PlaceId, m: ModeleTexture, cell: number, ground: (x: 
     uvs[i] = (u0 + inset(m.uvs[i])) / ATLAS.cells;
     uvs[i + 1] = (v0 + inset(m.uvs[i + 1])) / ATLAS.cells;
   }
+  // Le cap du corps est celui de l'habitant : le fichier n'ajoute aucun quart de tour (`habitantFit().yaw` nul, un test le relit).
   return { place, positions, uvs, indices: m.indices, frame: { at, yaw: worldHabitantYaw(place), height: worldHabitantHeight(place) } };
 }
 
@@ -69,7 +73,7 @@ function placeModel(place: PlaceId, m: ModeleTexture, cell: number, ground: (x: 
  */
 export function createWorldHabitantModels(scene: THREE.Scene, places: readonly PlaceId[], ground: (x: number, z: number) => number, prepare: (t: THREE.Texture) => void): WorldHabitantModels {
   const shown = places.filter(hasWorldHabitant).slice(0, WORLD_HABITANTS_PER_LEVEL_MAX);
-  const placed = new Map<PlaceId, Placed>();
+  const placed = new Map<ScenePlaceId, Placed>();
   let disposed = false;
   let texture: THREE.Texture | null = null;
   let wanted: readonly PlaceId[] = [];
@@ -77,6 +81,8 @@ export function createWorldHabitantModels(scene: THREE.Scene, places: readonly P
   /** Les sommets de chaque habitant montré debout dans le maillage : son premier sommet et leur nombre. */
   const ranges = new Map<ScenePlaceId, { start: number; count: number }>();
   let key: string | null = null;
+  /** L'habitant dont le corps est écrit au geste : remis au repos avant qu'un autre bouge ; aucun après `rebuild`. */
+  let worked: ScenePlaceId | null = null;
   const material = new THREE.MeshLambertMaterial({ flatShading: true });
   const mesh = new THREE.Mesh(new THREE.BufferGeometry(), material);
   mesh.visible = false;
@@ -89,6 +95,7 @@ export function createWorldHabitantModels(scene: THREE.Scene, places: readonly P
     if (k === key) return;
     key = k;
     ranges.clear();
+    worked = null;
     mesh.geometry.dispose();
     const geometry = new THREE.BufferGeometry();
     mesh.geometry = geometry;
@@ -159,13 +166,27 @@ export function createWorldHabitantModels(scene: THREE.Scene, places: readonly P
       rebuild();
     },
     work(place, phase) {
+      // Un maillage caché est refait du repos à son prochain `rebuild` : rien à remettre.
+      if (!mesh.visible) return;
+      const attr = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+      const write = (p: Placed, range: { start: number; count: number }, at: number) => {
+        workBody(p.positions, attr.array as Float32Array, range.start * 3, p.frame, (p.weights ??= bodyWeights(p.positions, p.frame)), at);
+        attr.addUpdateRange(range.start * 3, range.count * 3);
+        attr.needsUpdate = true;
+      };
+      // L'habitant travaillé avant : au repos (la scène le demande aussi, mais ses lieux et les nôtres ne se refont pas
+      // aux mêmes moments : un lieu sans modèle chargé qui sort de la ruine refait ses outils, pas ce maillage).
+      if (worked && worked !== place) {
+        const q = placed.get(worked), r = ranges.get(worked);
+        if (q && r) write(q, r, 0);
+        worked = null;
+      }
+      if (!place) return;
       const p = placed.get(place);
       const range = ranges.get(place);
-      if (!p || !range || !mesh.visible) return;
-      const attr = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-      workBody(p.positions, attr.array as Float32Array, range.start * 3, p.frame, (p.weights ??= bodyWeights(p.positions, p.frame)), phase);
-      attr.addUpdateRange(range.start * 3, range.count * 3);
-      attr.needsUpdate = true;
+      if (!p || !range) return;
+      write(p, range, phase);
+      worked = phase > 0 ? place : null;
     },
     dispose() {
       disposed = true;

@@ -13,7 +13,7 @@
 import { SEAT_COLOR, seatFacets } from './corps';
 import { FacetBuilder, type Facets } from './facets';
 import { distance, type Vec3 } from './geometry';
-import { levelOfPlace, type PlaceId, type ScenePlaceId } from './levelPlan';
+import type { PlaceId, ScenePlaceId } from './levelPlan';
 import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantYaw } from './worldHabitants';
 
 /** Le cycle du geste, en secondes : un aller et retour, lent (directeur artistique ; bien sous trois variations par seconde). */
@@ -113,7 +113,7 @@ export function worldGestes(places: readonly PlaceId[], ground: (x: number, z: n
       const at = worldHabitantAt(place, ground);
       if (!at) continue;
       const seat = new FacetBuilder();
-      seatFacets(seat, { at, yaw: worldHabitantYaw(place), height: worldHabitantHeight(place) }, SEAT_COLOR[levelOfPlace(place)]);
+      seatFacets(seat, { at, yaw: worldHabitantYaw(place), height: worldHabitantHeight(place) }, SEAT_COLOR);
       const f = seat.build();
       b.append(f);
       vertices += f.positions.length / 3;

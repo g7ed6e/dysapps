@@ -7,22 +7,22 @@ import { describe, expect, it } from 'vitest';
 import { lireGlbTexture } from '../characters/imported/glb';
 import { ARM, BEND, HIP, KNEE, SEAT_COLOR, SEAT_TRIANGLES, SHOULDER, bodyWeights, seatFacets, seatedBody, seatedHeight, workBody, type BodyFrame } from './corps';
 import { FacetBuilder } from './facets';
-import { habitantModelName } from './habitants';
+import { habitantFit, habitantHeight, habitantModelName } from './habitants';
 import { levelWorld } from './levelWorld';
-import { type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
+import { OPEN_WORLD_LEVELS, planFor, type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
 import { worldGestes } from './gestes';
-import { placeWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantYaw } from './worldHabitants';
+import { hasWorldHabitant, placeWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantYaw } from './worldHabitants';
 
 const MODELS = resolve(dirname(fileURLToPath(import.meta.url)), '../../../../docs/univers/archipeo/personnages/modeles');
 
 /** La version de loin d'un habitant, à sa place dans le monde, et son repère. */
-function placed(place: ScenePlaceId, level: OpenWorldLevel): { rest: Float32Array; frame: BodyFrame } {
+function placed(place: ScenePlaceId, level: OpenWorldLevel): { rest: Float32Array; frame: BodyFrame; fitYaw: number } {
   const world = levelWorld(level);
   const ground = world.ground(world.field());
   const bytes = readFileSync(resolve(MODELS, habitantModelName(place), 'habitant-loin.glb'));
   const m = lireGlbTexture(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength));
   const rest = placeWorldHabitant(place, m.positions, ground)!;
-  return { rest, frame: { at: worldHabitantAt(place, ground)!, yaw: worldHabitantYaw(place), height: worldHabitantHeight(place) } };
+  return { rest, frame: { at: worldHabitantAt(place, ground)!, yaw: worldHabitantYaw(place), height: worldHabitantHeight(place) }, fitYaw: habitantFit(m.positions, habitantHeight(place)).yaw };
 }
 
 /** Les quatre habitants de l'essai (directeur artistique) : le charpentier, l'aubergiste en robe, le cantonnier, l'annonceur. */
@@ -115,15 +115,74 @@ describe('le corps qui travaille', () => {
         for (let k = 0; k < s.length; k += 3) if (rest[k + 1] - frame.at.y < 0.02 * frame.height) expect(fwdOf(s, k, frame) - fwdOf(rest, k, frame)).toBeCloseTo((HIP - KNEE) * frame.height, 4);
       });
 
-      it('le bloc : vingt-quatre triangles, à hauteur de genou, sous les hanches, de la teinte du niveau', () => {
+      it('le bloc : vingt-quatre triangles, à hauteur de genou (sous les hanches), gris pierre, sous les hanches assises', () => {
         const b = new FacetBuilder();
-        seatFacets(b, frame, SEAT_COLOR[level]);
+        seatFacets(b, frame, SEAT_COLOR);
         const f = b.build();
         expect(f.triangles).toBe(SEAT_TRIANGLES);
         let y1 = -Infinity;
         for (let k = 1; k < f.positions.length; k += 3) y1 = Math.max(y1, f.positions[k]);
         expect(y1 - frame.at.y).toBeCloseTo(KNEE * frame.height, 6);
+        expect(y1 - frame.at.y).toBeLessThan(HIP * frame.height);
+        // Le centre du bloc est sous les hanches assises : derrière les pieds, sur l'axe de l'habitant.
+        let cx = 0, cz = 0;
+        for (let k = 0; k < f.positions.length; k += 3) {
+          cx += f.positions[k];
+          cz += f.positions[k + 2];
+        }
+        cx /= f.positions.length / 3;
+        cz /= f.positions.length / 3;
+        const { f: fw } = axes(frame);
+        expect((cx - frame.at.x) * fw.x + (cz - frame.at.z) * fw.z).toBeLessThan(0);
+      });
+
+      it('le tronçon : écrit à partir de `start`, rien avant ni après', () => {
+        const out = new Float32Array(rest.length + 12).fill(7);
+        workBody(rest, out, 6, frame, w, 1);
+        expect(Array.from(out.subarray(0, 6))).toEqual([7, 7, 7, 7, 7, 7]);
+        expect(Array.from(out.subarray(6 + rest.length))).toEqual([7, 7, 7, 7, 7, 7]);
+        const alone = new Float32Array(rest.length);
+        workBody(rest, alone, 0, frame, w, 1);
+        expect(out.subarray(6, 6 + rest.length)).toEqual(alone);
       });
     });
   }
+
+  it('les 62 habitants : les pieds immobiles, la tête qui avance, le bras à droite seulement, chaque sommet borné, assis à hauteur de genou, sans quart de tour du fichier', () => {
+    let count = 0;
+    for (const level of OPEN_WORLD_LEVELS) {
+      for (const p of planFor(level).places) {
+        if (!hasWorldHabitant(p.id)) continue;
+        count++;
+        const { rest, frame, fitYaw } = placed(p.id, level);
+        expect(fitYaw).toBe(0);
+        const w = bodyWeights(rest, frame);
+        const out = new Float32Array(rest.length);
+        workBody(rest, out, 0, frame, w, 1);
+        const { r } = axes(frame);
+        let top = -1;
+        for (let i = 0; i < rest.length / 3; i++) {
+          const k = i * 3;
+          const y = (rest[k + 1] - frame.at.y) / frame.height;
+          if (top < 0 || rest[k + 1] > rest[top * 3 + 1]) top = i;
+          // Sous les genoux, rien ne bouge.
+          if (y < KNEE) expect(out[k + 1]).toBe(rest[k + 1]);
+          // Le bras, à droite seulement, jamais sous les hanches.
+          if (w.arm[i] > 0) {
+            expect((rest[k] - frame.at.x) * r.x + (rest[k + 2] - frame.at.z) * r.z).toBeGreaterThan(0);
+            expect(y).toBeGreaterThan(HIP - 0.03);
+          }
+          // Aucun sommet ne part loin : au plus le bras tendu (un quart de la hauteur).
+          const d = Math.hypot(out[k] - rest[k], out[k + 1] - rest[k + 1], out[k + 2] - rest[k + 2]);
+          expect(d).toBeLessThan(0.25 * frame.height);
+        }
+        expect(fwdOf(out, top * 3, frame) - fwdOf(rest, top * 3, frame)).toBeGreaterThan(0.04 * frame.height);
+        const s = seatedBody(rest, frame);
+        let y1 = -Infinity;
+        for (let k = 1; k < s.length; k += 3) y1 = Math.max(y1, s[k]);
+        expect(y1 - frame.at.y).toBeCloseTo(seatedHeight(frame.height), 1);
+      }
+    }
+    expect(count).toBe(62);
+  });
 });
