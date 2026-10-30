@@ -131,6 +131,12 @@ export const hasWorldHabitant = (place: PlaceId): place is ScenePlaceId => Objec
 /** Le rayon de ses pieds, autour du point où il se tient. */
 const FOOT = 0.5;
 
+/**
+ * Le sol sous des pieds posés en (`x`, `z`) : au plus haut des cinq points du pas, pour que le sol à facettes, sur une
+ * pente, ne passe jamais devant les jambes (l'habitant des Écluses ; l'équipier derrière lui, plus haut sur la pente).
+ */
+export const groundUnderFeet = (x: number, z: number, ground: (x: number, z: number) => number): number => Math.max(ground(x, z), ground(x + FOOT, z), ground(x - FOOT, z), ground(x, z + FOOT), ground(x, z - FOOT));
+
 /** Où se tient l'habitant d'un lieu hors de sa scénette (ses pieds), ou rien. */
 export function worldHabitantAt(place: PlaceId, ground: (x: number, z: number) => number): Vec3 | null {
   if (!hasWorldHabitant(place)) return null;
@@ -141,8 +147,7 @@ export function worldHabitantAt(place: PlaceId, ground: (x: number, z: number) =
   const z = c.z + s.dz;
   // Sur une pente, au plus haut du sol sous ses pieds : le sol à facettes ne passe pas devant ses jambes (aux Écluses, il
   // coupait ses tibias, ses chaussures au-dessous : directeur artistique, consultant Archipéo).
-  const y = Math.max(ground(x, z), ground(x + FOOT, z), ground(x - FOOT, z), ground(x, z + FOOT), ground(x, z - FOOT));
-  return { x, y: y + (s.lift ?? 0), z };
+  return { x, y: groundUnderFeet(x, z, ground) + (s.lift ?? 0), z };
 }
 
 /**

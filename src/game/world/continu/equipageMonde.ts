@@ -11,7 +11,7 @@ import { habitantFit } from './habitants';
 import type { PlaceId } from './levelPlan';
 import PHRASES from './mondeOuvert.json';
 import type { PlaceId as PlaceId6e } from './plan6e';
-import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
+import { groundUnderFeet, hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
 
 /** Les équipiers qui ont un modèle dans le monde ouvert (GD-23, lot 1 : Zia et Malo). */
 export const EQUIPIERS: readonly Equipier[] = ['zia', 'malo'];
@@ -113,8 +113,9 @@ export function equipierFrame(place: PlaceId, ground: (x: number, z: number) => 
   const spot = EQUIPIER_SPOT_OF[place as PlaceId6e] ?? { side: -EQUIPIER_OFFSET.left, back: EQUIPIER_OFFSET.back };
   const x = at.x + r.x * spot.side * h - f.x * spot.back * h;
   const z = at.z + r.z * spot.side * h - f.z * spot.back * h;
-  // Au sol, jamais plus bas que l'habitant (sur un quai ou un seuil, le sol dessiné à côté peut être l'eau ou la pente).
-  return { at: { x, y: Math.max(ground(x, z), at.y), z }, yaw, height: equipierWorldHeight(place) };
+  // Au sol, au plus haut du pas (sur une pente, le sol à facettes coupait ses cuisses aux Écluses : directeur artistique,
+  // troisième passe), jamais plus bas que l'habitant (sur un quai ou un seuil, le sol dessiné à côté peut être l'eau).
+  return { at: { x, y: Math.max(groundUnderFeet(x, z, ground), at.y), z }, yaw, height: equipierWorldHeight(place) };
 }
 
 /**

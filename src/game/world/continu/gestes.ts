@@ -546,8 +546,9 @@ export const TOOL_KIT = {
       b.box(v(EQUIPIER_STAND.x, 1.45, EQUIPIER_STAND.z), [0.24, 0.12, 0.24], BRASS);
     },
     mobile: (b) => {
-      // Le manche part vers le large et vers qui arrive, pour se voir hors de la main (directeur artistique, 2e passe).
-      beam(b, v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z), v(EQUIPIER_STAND.x + 0.42, 1.57, EQUIPIER_STAND.z - 0.25), 0.08, IRON);
+      // Le manche part vers le large et vers qui arrive, pour se voir hors de la main (directeur artistique, 3e passe :
+      // vers l'arrière, l'angle de vue et le geste le raccourcissaient).
+      beam(b, v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z), v(EQUIPIER_STAND.x + 0.46, 1.57, EQUIPIER_STAND.z + 0.17), 0.08, IRON);
       b.box(v(EQUIPIER_STAND.x, 1.56, EQUIPIER_STAND.z), [0.2, 0.08, 0.16], IRON);
     },
     pivot: v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z),

@@ -89,7 +89,9 @@ describe('où chaque équipier se tient', () => {
       // Jamais devant l'habitant, jamais sur lui : au moins 0,4 de sa hauteur de côté, en retrait.
       expect(Math.abs(spot.side), place).toBeGreaterThanOrEqual(0.4);
       expect(spot.back, place).toBeGreaterThan(0);
-      expect(f.at.y, place).toBeGreaterThanOrEqual(ground(f.at.x, f.at.z) - 1e-9);
+      // Au plus haut du pas (le sol à facettes sur la pente des Écluses), jamais plus bas que l'habitant.
+      for (const [ox, oz] of [[0, 0], [0.5, 0], [-0.5, 0], [0, 0.5], [0, -0.5]]) expect(f.at.y, place).toBeGreaterThanOrEqual(ground(f.at.x + ox, f.at.z + oz) - 1e-9);
+      expect(f.at.y, place).toBeGreaterThanOrEqual(at.y - 1e-9);
       expect(f.yaw, place).toBe(yaw);
       expect(f.height, place).toBeCloseTo(EQUIPIER_HEIGHT * worldHabitantScale(place), 9);
       expect(f.height, place).toBeLessThan(h);
