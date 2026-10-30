@@ -47,6 +47,8 @@ import type { World } from './engine/state';
 import type { DetourId } from './engine/detours';
 import { findDetour, lightDetour } from './world/detoursSaved';
 import { seeVigil } from './world/vigilsSaved';
+import { keepEquipage } from './world/equipageSaved';
+import type { EquipageSavedId } from './engine/equipage';
 import type { VigilId } from './engine/vigils';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
@@ -120,6 +122,8 @@ interface BloclandContextValue {
   lightDetour: (id: DetourId) => void;
   /** Une veillée vue (GD-23, GD-27, lot 3) : elle ne se rejoue pas. */
   seeVigil: (id: VigilId) => void;
+  /** Le lieu d'un équipier dans le monde du 6e (GD-27, lot 5), retenu une fois pour toutes. */
+  keepEquipage: (places: Readonly<Partial<Record<EquipageSavedId, string>>>) => void;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
   /**
@@ -335,6 +339,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   const findDetourCb = useCallback((id: DetourId) => onDetour((s) => findDetour(s, id)), [onDetour]);
   const lightDetourCb = useCallback((id: DetourId) => onDetour((s) => lightDetour(s, id)), [onDetour]);
   const seeVigilCb = useCallback((id: VigilId) => onDetour((s) => seeVigil(s, id)), [onDetour]);
+  const keepEquipageCb = useCallback((places: Readonly<Partial<Record<EquipageSavedId, string>>>) => onDetour((s) => keepEquipage(s, places)), [onDetour]);
   const deliver = useCallback(
     (id: string): Livraison<GameState> => {
       const r = livrerLaCommande(stateRef.current, id);
@@ -433,6 +438,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       findDetour: findDetourCb,
       lightDetour: lightDetourCb,
       seeVigil: seeVigilCb,
+      keepEquipage: keepEquipageCb,
       moveTo,
       arrange,
       launch,
@@ -465,6 +471,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       findDetourCb,
       lightDetourCb,
       seeVigilCb,
+      keepEquipageCb,
       moveTo,
       arrange,
       launch,

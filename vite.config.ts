@@ -136,7 +136,7 @@ export default defineConfig({
         // (`equipier-loin-*.glb`, GD-27, lot 5) : hors ligne, Kéo seul tant qu'ils n'ont pas été vus.
         globIgnores: ['splash/**', 'assets/habitant-*.glb', 'assets/equipier-*.glb'],
         // Un habitant chargé une fois (son lieu approché) reste servi du cache, sans réseau ; le nom de son fichier change
-        // à chaque nouvelle version, l'ancien sort par le nombre (les cent vingt-six, habitants de près et de loin et équipiers, et la marge d'une version) ou par l'âge ;
+        // à chaque nouvelle version, l'ancien sort par le nombre (les cent vingt-huit, habitants de près et de loin, équipiers de près et de loin, et la marge d'une version) ou par l'âge ;
         // sur une tablette au quota serré, le cache se vide plutôt que d'échouer (`purgeOnQuotaError`) : les modèles reviennent
         // du réseau, et hors ligne les pions les remplacent (personne près des portes).
         runtimeCaching: [

@@ -22,6 +22,8 @@ const REGLES = [
   'engine/detours',
   // Les identifiants des veillées vues et leur assainissement (GD-23, GD-27, lot 3).
   'engine/vigils',
+  // Le lieu retenu de chaque équipier dans le monde et son assainissement (GD-27, lot 5).
+  'engine/equipage',
   'boss',
   'bossCore',
   'trophies',

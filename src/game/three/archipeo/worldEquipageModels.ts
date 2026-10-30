@@ -40,6 +40,8 @@ interface Placed {
 export interface WorldEquipageModels {
   /** Montre ces équipiers à leur lieu, et eux seuls ; rien ne se refait si rien n'a changé. */
   show(list: readonly EquipierInWorld[]): void;
+  /** Les équipiers réellement montrés (leur modèle lu, leur lieu avec un habitant) : ceux dont la scène pose l'outil et le toucher. */
+  shown(): readonly EquipierInWorld[];
   /** Le corps de l'équipier à la part `phase` de son geste (0 : au repos), s'il est montré ; celui travaillé avant revient au repos. `null` remet au repos. */
   work(equipier: Equipier | null, phase: number): void;
   /** Le repère de l'équipier montré, pour le toucher ; rien s'il n'est pas montré. */
@@ -56,14 +58,16 @@ const inset = (t: number) => INSET + Math.min(1, Math.max(0, t)) * (1 - 2 * INSE
 
 /**
  * L'équipage du 6e dans le monde : `enabled`, le niveau est le 6e (ailleurs, rien n'est chargé, le maillage reste vide) ;
- * `prepare` (le rendu) envoie la texture commune à la carte graphique dès qu'elle est faite.
+ * `prepare` (le rendu) envoie la texture commune à la carte graphique dès qu'elle est faite ; `ready` est appelé alors,
+ * pour que la scène repose les outils et le toucher avec les équipiers enfin montrés.
  */
-export function createWorldEquipageModels(scene: THREE.Scene, ground: (x: number, z: number) => number, prepare: (t: THREE.Texture) => void, enabled: boolean): WorldEquipageModels {
+export function createWorldEquipageModels(scene: THREE.Scene, ground: (x: number, z: number) => number, prepare: (t: THREE.Texture) => void, enabled: boolean, ready: () => void): WorldEquipageModels {
   const loaded = new Map<Equipier, Loaded>();
   const placed = new Map<Equipier, Placed>();
   let disposed = false;
   let texture: THREE.Texture | null = null;
   let wanted: readonly EquipierInWorld[] = [];
+  let shownNow: readonly EquipierInWorld[] = [];
   let key: string | null = null;
   /** L'équipier dont le corps est écrit au geste : remis au repos avant qu'un autre bouge ; aucun après `rebuild`. */
   let worked: Equipier | null = null;
@@ -83,13 +87,19 @@ export function createWorldEquipageModels(scene: THREE.Scene, ground: (x: number
     mesh.geometry.dispose();
     const geometry = new THREE.BufferGeometry();
     mesh.geometry = geometry;
-    const frames = list.map((e) => ({ e, m: loaded.get(e.equipier)!, frame: equipierFrame(e.place, ground) })).filter((x): x is typeof x & { frame: BodyFrame } => x.frame !== null);
-    mesh.visible = frames.length > 0 && texture !== null;
+    const frames: { e: EquipierInWorld; m: Loaded; frame: BodyFrame }[] = [];
+    for (const e of list) {
+      const m = loaded.get(e.equipier);
+      const frame = m && equipierFrame(e.place, ground);
+      if (m && frame) frames.push({ e, m, frame });
+    }
+    shownNow = texture ? frames.map((x) => x.e) : [];
+    mesh.visible = shownNow.length > 0;
     if (!mesh.visible) return;
     const vertices = frames.reduce((s, x) => s + x.m.model.length / 3, 0);
     const positions = new Float32Array(vertices * 3);
     const uvs = new Float32Array(vertices * 2);
-    const indices = new Uint16Array(frames.reduce((s, x) => s + x.m.indices.length, 0));
+    const indices = new (vertices <= 65536 ? Uint16Array : Uint32Array)(frames.reduce((s, x) => s + x.m.indices.length, 0));
     let v = 0;
     let n = 0;
     for (const { e, m, frame } of frames) {
@@ -146,7 +156,16 @@ export function createWorldEquipageModels(scene: THREE.Scene, ground: (x: number
       prepare(texture);
       key = null;
       rebuild();
+      ready();
     })();
+
+  /** Le corps d'un équipier montré, écrit à la part `at` de son geste dans le tampon des positions. */
+  const write = (p: Placed, at: number) => {
+    const attr = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+    workBody(p.positions, attr.array as Float32Array, p.start * 3, p.frame, (p.weights ??= bodyWeights(p.positions, p.frame)), at);
+    attr.addUpdateRange(p.start * 3, p.positions.length);
+    attr.needsUpdate = true;
+  };
 
   return {
     mesh,
@@ -154,15 +173,10 @@ export function createWorldEquipageModels(scene: THREE.Scene, ground: (x: number
       wanted = list;
       rebuild();
     },
+    shown: () => shownNow,
     work(equipier, phase) {
       // Un maillage caché est refait du repos à son prochain `rebuild` : rien à remettre.
       if (!mesh.visible) return;
-      const attr = mesh.geometry.getAttribute('position') as THREE.BufferAttribute;
-      const write = (p: Placed, at: number) => {
-        workBody(p.positions, attr.array as Float32Array, p.start * 3, p.frame, (p.weights ??= bodyWeights(p.positions, p.frame)), at);
-        attr.addUpdateRange(p.start * 3, p.positions.length);
-        attr.needsUpdate = true;
-      };
       if (worked && worked !== equipier) {
         const q = placed.get(worked);
         if (q) write(q, 0);

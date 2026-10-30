@@ -30,11 +30,15 @@ export const EQUIPIER_FAR_TRIANGLES = 1500;
  */
 export const EQUIPIER_OFFSET = { left: 0.52, back: 0.11 } as const;
 /**
- * Là où la gauche de l'habitant est prise (aux Quais, le hangar : l'équipier y serait caché dans le regard d'arrivée),
- * l'équipier passe à sa droite, au-delà de son outil, à cette part de la hauteur de l'habitant (vérifié en captures).
+ * La place propre à un lieu, en part de la hauteur de l'habitant, quand sa gauche est prise (vérifié en captures, à
+ * l'arrivée et de près) : `side`, vers sa droite si positif (au-delà de son outil), `back`, le retrait. Aux Quais, le
+ * hangar cachait l'équipier à gauche, et devant il paraissait devant l'habitant (retrait d'un quart de pas) ; aux
+ * Écluses, le mur du sas le prenait (directeur artistique, référent dys, consultant d'Archipéo, 30 octobre 2026).
  */
-export const EQUIPIER_RIGHT = 0.8;
-export const EQUIPIER_ON_RIGHT: readonly PlaceId6e[] = ['quais'];
+export const EQUIPIER_SPOT_OF: Readonly<Partial<Record<PlaceId6e, { side: number; back: number }>>> = {
+  quais: { side: 0.8, back: 0.25 },
+  ecluses: { side: 0.8, back: EQUIPIER_OFFSET.back },
+};
 
 /** Un équipier à un lieu du monde. */
 export interface EquipierInWorld {
@@ -54,20 +58,29 @@ function litAt(parts: readonly string[], log: readonly { part: string }[]): numb
 }
 
 /**
- * Le lieu de chaque équipier : parmi les lieux rallumés (`relit`) qu'il guide, le premier rallumé selon le journal
+ * Le lieu de chaque équipier : celui retenu dans la sauvegarde (`kept`, world/equipageSaved.ts) s'il est rallumé ; sinon,
+ * parmi les lieux rallumés (`relit`) qu'il guide, le premier rallumé selon le journal
  * (`world.log`, dans l'ordre des poses ; `partsOf`, les parties de la construction d'un lieu, que la page connaît) ; un
  * lieu dont le journal a perdu la trace passe pour le plus ancien ; à égalité, l'ordre de `relit` (celui du niveau).
  * Calculé depuis la sauvegarde à chaque lecture : l'équipier ne bouge que si un lieu plus ancien reparaît, ce qui
  * n'arrive qu'au chargement, jamais sous les yeux de l'élève.
  */
-export function equipierPlaces(relit: readonly PlaceId[], log: readonly { part: string }[], partsOf: (place: PlaceId) => readonly string[]): EquipierPlaces {
+export function equipierPlaces(relit: readonly PlaceId[], log: readonly { part: string }[], partsOf: (place: PlaceId) => readonly string[], kept: Readonly<Partial<Record<Equipier, string>>> = {}): EquipierPlaces {
   const out: Partial<Record<Equipier, PlaceId6e>> = {};
   const best: Partial<Record<Equipier, number>> = {};
   for (const place of relit) {
     const e = guideOf(place);
     if (!e || !hasWorldHabitant(place)) continue;
+    // Le lieu retenu dans la sauvegarde (`world.equipage`), s'il est encore rallumé, l'emporte : un repère fixe, même
+    // quand le journal a perdu les lignes qui le départageaient.
+    if (kept[e] === place) {
+      out[e] = place as PlaceId6e;
+      best[e] = -Infinity;
+      continue;
+    }
     const at = litAt(partsOf(place), log);
-    if (out[e] === undefined || at < best[e]!) {
+    const b = best[e];
+    if (b === undefined || at < b) {
       out[e] = place as PlaceId6e;
       best[e] = at;
     }
@@ -76,14 +89,17 @@ export function equipierPlaces(relit: readonly PlaceId[], log: readonly { part: 
 }
 
 /** Les équipiers à leur lieu, dans l'ordre de `EQUIPIERS`, sans ceux qui n'en ont pas. */
-export const equipageInWorld = (places: EquipierPlaces): EquipierInWorld[] => EQUIPIERS.flatMap((e) => (places[e] ? [{ equipier: e, place: places[e]! }] : []));
+export const equipageInWorld = (places: EquipierPlaces): EquipierInWorld[] => EQUIPIERS.flatMap((e) => {
+  const place = places[e];
+  return place ? [{ equipier: e, place }] : [];
+});
 
 /** La hauteur d'un équipier dans le monde, à sa place près de l'habitant d'un lieu : sa taille d'ado, à l'échelle du monde. */
 export const equipierWorldHeight = (place: PlaceId): number => EQUIPIER_HEIGHT * worldHabitantScale(place as never);
 
 /**
- * Le repère d'un équipier près de l'habitant de `place` : ses pieds à la gauche de l'habitant (à sa droite, au-delà de
- * l'outil, aux lieux de `EQUIPIER_ON_RIGHT`), un peu en retrait, au sol ;
+ * Le repère d'un équipier près de l'habitant de `place` : ses pieds à la gauche de l'habitant (ou à la place propre au
+ * lieu, `EQUIPIER_SPOT_OF`), un peu en retrait, au sol ;
  * son cap, celui de l'habitant (vers qui arrive) ; sa hauteur, celle d'un ado. Ou rien (le lieu n'a pas d'habitant).
  */
 export function equipierFrame(place: PlaceId, ground: (x: number, z: number) => number): BodyFrame | null {
@@ -94,9 +110,10 @@ export function equipierFrame(place: PlaceId, ground: (x: number, z: number) => 
   // Devant (vers qui arrive) et la droite de l'habitant (le côté de son outil) : la gauche en est l'opposé.
   const f = { x: Math.sin(yaw), z: Math.cos(yaw) };
   const r = { x: -Math.cos(yaw), z: Math.sin(yaw) };
-  const side = EQUIPIER_ON_RIGHT.includes(place as PlaceId6e) ? EQUIPIER_RIGHT : -EQUIPIER_OFFSET.left;
-  const x = at.x + r.x * side * h - f.x * EQUIPIER_OFFSET.back * h;
-  const z = at.z + r.z * side * h - f.z * EQUIPIER_OFFSET.back * h;
+  const spot = EQUIPIER_SPOT_OF[place as PlaceId6e] ?? { side: -EQUIPIER_OFFSET.left, back: EQUIPIER_OFFSET.back };
+  const x = at.x + r.x * spot.side * h - f.x * spot.back * h;
+  const z = at.z + r.z * spot.side * h - f.z * spot.back * h;
+  // Au sol, jamais plus bas que l'habitant (sur un quai ou un seuil, le sol dessiné à côté peut être l'eau ou la pente).
   return { at: { x, y: Math.max(ground(x, z), at.y), z }, yaw, height: equipierWorldHeight(place) };
 }
 

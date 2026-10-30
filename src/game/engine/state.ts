@@ -4,6 +4,7 @@ import type { BiomeId, BlockId } from '../biomes';
 import type { TirageAssemblage } from '../world/assembly';
 import type { Layout } from '../world/savedLayout';
 import type { DetourId } from './detours';
+import type { EquipageSaved } from './equipage';
 import type { VigilId } from './vigils';
 
 export interface ExerciseProgress {
@@ -108,6 +109,8 @@ export interface World {
    * Absent tant qu'aucune n'est vue, et dans une sauvegarde d'avant les veillées. Rien d'autre n'y est retenu.
    */
   vigils?: VigilId[];
+  /** Le lieu retenu de chaque équipier dans le monde du 6e (GD-27, lot 5 : engine/equipage.ts, world/equipageSaved.ts), écrit une fois. */
+  equipage?: EquipageSaved;
 }
 
 export interface LogEntry {

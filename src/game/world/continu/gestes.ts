@@ -263,24 +263,30 @@ export function gesteCandidates(places: readonly ScenePlaceId[], ground: (x: num
   return out;
 }
 
-/** À qui est le geste à cet instant, et sa part : à l'habitant (`who` absent) ou à l'équipier ; `phase` 0 au repos. */
+/** À qui est le geste à cet instant, et sa part : à l'habitant (`who` nul) ou à l'équipier ; `phase` 0 au repos. */
 export interface GesteSlot {
-  who?: Equipier;
+  who: Equipier | null;
   phase: number;
 }
 
 /**
- * Le geste à `t` secondes du début, au lieu d'un candidat : seul, l'habitant le fait sans fin ; partagé avec un
- * équipier, à tour de rôle, un cycle chacun (`GESTE_CYCLE`) séparé d'un repos (`GESTE_SETTLE`), l'habitant d'abord ;
- * jamais deux corps qui bougent ensemble (référent dys).
+ * Le geste à `t` secondes du début, au lieu d'un candidat, écrit dans `out` (rien n'est alloué : la fonction se joue à
+ * chaque image) : seul, l'habitant le fait sans fin ; partagé avec un équipier, à tour de rôle, un cycle chacun
+ * (`GESTE_CYCLE`) séparé d'un repos (`GESTE_SETTLE`), l'habitant d'abord ; jamais deux corps qui bougent ensemble
+ * (référent dys).
  */
-export function gesteSlot(t: number, shared: Equipier | undefined): GesteSlot {
-  if (!shared) return { phase: gestePhase(t) };
+export function gesteSlot(t: number, shared: Equipier | undefined, out: GesteSlot): GesteSlot {
+  if (!shared) {
+    out.who = null;
+    out.phase = gestePhase(t);
+    return out;
+  }
   const turn = GESTE_CYCLE + GESTE_SETTLE;
   const n = Math.floor(t / turn);
   const u = t - n * turn;
-  const phase = u < GESTE_CYCLE ? gestePhase(u) : 0;
-  return n % 2 === 0 ? { phase } : { who: shared, phase };
+  out.who = n % 2 === 0 ? null : shared;
+  out.phase = u < GESTE_CYCLE ? gestePhase(u) : 0;
+  return out;
 }
 
 /** Une face fine dressée dans le plan xy (un fil, une toile), vue des deux côtés, centrée en `c`, de `w` sur `h`. */
@@ -302,6 +308,8 @@ const v = (x: number, y: number, z: number): Vec3 => ({ x, y, z });
 
 /** Où se pose un support : à côté de la main droite, un peu devant, jamais devant le corps. */
 const STAND = v(0.75, 0, 0.35);
+/** Le support d'un équipier : devant lui plutôt qu'à côté, pour que l'outil ne soit jamais entre lui et l'habitant (directeur artistique). */
+const EQUIPIER_STAND = v(0.4, 0, 0.6);
 /** La main qui tient un outil. */
 const HAND = v(0.55, 1.6, 0.3);
 
@@ -527,34 +535,48 @@ export const TOOL_KIT = {
     axis: Z,
     amplitude: rad(-25),
   }),
-  /** 15. L'écrou (Zia) : un poteau de fer coiffé d'un écrou de laiton, la clé posée dessus, qui tourne de 25° autour de l'écrou. */
+  /**
+   * 15. L'écrou (Zia) : un poteau de fer fin, haut jusqu'à la main, coiffé d'un gros écrou de laiton ; la clé, longue,
+   * posée sur l'écrou et tenue sous la main, tourne de 25° autour de lui (directeur artistique, seconde passe : à hauteur
+   * de main, jamais au genou).
+   */
   ecrou: (): ToolShape => ({
     fixed: (b) => {
-      b.box(STAND, [0.36, 0.9, 0.36], IRON);
-      b.box(v(STAND.x, 0.9, STAND.z), [0.16, 0.12, 0.16], BRASS);
+      b.box(EQUIPIER_STAND, [0.24, 1.45, 0.24], IRON);
+      b.box(v(EQUIPIER_STAND.x, 1.45, EQUIPIER_STAND.z), [0.24, 0.12, 0.24], BRASS);
     },
     mobile: (b) => {
-      beam(b, v(STAND.x, 1.02, STAND.z), v(0.3, 1.25, STAND.z), 0.06, IRON);
-      b.box(v(STAND.x, 1.0, STAND.z), [0.18, 0.08, 0.14], IRON);
+      beam(b, v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z), v(EQUIPIER_STAND.x + 0.2, 1.57, EQUIPIER_STAND.z - 0.46), 0.08, IRON);
+      b.box(v(EQUIPIER_STAND.x, 1.56, EQUIPIER_STAND.z), [0.2, 0.08, 0.16], IRON);
     },
-    pivot: v(STAND.x, 1.02, STAND.z),
+    pivot: v(EQUIPIER_STAND.x, 1.57, EQUIPIER_STAND.z),
     axis: Y,
     amplitude: rad(25),
   }),
-  /** 16. Le registre (Malo) : un pupitre bas au plateau de cuir, deux feuilles posées ; une feuille tenue, qui descend vers la pile, sans la toucher. */
-  registre: (): ToolShape => ({
-    fixed: (b) => {
-      b.box(STAND, [0.7, 0.85, 0.5], WOOD);
-      b.box(v(STAND.x, 0.85, STAND.z), [0.6, 0.04, 0.42], LEATHER);
-      b.box(v(0.6, 0.89, STAND.z), [0.27, 0.02, 0.38], LINEN);
-      b.box(v(0.9, 0.89, STAND.z), [0.27, 0.02, 0.38], LINEN);
-    },
-    mobile: (b) => b.box({ x: 0.9, y: 1.25, z: STAND.z, pitch: rad(-35) }, [0.26, 0.02, 0.36], LINEN),
-    pivot: v(0.9, 1.25, STAND.z),
-    axis: X,
-    amplitude: 0,
-    shift: v(0, -0.32, 0),
-  }),
+  /**
+   * 16. Le registre (Malo) : un pupitre de bois au plateau incliné de 15° vers qui arrive, à hauteur de main, le registre
+   * ouvert dessus (deux pages de lin, un dos de bois sombre) ; une feuille tenue au-dessus descend vers la page, sans
+   * la toucher (directeur artistique, seconde passe : lisible de loin, les pages larges).
+   */
+  registre: (): ToolShape => {
+    // Le plateau un peu plus au large que le pied, pour ne jamais passer devant le corps (règle du kit).
+    const c = v(EQUIPIER_STAND.x + 0.1, 1.35, EQUIPIER_STAND.z);
+    const page = (dx: number, y: number, w: number, d: number, color: number, b: FacetBuilder) => b.box({ x: c.x + dx, y, z: c.z, pitch: rad(15) }, [w, 0.03, d], color);
+    return {
+      fixed: (b) => {
+        b.box(EQUIPIER_STAND, [0.16, 1.2, 0.16], WOOD);
+        b.box({ x: c.x, y: c.y, z: c.z, pitch: rad(15) }, [0.5, 0.05, 0.56], WOOD);
+        page(-0.13, 1.39, 0.22, 0.48, LINEN, b);
+        page(0.13, 1.39, 0.22, 0.48, LINEN, b);
+        page(0, 1.4, 0.05, 0.5, DARK_WOOD, b);
+      },
+      mobile: (b) => page(0.13, 1.62, 0.22, 0.4, LINEN, b),
+      pivot: v(c.x + 0.13, 1.62, c.z),
+      axis: X,
+      amplitude: 0,
+      shift: v(0, -0.2, 0),
+    };
+  },
 } satisfies Record<string, (...args: never[]) => ToolShape>;
 
 /** L'outil de chaque équipier dans le monde (directeur artistique, avec le consultant d'Archipéo : la mécanicienne serre un écrou, l'archiviste range ses feuilles). */

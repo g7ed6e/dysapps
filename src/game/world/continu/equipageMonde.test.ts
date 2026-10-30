@@ -8,7 +8,7 @@ import { lireGlbTexture } from '../characters/imported/glb';
 import { plansFor } from '../plans';
 import { openWorldCost, openWorldCost5e, worldGestesCost } from './budget';
 import { EQUIPIER_HEIGHT, equipierModelName, guideOf, type Equipier } from './equipage';
-import { EQUIPIERS, EQUIPIER_FAR_FILE, EQUIPIER_FAR_TRIANGLES, EQUIPIER_OFFSET, EQUIPIER_ON_RIGHT, EQUIPIER_RIGHT, EQUIPIER_ROLE, equipageCost, equipageInWorld, equipierFrame, equipierLine, equipierPlaces, equipierWorldHeight, placeEquipier } from './equipageMonde';
+import { EQUIPIERS, EQUIPIER_FAR_FILE, EQUIPIER_FAR_TRIANGLES, EQUIPIER_OFFSET, EQUIPIER_ROLE, EQUIPIER_SPOT_OF, equipageCost, equipageInWorld, equipierFrame, equipierLine, equipierPlaces, equipierWorldHeight, placeEquipier } from './equipageMonde';
 import { GESTE_CYCLE, GESTE_SETTLE, GESTE_TRIANGLES, TOOL_KIT, EQUIPIER_TOOL, gesteCandidates, gestePhase, gesteSlot, worldGestes } from './gestes';
 import { habitantFit } from './habitants';
 import { placeById, type ScenePlaceId } from './levelPlan';
@@ -55,6 +55,10 @@ describe('où chaque équipier se tient', () => {
     expect(places([b, a], log)).toEqual({ zia: b });
     // `a` n'est plus dans le journal : il passe pour le plus ancien.
     expect(places([a, b], [{ part: lastPlan(b) }])).toEqual({ zia: a });
+    // Le lieu retenu dans la sauvegarde l'emporte, tant qu'il est rallumé ; sinon il est ignoré.
+    expect(equipierPlaces([a, b], log, partsOf, { zia: a })).toEqual({ zia: a });
+    expect(equipierPlaces([b], log, partsOf, { zia: a })).toEqual({ zia: b });
+    expect(equipierPlaces([a, b], log, partsOf, { zia: 'nulle-part' })).toEqual({ zia: b });
     // Un lieu de Malo n'y change rien pour Zia, et l'ordre de l'équipage est fixe.
     const m = MALO[0];
     const both = places([m, a], []);
@@ -70,7 +74,7 @@ describe('où chaque équipier se tient', () => {
     expect(places([a, b], [...log, { part: lastPlan(b) }])).toEqual({ malo: a });
   });
 
-  it('à la gauche de l’habitant (à sa droite au-delà de l’outil aux Quais), un demi-pas en retrait, au sol, même cap, à sa taille d’ado ; rien sans habitant', () => {
+  it('à la gauche de l’habitant (à sa droite au-delà de l’outil aux Quais et aux Écluses), un demi-pas en retrait, au sol, même cap, à sa taille d’ado ; rien sans habitant', () => {
     for (const place of GUIDED) {
       const f = equipierFrame(place, ground)!;
       const at = worldHabitantAt(place, ground)!;
@@ -79,8 +83,12 @@ describe('où chaque équipier se tient', () => {
       const fwd = { x: Math.sin(yaw), z: Math.cos(yaw) };
       const right = { x: -Math.cos(yaw), z: Math.sin(yaw) };
       const dx = f.at.x - at.x, dz = f.at.z - at.z;
-      expect((dx * right.x + dz * right.z) / h, place).toBeCloseTo(EQUIPIER_ON_RIGHT.includes(place) ? EQUIPIER_RIGHT : -EQUIPIER_OFFSET.left, 6);
-      expect((dx * fwd.x + dz * fwd.z) / h, place).toBeCloseTo(-EQUIPIER_OFFSET.back, 6);
+      const spot = EQUIPIER_SPOT_OF[place] ?? { side: -EQUIPIER_OFFSET.left, back: EQUIPIER_OFFSET.back };
+      expect((dx * right.x + dz * right.z) / h, place).toBeCloseTo(spot.side, 6);
+      expect((dx * fwd.x + dz * fwd.z) / h, place).toBeCloseTo(-spot.back, 6);
+      // Jamais devant l'habitant, jamais sur lui : au moins 0,4 de sa hauteur de côté, en retrait.
+      expect(Math.abs(spot.side), place).toBeGreaterThanOrEqual(0.4);
+      expect(spot.back, place).toBeGreaterThan(0);
       expect(f.at.y, place).toBeGreaterThanOrEqual(ground(f.at.x, f.at.z) - 1e-9);
       expect(f.yaw, place).toBe(yaw);
       expect(f.height, place).toBeCloseTo(EQUIPIER_HEIGHT * worldHabitantScale(place), 9);
@@ -164,23 +172,27 @@ describe('son outil et le tour de rôle du geste', () => {
   });
 
   it('seul, l’habitant sans fin ; partagé, l’habitant un cycle, un repos, l’équipier un cycle, un repos ; jamais deux à la fois', () => {
-    for (const t of [0, 1, 3.9, 4, 7, 13]) expect(gesteSlot(t, undefined)).toEqual({ phase: gestePhase(t) });
+    const out = { who: null, phase: 0 } as Parameters<typeof gesteSlot>[2];
+    const slot = (t: number, shared?: 'zia' | 'malo') => ({ ...gesteSlot(t, shared, out) });
+    for (const t of [0, 1, 3.9, 4, 7, 13]) expect(slot(t)).toEqual({ who: null, phase: gestePhase(t) });
     const turn = GESTE_CYCLE + GESTE_SETTLE;
-    expect(gesteSlot(0, 'zia')).toEqual({ phase: 0 });
-    expect(gesteSlot(GESTE_CYCLE / 2, 'zia')).toEqual({ phase: 1 });
-    expect(gesteSlot(GESTE_CYCLE + 0.5, 'zia')).toEqual({ phase: 0 });
-    expect(gesteSlot(turn, 'zia')).toEqual({ who: 'zia', phase: 0 });
-    expect(gesteSlot(turn + GESTE_CYCLE / 2, 'zia')).toEqual({ who: 'zia', phase: 1 });
-    expect(gesteSlot(turn + GESTE_CYCLE + 0.5, 'zia')).toEqual({ who: 'zia', phase: 0 });
-    expect(gesteSlot(2 * turn + 1, 'malo').who).toBeUndefined();
-    expect(gesteSlot(3 * turn + 1, 'malo').who).toBe('malo');
+    expect(slot(0, 'zia')).toEqual({ who: null, phase: 0 });
+    expect(slot(GESTE_CYCLE / 2, 'zia')).toEqual({ who: null, phase: 1 });
+    expect(slot(GESTE_CYCLE + 0.5, 'zia')).toEqual({ who: null, phase: 0 });
+    expect(slot(turn, 'zia')).toEqual({ who: 'zia', phase: 0 });
+    expect(slot(turn + GESTE_CYCLE / 2, 'zia')).toEqual({ who: 'zia', phase: 1 });
+    expect(slot(turn + GESTE_CYCLE + 0.5, 'zia')).toEqual({ who: 'zia', phase: 0 });
+    expect(slot(2 * turn + 1, 'malo').who).toBeNull();
+    expect(slot(3 * turn + 1, 'malo').who).toBe('malo');
     // Toujours une seule part, entre 0 et 1, continue au changement de tour.
     for (let t = 0; t < 4 * turn; t += 0.01) {
-      const s = gesteSlot(t, 'zia');
+      const s = gesteSlot(t, 'zia', out);
       expect(s.phase).toBeGreaterThanOrEqual(0);
       expect(s.phase).toBeLessThanOrEqual(1);
     }
-    expect(gesteSlot(turn - 1e-9, 'zia').phase).toBeCloseTo(0, 6);
+    expect(gesteSlot(turn - 1e-9, 'zia', out).phase).toBeCloseTo(0, 6);
+    // Le même objet est rendu : rien d'alloué par image.
+    expect(gesteSlot(1, 'zia', out)).toBe(out);
   });
 
   it('compté au budget du 6e hors scénette, et nulle part ailleurs', () => {

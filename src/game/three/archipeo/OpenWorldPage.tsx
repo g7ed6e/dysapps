@@ -55,7 +55,7 @@ import { traceDone } from '../../world/continu/questions';
 import { REVISION_PHRASES } from '../../world/continu/remise';
 import { hasWorldHabitant } from '../../world/continu/worldHabitants';
 import { habitantLine, type PlaceMood } from '../../world/continu/paroles';
-import { EQUIPIER_ROLE, equipierLine, equipierPlaces } from '../../world/continu/equipageMonde';
+import { EQUIPIER_ROLE, equipierLine, equipierPlaces, type EquipierPlaces } from '../../world/continu/equipageMonde';
 import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
@@ -149,7 +149,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const habitantsShown = sixth || plan.places.some((p) => hasWorldHabitant(p.id));
   const errands = useMemo(() => hasOpenWorldErrands(plan), [plan]);
   const { biomeId } = useParams();
-  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, seeVigil, launch, moveTo, batisseur } = useBlocland();
+  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, seeVigil, keepEquipage, launch, moveTo, batisseur } = useBlocland();
   const textes = useTextes();
   // Les noms du lieu de départ du niveau : l'Escale au 6e, la Lisière au 5e ; ses bâtiments gardent leur nom.
   const departNames = useMemo(() => (textes.depart ? { ...textes.depart, nom: textes.depart.noms?.[level as '5e'] ?? textes.depart.nom } : undefined), [textes.depart, level]);
@@ -218,18 +218,27 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
   // L'équipage dans le monde (GD-27, lot 5, piste B ; le 6e) : chaque équipier près de l'habitant du premier lieu rallumé
   // qu'il a guidé, selon le journal des parties posées (ailleurs qu'au 6e, aucun lieu guidé : personne).
-  const equipage = useMemo(
-    () =>
-      equipierPlaces(
-        plan.places.filter((p) => constructionState(constructions[p.id]) === 'restauree').map((p) => p.id),
-        state.world.log,
-        (id) => {
-          const biome = getIle(placeById(id).island);
-          return biome ? plansFor(biome.id).map((p) => p.id) : [];
-        },
-      ),
-    [plan, constructions, state.world.log],
-  );
+  // Le journal change à chaque partie posée : la même table est gardée tant que son contenu ne change pas (la scène ne
+  // repose pas les lieux pour rien) ; le lieu choisi est retenu dans la sauvegarde, une fois pour toutes (`keepEquipage`).
+  const equipageRef = useRef<EquipierPlaces>({});
+  const equipage = useMemo(() => {
+    const next = equipierPlaces(
+      plan.places.filter((p) => constructionState(constructions[p.id]) === 'restauree').map((p) => p.id),
+      state.world.log,
+      (id) => {
+        const biome = getIle(placeById(id).island);
+        return biome ? plansFor(biome.id).map((p) => p.id) : [];
+      },
+      state.world.equipage ?? {},
+    );
+    const was = equipageRef.current;
+    if (JSON.stringify(was) === JSON.stringify(next)) return was;
+    equipageRef.current = next;
+    return next;
+  }, [plan, constructions, state.world.log, state.world.equipage]);
+  useEffect(() => {
+    if (Object.keys(equipage).length) keepEquipage(equipage);
+  }, [equipage, keepEquipage]);
   const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
   // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni départ ; sa fiche pose ses trois
   // parures (GD-25), les feux arrivant avec deux lieux restaurés.
