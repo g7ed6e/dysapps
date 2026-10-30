@@ -14,7 +14,7 @@ import { heightAt4e } from './terrain4e';
 import { heightAt5e, landDistance5e } from './terrain5e';
 import { FANAL_3E, FANAL_VIGIL_3E, VIGILS_3E } from './vigils3e';
 import { FORGE_4E, FORGE_VIGIL_4E, VIGILS_4E } from './vigils4e';
-import { FUMEROLLES_5E, FUMEROLLES_VIGIL_5E, SEMAPHORE_5E, SEMAPHORE_VIGIL_5E, VIGILS_5E } from './vigils5e';
+import { FUMEROLLES_5E, FUMEROLLES_VIGIL_5E, SEMAPHORE_5E, SEMAPHORE_LIT_VIGIL_5E, SEMAPHORE_VIGIL_5E, VIGILS_5E } from './vigils5e';
 import { FERRY_VIGIL_6E, PHARE_6E, PHARE_VIGIL_6E, VIGILS_6E } from './vigils6e';
 
 const blank = (): CameraPose => ({ position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 });
@@ -78,7 +78,7 @@ describe('Le cadre commun des veillées', () => {
   });
 
   it('glisse lentement, sans à-coup, le regard jamais à pic ; chaque veillée dure moins de vingt secondes', () => {
-    for (const [v, from] of [[PHARE_VIGIL_6E, FROM], [FERRY_VIGIL_6E, FROM_FERRY], [SEMAPHORE_VIGIL_5E, FROM], [FUMEROLLES_VIGIL_5E, FROM_FUMEROLLES], [FORGE_VIGIL_4E, FROM], [FANAL_VIGIL_3E, FROM]] as const) {
+    for (const [v, from] of [[PHARE_VIGIL_6E, FROM], [FERRY_VIGIL_6E, FROM_FERRY], [SEMAPHORE_VIGIL_5E, FROM], [SEMAPHORE_LIT_VIGIL_5E, FROM], [FUMEROLLES_VIGIL_5E, FROM_FUMEROLLES], [FORGE_VIGIL_4E, FROM], [FANAL_VIGIL_3E, FROM]] as const) {
       slow(v, from);
       for (const shot of v.shots) expect(pitch({ ...shot, fov: 56, lens: 0 })).toBeLessThan(25);
       expect(vigilSeconds(v)).toBeLessThan(20);
@@ -89,7 +89,7 @@ describe('Le cadre commun des veillées', () => {
   it('au 6e, le Phare est à portée : la veillée glisse depuis Kéo ; au 5e, au 4e et au 3e, le feu est à l’autre bout du niveau : elle commence par une coupe, la caméra au premier plan dès le début', () => {
     expect(vigilCuts(PHARE_VIGIL_6E)).toBe(false);
     expect(vigilCuts(FERRY_VIGIL_6E)).toBe(false);
-    for (const v of [SEMAPHORE_VIGIL_5E, FORGE_VIGIL_4E, FANAL_VIGIL_3E]) {
+    for (const v of [SEMAPHORE_VIGIL_5E, SEMAPHORE_LIT_VIGIL_5E, FORGE_VIGIL_4E, FANAL_VIGIL_3E]) {
       expect(vigilCuts(v)).toBe(true);
       expect(vigilPose(v, 0, FROM, blank()).position).toEqual(v.shots[0].position);
       expect(vigilPose(v, 0, FROM, blank()).position).not.toEqual(FROM.position);
@@ -101,13 +101,16 @@ describe('Le cadre commun des veillées', () => {
   });
 });
 
-/** Le feu d'un niveau est cadré : son sommet dans le haut de l'image, son pied dans l'image, la caméra au-dessus du sol et hors du lieu. */
+/**
+ * Le feu d'un niveau est cadré : son sommet dans le haut de l'image, son pied dans l'image au premier plan (le second
+ * peut serrer sur le feu), la caméra au-dessus du sol et hors du lieu.
+ */
 function framesFire(v: Vigil, foot: { x: number; y: number; z: number }, top: { x: number; y: number; z: number }, groundAt: (p: { x: number; z: number }) => number, clear: number): void {
-  for (const shot of v.shots) {
+  for (const [i, shot] of v.shots.entries()) {
     const p: CameraPose = { ...shot, fov: 56, lens: 0 };
     expect(screenY(p, top), 'sommet').toBeGreaterThan(0.1);
     expect(screenY(p, top), 'sommet').toBeLessThan(0.8);
-    expect(screenY(p, foot), 'pied').toBeGreaterThan(-0.9);
+    if (i === 0) expect(screenY(p, foot), 'pied').toBeGreaterThan(-0.9);
     expect(shot.position.y, 'au-dessus du sol').toBeGreaterThan(groundAt(shot.position) + 3);
     expect(Math.hypot(shot.position.x - foot.x, shot.position.z - foot.z), 'hors du lieu').toBeGreaterThan(clear);
   }
@@ -117,9 +120,23 @@ describe('Les veillées du 5e, du 4e et du 3e', () => {
   it('au 5e, l’arrivée et le départ cadrent le Sémaphore, la lanterne de tête de son mât dans le haut de l’image, depuis le plateau des Aiguilles', () => {
     const c = SEMAPHORE_5E.center;
     expect(heightAt5e(c)).toBeCloseTo(SEMAPHORE_5E.ground, 0);
-    framesFire(SEMAPHORE_VIGIL_5E, { x: c.x, y: SEMAPHORE_5E.ground, z: c.z }, { x: c.x + SEMAPHORE_5E.mast.x, y: SEMAPHORE_5E.mast.top, z: c.z + SEMAPHORE_5E.mast.z }, heightAt5e, 20);
+    const top = { x: c.x + SEMAPHORE_5E.mast.x, y: SEMAPHORE_5E.mast.top, z: c.z + SEMAPHORE_5E.mast.z };
+    const court = { x: c.x, y: SEMAPHORE_5E.court, z: c.z };
+    // Éteint : le mât est couché, le second plan montre la cour entière (la tour, le mât au sol), au-dessus de la ligne.
+    const ruin: CameraPose = { ...SEMAPHORE_VIGIL_5E.shots[1], fov: 56, lens: 0 };
+    expect(screenY(ruin, court)).toBeGreaterThan(-0.5);
+    expect(screenY(ruin, court)).toBeLessThan(0.2);
+    expect(ruin.position.y).toBeGreaterThan(heightAt5e(ruin.position) + 3);
+    expect(Math.hypot(ruin.position.x - c.x, ruin.position.z - c.z)).toBeGreaterThan(12);
+    // Allumé : le second plan serre sur la tête du mât, la lanterne, le feu lui-même, à moins de 14 unités (relecture du lot 3 bis).
+    framesFire(SEMAPHORE_LIT_VIGIL_5E, { x: c.x, y: SEMAPHORE_5E.ground, z: c.z }, top, heightAt5e, 5);
+    const near = SEMAPHORE_LIT_VIGIL_5E.shots[1].position;
+    expect(Math.hypot(near.x - top.x, near.y - top.y, near.z - top.z)).toBeLessThan(14);
+    expect(SEMAPHORE_LIT_VIGIL_5E.shots[0]).toBe(SEMAPHORE_VIGIL_5E.shots[0]);
     expect(vigilOf(VIGILS_5E, 'arrival')).toBe(SEMAPHORE_VIGIL_5E);
     expect(vigilOf(VIGILS_5E, 'departure')).toBe(SEMAPHORE_VIGIL_5E);
+    expect(vigilOf(VIGILS_5E, 'departure', true)).toBe(SEMAPHORE_LIT_VIGIL_5E);
+    expect(vigilOf(VIGILS_4E, 'departure', true)).toBe(FORGE_VIGIL_4E);
     expect(vigilWords(VIGILS_5E, 'arrival', false)).toBe('Le Sémaphore est éteint.');
     expect(vigilWords(VIGILS_5E, 'departure', true)).toBe('Le Sémaphore est allumé.');
   });
@@ -133,8 +150,9 @@ describe('Les veillées du 5e, du 4e et du 3e', () => {
       const p: CameraPose = { ...shot, fov: 56, lens: 0 };
       expect(screenY(p, m)).toBeGreaterThan(-0.5);
       expect(screenY(p, m)).toBeLessThan(0.3);
-      expect(shot.position.x).toBeLessThan(c.x);
-      expect(shot.position.z).toBeGreaterThan(c.z);
+      // Depuis l'ouest ou le sud-ouest, jamais depuis la margelle (au nord-ouest du centre).
+      expect(shot.position.x).toBeLessThan(c.x - 8);
+      expect(shot.position.z).toBeGreaterThan(c.z + FUMEROLLES_5E.margelle.z);
       expect(shot.position.y).toBeGreaterThan(heightAt5e(shot.position) + 1.5);
       expect(landDistance5e(shot.position)).toBeGreaterThan(0);
       expect(Math.hypot(shot.position.x - m.x, shot.position.z - m.z)).toBeGreaterThan(FUMEROLLES_5E.margelle.r + 4);

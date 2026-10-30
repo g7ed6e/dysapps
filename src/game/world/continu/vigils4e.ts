@@ -20,13 +20,13 @@ const shot = (position: Vec3, target: Vec3, travel: number, hold: number) => ({ 
 /** Le regard sur la Forge, depuis le sud-ouest : la cour entière et le fourneau, puis le fourneau de plus près, sa gueule au milieu de l'image. */
 export const FORGE_VIGIL_4E: Vigil = {
   shots: [
-    shot({ x: FORGE_4E.center.x - 12, y: 13, z: FORGE_4E.center.z + 46 }, { x: FORGE_4E.center.x, y: 4, z: FORGE_4E.center.z }, 0, TIMES.hold),
-    shot({ x: FORGE_4E.center.x - 4, y: 8, z: FORGE_4E.center.z + 27 }, { x: FORGE_4E.center.x, y: 4.5, z: FORGE_4E.center.z - 1 }, TIMES.near, TIMES.read),
+    shot({ x: FORGE_4E.center.x - 12, y: 13, z: FORGE_4E.center.z + 46 }, { x: FORGE_4E.center.x, y: 2.5, z: FORGE_4E.center.z }, 0, TIMES.hold),
+    shot({ x: FORGE_4E.center.x - 4, y: 8, z: FORGE_4E.center.z + 27 }, { x: FORGE_4E.center.x, y: 3, z: FORGE_4E.center.z - 1 }, TIMES.near, TIMES.read),
   ],
   still: STILL,
 };
 
-/** Les veillées du 4e : la Forge (ses abords l'allument), l'embarquement, le départ. */
+/** Les veillées du 4e : la Forge (ses abords l'allument) à l'arrivée et au départ ; personne n'embarque, l'équipage est complet. */
 export const VIGILS_4E: LevelVigils = {
   fire: 'forge',
   fireLit: (parts) => stageComplete(parts, 2),

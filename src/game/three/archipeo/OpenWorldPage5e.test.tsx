@@ -1,6 +1,6 @@
 // La page du monde ouvert du 5e (GD-22, lot 2) : elle donne à la scène le plan du 5e, rien de l'Escale, de la Nef ni des
 // Détours, et ses missions passent par l'écran habituel. La scène 3D n'est pas là sous jsdom : une scène simulée.
-import { act, render, screen } from '@testing-library/react';
+import { act, cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, expect, test, vi } from 'vitest';
@@ -23,7 +23,7 @@ const scene = vi.hoisted(() => ({
   instant: true,
   lay: null as { land: LinkedLand; events: BridgeLayEvents } | null,
   // Les veillées demandées à la scène (GD-23, GD-27, lot 3 bis), le voile levé ou non à cet instant, et si elle les joue (`playVigils`).
-  vigils: [] as { vigil: Vigil; done: () => void; veiled: boolean }[],
+  vigils: [] as { vigil: Vigil; done: () => void; pass: (() => void) | undefined; veiled: boolean }[],
   playVigils: false,
 }));
 vi.mock('./scene', () => ({
@@ -36,11 +36,12 @@ vi.mock('./scene', () => ({
       setPlaces: () => false,
       keoAt: () => ({ x: 0, z: 0 }),
       info: () => ({ calls: 0, triangles: 0, mapMs: 0 }),
-      playVigil: (vigil, done) => {
+      playVigil: (vigil, done, pass) => {
         if (!scene.playVigils) return false;
-        scene.vigils.push({ vigil, done, veiled: document.querySelector('.open-world-fondu')?.classList.contains('on') ?? false });
+        scene.vigils.push({ vigil, done, pass, veiled: document.querySelector('.open-world-fondu')?.classList.contains('on') ?? false });
         return true;
       },
+      endScript: () => scene.vigils.at(-1)?.done(),
       layLand: (land, events) => {
         scene.lay = { land, events };
       },
@@ -288,6 +289,65 @@ test('à l’arrivée par la Nef, la Nef dépose Kéo aux Radeaux, l’île du p
     expect(scene.vigils).toHaveLength(1);
     expect(scene.vigils[0].vigil).toBe(SEMAPHORE_VIGIL_5E);
     expect(scene.vigils[0].veiled).toBe(true);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test('« Passer » pendant une veillée qui coupe : le voile couvre d’abord, la caméra revient derrière Kéo un quart de seconde après, le voile se lève ; le toucher sur le monde passe par la page (`pass`)', async () => {
+  scene.playVigils = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    const veil = () => document.querySelector('.open-world-fondu')!;
+    act(() => vi.advanceTimersByTime(600));
+    expect(scene.vigils).toHaveLength(1);
+    expect(scene.vigils[0].pass).toBeDefined();
+    expect(veil()).not.toHaveClass('on');
+    const done = vi.spyOn(scene.vigils[0], 'done');
+    act(() => scene.options!.onCameraScript!(true));
+    await userEvent.setup({ advanceTimers: vi.advanceTimersByTime }).click(screen.getByRole('button', { name: 'Passer' }));
+    expect(veil()).toHaveClass('on');
+    expect(done).not.toHaveBeenCalled();
+    act(() => vi.advanceTimersByTime(300));
+    expect(done).toHaveBeenCalledTimes(1);
+    expect(screen.queryByText('Le Sémaphore est éteint.')).toBeNull();
+    act(() => vi.advanceTimersByTime(300));
+    expect(veil()).not.toHaveClass('on');
+    // Le toucher sur le monde, reçu par la scène, fait la même chose.
+    cleanup();
+    scene.vigils = [];
+    localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    act(() => vi.advanceTimersByTime(600));
+    expect(scene.vigils).toHaveLength(1);
+    const done2 = vi.spyOn(scene.vigils[0], 'done');
+    act(() => scene.vigils[0].pass!());
+    expect(veil()).toHaveClass('on');
+    expect(done2).not.toHaveBeenCalled();
+    act(() => vi.advanceTimersByTime(300));
+    expect(done2).toHaveBeenCalledTimes(1);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test('la scène refuse la veillée après le voile : le voile se lève, rien n’est retenu, la veillée reste à jouer à l’entrée suivante', async () => {
+  scene.playVigils = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    scene.playVigils = false;
+    act(() => vi.advanceTimersByTime(600));
+    expect(scene.vigils).toHaveLength(0);
+    expect(document.querySelector('.open-world-fondu')).not.toHaveClass('on');
+    const saved = JSON.parse(localStorage.getItem('dysapps:game') ?? '{}') as { world?: { vigils?: string[] } };
+    expect(saved.world?.vigils ?? []).toEqual([]);
   } finally {
     vi.useRealTimers();
   }

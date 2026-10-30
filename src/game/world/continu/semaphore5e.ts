@@ -287,7 +287,7 @@ function lantern(b: FacetBuilder, top: Vec3, lit: boolean): void {
 
 /**
  * La lanterne de tête du mât, le feu du 5e : sa cage de fer (quatre montants fins, en pointe sous le chapeau) et sa vitre,
- * d'ocre ou éteinte, posée en `at` (le pied de la cage) ; 26 triangles.
+ * d'ocre ou éteinte, posée en `at` (le pied de la cage) ; 30 triangles (le test les compte).
  */
 function mastLantern(b: FacetBuilder, at: Vec3, lit: boolean): void {
   const h = 0.7;
@@ -297,7 +297,7 @@ function mastLantern(b: FacetBuilder, at: Vec3, lit: boolean): void {
     [0.15, 0.15],
     [-0.15, 0.15],
   ] as const)
-    b.prism({ x: at.x + dx, y: at.y, z: at.z + dz }, 0.035, 0, h - 0.06, 3, C.iron);
+    b.prism({ x: at.x + dx, y: at.y, z: at.z + dz }, 0.035, 0.035, h - 0.06, 3, C.iron);
   lantern(b, { x: at.x, y: at.y + h, z: at.z }, lit);
 }
 

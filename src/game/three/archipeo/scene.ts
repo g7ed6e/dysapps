@@ -373,9 +373,10 @@ export interface OpenWorld {
   /**
    * Une veillée (GD-23, GD-27, lot 3 : world/continu/vigil.ts) : la caméra quitte Kéo pour ses plans, et revient derrière
    * lui à la fin ou au premier toucher ; `done` alors, par n'importe quel chemin. `false`, sans rien faire, sur la Carte,
-   * pendant une question, le départ de la Nef ou un autre script.
+   * pendant une question, le départ de la Nef ou un autre script. `pass`, s'il est donné, reçoit le toucher qui passe la
+   * veillée à la place de la fin immédiate : la page couvre d'abord, puis appelle `endScript`.
    */
-  playVigil(vigil: Vigil, done: () => void): boolean;
+  playVigil(vigil: Vigil, done: () => void, pass?: () => void): boolean;
   /** Termine la vue finale ou la veillée en cours, comme un toucher (Échap, Entrée ou Espace) ; rien s'il n'y en a pas. */
   endScript(): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
@@ -2840,8 +2841,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (poseRun.active) return finishPose();
     // Un toucher pendant l'allumage d'un lieu restauré le passe : tout allumé d'un coup.
     if (restoring) return endRestore();
-    // Un toucher pendant la vue finale ou une veillée la termine : la caméra revient derrière Kéo.
-    if (scriptRun) return finishScript();
+    // Un toucher pendant la vue finale ou une veillée la termine : la caméra revient derrière Kéo (ou la page couvre
+    // d'abord, `pass`).
+    if (scriptRun) return scriptRun.pass ? scriptRun.pass() : finishScript();
     // Un toucher pendant le départ de la Nef le termine (GD-21).
     if (nefTrip) return finishNefTrip();
     if (assembly) return finishAssembly();
@@ -4055,9 +4057,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // loin) entre dans le maillage de la pose (aucun appel de plus) ; une veillée ne dessine rien. Avec « Réduire les
   // animations », l'image finale, fixe. Jamais sur la Carte ni pendant une question.
   const finalView = world.finalView ?? null;
-  let scriptRun: { script: CameraScript; start: number; from: CameraPose; still: boolean; drawn: boolean; done: (() => void) | null } | null = null;
+  let scriptRun: { script: CameraScript; start: number; from: CameraPose; still: boolean; drawn: boolean; done: (() => void) | null; pass: (() => void) | null } | null = null;
   const scriptPose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
-  function startScript(script: CameraScript, facets: Facets | null, done: (() => void) | null): boolean {
+  function startScript(script: CameraScript, facets: Facets | null, done: (() => void) | null, pass: (() => void) | null = null): boolean {
     if (scriptRun || asked || mapView || nefTrip) return false;
     finishPose();
     finishLay();
@@ -4065,7 +4067,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walk = null;
     const from: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
     copyPose(current, from);
-    scriptRun = { script, start: performance.now() / 1000, from, still: reduceMotion, drawn: facets !== null, done };
+    scriptRun = { script, start: performance.now() / 1000, from, still: reduceMotion, drawn: facets !== null, done, pass };
     if (facets) {
       setGeometry(poseMesh, facets);
       poseMesh.material = landMaterial;
@@ -4748,7 +4750,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeVisibility();
     },
     playFinal: () => startFinal(null),
-    playVigil: (vigil, done) => startScript(vigilScript(vigil), null, done),
+    playVigil: (vigil, done, pass) => startScript(vigilScript(vigil), null, done, pass ?? null),
     endScript: () => finishScript(),
     departNef: (done) => {
       if (nefTrip || nefLookNow === 4) return done();

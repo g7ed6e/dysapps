@@ -23,12 +23,12 @@ const shot = (position: Vec3, target: Vec3, travel: number, hold: number) => ({ 
 export const FANAL_VIGIL_3E: Vigil = {
   shots: [
     shot({ x: FANAL_3E.center.x + 14, y: 20, z: FANAL_3E.center.z + 46 }, { x: FANAL_3E.center.x, y: 9, z: FANAL_3E.center.z - 1 }, 0, TIMES.hold),
-    shot({ x: FANAL_3E.center.x + 5, y: 16, z: FANAL_3E.center.z + 28 }, { x: FANAL_3E.center.x, y: 11, z: FANAL_3E.center.z - 1 }, TIMES.near, TIMES.read),
+    shot({ x: FANAL_3E.center.x + 5, y: 16, z: FANAL_3E.center.z + 28 }, { x: FANAL_3E.center.x, y: 8, z: FANAL_3E.center.z - 1 }, TIMES.near, TIMES.read),
   ],
   still: STILL,
 };
 
-/** Les veillées du 3e : le Fanal (son haut l'allume), l'embarquement ; le départ est la vue finale. */
+/** Les veillées du 3e : le Fanal (son haut l'allume) à l'arrivée ; ni embarquement ni départ, la vue finale en tient lieu. */
 export const VIGILS_3E: LevelVigils = {
   fire: 'fanal',
   fireLit: (parts) => stageComplete(parts, 1),

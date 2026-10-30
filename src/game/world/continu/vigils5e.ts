@@ -24,29 +24,38 @@ const STILL = 8;
 
 const shot = (position: Vec3, target: Vec3, travel: number, hold: number) => ({ position, target, travel, hold });
 
+/** Le premier plan, commun : depuis le sud, au-dessus du plateau, entre deux aiguilles (l'une à 19 unités à l'est du Sémaphore et 28 au sud, l'autre à 28 à l'ouest : le regard passe entre elles, aucune devant la tour), la tour et sa cour, le mât entier. */
+const FAR = shot({ x: SEMAPHORE_5E.center.x - 8, y: 29, z: SEMAPHORE_5E.center.z + 46 }, { x: SEMAPHORE_5E.center.x - 2, y: 17, z: SEMAPHORE_5E.center.z - 2 }, 0, TIMES.hold);
+
 /**
- * Le regard sur le Sémaphore, depuis le sud, au-dessus du plateau, entre deux aiguilles (l'une à 19 unités à l'est du
- * Sémaphore et 28 au sud, l'autre à 28 à l'ouest : le regard passe entre elles, aucune devant la tour) : d'abord la tour
- * et sa cour, le mât entier (en ruine, couché le long du mur ouest), puis la tour de plus près, sous le mât, sa
- * lanterne de tête dans le tiers haut.
+ * Le regard sur le Sémaphore éteint : le premier plan, puis la cour de plus près, depuis le sud-ouest, la tour entière et
+ * le mât couché le long du mur ouest, sa lanterne au bout.
  */
 export const SEMAPHORE_VIGIL_5E: Vigil = {
-  shots: [
-    shot({ x: SEMAPHORE_5E.center.x - 8, y: 29, z: SEMAPHORE_5E.center.z + 46 }, { x: SEMAPHORE_5E.center.x - 2, y: 17, z: SEMAPHORE_5E.center.z - 2 }, 0, TIMES.hold),
-    shot({ x: SEMAPHORE_5E.center.x + 6, y: 26, z: SEMAPHORE_5E.center.z + 30 }, { x: SEMAPHORE_5E.center.x - 3, y: 21, z: SEMAPHORE_5E.center.z - 2.3 }, TIMES.near, TIMES.read),
-  ],
+  shots: [FAR, shot({ x: SEMAPHORE_5E.center.x - 12, y: 20, z: SEMAPHORE_5E.center.z + 14 }, { x: SEMAPHORE_5E.center.x - 3, y: 15.5, z: SEMAPHORE_5E.center.z - 2 }, TIMES.near, TIMES.read)],
+  still: STILL,
+};
+
+/**
+ * Le regard sur le Sémaphore allumé : le premier plan, puis, de près et un peu à l'ouest, hors de l'axe du panache du
+ * volcan, la tête du mât : sa lanterne grosse dans le tiers haut, le feu lui-même (directeur artistique, consultant
+ * d'Archipéo, relecture du lot 3 bis).
+ */
+export const SEMAPHORE_LIT_VIGIL_5E: Vigil = {
+  shots: [FAR, shot({ x: SEMAPHORE_5E.center.x - 9, y: 28.5, z: SEMAPHORE_5E.center.z + 9 }, { x: SEMAPHORE_5E.center.x - 2.9, y: 26.5, z: SEMAPHORE_5E.center.z - 2.3 }, TIMES.near, TIMES.read)],
   still: STILL,
 };
 
 /**
  * Le regard sur les Fumerolles, depuis le sud-ouest, du côté du chemin de dalles qui contourne la margelle : à mi-hauteur,
- * la margelle entière, ses trois panaches et la cabane de la sondeuse redressée derrière, à l'est ; puis de près, bas,
- * sur la dalle de relevé, face aux trois bouches et aux sondes debout.
+ * la margelle entière, ses trois panaches et la cabane de la sondeuse redressée derrière, à l'est (l'habitante, à sa
+ * porte, reste au bord de l'image, jamais au milieu : la ligne nomme le naturaliste, pas elle) ; puis de plus près,
+ * depuis l'ouest, la margelle et ses trois bouches, aucun objet coupé au premier plan (directeur artistique, relecture).
  */
 export const FUMEROLLES_VIGIL_5E: Vigil = {
   shots: [
-    shot({ x: FUMEROLLES_5E.center.x - 13, y: FUMEROLLES_5E.ground + 7, z: FUMEROLLES_5E.center.z + 11 }, { x: FUMEROLLES_5E.center.x + 1.5, y: FUMEROLLES_5E.ground + 1.5, z: FUMEROLLES_5E.center.z - 3 }, TIMES.glide, TIMES.glance),
-    shot({ x: FUMEROLLES_5E.center.x - 5, y: FUMEROLLES_5E.ground + 2.2, z: FUMEROLLES_5E.center.z + 4 }, { x: FUMEROLLES_5E.center.x + 0.6, y: FUMEROLLES_5E.ground + 0.8, z: FUMEROLLES_5E.center.z - 4 }, TIMES.glide, TIMES.read),
+    shot({ x: FUMEROLLES_5E.center.x - 13, y: FUMEROLLES_5E.ground + 7, z: FUMEROLLES_5E.center.z + 11 }, { x: FUMEROLLES_5E.center.x + 0.5, y: FUMEROLLES_5E.ground + 1.5, z: FUMEROLLES_5E.center.z - 3.5 }, TIMES.glide, TIMES.glance),
+    shot({ x: FUMEROLLES_5E.center.x - 13, y: FUMEROLLES_5E.ground + 5, z: FUMEROLLES_5E.center.z - 1 }, { x: FUMEROLLES_5E.center.x + 0.6, y: FUMEROLLES_5E.ground + 2, z: FUMEROLLES_5E.center.z - 5.6 }, TIMES.glide, TIMES.read),
   ],
   still: STILL,
 };
@@ -59,6 +68,7 @@ export const VIGILS_5E: LevelVigils = {
   fire: 'semaphore',
   fireLit: (parts) => stageComplete(parts, 1),
   fireVigil: SEMAPHORE_VIGIL_5E,
+  fireVigilLit: SEMAPHORE_LIT_VIGIL_5E,
   boarding: { place: 'fumerolles', who: BOARDING_5E, vigil: FUMEROLLES_VIGIL_5E },
   departure: true,
 };

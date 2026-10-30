@@ -15,7 +15,7 @@ import { VIGILS_4E } from './vigils4e';
 import { VIGILS_5E } from './vigils5e';
 import { VIGILS_6E } from './vigils6e';
 
-/** Les trois veillées d'un niveau, dans l'ordre où l'élève les voit. */
+/** Les veillées d'un niveau, trois au plus (deux au 4e, une au 3e), dans l'ordre où l'élève les voit. */
 export type VigilKind = 'arrival' | 'boarding' | 'departure';
 
 /** L'embarquement d'un équipier : le lieu rallumé où il monte à bord, son rôle (jamais un prénom, GD-19), ses plans. */
@@ -33,6 +33,8 @@ export interface LevelVigils {
   fireLit(parts: readonly PartShape[]): boolean;
   /** Les plans sur le feu : l'arrivée (éteint) et le départ (tel qu'il est). */
   readonly fireVigil: Vigil;
+  /** Les plans sur le feu allumé, s'ils diffèrent (au 5e, le second plan serre sur la tête du mât, où la lanterne est montée). */
+  readonly fireVigilLit?: Vigil;
   /** L'embarquement, ou rien : personne ne monte à bord à ce niveau. */
   readonly boarding: Boarding | null;
   /** Le niveau a une veillée de départ (au 3e, la vue finale en tient lieu). */
@@ -44,11 +46,11 @@ const BY_LEVEL: Readonly<Record<OpenWorldLevel, LevelVigils>> = { '6e': VIGILS_6
 /** Les veillées du niveau. */
 export const levelVigils = (level: OpenWorldLevel): LevelVigils => BY_LEVEL[level];
 
-/** La veillée `kind` du niveau, ou rien (aucun embarquement, aucun départ). */
-export function vigilOf(v: LevelVigils, kind: VigilKind): Vigil | null {
+/** La veillée `kind` du niveau, le feu allumé ou non (`lit`), ou rien (aucun embarquement, aucun départ). */
+export function vigilOf(v: LevelVigils, kind: VigilKind, lit = false): Vigil | null {
   if (kind === 'boarding') return v.boarding?.vigil ?? null;
-  if (kind === 'departure') return v.departure ? v.fireVigil : null;
-  return v.fireVigil;
+  if (kind === 'departure' && !v.departure) return null;
+  return (lit && v.fireVigilLit) || v.fireVigil;
 }
 
 /**

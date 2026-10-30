@@ -315,7 +315,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // La Nef part (GD-21) : la scène seule, comme pendant une question, jusqu'à l'arrivée en 5e.
   const [departing, setDeparting] = useState(false);
   // Le fondu du voyage entre niveaux : il couvre la page qui part, puis celle qui arrive, jusqu'à ce que son monde soit prêt.
-  const [fondu, setFondu] = useState(arrival.voyage === 'fondu' && !reduceMotion);
+  // À l'arrivée par la Nef dans un niveau dont le feu est loin (`vigilCuts`), la page monte déjà voilée : l'élève ne voit
+  // pas le quai un instant avant la coupe de la veillée d'arrivée (consultant UX UI) ; si elle ne se joue pas, l'effet de
+  // l'arrivée lève le voile.
+  const [fondu, setFondu] = useState(!reduceMotion && (arrival.voyage === 'fondu' || (arrival.voyage === 'arrivee' && vigilCuts(vigils.fireVigil) && !vigilSeen(state.world, `${level}-arrival`))));
   // Un script de caméra se joue (la vue finale du 3e, une veillée) : la scène seule, comme pendant une question.
   const [scriptPlaying, setScriptPlaying] = useState(false);
   // La veillée en cours (GD-23, GD-27, lot 3) : sa ligne, écrite sur fond uni et lue, relançable, le temps des plans.
@@ -422,7 +425,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       if (e.key !== 'Escape' && e.key !== 'Enter' && e.key !== ' ') return;
       if (e.key !== 'Escape' && e.target instanceof Element && e.target.closest('button')) return;
       e.preventDefault();
-      world.current?.endScript();
+      passVigilRef.current();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
@@ -1070,7 +1073,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       setPanel(null);
       // Une fois par niveau, la veillée de départ d'abord (GD-27 : le feu du niveau tel qu'il est) ; le départ suit, par
       // n'importe quel chemin (sa fin, ou le toucher qui la passe).
-      if (!vigilSeen(state.world, `${level}-departure`) && playVigilRef.current('departure', () => leave(stage))) return;
+      if (!vigilSeen(state.world, `${level}-departure`) && playVigilRef.current('departure', () => leave(stage), () => leave(stage))) return;
       leave(stage);
     },
     [level, state.world, leave, scriptPlaying],
@@ -1092,25 +1095,49 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   useEffect(() => () => {
     for (const t of veilTimers.current) window.clearTimeout(t);
   }, []);
+  // Une veillée qui coupe se passe aussi sous le voile : « Passer », Échap, Entrée, Espace (la page) et le toucher sur le
+  // monde (la scène, par `pass`) couvrent d'abord, puis terminent le script un quart de seconde après ; la caméra ne
+  // saute pas derrière Kéo à découvert (consultant UX UI, expert frontend). `passing` : un seul passage à la fois.
+  const veiledRun = useRef(false);
+  const passing = useRef(false);
+  const passVigil = useCallback(() => {
+    const w = world.current;
+    if (!w || passing.current) return;
+    if (!veiledRun.current) return w.endScript();
+    passing.current = true;
+    clearVeil();
+    setFondu(true);
+    veilLater(() => w.endScript(), LEVEL_FADE_MS / 2);
+  }, []);
+  const passVigilRef = useRef(passVigil);
+  passVigilRef.current = passVigil;
   const playVigil = useCallback(
-    (kind: VigilKind, after?: () => void): boolean => {
+    (kind: VigilKind, after?: () => void, refused?: () => void): boolean => {
       const w = world.current;
-      const vigil = w ? vigilOf(vigils, kind) : null;
+      const lit = vigils.fireLit(posedShapes(constructionsRef.current[vigils.fire]));
+      const vigil = w ? vigilOf(vigils, kind, lit) : null;
       if (!w || !vigil || scriptPlaying || asking || mapOpen) return false;
-      const line = vigilWords(vigils, kind, vigils.fireLit(posedShapes(constructionsRef.current[vigils.fire])));
+      const line = vigilWords(vigils, kind, lit);
       const veiled = vigilCuts(vigil) && !reduceMotion;
       const start = (): boolean => {
-        const started = w.playVigil(vigil, () => {
-          clearVeil();
-          stopSpeaking();
-          setVigil(null);
-          if (veiled) veilLater(() => setFondu(false), LEVEL_FADE_MS / 2);
-          after?.();
-        });
+        const started = w.playVigil(
+          vigil,
+          () => {
+            clearVeil();
+            veiledRun.current = false;
+            passing.current = false;
+            stopSpeaking();
+            setVigil(null);
+            if (veiled) veilLater(() => setFondu(false), LEVEL_FADE_MS / 2);
+            after?.();
+          },
+          veiled ? passVigilRef.current : undefined,
+        );
         if (!started) {
           if (veiled) setFondu(false);
           return false;
         }
+        veiledRun.current = veiled;
         seeVigil(`${level}-${kind}`);
         setVigil((was) => ({ n: (was?.n ?? 0) + 1, line }));
         if (settings.autoRead) speak(line);
@@ -1121,12 +1148,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         return true;
       };
       if (!veiled) return start();
-      // Le voile couvre d'abord, puis la caméra coupe sous lui ; la scène refuse si quelque chose a changé entre-temps,
-      // ce que rien ne fait en un quart de seconde (les boutons sont encore là, mais la Carte et une question sont déjà
-      // exclues ci-dessus) : la veillée est tenue pour lancée.
+      // Le voile couvre d'abord, puis la caméra coupe sous lui. La scène peut refuser entre-temps (un raccourci clavier
+      // ouvre la Carte, la Nef est lancée) : la veillée, déjà tenue pour lancée, n'est pas retenue, et `refused` rend à
+      // l'appelant ce qu'il attendait de `false` (le départ part sans veillée, l'embarquement reste à jouer).
       clearVeil();
       setFondu(true);
-      veilLater(() => void start(), LEVEL_FADE_MS / 2);
+      veilLater(() => {
+        if (!start()) refused?.();
+      }, LEVEL_FADE_MS / 2);
       return true;
     },
     [level, vigils, reduceMotion, scriptPlaying, asking, mapOpen, seeVigil, settings.autoRead, speak],
@@ -1144,7 +1173,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     if (!ready || arrivalVigilTried.current || vigilSeen(state.world, `${level}-arrival`)) return;
     arrivalVigilTried.current = true;
     if (achieved > 0) seeVigil(`${level}-arrival`);
-    else if (arrival.voyage === 'arrivee' || (start === 'quai' && arrival.voyage !== 'fondu')) playVigil('arrival');
+    else if ((arrival.voyage === 'arrivee' || (start === 'quai' && arrival.voyage !== 'fondu')) && playVigil('arrival')) return;
+    if (arrival.voyage === 'arrivee') setFondu(false);
   }, [ready, level, state.world, achieved, start, arrival.voyage, seeVigil, playVigil]);
   // L'embarquement d'un équipier : son lieu rallumé sous les yeux de l'élève, la veillée vient au retour de la scénette,
   // après le bilan et la pose de la partie, jamais pendant. Déjà rallumé en arrivant : retenue comme vue.
@@ -1165,7 +1195,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // Elle attend aussi la Carte fermée ; refusée par la scène (la Nef en route), elle reste à jouer (expert frontend).
   useEffect(() => {
     if (!boardingPending || posePending || asking || scriptPlaying || Boolean(remise) || mapOpen) return;
-    if (playVigil('boarding')) setBoardingPending(false);
+    if (playVigil('boarding', undefined, () => setBoardingPending(true))) setBoardingPending(false);
   }, [boardingPending, posePending, asking, scriptPlaying, remise, mapOpen, playVigil]);
   // Quand le monde est prêt, après un voyage entre niveaux : à la première arrivée par la Nef, le carillon, une fois ;
   // après un retour, le nom du niveau, dans la zone du lecteur d'écran et à la voix (référent dys). Puis l'adresse
@@ -1498,7 +1528,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
             <p role="status">{vigil?.line ?? ''}</p>
             {vigil && <SpeakButton text={vigil.line} label="Réécouter" compact />}
             {vigil && (
-              <button type="button" className="open-world-veillee-pass" onClick={() => world.current?.endScript()}>
+              <button type="button" className="open-world-veillee-pass" onClick={() => passVigilRef.current()}>
                 Passer
               </button>
             )}
