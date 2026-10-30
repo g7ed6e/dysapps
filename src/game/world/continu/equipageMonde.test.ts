@@ -14,7 +14,7 @@ import { habitantFit } from './habitants';
 import { placeById, type ScenePlaceId } from './levelPlan';
 import { levelWorld } from './levelWorld';
 import { PLACES, type PlaceId } from './plan6e';
-import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
+import { FOOT, hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
 
 const DOSSIER = resolve(__dirname, '../../../../docs/univers/archipeo/personnages/modeles');
 const lu = (e: Equipier) => {
@@ -90,7 +90,7 @@ describe('où chaque équipier se tient', () => {
       expect(Math.abs(spot.side), place).toBeGreaterThanOrEqual(0.4);
       expect(spot.back, place).toBeGreaterThan(0);
       // Au plus haut du pas (le sol à facettes sur la pente des Écluses), jamais plus bas que l'habitant.
-      const foot = (0.5 * f.height) / h;
+      const foot = (FOOT * f.height) / h;
       for (const [ox, oz] of [[0, 0], [foot, 0], [-foot, 0], [0, foot], [0, -foot]]) expect(f.at.y, place).toBeGreaterThanOrEqual(ground(f.at.x + ox, f.at.z + oz) - 1e-9);
       expect(f.at.y, place).toBeGreaterThanOrEqual(at.y - 1e-9);
       expect(f.yaw, place).toBe(yaw);

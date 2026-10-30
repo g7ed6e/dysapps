@@ -245,7 +245,7 @@ function inFrontOfCamera(p: Vec2): boolean {
 }
 
 /** Une ombre peinte : un disque à `sides` côtés posé sur le sol, plus sombre que lui, du côté opposé au soleil. */
-export const SHADOW = { lift: 0.05, darken: [0.66, 0.74, 0.84], sides: 7, stretch: 1.6, segment: 1.5 } as const;
+export const SHADOW = { lift: 0.05, darken: [0.66, 0.74, 0.84], sides: 7, stretch: 1.6, segment: 1.5, rise: 0.5 } as const;
 
 /** La couleur d'une ombre sur un sol de couleur `ground` (sRGB) : plus sombre et plus froide, jamais noire. */
 export function shadowColor(ground: number): number {
@@ -273,8 +273,13 @@ function shadow(b: FacetBuilder | null, ground: (x: number, z: number) => number
   if (!b) return count;
   const cx = x + SHADOW_DIR.x * (shift + long - radius);
   const cz = z + SHADOW_DIR.z * (shift + long - radius);
-  const color = shadowColor(groundTone(cx, cz, ground(cx, cz)));
-  const at = (px: number, pz: number): [number, number, number] => [px, ground(px, pz) + SHADOW.lift, pz];
+  const gc = ground(cx, cz);
+  const color = shadowColor(groundTone(cx, cz, gc));
+  // L'ombre d'un lieu s'arrête au pied d'une pente : au-delà de `rise` au-dessus du sol du lieu (`x`, `z`), elle passe
+  // sous le sol, qui la coupe (directeur artistique, sixième passe : en anneaux, elle montait la colline des Écluses en
+  // bandes).
+  const top = slope ? ground(x, z) + SHADOW.rise : Infinity;
+  const at = (px: number, pz: number): [number, number, number] => [px, Math.min(ground(px, pz), top) + SHADOW.lift, pz];
   const c = at(cx, cz);
   const ring = (t: number) => Array.from({ length: n }, (_, k) => {
     const u = t * long * Math.cos((2 * Math.PI * k) / n);
