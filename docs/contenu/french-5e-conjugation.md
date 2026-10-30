@@ -739,9 +739,9 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `past-tenses` | La chaussée longe la rive du marais. | Le tailleur dalle la rive. |
-| `future-tense` | La chaussée va jusqu’à la brume. | Le tailleur trace la chaussée jusqu’au bout. |
-| `tense-recognition` | Le tailleur choisit un signe pour chaque pierre. | Le tailleur grave chaque pierre. |
+| `past-tenses` | La chaussée longe la rive du marais. | Le tailleur de pierre dalle la rive. |
+| `future-tense` | La chaussée va jusqu’à la brume. | Le tailleur de pierre trace la chaussée jusqu’au bout. |
+| `tense-recognition` | Le tailleur choisit un signe pour chaque pierre. | Le tailleur de pierre grave chaque pierre. |
 | `tense-choice` | Le tailleur dresse les pierres une à une. | Les pierres sont debout. |
 | `sentence-grammar` | Le tailleur grave des signes sur les dalles. | Les signes restent sur les dalles. |
 

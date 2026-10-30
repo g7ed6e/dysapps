@@ -700,7 +700,7 @@ Pour tous les items :
 
 - métier : Je fais signe aux bateaux avec les bras. · Je hisse les fanions sur la corde. · Je souffle dans la corne de brume.
 - lieu : Ici, le Sémaphore fait signe aux bateaux du large. · Les bras de bois se lisent de loin.
-- ruine : Les bras sont couchés sur le toit. · La corde est rompue. · La corne est tombée de sa table.
+- ruine : Les bras sont couchés sur le toit. · La corde est rompue. · La corne est tombée de son support.
 - chantier : Le mât est debout. · Un bras est relevé.
 - rallumé : Les deux bras sont levés. · Les fanions flottent sur la corde.
 

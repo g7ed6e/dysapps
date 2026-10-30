@@ -717,7 +717,7 @@ Pour tous les items :
 | --- | --- | --- |
 | `hello` | Les bateaux saluent la station en passant. | La station répond aux bateaux. |
 | `numbers` | Les mâts se suivent dans la mer. | Les mâts sont alignés. |
-| `first-listening` | Le pilote écoute les bateaux du chenal. | Le pilote voit passer les bateaux. |
+| `first-listening` | Le pilote écoute les bateaux du chenal. | Le pilote du chenal voit passer les bateaux. |
 | `signs` | Les bouées flottent au pied de la cale. | Les bouées tiennent à leur amarre. |
 | `famous-people` | Des visiteurs de loin passent par le chenal. | Les visiteurs sont au quai. |
 

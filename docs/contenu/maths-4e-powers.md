@@ -203,7 +203,7 @@ Pour tous les items :
 | `powers` | Les étincelles jaillissent de la tôle chaude. | Les étincelles éclairent la forge. |
 | `square-roots` | L’enclume reçoit les pièces chaudes. | Les pièces sont forgées. |
 | `scientific-notation` | Les pièces chaudes plongent dans l’eau. | Le métal est durci. |
-| `subtracting` | Le forgeron note le chaud et le froid. | Le fourneau est chargé. |
+| `subtracting` | La chaudronnière note le chaud et le froid. | Le chaud et le froid sont notés. |
 | `volumes` | Chaque pièce a sa forme et son moule. | Les formes à couler sont posées sur l’établi. |
 
 ## Les plans

@@ -843,7 +843,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : J’entretiens la voie. · Je graisse les leviers du poste. · Je tourne la plaque.
-- lieu : Ici, les trains changent de voie. · Dans le poste, je change la voie des trains.
+- lieu : Ici, les trains changent de voie. · Ici, les leviers du poste changent la voie.
 - ruine : Le toit du poste est tombé. · La plaque tournante est rouillée. · Les rails sont tordus.
 - chantier : Les leviers sont graissés. · Les rails sont redressés.
 - rallumé : Les trains passent d’une voie à l’autre. · La plaque tourne. · Les leviers répondent.

@@ -2835,6 +2835,12 @@
 .open-world-said > p > span {
   display: block;
 }
+/* Le rôle de l'habitant qui parle (GD-27), en étiquette au-dessus de sa ligne, du style du rôle de la bulle : pas une
+   phrase de plus, et pas un pas de quatre secondes à lui sur un petit écran. */
+.open-world-said > p > .open-world-said-label {
+  font-weight: 400;
+  font-size: max(18px, 0.9em);
+}
 .open-world-said > .speak-button {
   pointer-events: auto;
 }

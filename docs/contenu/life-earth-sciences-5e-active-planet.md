@@ -425,7 +425,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `active-earth` | Les bouches chaudes sortent de la roche. | Les bouches ont leur bord de pierre. |
+| `active-earth` | Les bouches chaudes sortent de la roche. | Chaque bouche a son bord de pierre. |
 | `weather-climate` | La girouette tourne sur son mât. | La girouette se dresse sur son mât. |
 | `human-impact` | Les gens puisent l’eau des sources chaudes. | Le niveau de l’eau est noté. |
 

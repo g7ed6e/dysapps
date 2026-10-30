@@ -387,8 +387,8 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `syllables` | La cloche sonne par petits coups. | La gardienne raccroche la cloche. |
-| `sound-hunt` | La gardienne écoute les bruits de la côte. | La gardienne note les bruits. |
+| `syllables` | La cloche sonne par petits coups. | La gardienne du phare raccroche la cloche. |
+| `sound-hunt` | La gardienne écoute les bruits de la côte. | La gardienne du phare note les bruits. |
 | `rhymes` | Une échelle monte à la cabane. | L’échelle tient contre le mur. |
 
 ## Les plans

@@ -349,7 +349,7 @@ Pour tous les items :
 | `proportion-tables` | Les étals se garnissent sur les radeaux. | Le marchand garnit ses étals. |
 | `percentages` | Les prix changent d’un radeau à l’autre. | Le marchand affiche les prix. |
 | `ratios` | Les barques font la traversée du chenal. | Les barques sont à quai. |
-| `formulas` | Le marchand note ses comptes sur la toile. | Les comptes tombent juste. |
+| `formulas` | Le marchand note ses comptes sur la toile. | Les comptes sont écrits sur la toile. |
 | `statistics` | Le marchand tient le registre des ventes. | Le marchand inscrit les ventes au registre. |
 
 ## Les plans

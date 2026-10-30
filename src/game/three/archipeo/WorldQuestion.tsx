@@ -95,8 +95,9 @@ export interface WorldRevisionPart {
 /** La scénette d'un lieu qui n'en a pas (le 5e, GD-22, lot 2) : ni rôle ni phrase d'accueil. */
 const NO_SCENETTE: Scenette = { role: '', greeting: null, placement: 'rangee' };
 // Le cadre d'une mission (GD-27), lu à voix haute : il se lève un temps après la fin de la voix (le lecteur lent finit
-// après elle), et au plus tard après le délai de secours, si la voix ne finit jamais. Sans lecture automatique, seul un
-// toucher le lève : jamais de durée imposée (référent dys, consultant UX UI).
+// après elle). Sans voix du tout (la lecture automatique choisie, mais la synthèse absente), il se lève après le délai de
+// secours. Sans lecture automatique, ou la voix coupée par une relecture, seul un toucher le lève : jamais de durée
+// imposée (référent dys, consultant UX UI).
 const FRAME_AFTER_VOICE_MS = 1500;
 const FRAME_FALLBACK_MS = 15000;
 
@@ -249,25 +250,31 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   const framing = bulle && words !== null && !framed;
   // Le focus clavier posé sur le cadre quand il se lève revient sur la ligne de consigne qui le remplace.
   const frameFocused = useRef(false);
-  const passFrame = useCallback(() => {
+  // Levé de lui-même (la voix finie) : rien à couper. Levé au toucher : la voix du cadre s'arrête.
+  const liftFrame = useCallback(() => {
     frameFocused.current = document.activeElement?.classList.contains('world-scenette-cadre') ?? false;
-    stopSpeaking();
     setFramed(true);
   }, []);
+  const passFrame = useCallback(() => {
+    stopSpeaking();
+    liftFrame();
+  }, [liftFrame]);
   useEffect(() => {
     if (!framing || !words || !settings.autoRead) return;
     // Un rappel d'une phrase déjà coupée (la scénette fermée pendant le cadre) ne lève rien.
     let live = true;
     const timers: number[] = [];
-    const later = (ms: number) => timers.push(window.setTimeout(() => live && passFrame(), ms));
-    later(FRAME_FALLBACK_MS);
-    speak(frenchTypography(words.frame), 0.9, () => later(FRAME_AFTER_VOICE_MS));
+    const later = (ms: number) => {
+      if (live) timers.push(window.setTimeout(() => live && liftFrame(), ms));
+    };
+    if (isSpeechAvailable()) speak(frenchTypography(words.frame), 0.9, () => later(FRAME_AFTER_VOICE_MS));
+    else later(FRAME_FALLBACK_MS);
     return () => {
       live = false;
       timers.forEach((t) => window.clearTimeout(t));
       stopSpeaking();
     };
-  }, [framing, words, settings.autoRead, passFrame]);
+  }, [framing, words, settings.autoRead, liftFrame]);
   useEffect(() => {
     if (!framed || !frameFocused.current) return;
     frameFocused.current = false;
@@ -654,7 +661,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
           <SpeakButton text={frenchTypography(line)} label="Consigne" compact />
         </div>
       ) : (
-        <div className="world-scenette-head">
+        <div className="world-scenette-head" tabIndex={-1}>
           <p className="world-scenette-role">
             <RoleName role={scenette.role} />
           </p>

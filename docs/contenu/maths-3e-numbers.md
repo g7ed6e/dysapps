@@ -903,7 +903,7 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `power-rules` | Les mesures vont de la grande à la petite. | Les mesures sont sur la longue table. |
-| `square-equations` | Les sacs sont rangés en rangées égales. | Les rangées sont égales. |
+| `square-equations` | Les sacs font autant de rangées que de colonnes. | Les rangées et les colonnes sont égales. |
 | `prime-factors` | Les sacs se partagent entre les casiers. | Les sacs trouvent leur casier. |
 | `identities` | Les sacs forment un grand carré sur la plate-forme. | La plate-forme porte son carré de sacs. |
 | `zero-product` | La poulie monte les sacs un par un. | Les sacs sont montés au grenier. |

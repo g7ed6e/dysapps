@@ -73,7 +73,7 @@
         },
         "justice": {
           "frame": "Le juge reçoit les gens dans la salle.",
-          "follow": "Le juge a dit son avis."
+          "follow": "Le juge a rendu sa décision."
         },
         "security-defence": {
           "frame": "Les gardes ouvrent les portes aux passants.",
@@ -354,7 +354,7 @@
           "Chaque cadre garde un bateau."
         ],
         "ruine": [
-          "Le toit de la galerie est crevé.",
+          "Le toit de la galerie est ouvert.",
           "Les cadres sont tombés.",
           "La galerie est couverte de poussière."
         ],
@@ -404,7 +404,7 @@
         "ruine": [
           "Les bras sont couchés sur le toit.",
           "La corde est rompue.",
-          "La corne est tombée de sa table."
+          "La corne est tombée de son support."
         ],
         "chantier": [
           "Le mât est debout.",
@@ -464,7 +464,7 @@
       },
       "missions": {
         "to-be": {
-          "frame": "Les voyageurs se présentent au chef de quai.",
+          "frame": "Les voyageurs se présentent au chef de gare.",
           "follow": "Les voyageurs sont sur le quai."
         },
         "have-got": {
@@ -476,8 +476,8 @@
           "follow": "Le quai est libre."
         },
         "story": {
-          "frame": "Le chef de quai raconte un voyage.",
-          "follow": "Le chef de quai finit son récit."
+          "frame": "Le chef de gare raconte un voyage.",
+          "follow": "Le chef de gare finit son récit."
         }
       }
     },
@@ -516,7 +516,7 @@
         },
         "first-listening": {
           "frame": "Le pilote écoute les bateaux du chenal.",
-          "follow": "Le pilote voit passer les bateaux."
+          "follow": "Le pilote du chenal voit passer les bateaux."
         },
         "signs": {
           "frame": "Les bouées flottent au pied de la cale.",
@@ -682,7 +682,7 @@
         ],
         "lieu": [
           "Ici, les trains changent de voie.",
-          "Dans le poste, je change la voie des trains."
+          "Ici, les leviers du poste changent la voie."
         ],
         "ruine": [
           "Le toit du poste est tombé.",
@@ -795,15 +795,15 @@
       "missions": {
         "past-tenses": {
           "frame": "La chaussée longe la rive du marais.",
-          "follow": "Le tailleur dalle la rive."
+          "follow": "Le tailleur de pierre dalle la rive."
         },
         "future-tense": {
           "frame": "La chaussée va jusqu’à la brume.",
-          "follow": "Le tailleur trace la chaussée jusqu’au bout."
+          "follow": "Le tailleur de pierre trace la chaussée jusqu’au bout."
         },
         "tense-recognition": {
           "frame": "Le tailleur choisit un signe pour chaque pierre.",
-          "follow": "Le tailleur grave chaque pierre."
+          "follow": "Le tailleur de pierre grave chaque pierre."
         },
         "tense-choice": {
           "frame": "Le tailleur dresse les pierres une à une.",
@@ -890,15 +890,15 @@
       "missions": {
         "word-classes": {
           "frame": "Les pêcheurs rentrent avec la pêche.",
-          "follow": "Les pêcheurs trient la pêche."
+          "follow": "La pêcheuse trie la pêche."
         },
         "sorting": {
           "frame": "Les sardines sont étalées sur le sable.",
-          "follow": "Les pêcheurs rangent les paniers."
+          "follow": "La pêcheuse range les paniers."
         },
         "e-er-ez": {
           "frame": "Les filets sèchent sur les perches.",
-          "follow": "Les pêcheurs roulent les filets."
+          "follow": "La pêcheuse roule les filets."
         },
         "plurals": {
           "frame": "La barque rentre avec ses sardines.",
@@ -964,11 +964,11 @@
       "missions": {
         "syllables": {
           "frame": "La cloche sonne par petits coups.",
-          "follow": "La gardienne raccroche la cloche."
+          "follow": "La gardienne du phare raccroche la cloche."
         },
         "sound-hunt": {
           "frame": "La gardienne écoute les bruits de la côte.",
-          "follow": "La gardienne note les bruits."
+          "follow": "La gardienne du phare note les bruits."
         },
         "rhymes": {
           "frame": "Une échelle monte à la cabane.",
@@ -1327,7 +1327,7 @@
       "missions": {
         "christendoms-islam": {
           "frame": "Les grandes pierres du bas sont les plus anciennes.",
-          "follow": "Le bâtisseur pose les grandes pierres."
+          "follow": "La maçonne pose les grandes pierres."
         },
         "feudal-west": {
           "frame": "Les pierres du milieu portent de hautes fentes.",
@@ -1347,7 +1347,7 @@
           "Je dessine les arcs."
         ],
         "lieu": [
-          "Ici, une arcade est bâtie au bord de l’eau.",
+          "Ici, une arcade se dresse au bord de l’eau.",
           "Le dallage descend jusqu’à l’eau."
         ],
         "ruine": [
@@ -1369,8 +1369,8 @@
           "follow": "Les outils sont dans leurs caisses."
         },
         "ancient-peoples": {
-          "frame": "Les peuples anciens bâtissaient près de l’eau.",
-          "follow": "Le fouilleur dessine l’arcade."
+          "frame": "Les peuples anciens ont bâti près de l’eau.",
+          "follow": "L’archéologue dessine l’arcade."
         },
         "roman-empire": {
           "frame": "Une route mène à l’escalier de pierre.",
@@ -1378,7 +1378,7 @@
         },
         "viewpoints": {
           "frame": "Les documents de la fouille sont sur la planche.",
-          "follow": "Le fouilleur range les documents."
+          "follow": "L’archéologue range les documents."
         }
       }
     },
@@ -1421,8 +1421,8 @@
           "follow": "Le bassin est plein."
         },
         "gr-myth-history": {
-          "frame": "La pierre est lisse.",
-          "follow": "Les colonnes sont droites."
+          "frame": "Les colonnes sont encore toutes lisses.",
+          "follow": "Les colonnes sont gravées et droites."
         },
         "gr-greek-world": {
           "frame": "Le cercle de colonnes s’ouvre sur le ciel.",
@@ -1451,7 +1451,7 @@
           "Le bassin est vide."
         ],
         "chantier": [
-          "Les hauts des colonnes sont posés sur les colonnes.",
+          "Le haut de chaque colonne est posé.",
           "Le bassin est nettoyé."
         ],
         "rallume": [
@@ -1535,7 +1535,7 @@
         },
         "gr-alphabet": {
           "frame": "Le conteur trace ses signes au pied de la paroi.",
-          "follow": "Les signes courent sur la paroi."
+          "follow": "Les signes sont sur la paroi."
         }
       }
     },
@@ -1648,7 +1648,7 @@
       "missions": {
         "active-earth": {
           "frame": "Les bouches chaudes sortent de la roche.",
-          "follow": "Les bouches ont leur bord de pierre."
+          "follow": "Chaque bouche a son bord de pierre."
         },
         "weather-climate": {
           "frame": "La girouette tourne sur son mât.",
@@ -1868,7 +1868,7 @@
       "missions": {
         "es-greetings": {
           "frame": "Un voyageur s’assoit à la grande table.",
-          "follow": "L’aubergiste sert la table."
+          "follow": "L’aubergiste sert le repas."
         },
         "es-numbers": {
           "frame": "L’aubergiste compte les couverts et les lits.",
@@ -1900,7 +1900,7 @@
         },
         "de-articles": {
           "frame": "Les bancs sont rangés autour de la table.",
-          "follow": "Les bancs sont prêts pour la classe."
+          "follow": "Les bancs sont prêts pour le repas."
         },
         "de-sentences": {
           "frame": "Le courrier des voyageurs arrive à l’auberge.",
@@ -2035,8 +2035,8 @@
           "follow": "Les mesures sont sur la longue table."
         },
         "square-equations": {
-          "frame": "Les sacs sont rangés en rangées égales.",
-          "follow": "Les rangées sont égales."
+          "frame": "Les sacs font autant de rangées que de colonnes.",
+          "follow": "Les rangées et les colonnes sont égales."
         },
         "prime-factors": {
           "frame": "Les sacs se partagent entre les casiers.",
@@ -2234,8 +2234,8 @@
           "follow": "Le métal est durci."
         },
         "subtracting": {
-          "frame": "Le forgeron note le chaud et le froid.",
-          "follow": "Le fourneau est chargé."
+          "frame": "La chaudronnière note le chaud et le froid.",
+          "follow": "Le chaud et le froid sont notés."
         },
         "volumes": {
           "frame": "Chaque pièce a sa forme et son moule.",
@@ -2283,7 +2283,7 @@
         },
         "formulas": {
           "frame": "Le marchand note ses comptes sur la toile.",
-          "follow": "Les comptes tombent juste."
+          "follow": "Les comptes sont écrits sur la toile."
         },
         "statistics": {
           "frame": "Le marchand tient le registre des ventes.",
@@ -2631,8 +2631,8 @@
           "follow": "La vapeur est dans les conduites."
         },
         "motion-signals": {
-          "frame": "Le rotor tourne plus ou moins fort.",
-          "follow": "Le chauffeur graisse le rotor."
+          "frame": "Le rotor tourne dans un sens, puis dans l’autre.",
+          "follow": "La machiniste graisse le rotor."
         },
         "energy-circuits": {
           "frame": "Un fil de cuivre relie le rotor à la lampe.",
@@ -2640,7 +2640,7 @@
         },
         "materials-light": {
           "frame": "La brique, le fer et le cuivre font la machine.",
-          "follow": "Le chauffeur remonte les pièces."
+          "follow": "La machiniste remonte les pièces."
         }
       }
     },

@@ -462,7 +462,7 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `christendoms-islam` | Les grandes pierres du bas sont les plus anciennes. | Le bâtisseur pose les grandes pierres. |
+| `christendoms-islam` | Les grandes pierres du bas sont les plus anciennes. | La maçonne pose les grandes pierres. |
 | `feudal-west` | Les pierres du milieu portent de hautes fentes. | Les fentes de jour s’ouvrent dans le mur. |
 | `new-worlds` | La brique du parapet est tout en haut. | Le parapet est posé. |
 

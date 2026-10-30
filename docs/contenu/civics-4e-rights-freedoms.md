@@ -429,7 +429,7 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `freedoms` | Les gens se réunissent dans la salle. | Les bancs sont pleins de monde. |
-| `justice` | Le juge reçoit les gens dans la salle. | Le juge a dit son avis. |
+| `justice` | Le juge reçoit les gens dans la salle. | Le juge a rendu sa décision. |
 | `security-defence` | Les gardes ouvrent les portes aux passants. | Les portes sont fermées pour la nuit. |
 
 ## Les plans

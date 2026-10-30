@@ -571,7 +571,7 @@ Pour tous les items :
 ### L’habitant
 
 - métier : Je dégage les dalles à la brosse. · Je range les pierres de la fouille. · Je dessine les arcs.
-- lieu : Ici, une arcade est bâtie au bord de l’eau. · Le dallage descend jusqu’à l’eau.
+- lieu : Ici, une arcade se dresse au bord de l’eau. · Le dallage descend jusqu’à l’eau.
 - ruine : Les piles de l’arcade sont dans l’eau. · Les dalles sont couvertes de sable.
 - chantier : Les dalles du dallage sont dégagées. · L’escalier descend jusqu’à l’eau.
 - rallumé : Les arcs de l’arcade sont complets. · Les clés des arcs sont en place.
@@ -581,9 +581,9 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `early-humans` | Les outils de pierre sont dans la fouille. | Les outils sont dans leurs caisses. |
-| `ancient-peoples` | Les peuples anciens bâtissaient près de l’eau. | Le fouilleur dessine l’arcade. |
+| `ancient-peoples` | Les peuples anciens ont bâti près de l’eau. | L’archéologue dessine l’arcade. |
 | `roman-empire` | Une route mène à l’escalier de pierre. | La route est tracée sur le plan. |
-| `viewpoints` | Les documents de la fouille sont sur la planche. | Le fouilleur range les documents. |
+| `viewpoints` | Les documents de la fouille sont sur la planche. | L’archéologue range les documents. |
 
 ## Les plans
 

@@ -375,7 +375,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // combien de millisecondes (jamais en même temps que le toc).
   // Le nom d'un Détour où Kéo s'est arrêté s'écrit de même, en haut (`top`), et part dès qu'il en repart (`detour`).
   // L'état d'un lieu qui s'anime à sa restauration (la Forge du 4e) s'écrit de même, avec l'icône de l'état (`icon`).
-  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName; voice?: string } | null>(null);
+  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName; voice?: string; label?: string } | null>(null);
   // Les mots d'état de l'univers, lus par la scène faite une fois (« La Forge est restaurée. »).
   const stateWords = useRef(textes.etatsDIle);
   stateWords.current = textes.etatsDIle;
@@ -534,22 +534,22 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         if (needleRef.current) needleRef.current.style.transform = `rotate(${yaw.toFixed(3)}rad)`;
         setTurned(Math.abs(yaw) > 0.01);
       },
-      // L'habitant d'un lieu touché près de sa porte (GD-27, la parole du lieu) : son rôle puis une ligne de dix mots au
-      // plus, écrits dans la phrase du monde et lus, qui tourne à chaque toucher (son métier, son lieu, l'état du lieu) ;
-      // la rotation n'est pas sauvegardée. Un second toucher pendant que la ligne s'affiche la redit (référent dys).
-      // Kéo ne bouge pas.
+      // L'habitant d'un lieu touché près de sa porte (GD-27, la parole du lieu) : une ligne de dix mots au plus, sous
+      // son rôle en étiquette, écrite dans la phrase du monde et lue (« Rôle. Ligne. »), qui tourne à chaque toucher (son
+      // métier, son lieu, l'état du lieu) ; la rotation n'est pas sauvegardée. Un double toucher redit la même ligne
+      // (référent dys) ; « Réécouter » la redit aussi. Kéo ne bouge pas.
       onHabitant: (placeId) => {
         const state = constructionState(constructionsRef.current[placeId]);
         const mood: PlaceMood = state === 'restauree' ? 'rallume' : state === 'en-chantier' ? 'chantier' : 'ruine';
         const last = habitantSaid.current;
-        const again = last?.place === placeId && Date.now() - last.at < SAID_MS * 2 ? last.line : null;
+        const again = last?.place === placeId && Date.now() - last.at < DOUBLE_TOUCH_MS ? last.line : null;
         const n = habitantTurns.current.get(placeId) ?? 0;
         const line = again ?? habitantLine(placeId, mood, n);
         if (!line) return;
         if (!again) habitantTurns.current.set(placeId, n + 1);
         habitantSaid.current = { place: placeId, line, at: Date.now() };
         const role = hasScenette(placeId) ? scenetteOf(placeId).role : null;
-        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: role ? [role, line] : [line], after: 0, voice: role ? `${role}. ${line}` : undefined }));
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0, label: role ?? undefined, voice: role ? `${role}. ${line}` : undefined }));
       },
       // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
       onClosed: (land) => {
@@ -1357,7 +1357,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               hors des noms des lieux du sud. */}
           <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidOn ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
             {saidOn && said?.icon && <Icon name={said.icon} />}
-            <p role="status">{saidOn && said ? said.lines.map((line, i) => (
+            <p role="status">{saidOn && said?.label && <span className="open-world-said-label">{said.label}</span>}{saidOn && said ? said.lines.map((line, i) => (
                   // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
                   <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
                     {i > 0 && ' '}
@@ -1537,6 +1537,8 @@ const PONT_REBATI = 'Le pont est rebâti.';
  */
 const SAID_AFTER_MS = 450;
 const SAID_MS = 4000;
+/** Deux touchers de l'habitant à moins de ce délai : la même ligne, redite (un double toucher n'en saute pas une). */
+const DOUBLE_TOUCH_MS = 1200;
 
 /** Un petit écran : un téléphone, étroit ou couché (la même requête que `.open-world-said`, openWorld.css). */
 const SMALL_SCREEN = '(max-width: 600px), (max-height: 500px)';

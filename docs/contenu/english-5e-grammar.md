@@ -668,7 +668,7 @@ Pour tous les items :
 
 - métier : Je peins les bateaux des capitaines. · Je tends mes toiles dans les cadres. · Je mélange mes couleurs.
 - lieu : Ici, les capitaines venus d’ailleurs ont leur galerie. · Chaque cadre garde un bateau.
-- ruine : Le toit de la galerie est crevé. · Les cadres sont tombés. · La galerie est couverte de poussière.
+- ruine : Le toit de la galerie est ouvert. · Les cadres sont tombés. · La galerie est couverte de poussière.
 - chantier : Le toit de la galerie est refait. · Les cadres sont remis au mur.
 - rallumé : Chaque cadre a son bateau. · La galerie est ouverte.
 

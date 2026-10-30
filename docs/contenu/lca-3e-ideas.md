@@ -844,7 +844,7 @@ Pour tous les items :
 | `la-empire` | Les colonnes portent l’anneau de linteaux. | Le cercle est refermé sous le ciel. |
 | `la-provinces` | Le banc rond fait le tour de la table. | Le banc est remis en rond. |
 | `la-heritage` | La fontaine coule dans son bassin d’eau sombre. | Le bassin est plein. |
-| `gr-myth-history` | La pierre est lisse. | Les colonnes sont droites. |
+| `gr-myth-history` | Les colonnes sont encore toutes lisses. | Les colonnes sont gravées et droites. |
 | `gr-greek-world` | Le cercle de colonnes s’ouvre sur le ciel. | Les colonnes se tiennent ensemble. |
 | `gr-heritage` | Les pins entourent la clairière. | La clairière est dégagée. |
 

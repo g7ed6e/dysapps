@@ -477,10 +477,10 @@ Pour tous les items :
 
 | mission | cadre | suite |
 | --- | --- | --- |
-| `to-be` | Les voyageurs se présentent au chef de quai. | Les voyageurs sont sur le quai. |
+| `to-be` | Les voyageurs se présentent au chef de gare. | Les voyageurs sont sur le quai. |
 | `have-got` | Chaque voyageur porte une malle. | Chaque voyageur range sa malle. |
 | `present-simple` | Les bateaux partent du quai. | Le quai est libre. |
-| `story` | Le chef de quai raconte un voyage. | Le chef de quai finit son récit. |
+| `story` | Le chef de gare raconte un voyage. | Le chef de gare finit son récit. |
 
 ## Les plans
 

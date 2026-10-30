@@ -579,9 +579,9 @@ Pour tous les items :
 | mission | cadre | suite |
 | --- | --- | --- |
 | `states-of-matter` | La source chaude fume au bord du bassin. | La vapeur est dans les conduites. |
-| `motion-signals` | Le rotor tourne plus ou moins fort. | Le chauffeur graisse le rotor. |
+| `motion-signals` | Le rotor tourne dans un sens, puis dans l’autre. | La machiniste graisse le rotor. |
 | `energy-circuits` | Un fil de cuivre relie le rotor à la lampe. | La lampe s’allume au bout du fil. |
-| `materials-light` | La brique, le fer et le cuivre font la machine. | Le chauffeur remonte les pièces. |
+| `materials-light` | La brique, le fer et le cuivre font la machine. | La machiniste remonte les pièces. |
 
 ## Les plans
 

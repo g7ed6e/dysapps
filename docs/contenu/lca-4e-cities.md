@@ -836,7 +836,7 @@ Pour tous les items :
 - métier : Je taille la pierre des colonnes. · Je sculpte les hauts des colonnes. · Je polis le marbre.
 - lieu : Ici, la halle abrite les statues des villes anciennes. · Le bassin reflète les colonnes.
 - ruine : Les colonnes sont couchées. · Le toit de la halle est tombé. · Le bassin est vide.
-- chantier : Les hauts des colonnes sont posés sur les colonnes. · Le bassin est nettoyé.
+- chantier : Le haut de chaque colonne est posé. · Le bassin est nettoyé.
 - rallumé : La halle est couverte. · Le bassin de la halle est plein. · Les statues sont à leur place.
 
 ### Les missions
