@@ -9,7 +9,7 @@
 // aucun appel de plus. Code pur ; la scène le refait avec les lieux (`LevelWorld.rafiot`).
 import type { Facets } from './facets';
 import { fromPlan, type PlaceId } from './plan6e';
-import { rafiotFacets, type RafiotPiece, type RafiotSite } from './rafiot';
+import { RAFIOT_PIECES_CARRIED, rafiotFacets, type RafiotPiece, type RafiotSite } from './rafiot';
 import { SHADOW_DIR } from './sky';
 
 /** Le soleil du 6e, à plat (l'opposé des ombres peintes) : les pans de la coque au soleil ou à l'ombre. */
@@ -28,12 +28,8 @@ export const RAFIOT_SPOTS_6E: readonly (RafiotSite & { readonly place: PlaceId }
   { place: 'ferry', at: fromPlan([300, 800]), yaw: Math.PI / 2 - 0.2 },
 ];
 
-/**
- * Les pièces sur le pont au 6e : trois des six (l'anneau, la cloche, le poids), une poignée, jamais une par lieu. Décision
- * du directeur artistique du 30 octobre 2026 (GD-28) : les mêmes trois au 6e, au 5e et au 4e, un nombre qui ne grandit
- * pas d'un niveau à l'autre (il se lirait comme un compteur) ; au 3e, les pièces rendues au Fanal restent (GD-25).
- */
-export const RAFIOT_PIECES_6E: readonly RafiotPiece[] = ['anneau', 'cloche', 'poids'];
+/** Les pièces sur le pont au 6e : les trois que le Rafiot montre à tous les niveaux où il les porte (`RAFIOT_PIECES_CARRIED`). */
+export const RAFIOT_PIECES_6E: readonly RafiotPiece[] = RAFIOT_PIECES_CARRIED;
 
 /** Le plafond du Rafiot du 6e : ce qu'il coûte au plus dans le maillage des lieux (rafiot6e.test.ts). */
 export const RAFIOT_6E_TRIANGLES_MAX = 600;

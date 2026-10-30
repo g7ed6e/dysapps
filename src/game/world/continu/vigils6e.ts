@@ -1,16 +1,14 @@
 // Les trois veillées du 6e (GD-23, « trois veillées par niveau » ; GD-27, « Par quels canaux le récit se raconte » ;
-// lot 3) : l'arrivée et le départ cadrent le feu du niveau, la lanterne du Phare, éteinte à l'arrivée, telle qu'elle est
+// lot 3 ; le cadre commun : ./levelVigils.ts) : l'arrivée et le départ cadrent le feu du niveau, la lanterne du Phare, éteinte à l'arrivée, telle qu'elle est
 // au départ (la veillée de départ du 6e ne montre que son propre feu) ; l'embarquement cadre la Gare maritime rallumée,
 // où l'équipière radio monte à bord (son modèle 3D n'existe pas encore, GD-19 : la veillée montre le lieu, la ligne dit
 // l'équipier). Deux plans chacune, lents, le regard à peine sous l'horizon, jamais à pic ; puis la caméra revient
-// derrière Kéo. Une seule ligne, littérale, le lieu nommé (docs/contenu/monde-ouvert.md, « Les veillées »). Code pur.
+// derrière Kéo. Une seule ligne, littérale, le lieu nommé (./levelVigils.ts). Code pur.
+import { lanternLit } from './construction';
 import type { Vec3 } from './geometry';
-import PHRASES from './mondeOuvert.json';
-import { FERRY_ISLET, fromPlan, placeById } from './plan6e';
+import type { LevelVigils } from './levelVigils';
+import { FERRY_ISLET, fromPlan } from './plan6e';
 import type { Vigil } from './vigil';
-
-/** Les trois veillées d'un niveau, dans l'ordre où l'élève les voit. */
-export type VigilKind = 'arrival' | 'boarding' | 'departure';
 
 /**
  * Le Phare dans le monde : son pied (le sol de l'îlot) et sa lanterne (places.ts, `LANTERN`, 11,1 au-dessus du pied,
@@ -55,21 +53,18 @@ export const FERRY_VIGIL_6E: Vigil = {
   still: STILL,
 };
 
-/** La veillée de chaque moment du 6e. */
-export const vigil6e = (kind: VigilKind): Vigil => (kind === 'boarding' ? FERRY_VIGIL_6E : PHARE_VIGIL_6E);
-
 /**
- * L'équipier qui monte à bord au 6e, par son rôle (GD-19 : son prénom ne s'affiche jamais) : un rôle qui désigne une
+ * L'équipière qui monte à bord au 6e, par son rôle (GD-19 : son prénom ne s'affiche jamais) : un rôle qui désigne une
  * personne, jamais un objet (« La radio monte à bord » se lisait comme l'appareil ; directeur du contenu pédagogique,
  * relecture du lot 3).
  */
 const BOARDING_6E = 'L’équipière radio';
 
-/**
- * La ligne de la veillée `kind` au 6e : le feu nommé et son état (`lit` : la lanterne du Phare allumée, avec le haut du
- * Phare posé), ou l'équipier qui monte à bord.
- */
-export function vigilWords6e(kind: VigilKind, lit: boolean): string {
-  if (kind === 'boarding') return PHRASES.boarding.replace('{Équipier}', BOARDING_6E);
-  return (lit ? PHRASES.fireLit : PHRASES.fireOut).replace('{Feu}', placeById('phare').name);
-}
+/** Les veillées du 6e : le Phare (sa lanterne allumée dès son haut posé, GD-20), la radio à la Gare maritime, le départ. */
+export const VIGILS_6E: LevelVigils = {
+  fire: 'phare',
+  fireLit: lanternLit,
+  fireVigil: PHARE_VIGIL_6E,
+  boarding: { place: 'ferry', who: BOARDING_6E, vigil: FERRY_VIGIL_6E },
+  departure: true,
+};

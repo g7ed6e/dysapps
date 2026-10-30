@@ -41,7 +41,7 @@ import {
   skyIslandsPortraitFacets,
 } from './crique4e';
 import { FacetBuilder } from './facets';
-import { PIECES_BRONZE, RAFIOT_FUNNEL, RAFIOT_HULL_COLORS, rafiotPiece } from './rafiot';
+import { PIECES_BRONZE, RAFIOT_FUNNEL, RAFIOT_HULL_COLORS, RAFIOT_PIECES_CARRIED, rafiotPiece } from './rafiot';
 import { distance, distanceToPolyline, linearRgb, type Vec2, type Vec3 } from './geometry';
 import { LISIERE_SITE } from './lisiere';
 import { levelWorld } from './levelWorld';
@@ -538,13 +538,14 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     expect(lamp).toBe(0);
   });
 
-  it('le pont du Rafiot vide quand ses six pièces sont rendues au Fanal du 3e, le reste du décor identique', () => {
+  it('le pont du Rafiot porte trois pièces (l’anneau, la cloche, le poids : directeur artistique, 30 octobre 2026), vide quand elles sont rendues au Fanal du 3e, le reste du décor identique', () => {
     const full = criqueDecorFacets();
     const empty = criqueDecorFacets(true);
     expect(empty.triangles).toBeLessThan(full.triangles);
-    // Rien d'autre ne change : seules les pièces partent (le même nombre de triangles que le dessin des six pièces).
+    expect(RAFIOT_PIECES_CARRIED).toEqual(['anneau', 'cloche', 'poids']);
+    // Rien d'autre ne change : seules les pièces partent (le même nombre de triangles que le dessin des trois pièces).
     const b = new FacetBuilder();
-    for (const id of ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const) rafiotPiece(b, id, 0, 0, 0, PIECES_BRONZE);
+    for (const id of RAFIOT_PIECES_CARRIED) rafiotPiece(b, id, 0, 0, 0, PIECES_BRONZE);
     expect(full.triangles - empty.triangles).toBe(b.build().triangles);
   });
 

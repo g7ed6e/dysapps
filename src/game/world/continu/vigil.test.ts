@@ -7,7 +7,15 @@ import { FERRY_ISLET, placeById } from './plan6e';
 import PHRASES from './mondeOuvert.json';
 import { heightAt, landDistance } from './terrain';
 import { vigilPose, vigilScript, vigilSeconds, type Vigil } from './vigil';
-import { FERRY_VIGIL_6E, PHARE_6E, PHARE_VIGIL_6E, vigil6e, vigilWords6e } from './vigils6e';
+import { levelVigils, vigilCuts, vigilOf, vigilWords } from './levelVigils';
+import type { PartShape, Stage } from './construction';
+import { heightAt3e } from './terrain3eHeight';
+import { heightAt4e } from './terrain4e';
+import { heightAt5e, landDistance5e } from './terrain5e';
+import { FANAL_3E, FANAL_VIGIL_3E, VIGILS_3E } from './vigils3e';
+import { FORGE_4E, FORGE_VIGIL_4E, VIGILS_4E } from './vigils4e';
+import { FUMEROLLES_5E, FUMEROLLES_VIGIL_5E, SEMAPHORE_5E, SEMAPHORE_VIGIL_5E, VIGILS_5E } from './vigils5e';
+import { FERRY_VIGIL_6E, PHARE_6E, PHARE_VIGIL_6E, VIGILS_6E } from './vigils6e';
 
 const blank = (): CameraPose => ({ position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 });
 /** La caméra qui suit Kéo au quai de l'Escale, tournée vers le nord. */
@@ -31,6 +39,9 @@ function screenY(p: CameraPose, at: { x: number; y: number; z: number }): number
 
 /** La caméra qui suit Kéo devant la porte de la Gare maritime, au retour de sa scénette. */
 const FROM_FERRY: CameraPose = { position: { x: FERRY_ISLET.center.x + 1.2, y: 9.6, z: FERRY_ISLET.center.z + 13.1 }, target: { x: FERRY_ISLET.center.x + 1.2, y: 3.6, z: FERRY_ISLET.center.z + 3.4 }, fov: 56, lens: 0 };
+
+/** La caméra qui suit Kéo devant la porte des Fumerolles (porte en (2, 7) du lieu), au retour de sa scénette. */
+const FROM_FUMEROLLES: CameraPose = { position: { x: FUMEROLLES_5E.center.x + 2, y: FUMEROLLES_5E.ground + 9.6, z: FUMEROLLES_5E.center.z + 16.7 }, target: { x: FUMEROLLES_5E.center.x + 2, y: FUMEROLLES_5E.ground + 3.6, z: FUMEROLLES_5E.center.z + 7 }, fov: 56, lens: 0 };
 
 const slow = (v: Vigil, from: CameraPose) => {
   let last = vigilPose(v, 0, from, blank());
@@ -67,12 +78,108 @@ describe('Le cadre commun des veillées', () => {
   });
 
   it('glisse lentement, sans à-coup, le regard jamais à pic ; chaque veillée dure moins de vingt secondes', () => {
-    for (const [v, from] of [[PHARE_VIGIL_6E, FROM], [FERRY_VIGIL_6E, FROM_FERRY]] as const) {
+    for (const [v, from] of [[PHARE_VIGIL_6E, FROM], [FERRY_VIGIL_6E, FROM_FERRY], [SEMAPHORE_VIGIL_5E, FROM], [FUMEROLLES_VIGIL_5E, FROM_FUMEROLLES], [FORGE_VIGIL_4E, FROM], [FANAL_VIGIL_3E, FROM]] as const) {
       slow(v, from);
       for (const shot of v.shots) expect(pitch({ ...shot, fov: 56, lens: 0 })).toBeLessThan(25);
       expect(vigilSeconds(v)).toBeLessThan(20);
       expect(v.still).toBeGreaterThanOrEqual(6);
     }
+  });
+
+  it('au 6e, le Phare est à portée : la veillée glisse depuis Kéo ; au 5e, au 4e et au 3e, le feu est à l’autre bout du niveau : elle commence par une coupe, la caméra au premier plan dès le début', () => {
+    expect(vigilCuts(PHARE_VIGIL_6E)).toBe(false);
+    expect(vigilCuts(FERRY_VIGIL_6E)).toBe(false);
+    for (const v of [SEMAPHORE_VIGIL_5E, FORGE_VIGIL_4E, FANAL_VIGIL_3E]) {
+      expect(vigilCuts(v)).toBe(true);
+      expect(vigilPose(v, 0, FROM, blank()).position).toEqual(v.shots[0].position);
+      expect(vigilPose(v, 0, FROM, blank()).position).not.toEqual(FROM.position);
+    }
+    expect(levelVigils('6e')).toBe(VIGILS_6E);
+    expect(levelVigils('5e')).toBe(VIGILS_5E);
+    expect(levelVigils('4e')).toBe(VIGILS_4E);
+    expect(levelVigils('3e')).toBe(VIGILS_3E);
+  });
+});
+
+/** Le feu d'un niveau est cadré : son sommet dans le haut de l'image, son pied dans l'image, la caméra au-dessus du sol et hors du lieu. */
+function framesFire(v: Vigil, foot: { x: number; y: number; z: number }, top: { x: number; y: number; z: number }, groundAt: (p: { x: number; z: number }) => number, clear: number): void {
+  for (const shot of v.shots) {
+    const p: CameraPose = { ...shot, fov: 56, lens: 0 };
+    expect(screenY(p, top), 'sommet').toBeGreaterThan(0.1);
+    expect(screenY(p, top), 'sommet').toBeLessThan(0.8);
+    expect(screenY(p, foot), 'pied').toBeGreaterThan(-0.9);
+    expect(shot.position.y, 'au-dessus du sol').toBeGreaterThan(groundAt(shot.position) + 3);
+    expect(Math.hypot(shot.position.x - foot.x, shot.position.z - foot.z), 'hors du lieu').toBeGreaterThan(clear);
+  }
+}
+
+describe('Les veillées du 5e, du 4e et du 3e', () => {
+  it('au 5e, l’arrivée et le départ cadrent le Sémaphore, la lanterne de tête de son mât dans le haut de l’image, depuis le plateau des Aiguilles', () => {
+    const c = SEMAPHORE_5E.center;
+    expect(heightAt5e(c)).toBeCloseTo(SEMAPHORE_5E.ground, 0);
+    framesFire(SEMAPHORE_VIGIL_5E, { x: c.x, y: SEMAPHORE_5E.ground, z: c.z }, { x: c.x + SEMAPHORE_5E.mast.x, y: SEMAPHORE_5E.mast.top, z: c.z + SEMAPHORE_5E.mast.z }, heightAt5e, 20);
+    expect(vigilOf(VIGILS_5E, 'arrival')).toBe(SEMAPHORE_VIGIL_5E);
+    expect(vigilOf(VIGILS_5E, 'departure')).toBe(SEMAPHORE_VIGIL_5E);
+    expect(vigilWords(VIGILS_5E, 'arrival', false)).toBe('Le Sémaphore est éteint.');
+    expect(vigilWords(VIGILS_5E, 'departure', true)).toBe('Le Sémaphore est allumé.');
+  });
+
+  it('au 5e, l’embarquement cadre les Fumerolles depuis le sud-ouest, la margelle au milieu de l’image, la caméra au-dessus des Contreforts, en glissant depuis Kéo ; « Le naturaliste monte à bord. »', () => {
+    const c = FUMEROLLES_5E.center;
+    const m = { x: c.x + FUMEROLLES_5E.margelle.x, y: FUMEROLLES_5E.ground + 0.5, z: c.z + FUMEROLLES_5E.margelle.z };
+    expect(heightAt5e(c)).toBeCloseTo(FUMEROLLES_5E.ground, 0);
+    expect(vigilCuts(FUMEROLLES_VIGIL_5E)).toBe(false);
+    for (const shot of FUMEROLLES_VIGIL_5E.shots) {
+      const p: CameraPose = { ...shot, fov: 56, lens: 0 };
+      expect(screenY(p, m)).toBeGreaterThan(-0.5);
+      expect(screenY(p, m)).toBeLessThan(0.3);
+      expect(shot.position.x).toBeLessThan(c.x);
+      expect(shot.position.z).toBeGreaterThan(c.z);
+      expect(shot.position.y).toBeGreaterThan(heightAt5e(shot.position) + 1.5);
+      expect(landDistance5e(shot.position)).toBeGreaterThan(0);
+      expect(Math.hypot(shot.position.x - m.x, shot.position.z - m.z)).toBeGreaterThan(FUMEROLLES_5E.margelle.r + 4);
+    }
+    expect(vigilOf(VIGILS_5E, 'boarding')).toBe(FUMEROLLES_VIGIL_5E);
+    expect(VIGILS_5E.boarding?.place).toBe('fumerolles');
+    expect(vigilWords(VIGILS_5E, 'boarding', false)).toBe('Le naturaliste monte à bord.');
+    expect(vigilOf(VIGILS_4E, 'boarding')).toBeNull();
+    expect(vigilOf(VIGILS_3E, 'boarding')).toBeNull();
+    expect(vigilWords(VIGILS_4E, 'boarding', false)).toBe('');
+  });
+
+  it('au 4e, l’arrivée et le départ cadrent la Forge, son fourneau dans le haut de l’image, depuis le sud des Fabriques', () => {
+    const c = FORGE_4E.center;
+    expect(heightAt4e(c)).toBeCloseTo(FORGE_4E.ground, 0);
+    framesFire(FORGE_VIGIL_4E, { x: c.x, y: FORGE_4E.ground, z: c.z }, { x: c.x, y: FORGE_4E.furnace.top, z: c.z + FORGE_4E.furnace.z }, heightAt4e, 20);
+    expect(vigilOf(VIGILS_4E, 'arrival')).toBe(FORGE_VIGIL_4E);
+    expect(vigilOf(VIGILS_4E, 'departure')).toBe(FORGE_VIGIL_4E);
+    expect(vigilWords(VIGILS_4E, 'arrival', false)).toBe('La Forge est éteinte.');
+    expect(vigilWords(VIGILS_4E, 'departure', true)).toBe('La Forge est allumée.');
+  });
+
+  it('au 3e, l’arrivée cadre le Fanal, sa tour dans le haut de l’image, depuis le Cirque ; la vue finale tient lieu de départ', () => {
+    const c = FANAL_3E.center;
+    expect(heightAt3e(c)).toBeCloseTo(FANAL_3E.ground, 0);
+    framesFire(FANAL_VIGIL_3E, { x: c.x, y: FANAL_3E.ground, z: c.z }, { x: c.x, y: FANAL_3E.tower.top, z: c.z + FANAL_3E.tower.z }, heightAt3e, 20);
+    expect(vigilOf(VIGILS_3E, 'arrival')).toBe(FANAL_VIGIL_3E);
+    expect(vigilOf(VIGILS_3E, 'departure')).toBeNull();
+    expect(VIGILS_3E.departure).toBe(false);
+    expect(vigilWords(VIGILS_3E, 'arrival', false)).toBe('Le Fanal est éteint.');
+    expect(vigilWords(VIGILS_3E, 'departure', true)).toBe('Le Fanal est allumé.');
+  });
+
+  it('chaque feu s’allume avec la partie dite : le haut au 6e, au 5e et au 3e, les abords au 4e ; une demi-partie ne l’allume pas', () => {
+    const posed = (...stages: Stage[]): PartShape[] => stages.map((stage) => [{ stage, from: 0, to: 1 }]);
+    const half: PartShape[] = [[{ stage: 1, from: 0, to: 0.5 }], [{ stage: 2, from: 0, to: 0.5 }]];
+    for (const v of [VIGILS_6E, VIGILS_5E, VIGILS_3E]) {
+      expect(v.fireLit([])).toBe(false);
+      expect(v.fireLit(posed(0))).toBe(false);
+      expect(v.fireLit(posed(0, 1))).toBe(true);
+      expect(v.fireLit(half)).toBe(false);
+    }
+    expect(VIGILS_4E.fireLit(posed(0, 1))).toBe(false);
+    expect(VIGILS_4E.fireLit(posed(0, 1, 2))).toBe(true);
+    expect(VIGILS_4E.fireLit(half)).toBe(false);
   });
 });
 
@@ -90,8 +197,8 @@ describe('Les veillées du 6e', () => {
       expect(landDistance(shot.position)).toBeLessThan(0);
       expect(Math.hypot(shot.position.x - foot.x, shot.position.z - foot.z)).toBeGreaterThan(15);
     }
-    expect(vigil6e('arrival')).toBe(PHARE_VIGIL_6E);
-    expect(vigil6e('departure')).toBe(PHARE_VIGIL_6E);
+    expect(vigilOf(VIGILS_6E, 'arrival')).toBe(PHARE_VIGIL_6E);
+    expect(vigilOf(VIGILS_6E, 'departure')).toBe(PHARE_VIGIL_6E);
   });
 
   it('l’embarquement cadre la Gare maritime, sur son îlot, depuis le large', () => {
@@ -103,14 +210,14 @@ describe('Les veillées du 6e', () => {
       expect(Math.hypot(shot.position.x - c.x, shot.position.z - c.z)).toBeGreaterThan(FERRY_ISLET.radius + 8);
       expect(landDistance(shot.position)).toBeLessThan(0);
     }
-    expect(vigil6e('boarding')).toBe(FERRY_VIGIL_6E);
+    expect(vigilOf(VIGILS_6E, 'boarding')).toBe(FERRY_VIGIL_6E);
   });
 
   it('une seule ligne par veillée, littérale, le lieu nommé, dix mots au plus, un point à la fin', () => {
-    expect(vigilWords6e('arrival', false)).toBe('Le Phare est éteint.');
-    expect(vigilWords6e('departure', true)).toBe('Le Phare est allumé.');
-    expect(vigilWords6e('departure', false)).toBe('Le Phare est éteint.');
-    expect(vigilWords6e('boarding', false)).toBe('L’équipière radio monte à bord.');
+    expect(vigilWords(VIGILS_6E, 'arrival', false)).toBe('Le Phare est éteint.');
+    expect(vigilWords(VIGILS_6E, 'departure', true)).toBe('Le Phare est allumé.');
+    expect(vigilWords(VIGILS_6E, 'departure', false)).toBe('Le Phare est éteint.');
+    expect(vigilWords(VIGILS_6E, 'boarding', false)).toBe('L’équipière radio monte à bord.');
     expect(placeById('phare').name).toBe('Le Phare');
     for (const line of [PHRASES.fireOut, PHRASES.fireLit, PHRASES.boarding]) {
       expect(line.endsWith('.')).toBe(true);

@@ -18,7 +18,7 @@ import { BUOY_TOUCH, NEF_BAND, buoyAt, type NefFlight, type NefLook, type NefSit
 import { C4E, brickCourse, brickCourseHeights, once } from './place4eKit';
 import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVING, CRIQUE_QUAY_SPOT, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import type { PortSite } from './port';
-import { RAFIOT_PIECES, rafiotFacets } from './rafiot';
+import { RAFIOT_PIECES_CARRIED, rafiotFacets } from './rafiot';
 import { SHADOW_DIR_4E } from './sky';
 import { heightAt4e, lavaFacets, plumeFacets, volcanoFarFacets } from './terrain4e';
 
@@ -230,12 +230,13 @@ export function digueFacets(): Facets {
 
 /**
  * Le Rafiot des Ferrailleurs à la Crique (./rafiot.ts) : de flanc, vu du quai de la Crique (`RAFIOT_4E.yaw`), sous le
- * soleil du 4e, sa fumée courte (il chauffe), ses six pièces de bronze sur le pont arrière tant que la bande ne les a pas
+ * soleil du 4e, sa fumée courte (il chauffe), ses trois pièces de bronze sur le pont arrière (`RAFIOT_PIECES_CARRIED`, décision du
+ * directeur artistique du 30 octobre 2026 ; six jusqu'au lot 3 bis de GD-27) tant que la bande ne les a pas
  * rendues au Fanal du 3e (`returned` : le pont vide, consultant d'Archipéo, relecture de la PR du 3e). Et le quai
  * abandonné, de planches, où il est amarré.
  */
 function rafiot4eFacets(returned: boolean): Facets {
-  const boat = rafiotFacets(RAFIOT_4E, SUN_4E, { pieces: returned ? [] : RAFIOT_PIECES, smoke: true });
+  const boat = rafiotFacets(RAFIOT_4E, SUN_4E, { pieces: returned ? [] : RAFIOT_PIECES_CARRIED, smoke: true });
   // Le quai abandonné : un tablier de planches, quelques pieux (sans chapeau : on ne le voit pas sous le tablier).
   const q = new FacetBuilder();
   const [from, to] = RAFIOT_4E.quay;

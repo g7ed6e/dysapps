@@ -78,6 +78,14 @@ function ball(b: FacetBuilder, c: Vec3, r: number, color: number): void {
 export const RAFIOT_PIECES = ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const;
 export type RafiotPiece = (typeof RAFIOT_PIECES)[number];
 
+/**
+ * Les pièces que le Rafiot montre sur son pont, au 6e, au 5e et au 4e : les mêmes trois, l'anneau, la cloche et le poids,
+ * une poignée, jamais une par lieu, un nombre qui ne grandit pas d'un niveau à l'autre (il se lirait comme un compteur,
+ * GD-28) ; décision du directeur artistique du 30 octobre 2026 (GD-27, lots 3 et 3 bis). Au 3e, les six pièces rendues au
+ * Fanal restent (GD-25, `RAFIOT_PIECES`).
+ */
+export const RAFIOT_PIECES_CARRIED: readonly RafiotPiece[] = ['anneau', 'cloche', 'poids'];
+
 /** La hauteur de chaque pièce, à l'échelle 1, de son pied à son haut. */
 export const RAFIOT_PIECE_HEIGHT: Readonly<Record<RafiotPiece, number>> = { anneau: 0.72, cloche: 0.52, poids: 0.53, regulateur: 0.85, gong: 0.93, vasque: 0.44 };
 

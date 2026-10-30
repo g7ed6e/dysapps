@@ -18,8 +18,12 @@
 // Une seule lumière, celle du signaleur, sur sa perche à droite de la porte. Cinq parties (3 + 1 + 1, comme les Radeaux) :
 // le corps en trois (la cour, le pied de la tour, la porte et son linteau aux racines ; le fût jusqu'à la corniche ; la
 // cabine), le haut (le mât, les bras, les cordages, la drisse et ses fanions, la lanterne de la potence), les abords (le
-// muret remis en rang, la corne sur son tréteau, la lanterne du chemin). Trois lanternes au plus, toutes sous 4 : aucune
-// lumière au-dessus de la corniche. La chaussée qui arrive de l'est est celle de la terre (lot 13a) : le lieu n'y pose
+// muret remis en rang, la corne sur son tréteau, la lanterne du chemin). Trois lanternes sous 4, et la lanterne de tête du
+// mât : aucune autre lumière au-dessus de la corniche. La lanterne de tête du mât est le feu du 5e (GD-27, « La chaîne
+// des feux » ; décision du directeur artistique du 30 octobre 2026, lot 3 bis) : une cage de fer à quatre montants et une
+// vitre, au sommet du mât, au-dessus du chapeau ; couchée avec le tronçon haut du mât dans la ruine, vitre éteinte ; en
+// haut du mât dressé, vitre ocre fixe, dès que le haut est posé (comme la lanterne du Phare, GD-20) ; sans halo ni
+// pulsation, moins de 40 triangles. La chaussée qui arrive de l'est est celle de la terre (lot 13a) : le lieu n'y pose
 // rien ; elle devient le seuil de la cour, à sa hauteur, sous le disque de son nœud. Une trace par mission, avec sa partie (`stage`, `row`). Rien ne bouge, rien à lire. Code pur (placeArt.ts).
 import type { Stage } from './construction';
 import { drawPosed, FacetBuilder } from './facets';
@@ -279,6 +283,22 @@ function block(b: FacetBuilder, at: Vec3, size: readonly [number, number, number
 function lantern(b: FacetBuilder, top: Vec3, lit: boolean): void {
   b.box({ x: top.x, y: top.y - 0.34, z: top.z }, [0.24, 0.3, 0.24], lit ? C.lantern : C.lanternOff);
   b.prism({ x: top.x, y: top.y - 0.04, z: top.z, yaw: Math.PI / 4 }, 0.21, 0, 0.16, 4, C.iron);
+}
+
+/**
+ * La lanterne de tête du mât, le feu du 5e : sa cage de fer (quatre montants fins, en pointe sous le chapeau) et sa vitre,
+ * d'ocre ou éteinte, posée en `at` (le pied de la cage) ; 26 triangles.
+ */
+function mastLantern(b: FacetBuilder, at: Vec3, lit: boolean): void {
+  const h = 0.7;
+  for (const [dx, dz] of [
+    [-0.15, -0.15],
+    [0.15, -0.15],
+    [0.15, 0.15],
+    [-0.15, 0.15],
+  ] as const)
+    b.prism({ x: at.x + dx, y: at.y, z: at.z + dz }, 0.035, 0, h - 0.06, 3, C.iron);
+  lantern(b, { x: at.x, y: at.y + h, z: at.z }, lit);
 }
 
 /** Un disque à `n` pans (un aplat), de rayon `r`. */
@@ -596,7 +616,8 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     corps3,
   );
   // Le haut la relève : le mât en deux tronçons et les deux bras, couchés à plat le long du mur ouest, parallèles entre
-  // eux, jamais croisés ; deux fanions délavés à plat sur les dalles ; la potence et sa lanterne éteinte.
+  // eux, jamais croisés ; la lanterne de tête du mât couchée au bout du tronçon haut, éteinte ; deux fanions délavés à
+  // plat sur les dalles ; la potence et sa lanterne éteinte.
   add(
     'ruine',
     0,
@@ -606,6 +627,7 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
         [-6.4, -4.2, 3.4],
       ] as const)
         b.drum({ x, y: PT + MAST.r, z, pitch: Math.PI / 2 }, MAST.r, len, 6, C.wornShade, C.wornWood);
+      drawPosed(b, { x: -6.4, y: PT + 0.17, z: -4.2 + 3.4 / 2 + 0.3, yaw: 0.2, pitch: Math.PI / 2 }, (l) => mastLantern(l, { x: 0, y: 0, z: 0 }, false));
       for (const [x, z, len] of [
         [-7.0, -4.9, ARMS.low.len],
         [-7.8, -4.3, ARMS.high.len],
@@ -697,13 +719,14 @@ function model(add: AddPiece, ground: SiteGround, _door: Vec2): void {
     // Le volet de bois, fermé, sur la face sud.
     b.plate({ x: K.x + 0.3, y: y0 + 0.75, z: K.z + K.side / 2 + 0.012 }, [[-0.5, 0], [0.5, 0], [0.5, 0.85], [-0.5, 0.85]], C.door);
   });
-  // Le haut : le mât et son chapeau carré, les deux bras et leurs contrepoids, les cordages le long du mât jusqu'au toit de
-  // la cabine, la drisse et ses trois fanions ; la lanterne de la potence, allumée dès qu'elle est posée (jamais à une
-  // réussite). Rien d'allumé au-dessus de la corniche.
+  // Le haut : le mât et son chapeau carré, la lanterne de tête du mât allumée (le feu du 5e), les deux bras et leurs
+  // contrepoids, les cordages le long du mât jusqu'au toit de la cabine, la drisse et ses trois fanions ; la lanterne de la
+  // potence, allumée dès qu'elle est posée (jamais à une réussite). Rien d'autre d'allumé au-dessus de la corniche.
   add(1, 0, (b) => {
     const y0 = PT + CORNICE_TOP - 0.1;
     b.prism({ x: MAST.x, y: y0, z: MAST.z }, MAST.r, MAST.r * 0.85, PT + MAST.top - y0, 8, C.newShade, C.newWood);
     block(b, { x: MAST.x, y: PT + MAST.top, z: MAST.z }, [MAST.cap, MAST.capH, MAST.cap], C.newShade, C.newWood);
+    mastLantern(b, { x: MAST.x, y: PT + MAST.top + MAST.capH, z: MAST.z }, true);
     arm(b, ARMS.low);
     arm(b, ARMS.high);
     // Les cordages : de chaque charnière, le long du mât, jusqu'au bord ouest du toit de la cabine ; chacun à son z, ils

@@ -2,14 +2,16 @@
 // Détours, et ses missions passent par l'écran habituel. La scène 3D n'est pas là sous jsdom : une scène simulée.
 import { act, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
-import { afterEach, beforeEach, vi } from 'vitest';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { afterEach, beforeEach, expect, test, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { degelerSauvegarde } from '../../../core/storage';
 import { BloclandProvider, useBlocland } from '../../BloclandContext';
 import { getArchipelago, voyageId } from '../../world/archipelago';
 import type { LinkedLand } from '../../world/continu/lands';
+import { vigilSeconds, type Vigil } from '../../world/continu/vigil';
+import { SEMAPHORE_VIGIL_5E } from '../../world/continu/vigils5e';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import { LEVEL_PICKER_FOLD_MS } from './LevelPicker';
 import OpenWorldPage from './OpenWorldPage';
@@ -20,6 +22,9 @@ const scene = vi.hoisted(() => ({
   world: null as OpenWorld | null,
   instant: true,
   lay: null as { land: LinkedLand; events: BridgeLayEvents } | null,
+  // Les veillées demandées à la scène (GD-23, GD-27, lot 3 bis), le voile levé ou non à cet instant, et si elle les joue (`playVigils`).
+  vigils: [] as { vigil: Vigil; done: () => void; veiled: boolean }[],
+  playVigils: false,
 }));
 vi.mock('./scene', () => ({
   createOpenWorld: (_host: HTMLElement, options: OpenWorldOptions) => {
@@ -31,6 +36,11 @@ vi.mock('./scene', () => ({
       setPlaces: () => false,
       keoAt: () => ({ x: 0, z: 0 }),
       info: () => ({ calls: 0, triangles: 0, mapMs: 0 }),
+      playVigil: (vigil, done) => {
+        if (!scene.playVigils) return false;
+        scene.vigils.push({ vigil, done, veiled: document.querySelector('.open-world-fondu')?.classList.contains('on') ?? false });
+        return true;
+      },
       layLand: (land, events) => {
         scene.lay = { land, events };
       },
@@ -56,6 +66,8 @@ afterEach(() => {
 beforeEach(() => {
   scene.instant = true;
   scene.lay = null;
+  scene.vigils = [];
+  scene.playVigils = false;
   vi.stubGlobal(
     'ResizeObserver',
     class {
@@ -75,14 +87,16 @@ function BuilderHook() {
   return null;
 }
 
-function renderPage() {
+function renderPage(entry: string | { pathname: string; state: unknown } = '/adventure') {
   render(
     <SettingsProvider>
       <ProgressProvider>
         <BloclandProvider>
           <BuilderHook />
-          <MemoryRouter initialEntries={['/adventure']}>
-            <OpenWorldPage level="5e" />
+          <MemoryRouter initialEntries={[entry]}>
+            <Routes>
+              <Route path="/adventure/:biomeId?" element={<OpenWorldPage level="5e" />} />
+            </Routes>
           </MemoryRouter>
         </BloclandProvider>
       </ProgressProvider>
@@ -220,4 +234,61 @@ test('sur un Détour (le Perchoir), « Y aller » repart vers le lieu de la marq
   // Reparti du Détour : les pas, comme ailleurs.
   act(() => scene.options!.onDetour!(null));
   expect(go().querySelector('svg')!.getAttribute('class')).not.toBe(arrow());
+});
+
+// Les veillées du 5e (GD-23, GD-27, lot 3 bis) : le Sémaphore est à l'autre bout du niveau, la caméra y coupe sous le voile.
+test('à la première entrée au 5e, à la Lisière : le voile couvre un quart de seconde, la caméra coupe au Sémaphore, « Le Sémaphore est éteint. » ; le voile revient pour le retour derrière Kéo ; la veillée est retenue', async () => {
+  scene.playVigils = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    const veil = () => document.querySelector('.open-world-fondu')!;
+    act(() => vi.advanceTimersByTime(300));
+    expect(scene.vigils).toHaveLength(1);
+    expect(scene.vigils[0].vigil).toBe(SEMAPHORE_VIGIL_5E);
+    // La caméra a coupé sous le voile, qui se lève ensuite.
+    expect(scene.vigils[0].veiled).toBe(true);
+    expect(document.querySelector('.open-world-veillee')).toHaveTextContent('Le Sémaphore est éteint.');
+    act(() => vi.advanceTimersByTime(300));
+    expect(veil()).not.toHaveClass('on');
+    // Un quart de seconde avant la fin, le voile revient.
+    act(() => vi.advanceTimersByTime(vigilSeconds(SEMAPHORE_VIGIL_5E) * 1000 - 500));
+    expect(veil()).toHaveClass('on');
+    act(() => scene.vigils[0].done());
+    expect(screen.queryByText('Le Sémaphore est éteint.')).toBeNull();
+    act(() => vi.advanceTimersByTime(300));
+    expect(veil()).not.toHaveClass('on');
+    const saved = JSON.parse(localStorage.getItem('dysapps:game') ?? '{}') as { world?: { vigils?: string[] } };
+    expect(saved.world?.vigils).toEqual(['5e-arrival']);
+  } finally {
+    vi.useRealTimers();
+  }
+});
+
+test('au retour d’un fondu depuis un autre niveau, l’arrivée ne se joue pas ; une veillée vue ne se rejoue pas', async () => {
+  scene.playVigils = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port, vigils: ['5e-arrival'] } }));
+  renderPage();
+  await screen.findByRole('button', { name: /Carte/ });
+  expect(scene.vigils).toHaveLength(0);
+  expect(document.querySelector('.open-world-fondu')).not.toHaveClass('on');
+});
+
+test('à l’arrivée par la Nef, la Nef dépose Kéo aux Radeaux, l’île du port de la grille : l’arrivée se joue là aussi, à la première entrée', async () => {
+  scene.playVigils = true;
+  localStorage.setItem('dysapps:game', JSON.stringify({ version: 3, stock: {}, world: { links: [voyageId('5e')], place: getArchipelago('5e').port } }));
+  vi.useFakeTimers({ shouldAdvanceTime: true });
+  try {
+    renderPage({ pathname: `/adventure/${getArchipelago('5e').port}`, state: { voyage: 'arrivee' } });
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(scene.options!.start).toBe('radeaux');
+    act(() => vi.advanceTimersByTime(300));
+    expect(scene.vigils).toHaveLength(1);
+    expect(scene.vigils[0].vigil).toBe(SEMAPHORE_VIGIL_5E);
+    expect(scene.vigils[0].veiled).toBe(true);
+  } finally {
+    vi.useRealTimers();
+  }
 });

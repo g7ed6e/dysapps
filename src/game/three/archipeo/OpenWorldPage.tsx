@@ -42,12 +42,12 @@ import { detourById, type DetourId } from '../../world/continu/detours';
 import { SettingsButton, WorldShortcuts } from '../../WorldShortcuts';
 import { getArchipelago, payableBlocks, type ArchipelagoId } from '../../world/archipelago';
 import { firstBefore, isBridgeSpot, isLinkedLand, landById, landOf, landOfBridgeSpot, landPrice, landsAfter, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
-import { lanternLit, type PartShape } from '../../world/continu/construction';
+import type { PartShape } from '../../world/continu/construction';
 import { LOOK_UP } from '../../world/continu/camera';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, keoZone, missionsOfPlace, nextMission, overlaps, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
 import { hasScenette, placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
-import { vigil6e, vigilWords6e, type VigilKind } from '../../world/continu/vigils6e';
-import type { VigilId } from '../../engine/vigils';
+import { levelVigils, vigilCuts, vigilOf, vigilWords, type VigilKind } from '../../world/continu/levelVigils';
+import { vigilSeconds } from '../../world/continu/vigil';
 import { vigilSeen } from '../../world/vigilsSaved';
 import { scenetteOf } from '../../world/continu/scenette';
 import type { PortSpot } from '../../world/continu/plan6e';
@@ -135,6 +135,8 @@ const missionTitle = (island: string, mission: string) => getIle(island)?.exerci
  */
 export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const plan = planFor(level);
+  // Les veillées du niveau (GD-23, GD-27, lots 3 et 3 bis) : son feu, qui monte à bord, leurs plans.
+  const vigils = useMemo(() => levelVigils(level), [level]);
   // Le 6e seul a les Détours, les commandes et l'entraide des habitants, et les scénettes de tous ses lieux (GD-22, lot
   // 2) ; chaque niveau a son lieu de départ et sa Nef (GD-22, lot 4 : la Lisière et le dirigeable).
   const sixth = level === '6e';
@@ -1066,63 +1068,100 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       // partirait quand même (expert frontend, relecture du lot 3 de GD-27).
       if (!w || scriptPlaying) return;
       setPanel(null);
-      // Au 6e, une fois, la veillée de départ d'abord (GD-27 : le Phare tel qu'il est) ; le départ suit, par n'importe
-      // quel chemin (sa fin, ou le toucher qui la passe).
-      if (level === '6e' && !vigilSeen(state.world, '6e-departure') && playVigilRef.current('departure', () => leave(stage))) return;
+      // Une fois par niveau, la veillée de départ d'abord (GD-27 : le feu du niveau tel qu'il est) ; le départ suit, par
+      // n'importe quel chemin (sa fin, ou le toucher qui la passe).
+      if (!vigilSeen(state.world, `${level}-departure`) && playVigilRef.current('departure', () => leave(stage))) return;
       leave(stage);
     },
     [level, state.world, leave, scriptPlaying],
   );
-  // Les veillées du 6e (GD-23, « trois veillées par niveau » ; GD-27, lot 3) : la caméra quitte Kéo pour les plans de la
-  // veillée, sa ligne s'écrit sur fond uni et se dit avec la lecture automatique ; un toucher passe tout. Une veillée vue
-  // ne se rejoue pas, quoi qu'il arrive ensuite (`seeVigil`). `after` à la fin, par n'importe quel chemin ; la voix de la
-  // ligne s'arrête avec la veillée (passée d'un toucher, elle ne continue pas sur le monde revenu : référent dys). La
-  // scène peut refuser (la Carte ouverte, la Nef en route, un autre script) : `false`, rien n'est retenu.
+  // Les veillées (GD-23, « trois veillées par niveau » ; GD-27, lots 3 et 3 bis) : la caméra quitte Kéo pour les plans de
+  // la veillée, sa ligne s'écrit sur fond uni et se dit avec la lecture automatique ; un toucher passe tout. Une veillée
+  // vue ne se rejoue pas, quoi qu'il arrive ensuite (`seeVigil`). `after` à la fin, par n'importe quel chemin ; la voix de
+  // la ligne s'arrête avec la veillée (passée d'un toucher, elle ne continue pas sur le monde revenu : référent dys). La
+  // scène peut refuser (la Carte ouverte, la Nef en route, un autre script) : `false`, rien n'est retenu. Quand le feu est
+  // trop loin pour y glisser (le 5e, le 4e, le 3e : `vigilCuts`), le voile du fondu couvre la coupe du début et celle du
+  // retour derrière Kéo (un quart de seconde chacune, comme le voyage entre niveaux) ; avec « Réduire les animations »,
+  // sans voile, l'image fixe d'un coup.
+  const veilTimers = useRef<number[]>([]);
+  const clearVeil = () => {
+    for (const t of veilTimers.current) window.clearTimeout(t);
+    veilTimers.current = [];
+  };
+  const veilLater = (fn: () => void, ms: number) => veilTimers.current.push(window.setTimeout(fn, ms));
+  useEffect(() => () => {
+    for (const t of veilTimers.current) window.clearTimeout(t);
+  }, []);
   const playVigil = useCallback(
     (kind: VigilKind, after?: () => void): boolean => {
       const w = world.current;
-      if (!w || level !== '6e') return false;
-      const line = vigilWords6e(kind, lanternLit(posedShapes(constructionsRef.current['phare'])));
-      if (!w.playVigil(vigil6e(kind), () => {
-        stopSpeaking();
-        setVigil(null);
-        after?.();
-      })) return false;
-      seeVigil(`6e-${kind}` satisfies VigilId);
-      setVigil((was) => ({ n: (was?.n ?? 0) + 1, line }));
-      if (settings.autoRead) speak(line);
+      const vigil = w ? vigilOf(vigils, kind) : null;
+      if (!w || !vigil || scriptPlaying || asking || mapOpen) return false;
+      const line = vigilWords(vigils, kind, vigils.fireLit(posedShapes(constructionsRef.current[vigils.fire])));
+      const veiled = vigilCuts(vigil) && !reduceMotion;
+      const start = (): boolean => {
+        const started = w.playVigil(vigil, () => {
+          clearVeil();
+          stopSpeaking();
+          setVigil(null);
+          if (veiled) veilLater(() => setFondu(false), LEVEL_FADE_MS / 2);
+          after?.();
+        });
+        if (!started) {
+          if (veiled) setFondu(false);
+          return false;
+        }
+        seeVigil(`${level}-${kind}`);
+        setVigil((was) => ({ n: (was?.n ?? 0) + 1, line }));
+        if (settings.autoRead) speak(line);
+        if (veiled) {
+          veilLater(() => setFondu(false), LEVEL_FADE_MS / 2);
+          veilLater(() => setFondu(true), vigilSeconds(vigil) * 1000 - LEVEL_FADE_MS / 2);
+        }
+        return true;
+      };
+      if (!veiled) return start();
+      // Le voile couvre d'abord, puis la caméra coupe sous lui ; la scène refuse si quelque chose a changé entre-temps,
+      // ce que rien ne fait en un quart de seconde (les boutons sont encore là, mais la Carte et une question sont déjà
+      // exclues ci-dessus) : la veillée est tenue pour lancée.
+      clearVeil();
+      setFondu(true);
+      veilLater(() => void start(), LEVEL_FADE_MS / 2);
       return true;
     },
-    [level, seeVigil, settings.autoRead, speak],
+    [level, vigils, reduceMotion, scriptPlaying, asking, mapOpen, seeVigil, settings.autoRead, speak],
   );
   const playVigilRef = useRef(playVigil);
   playVigilRef.current = playVigil;
-  // L'arrivée : la première fois que l'élève entre dans le monde, au quai de l'Escale, tant qu'aucun lieu n'est rallumé
-  // (le Phare est éteint). Une partie plus avancée ne la voit jamais : elle est retenue comme vue. Une fois par entrée :
-  // si la scène refuse (la Nef en route, un autre script), l'arrivée n'est ni jouée ni retenue, et se rejouera à l'entrée
-  // suivante.
+  // L'arrivée : la première fois que l'élève entre dans le niveau, à son point d'arrivée (au 6e, le quai de l'Escale, sans
+  // voyage ; ensuite, l'arrivée par la Nef, où qu'elle dépose Kéo (au 5e, l'île du port de la grille, les Radeaux ; au 4e
+  // et au 3e, le débarcadère), ou le quai par le mode bâtisseur, jamais au retour d'un fondu), tant qu'aucun lieu n'est
+  // rallumé (le feu est éteint). Une partie plus avancée ne la voit jamais : elle est retenue comme vue. Une fois
+  // par entrée : si la scène refuse (la Nef en route, un autre script), l'arrivée n'est ni jouée ni retenue, et se
+  // rejouera à l'entrée suivante.
   const arrivalVigilTried = useRef(false);
   useEffect(() => {
-    if (!ready || arrivalVigilTried.current || level !== '6e' || vigilSeen(state.world, '6e-arrival')) return;
+    if (!ready || arrivalVigilTried.current || vigilSeen(state.world, `${level}-arrival`)) return;
     arrivalVigilTried.current = true;
-    if (achieved > 0) seeVigil('6e-arrival');
-    else if (start === 'quai' && !arrival.voyage) playVigil('arrival');
+    if (achieved > 0) seeVigil(`${level}-arrival`);
+    else if (arrival.voyage === 'arrivee' || (start === 'quai' && arrival.voyage !== 'fondu')) playVigil('arrival');
   }, [ready, level, state.world, achieved, start, arrival.voyage, seeVigil, playVigil]);
-  // L'embarquement de la radio : la Gare maritime rallumée sous les yeux de l'élève, la veillée vient au retour de la
-  // scénette, après le bilan et la pose de la partie, jamais pendant. Déjà rallumée en arrivant : retenue comme vue.
-  const ferryWhole = useRef<boolean | null>(null);
+  // L'embarquement d'un équipier : son lieu rallumé sous les yeux de l'élève, la veillée vient au retour de la scénette,
+  // après le bilan et la pose de la partie, jamais pendant. Déjà rallumé en arrivant : retenue comme vue.
+  const boardingWhole = useRef<boolean | null>(null);
   const [boardingPending, setBoardingPending] = useState(false);
   useEffect(() => {
-    if (!ready || level !== '6e') return;
-    const whole = constructionState(constructions['ferry']) === 'restauree';
-    const was = ferryWhole.current;
-    ferryWhole.current = whole;
+    const place = vigils.boarding?.place;
+    if (!ready || !place) return;
+    const whole = constructionState(constructions[place]) === 'restauree';
+    const was = boardingWhole.current;
+    boardingWhole.current = whole;
     if (was === null) {
-      if (whole && !vigilSeen(state.world, '6e-boarding')) seeVigil('6e-boarding');
+      if (whole && !vigilSeen(state.world, `${level}-boarding`)) seeVigil(`${level}-boarding`);
       return;
     }
-    if (whole && !was && !vigilSeen(state.world, '6e-boarding')) setBoardingPending(true);
-  }, [ready, level, constructions, state.world, seeVigil]);
+    if (whole && !was && !vigilSeen(state.world, `${level}-boarding`)) setBoardingPending(true);
+  }, [ready, level, vigils, constructions, state.world, seeVigil]);
   // Elle attend aussi la Carte fermée ; refusée par la scène (la Nef en route), elle reste à jouer (expert frontend).
   useEffect(() => {
     if (!boardingPending || posePending || asking || scriptPlaying || Boolean(remise) || mapOpen) return;
@@ -1147,8 +1186,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   }, [ready, arrival.voyage, settings.sounds, settings.autoRead, speak, textes.archipels, level, navigate, location.pathname, location.search]);
   // Le retour d'un fondu : le voile se lève quand le monde est prêt, ou après quelques secondes au plus, pour ne jamais
   // laisser l'élève devant un voile qui prend les touchers (consultant UX UI).
+  // Le voile du voyage seul : celui d'une veillée qui coupe (`playVigil`) se lève à son heure, pas quand le monde est prêt.
+  const voyageVeil = useRef(arrival.voyage === 'fondu');
   useEffect(() => {
-    if (ready) setFondu(false);
+    if (!ready || !voyageVeil.current) return;
+    voyageVeil.current = false;
+    setFondu(false);
   }, [ready]);
   useEffect(() => {
     if (!fondu) return;

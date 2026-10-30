@@ -12,7 +12,8 @@ describe('Les veillées vues', () => {
   it('assainit : connues, sans doublon, dans l’ordre', () => {
     expect(sanitizeVigils(undefined)).toEqual([]);
     expect(sanitizeVigils(['6e-departure', 'x', '6e-arrival', '6e-arrival'])).toEqual(['6e-arrival', '6e-departure']);
-    expect(VIGIL_IDS).toEqual(['6e-arrival', '6e-boarding', '6e-departure']);
+    expect(VIGIL_IDS).toEqual(['6e-arrival', '6e-boarding', '6e-departure', '5e-arrival', '5e-boarding', '5e-departure', '4e-arrival', '4e-boarding', '4e-departure', '3e-arrival', '3e-boarding', '3e-departure']);
+    expect(sanitizeVigils(['3e-arrival', '5e-boarding', '6e-arrival'])).toEqual(['6e-arrival', '5e-boarding', '3e-arrival']);
   });
 
   it('retient une veillée vue une seule fois, sans rien écrire d’autre', () => {
