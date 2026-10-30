@@ -36,7 +36,7 @@
 // « demande ». La révision jouée dans la scène du lieu (lot L3) : la phrase d'entrée et celle du bilan, sans date ni échec ; le rappel
 // de l'habitant, une forme sans jeton (ni nom de mission ni nombre), qui remplace celui de la grille dans le monde ouvert.
 // Les veillées (GD-23, GD-27, lot 3) : la seule ligne de chacune, que le jeu remplit avec le nom du feu du niveau (au 6e,
-// « Le Phare ») ou de l'équipier qui monte à bord (« La radio ») ; lue par src/game/world/continu/vigils6e.ts.
+// « Le Phare ») ou de l'équipier qui monte à bord (« L’équipière radio ») ; lue par src/game/world/continu/vigils6e.ts.
 //
 // Chaque forme a ses jetons, tous exigés, aucun autre permis, jamais une accolade seule. Règles de lecture (référent dys,
 // arbitrages du directeur artistique) : trois phrases au plus, un point à la fin, jamais « ! » ni « … », l'apostrophe
