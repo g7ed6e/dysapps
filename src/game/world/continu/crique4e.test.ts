@@ -23,9 +23,6 @@ import {
   NEF_4E,
   NEF_4E_DEPARTURE,
   NEF_4E_TEMPS,
-  PIECES_BRONZE,
-  RAFIOT_FUNNEL,
-  RAFIOT_HULL_COLORS,
   SKY_GATE_4E,
   SKY_GATE_4E_PORTRAIT,
   SKY_ISLANDS_4E,
@@ -38,12 +35,13 @@ import {
   envelopeShown,
   nef4eFlight,
   nef4eSiteTriangles,
-  rafiotPiece,
+ 
   skyIslandTouched,
   skyIslandsFacets,
   skyIslandsPortraitFacets,
 } from './crique4e';
 import { FacetBuilder } from './facets';
+import { PIECES_BRONZE, RAFIOT_FUNNEL, RAFIOT_HULL_COLORS, rafiotPiece } from './rafiot';
 import { distance, distanceToPolyline, linearRgb, type Vec2, type Vec3 } from './geometry';
 import { LISIERE_SITE } from './lisiere';
 import { levelWorld } from './levelWorld';

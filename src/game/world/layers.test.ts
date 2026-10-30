@@ -20,6 +20,8 @@ const REGLES = [
   'engine/learning',
   // Les identifiants des Détours du monde continu et leur assainissement (GD-20, déplacement libre, lot 2).
   'engine/detours',
+  // Les identifiants des veillées vues et leur assainissement (GD-23, GD-27, lot 3).
+  'engine/vigils',
   'boss',
   'bossCore',
   'trophies',

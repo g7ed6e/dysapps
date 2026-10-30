@@ -3,8 +3,11 @@
 // mêmes fonctions, appelées de même) ; le 5e prend les siennes (./terrain5e.ts, ./paths5e.ts, ./sea.ts, ./sky.ts). Ce
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
-import { WORLD_FOG, type CameraPose, type DetourView } from './camera';
-import { AIGUILLES_COLORS, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, RAFIOT_HULL_COLORS, RAFIOT_SMOKE_COLORS, SKY_ISLAND_COLORS, criqueDecorFacets, criqueLook } from './crique4e';
+import { WORLD_FOG, type DetourView } from './camera';
+import type { CameraScript } from './cameraPath';
+import { AIGUILLES_COLORS, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, SKY_ISLAND_COLORS, criqueDecorFacets, criqueLook } from './crique4e';
+import { RAFIOT_HULL_COLORS, RAFIOT_SMOKE_COLORS } from './rafiot';
+import { rafiot6eFacets } from './rafiot6e';
 import { mergeFacets, type Facets } from './facets';
 import { FANAL_TOWER_3E } from './fanal3e';
 import { FAR_ISLES_3E, FAR_ISLES_FOG_3E, FINAL_VIEW_3E, FINAL_VIEW_SECONDS_3E, farArchipelagos3e, finalViewPose3e } from './finalView3e';
@@ -173,14 +176,17 @@ export interface LevelWorld {
    * seule montre (les archipels au loin), et ce que dure son image fixe avec « Réduire les animations ». Rien ailleurs.
    */
   readonly finalView?: FinalView;
+  /**
+   * Le Rafiot des Ferrailleurs à quai (GD-23, lot 2 ; GD-27 ; GD-28 : au 6e, la seule trace de la bande, ./rafiot6e.ts) :
+   * amarré près d'un lieu éteint (`restored` dit si un lieu est rallumé), parti quand ils le sont tous ; dans le maillage
+   * des lieux, refait avec eux. Rien ailleurs (au 4e, il est dans `Departure.decor`).
+   */
+  rafiot?(restored: (place: PlaceId) => boolean): Facets | null;
 }
 
-/** La vue finale d'un niveau (`LevelWorld.finalView`). */
-interface FinalView {
+/** La vue finale d'un niveau (`LevelWorld.finalView`) : un script de caméra, et ce qu'elle seule dessine. */
+interface FinalView extends CameraScript {
   readonly place: PlaceId;
-  readonly seconds: number;
-  readonly still: number;
-  pose(t: number, from: CameraPose, out: CameraPose, still?: boolean): CameraPose;
   facets(): Facets;
 }
 
@@ -223,6 +229,7 @@ const WORLD_6E: LevelWorld = {
   departure: DEPARTURE_6E,
   fog: WORLD_FOG,
   mapOverlay: () => mergeFacets([]),
+  rafiot: rafiot6eFacets,
 };
 
 const WORLD_5E: LevelWorld = {

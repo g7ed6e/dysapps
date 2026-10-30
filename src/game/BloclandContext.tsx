@@ -46,6 +46,8 @@ import { ensureLands, payLand, settleNewPlaces, type GridLand, type PayLandResul
 import type { World } from './engine/state';
 import type { DetourId } from './engine/detours';
 import { findDetour, lightDetour } from './world/detoursSaved';
+import { seeVigil } from './world/vigilsSaved';
+import type { VigilId } from './engine/vigils';
 
 /** Sessions courtes : on propose d'arrêter après ce nombre d'exercices ou cette durée. */
 const SESSION_MAX_EXERCISES = 3;
@@ -116,6 +118,8 @@ interface BloclandContextValue {
   findDetour: (id: DetourId) => void;
   /** Le cairn d'un Détour trouvé, rallumé (« Rallumer ») : il reste allumé. */
   lightDetour: (id: DetourId) => void;
+  /** Une veillée vue (GD-23, GD-27, lot 3) : elle ne se rejoue pas. */
+  seeVigil: (id: VigilId) => void;
   /** Le bonhomme va sur une île ouverte. */
   moveTo: (id: BiomeId) => void;
   /**
@@ -330,6 +334,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
   }, []);
   const findDetourCb = useCallback((id: DetourId) => onDetour((s) => findDetour(s, id)), [onDetour]);
   const lightDetourCb = useCallback((id: DetourId) => onDetour((s) => lightDetour(s, id)), [onDetour]);
+  const seeVigilCb = useCallback((id: VigilId) => onDetour((s) => seeVigil(s, id)), [onDetour]);
   const deliver = useCallback(
     (id: string): Livraison<GameState> => {
       const r = livrerLaCommande(stateRef.current, id);
@@ -427,6 +432,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       tapStory,
       findDetour: findDetourCb,
       lightDetour: lightDetourCb,
+      seeVigil: seeVigilCb,
       moveTo,
       arrange,
       launch,
@@ -458,6 +464,7 @@ export function BloclandProvider({ children }: { children: ReactNode }) {
       tapStory,
       findDetourCb,
       lightDetourCb,
+      seeVigilCb,
       moveTo,
       arrange,
       launch,

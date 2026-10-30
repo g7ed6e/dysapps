@@ -4,11 +4,13 @@
 // trois archipels rallumés (le phare du 6e, les Aiguilles du 5e, le panache du 4e), puis se tourne lentement vers le
 // nord, où le port des Ferrailleurs répond d'une seule lumière fixe, le Fanal allumé devant elle. Un toucher la termine ;
 // avec « Réduire les animations », c'est une image fixe, la dernière. La montée est lente, sans à-coup (avis du référent
-// dys sur le vertige, point 5) ; la caméra ne plonge jamais vers les nuages. Aucun mot : l'image seule. Code pur.
+// dys sur le vertige, point 5) ; la caméra ne plonge jamais vers les nuages (le chemin : ./cameraPath.ts). Aucun mot :
+// l'image seule. Code pur.
 import type { CameraPose } from './camera';
 import { FacetBuilder, type Facets } from './facets';
 import { FERRAILLEURS_PORT_3E } from './ferrailleurs3e';
-import { smoothstep, type Vec3 } from './geometry';
+import { between, ease } from './cameraPath';
+import type { Vec3 } from './geometry';
 import { C3E } from './place3eKit';
 import { rock } from './surroundingsKit';
 
@@ -36,41 +38,6 @@ export const FINAL_POSES_3E = {
   southWest: { position: { x: -78, y: 42, z: -112 }, target: { x: -139.6, y: 31.5, z: -33.2 } },
   north: { position: { x: -70, y: 30, z: -100 }, target: { x: -8.2, y: 1.3, z: -173.6 } },
 } as const satisfies Record<string, { position: Vec3; target: Vec3 }>;
-
-/** La part du chemin, adoucie au départ et à l'arrivée (jamais d'à-coup). */
-const ease = (a: number, b: number, t: number): number => smoothstep(a, b, t);
-
-/** Copie `a` + (`b` − `a`)·`u` dans `out`. */
-function mix(out: Vec3, a: Vec3, b: Vec3, u: number): void {
-  out.x = a.x + (b.x - a.x) * u;
-  out.y = a.y + (b.y - a.y) * u;
-  out.z = a.z + (b.z - a.z) * u;
-}
-
-/** Le cap (depuis +z, vers +x), la pente sous l'horizon et la portée du regard d'une pose. */
-function aimOf(p: { position: Vec3; target: Vec3 }): { yaw: number; pitch: number; reach: number } {
-  const dx = p.target.x - p.position.x,
-    dy = p.target.y - p.position.y,
-    dz = p.target.z - p.position.z;
-  const flat = Math.hypot(dx, dz);
-  return { yaw: Math.atan2(dx, dz), pitch: Math.atan2(-dy, flat), reach: Math.hypot(flat, dy) };
-}
-
-/**
- * La pose entre `a` et `b` à la part `u` : la caméra glisse de l'une à l'autre ; son regard tourne de l'un à l'autre (le
- * cap par le plus court, la pente), sans jamais passer par un point proche : le regard ne plonge pas en route.
- */
-function between(out: CameraPose, a: { position: Vec3; target: Vec3 }, b: { position: Vec3; target: Vec3 }, u: number): void {
-  mix(out.position, a.position, b.position, u);
-  const A = aimOf(a),
-    B = aimOf(b);
-  const yaw = A.yaw + Math.atan2(Math.sin(B.yaw - A.yaw), Math.cos(B.yaw - A.yaw)) * u;
-  const pitch = A.pitch + (B.pitch - A.pitch) * u;
-  const reach = A.reach + (B.reach - A.reach) * u;
-  out.target.x = out.position.x + Math.sin(yaw) * Math.cos(pitch) * reach;
-  out.target.y = out.position.y - Math.sin(pitch) * reach;
-  out.target.z = out.position.z + Math.cos(yaw) * Math.cos(pitch) * reach;
-}
 
 /**
  * La pose de la vue finale à `t` secondes de son début, depuis la pose `from` de la caméra au moment où elle commence ;

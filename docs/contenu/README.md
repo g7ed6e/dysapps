@@ -230,7 +230,7 @@ Les phrases sont celles de la grille, les mêmes dans Blocland et dans Archipéo
 
 ## Les phrases des habitants du monde ouvert
 
-`monde-ouvert.md` n’est pas une île : il tient les phrases des habitants du monde ouvert d’Archipéo ([GD-20](../gameplay/propositions/GD-20.md), point 4, prototype du 6e derrière `?monde=ouvert`), une seule forme par moment de la commande, que le jeu remplit avec la commande de chaque île. Les phrases de « Les demandes » restent celles de la grille. `npm run contenu` les écrit dans `src/game/world/continu/mondeOuvert.json`, que seul le monde ouvert lit :
+`monde-ouvert.md` n’est pas une île : il tient les phrases des habitants du monde ouvert d’Archipéo ([GD-20](../gameplay/propositions/GD-20.md), point 4, prototype du 6e derrière `?monde=ouvert`), une seule forme par moment de la commande, que le jeu remplit avec la commande de chaque île. Il tient aussi, sous « Les veillées », la seule ligne de chaque veillée ([GD-23](../gameplay/propositions/GD-23.md), [GD-27](../gameplay/propositions/GD-27.md)) : une forme par moment (le feu éteint, le feu allumé, l’embarquement), que le jeu remplit avec le nom du lieu du feu ou le rôle de l’équipier. Les phrases de « Les demandes » restent celles de la grille. `npm run contenu` les écrit dans `src/game/world/continu/mondeOuvert.json`, que seul le monde ouvert lit :
 
 ```md
 ## Les habitants

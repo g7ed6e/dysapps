@@ -18,6 +18,8 @@ import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { blendPose, nefArrivingParts, nefAtBerth, nefModelFacets, nefSheetPose, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
+import type { CameraScript } from '../../world/continu/cameraPath';
+import { vigilScript, type Vigil } from '../../world/continu/vigil';
 import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, fitArrivalBack, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
@@ -174,8 +176,11 @@ export interface OpenWorldOptions {
    * commence (ou se pose d'un coup, avec « Réduire les animations ») ; la page dit son état, écrit et à voix haute.
    */
   onRestored?(place: PlaceId): void;
-  /** La vue finale du niveau commence (`true`) ou finit (`false`) : la page cache ses boutons le temps qu'elle dure. */
-  onFinalView?(playing: boolean): void;
+  /**
+   * La vue finale du niveau ou une veillée commence (`true`) ou finit (`false`) : la page cache ses boutons le temps
+   * qu'elle dure.
+   */
+  onCameraScript?(playing: boolean): void;
   /**
    * La place à l'écran des pastilles des habitants (GD-20, point 4, lot L1), à chaque image, comme les cadenas (la même
    * liste, remplie sur place ; refaite quand `setSigns` change). Aucune pendant une question, une remise ou sur la Carte.
@@ -365,8 +370,14 @@ export interface OpenWorld {
    * (les captures seulement) ; rien ailleurs, sur la Carte ou pendant une question.
    */
   playFinal(): void;
-  /** Termine la vue finale en cours, comme un toucher (Échap, Entrée ou Espace) ; rien s'il n'y en a pas. */
-  endFinal(): void;
+  /**
+   * Une veillée (GD-23, GD-27, lot 3 : world/continu/vigil.ts) : la caméra quitte Kéo pour ses plans, et revient derrière
+   * lui à la fin ou au premier toucher ; `done` alors, par n'importe quel chemin. `false`, sans rien faire, sur la Carte,
+   * pendant une question, le départ de la Nef ou un autre script.
+   */
+  playVigil(vigil: Vigil, done: () => void): boolean;
+  /** Termine la vue finale ou la veillée en cours, comme un toucher (Échap, Entrée ou Espace) ; rien s'il n'y en a pas. */
+  endScript(): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, la Nef comprise, sans rien faire (la mesure des cibles). */
@@ -2192,6 +2203,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (nefStays) rest.push(nefStays);
     if (siteDecor) rest.push(siteDecor);
     if (offMapDecor && !mapView) rest.push(offMapDecor);
+    // Le Rafiot des Ferrailleurs à quai (au 6e : GD-23, lot 2 ; GD-27 ; GD-28), près d'un lieu encore éteint ; parti quand
+    // ils le sont tous. Dans le monde et sur la Carte, aucun appel de plus.
+    const rafiot = world.rafiot?.((id) => isWhole(posedOf(id)));
+    if (rafiot) rest.push(rafiot);
     // Au 5e, sur la Carte, la ligne de la falaise (GD-22, lot 2) : le bord du plateau, et la bande sombre des chemins, dans
     // le maillage des lieux.
     if (!sixth) {
@@ -2825,8 +2840,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (poseRun.active) return finishPose();
     // Un toucher pendant l'allumage d'un lieu restauré le passe : tout allumé d'un coup.
     if (restoring) return endRestore();
-    // Un toucher pendant la vue finale la termine : la caméra revient derrière Kéo.
-    if (finalRun) return finishFinal();
+    // Un toucher pendant la vue finale ou une veillée la termine : la caméra revient derrière Kéo.
+    if (scriptRun) return finishScript();
     // Un toucher pendant le départ de la Nef le termine (GD-21).
     if (nefTrip) return finishNefTrip();
     if (assembly) return finishAssembly();
@@ -4033,54 +4048,66 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     startFinal(place);
   }
 
-  // La vue finale du niveau (`LevelWorld.finalView`, au 3e : GD-25, relecture du Cirque, correction 1) : une fois, à la
-  // fin de l'allumage de son lieu (la fin des Ferrailleurs, au Fanal restauré), la caméra quitte Kéo, s'élève lentement et
-  // montre ce que la vue seule dessine (les archipels au loin), dans le maillage de la pose (aucun appel de plus) ; elle
-  // revient derrière Kéo à la fin, ou au premier toucher. Avec « Réduire les animations », l'image finale, fixe. Jamais
-  // sur la Carte ni pendant une question.
+  // Un script de caméra (world/continu/cameraPath.ts, `CameraScript`) : la vue finale du niveau (`LevelWorld.finalView`,
+  // au 3e : GD-25, relecture du Cirque, correction 1), une fois, à la fin de l'allumage de son lieu (la fin des
+  // Ferrailleurs, au Fanal restauré) ; ou une veillée (GD-23, GD-27, lot 3 : `playVigil`). La caméra quitte Kéo, suit le
+  // script et revient derrière lui à la fin, ou au premier toucher. Ce que la vue finale seule dessine (les archipels au
+  // loin) entre dans le maillage de la pose (aucun appel de plus) ; une veillée ne dessine rien. Avec « Réduire les
+  // animations », l'image finale, fixe. Jamais sur la Carte ni pendant une question.
   const finalView = world.finalView ?? null;
-  let finalRun: { start: number; from: CameraPose; still: boolean } | null = null;
-  const finalPose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
-  function startFinal(place: PlaceId | null) {
-    if (!finalView || (place !== null && place !== finalView.place) || finalRun || asked || mapView) return;
+  let scriptRun: { script: CameraScript; start: number; from: CameraPose; still: boolean; drawn: boolean; done: (() => void) | null } | null = null;
+  const scriptPose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+  function startScript(script: CameraScript, facets: Facets | null, done: (() => void) | null): boolean {
+    if (scriptRun || asked || mapView || nefTrip) return false;
     finishPose();
     finishLay();
     endGlow();
     walk = null;
     const from: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
     copyPose(current, from);
-    finalRun = { start: performance.now() / 1000, from, still: reduceMotion };
-    setGeometry(poseMesh, finalView.facets());
-    poseMesh.material = landMaterial;
-    poseMesh.position.set(0, 0, 0);
+    scriptRun = { script, start: performance.now() / 1000, from, still: reduceMotion, drawn: facets !== null, done };
+    if (facets) {
+      setGeometry(poseMesh, facets);
+      poseMesh.material = landMaterial;
+      poseMesh.position.set(0, 0, 0);
+    }
     options.onMark(null);
-    options.onFinalView?.(true);
-    stepFinal(finalRun.start);
+    options.onCameraScript?.(true);
+    stepScript(scriptRun.start);
+    return true;
   }
-  function finishFinal() {
-    if (!finalRun) return;
-    finalRun = null;
-    poseMesh.visible = false;
-    poseMesh.geometry.dispose();
-    poseMesh.geometry = new THREE.BufferGeometry();
-    poseMesh.material = poseMaterial;
+  function startFinal(place: PlaceId | null) {
+    if (!finalView || (place !== null && place !== finalView.place)) return;
+    startScript(finalView, finalView.facets(), null);
+  }
+  function finishScript() {
+    if (!scriptRun) return;
+    const { drawn, done } = scriptRun;
+    scriptRun = null;
+    if (drawn) {
+      poseMesh.visible = false;
+      poseMesh.geometry.dispose();
+      poseMesh.geometry = new THREE.BufferGeometry();
+      poseMesh.material = poseMaterial;
+    }
     updateRings(true);
     follow();
-    options.onFinalView?.(false);
+    options.onCameraScript?.(false);
+    done?.();
   }
-  function stepFinal(t: number) {
-    if (!finalRun || !finalView) return;
-    const u = t - finalRun.start;
-    if (u >= (finalRun.still ? finalView.still : finalView.seconds)) return finishFinal();
-    const p = finalView.pose(u, finalRun.from, finalPose, finalRun.still);
+  function stepScript(t: number) {
+    if (!scriptRun) return;
+    const u = t - scriptRun.start;
+    if (u >= (scriptRun.still ? scriptRun.script.still : scriptRun.script.seconds)) return finishScript();
+    const p = scriptRun.script.pose(u, scriptRun.from, scriptPose, scriptRun.still);
     applyPose(p);
     // Les tuiles du sol suivent la caméra et son regard (le cap de la caméra qui suit : 0 vers le nord).
-    finalRings.x = p.position.x;
-    finalRings.z = p.position.z;
-    finalRings.look = Math.atan2(-(p.target.x - p.position.x), -(p.target.z - p.position.z));
-    updateRings(false, finalRun.still, finalRings);
+    scriptRings.x = p.position.x;
+    scriptRings.z = p.position.z;
+    scriptRings.look = Math.atan2(-(p.target.x - p.position.x), -(p.target.z - p.position.z));
+    updateRings(false, scriptRun.still, scriptRings);
   }
-  const finalRings = { x: 0, z: 0, look: 0 };
+  const scriptRings = { x: 0, z: 0, look: 0 };
   function stepRestore(t: number) {
     if (!restoring) return;
     const art = placeArt(restoring.place)?.restoration;
@@ -4543,9 +4570,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       meter?.tick(renderer.info, now);
       return;
     }
-    if (finalRun) {
-      // La vue finale : la caméra s'élève et tourne, Kéo attend où il est ; ni marque ni cadenas.
-      stepFinal(t);
+    if (scriptRun) {
+      // La vue finale ou une veillée : la caméra suit son script, Kéo attend où il est ; ni marque ni cadenas.
+      stepScript(t);
       body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
@@ -4721,7 +4748,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeVisibility();
     },
     playFinal: () => startFinal(null),
-    endFinal: () => finishFinal(),
+    playVigil: (vigil, done) => startScript(vigilScript(vigil), null, done),
+    endScript: () => finishScript(),
     departNef: (done) => {
       if (nefTrip || nefLookNow === 4) return done();
       startNefTrip(done);

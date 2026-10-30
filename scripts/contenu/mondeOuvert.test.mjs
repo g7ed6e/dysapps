@@ -18,12 +18,13 @@ const ENTRAIDE = [
   '- consigne apporter : Tu apportes {nom}.',
 ];
 const REVISION = ['- entrée : Tu revois {questions}.', '- fin : Tu as revu {questions}.', '- rappel : On revoit quelques questions ensemble.'];
-const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, '', '## L’entraide', '', ...ENTRAIDE, '', '## La révision', '', ...REVISION, ''].join('\n');
+const VEILLEES = ['- feu éteint : {Feu} est éteint.', '- feu allumé : {Feu} est allumé.', '- embarquement : {Équipier} monte à bord.'];
+const md = (...l) => ['# Le monde ouvert', '', '## Les habitants', '', ...l, '', '## L’entraide', '', ...ENTRAIDE, '', '## La révision', '', ...REVISION, '', '## Les veillées', '', ...VEILLEES, ''].join('\n');
 const lire = (...l) => () => lireMondeOuvert(md(...l), 'monde-ouvert.md');
 const remplacer = (avant, apres) => BONNES.map((l) => (l.startsWith(`- ${avant} :`) ? apres : l));
 
 describe('docs/contenu/monde-ouvert.md', () => {
-  it('lit les treize formes de ses trois sections, dans l’ordre du jeu', () => {
+  it('lit les seize formes de ses quatre sections, dans l’ordre du jeu', () => {
     expect(lire(...BONNES)()).toEqual({
       ask: 'Il me faut {objet}. C’est pour {nom}. Joue une mission {au lieu}.',
       askAssembled: 'Il me faut {objet}. C’est pour {nom}. Assemble les {blocs} {au lieu}.',
@@ -38,6 +39,9 @@ describe('docs/contenu/monde-ouvert.md', () => {
       revisionEntry: 'Tu revois {questions}.',
       revisionDone: 'Tu as revu {questions}.',
       revisionReminder: 'On revoit quelques questions ensemble.',
+      fireOut: '{Feu} est éteint.',
+      fireLit: '{Feu} est allumé.',
+      boarding: '{Équipier} monte à bord.',
     });
   });
 

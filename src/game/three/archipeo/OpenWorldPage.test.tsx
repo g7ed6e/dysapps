@@ -3,10 +3,10 @@
 // la fin de la pose, jamais avec le toc, et celle du pont devenu reliable la suit. Et la commande prête dans la suggestion
 // (lot L1 « Livrer »). La scène 3D n'est pas là sous jsdom : une scène simulée, qui pose le pont d'un coup (`instant`), ou
 // attend qu'on dise le toc et la fin.
-import { act, fireEvent, render, screen, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, useLocation } from 'react-router-dom';
-import { afterEach, beforeEach, vi } from 'vitest';
+import { afterEach, beforeEach, describe, vi } from 'vitest';
 import { ProgressProvider } from '../../../core/ProgressContext';
 import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
@@ -14,11 +14,15 @@ import { reachableIslands } from '../../world/archipelago';
 import { toutConstruit } from '../../world/budget';
 import { landById, type LinkedLand } from '../../world/continu/lands';
 import { placeById } from '../../world/continu/levelPlan';
-import { planCells } from '../../world/plans';
+import { planCells, plansFor } from '../../world/plans';
+import { getIle } from '../../biomes';
+import { PLACES } from '../../world/continu/plan6e';
 import { COMMANDES } from '../../world/requests';
 import { VEHICLE_STAGES } from '../../world/vehicle';
 import type { BridgeLayEvents, OpenWorld, OpenWorldOptions } from './scene';
 import OpenWorldPage from './OpenWorldPage';
+import type { Vigil } from '../../world/continu/vigil';
+import { FERRY_VIGIL_6E, PHARE_VIGIL_6E } from '../../world/continu/vigils6e';
 
 const scene = vi.hoisted(() => ({
   options: null as OpenWorldOptions | null,
@@ -26,6 +30,9 @@ const scene = vi.hoisted(() => ({
   world: null as OpenWorld | null,
   instant: true,
   lay: null as { land: LinkedLand; events: BridgeLayEvents } | null,
+  // Les veillées demandées à la scène (GD-23, GD-27, lot 3), et si elle les joue (`playVigils`).
+  vigils: [] as { vigil: Vigil; done: () => void }[],
+  playVigils: false,
 }));
 vi.mock('./scene', () => ({
   createOpenWorld: (_host: HTMLElement, options: OpenWorldOptions) => {
@@ -34,6 +41,11 @@ vi.mock('./scene', () => ({
     const own: Partial<OpenWorld> = {
       question: () => [],
       onSceneTurn: () => () => {},
+      playVigil: (vigil, done) => {
+        if (!scene.playVigils) return false;
+        scene.vigils.push({ vigil, done });
+        return true;
+      },
       setPlaces: () => false,
       keoAt: () => ({ x: 0, z: 0 }),
       info: () => ({ calls: 0, triangles: 0, mapMs: 0 }),
@@ -90,6 +102,8 @@ beforeEach(() => {
   nef.kit = false;
   scene.instant = true;
   scene.lay = null;
+  scene.vigils = [];
+  scene.playVigils = false;
   vi.stubGlobal(
     'ResizeObserver',
     class {
@@ -512,5 +526,95 @@ describe('« Reprendre » chez l’habitant (GD-20, point 4, lot L3)', () => {
     await reprendreAuxQuais();
     await vi.waitFor(() => expect(screen.getByTestId('adresse')).toHaveTextContent(/revision=1/));
     expect(document.querySelector('.quiz-steps-revision')).toBeNull();
+  });
+});
+
+// Les veillées du 6e (GD-23, « trois veillées par niveau » ; GD-27, lot 3).
+describe('Les veillées du 6e', () => {
+  const saved = () => (JSON.parse(localStorage.getItem('dysapps:game') ?? '{}') as { world?: { vigils?: string[] } }).world?.vigils ?? [];
+
+  test('à la première entrée dans le monde, au quai : la caméra va au Phare, « Le Phare est éteint. » s’écrit avec son haut-parleur, les boutons se cachent ; à la fin, la ligne s’efface et la veillée est retenue', async () => {
+    scene.playVigils = true;
+    renderPage();
+    await screen.findByText('Le Phare est éteint.');
+    expect(scene.vigils).toHaveLength(1);
+    expect(scene.vigils[0].vigil).toBe(PHARE_VIGIL_6E);
+    expect(document.querySelector('.open-world-veillee')).toHaveTextContent('Le Phare est éteint.');
+    act(() => scene.options!.onCameraScript!(true));
+    expect(screen.queryByRole('button', { name: /Carte/ })).toBeNull();
+    act(() => {
+      scene.vigils[0].done();
+      scene.options!.onCameraScript!(false);
+    });
+    expect(screen.queryByText('Le Phare est éteint.')).toBeNull();
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(saved()).toEqual(['6e-arrival']);
+  });
+
+  test('une veillée vue ne se rejoue pas ; une partie où un lieu est déjà rallumé ne voit jamais l’arrivée, retenue comme vue', async () => {
+    scene.playVigils = true;
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], vigils: ['6e-arrival'] } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(scene.vigils).toHaveLength(0);
+    cleanup();
+    const place = PLACES.find((p) => p.id === 'quais')!;
+    const island = getIle(place.island)!;
+    const parts = Object.fromEntries(plansFor(island.id).map((p) => [p.id, planCells(p).map((c) => c.key)]));
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], parts } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(scene.vigils).toHaveLength(0);
+    expect(saved()).toEqual(['6e-arrival']);
+  });
+
+  test('« Partir » : la veillée de départ d’abord, le Phare tel qu’il est, puis la Nef part, par la fin de la veillée ou le toucher qui la passe', async () => {
+    scene.playVigils = true;
+    const stage = VEHICLE_STAGES[0];
+    nef.kit = true;
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], vigils: ['6e-arrival'], parts: { [stage.id]: planCells(stage).map((c) => c.key) } } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    const w = scene.world!;
+    vi.mocked(w.goToPort).mockImplementation((spot) => scene.options!.onPort(spot));
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Y aller : La Nef' }));
+    const sheet = await screen.findByRole('dialog', { name: 'La Nef' });
+    await userEvent.setup().click(within(sheet).getByRole('button', { name: /^Partir/ }));
+    expect(scene.vigils).toHaveLength(1);
+    expect(scene.vigils[0].vigil).toBe(PHARE_VIGIL_6E);
+    expect(screen.getByText('Le Phare est éteint.')).toBeInTheDocument();
+    expect(w.departNef).not.toHaveBeenCalled();
+    act(() => scene.vigils[0].done());
+    expect(w.departNef).toHaveBeenCalledTimes(1);
+    expect(saved()).toEqual(['6e-arrival', '6e-departure']);
+  });
+
+  test('la Gare maritime rallumée sous les yeux de l’élève : la veillée de l’embarquement vient après la pose, « La radio monte à bord. » ; déjà rallumée en arrivant, jamais', async () => {
+    scene.playVigils = true;
+    const ferry = PLACES.find((p) => p.id === 'ferry')!;
+    const island = getIle(ferry.island)!;
+    const plans = plansFor(island.id);
+    const parts = Object.fromEntries(plans.map((p) => [p.id, planCells(p).map((c) => c.key)]));
+    // Déjà rallumée : rien, retenue comme vue.
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], vigils: ['6e-arrival'], parts } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(scene.vigils).toHaveLength(0);
+    expect(saved()).toEqual(['6e-arrival', '6e-boarding']);
+    cleanup();
+    // Rallumée sous les yeux de l'élève : la dernière partie posée pendant la page.
+    const last = plans[plans.length - 1];
+    const before = { ...parts, [last.id]: planCells(last).map((c) => c.key).slice(0, -1) };
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], vigils: ['6e-arrival'], parts: before } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(scene.vigils).toHaveLength(0);
+    act(() => {
+      pay.ctx!.chargerPourLesMesures({ ...pay.ctx!.state, world: { ...pay.ctx!.state.world, parts } });
+    });
+    await screen.findByText('La radio monte à bord.');
+    expect(scene.vigils[0].vigil).toBe(FERRY_VIGIL_6E);
+    // La partie chargée pour les mesures ne s'écrit pas sur l'appareil : la veillée vue se lit dans l'état.
+    expect(pay.ctx!.state.world.vigils).toContain('6e-boarding');
   });
 });
