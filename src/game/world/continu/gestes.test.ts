@@ -9,6 +9,7 @@ import { COMMON_DETOUR_VIEW, followPose, lookUp, occlusionLift, screenOf } from 
 import { doorOf } from './construction';
 import { FacetBuilder } from './facets';
 import { linearRgb } from './geometry';
+import { SEAT_TRIANGLES } from './corps';
 import { GESTE_CYCLE, GESTE_REACH, GESTE_SLACK, GESTE_TRIANGLES, TOOL_KIT, TOOL_OF, activeGeste, gesteCandidates, gestePhase, gesteToolOf, moveMobile, worldGestes, type MobilePiece } from './gestes';
 import { OPEN_WORLD_LEVELS, hasScenette, levelOfPlace, planFor, type OpenWorldLevel, type ScenePlaceId } from './levelPlan';
 import { levelWorld } from './levelWorld';
@@ -128,9 +129,10 @@ describe('les outils des habitants', () => {
         expect(end).toBeLessThanOrEqual(g.facets.positions.length / 3);
       });
 
-      it('dans la ruine, ni outil ni support', () => {
+      it('dans la ruine, ni outil ni support : le bloc de l’habitant assis seulement, fixe, sous les 60 triangles', () => {
         const g = worldGestes(planFor(level).places.map((p) => p.id), ground, () => false);
-        expect(g.facets.triangles).toBe(0);
+        expect(g.facets.triangles).toBe(toolPlaces(level).length * SEAT_TRIANGLES);
+        expect(SEAT_TRIANGLES).toBeLessThanOrEqual(GESTE_TRIANGLES);
         expect(g.mobiles).toEqual([]);
       });
 

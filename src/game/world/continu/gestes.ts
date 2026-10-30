@@ -10,9 +10,10 @@
 // habitants), que la vue montre et cache avec eux ; la pièce mobile de l'habitant actif est déplacée sommet par sommet
 // (`moveMobile`), quelques dizaines de sommets par image. Rien n'est annoncé : le mouvement est décoratif, l'état du lieu
 // reste porté par l'écrit (référent dys). Code pur.
+import { SEAT_COLOR, seatFacets } from './corps';
 import { FacetBuilder, type Facets } from './facets';
 import { distance, type Vec3 } from './geometry';
-import { type PlaceId, type ScenePlaceId } from './levelPlan';
+import { levelOfPlace, type PlaceId, type ScenePlaceId } from './levelPlan';
 import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantYaw } from './worldHabitants';
 
 /** Le cycle du geste, en secondes : un aller et retour, lent (directeur artistique ; bien sous trois variations par seconde). */
@@ -97,8 +98,8 @@ function habitantFrame(place: ScenePlaceId, ground: (x: number, z: number) => nu
 }
 
 /**
- * Les outils des habitants de `places` (ceux qui en ont un, hors ruine : `withTool`), à leur place dans le monde, dans un
- * seul maillage ; la pièce mobile de chacun au repos, repérée. L'ordre des sommets : pour chaque lieu, sa pièce fixe puis
+ * Les outils des habitants de `places` (ceux qui en ont un, hors ruine : `withTool` ; dans la ruine, le bloc de l'habitant
+ * assis à la place), à leur place dans le monde, dans un seul maillage ; la pièce mobile de chacun au repos, repérée. L'ordre des sommets : pour chaque lieu, sa pièce fixe puis
  * sa pièce mobile. `toolOf` ne sert qu'aux tests, pour poser une forme du kit à un lieu donné ; la scène garde `gesteToolOf`.
  */
 export function worldGestes(places: readonly PlaceId[], ground: (x: number, z: number) => number, withTool: (place: ScenePlaceId) => boolean = () => true, toolOf: (place: ScenePlaceId) => ToolShape | null = gesteToolOf): WorldGestes {
@@ -106,7 +107,18 @@ export function worldGestes(places: readonly PlaceId[], ground: (x: number, z: n
   const mobiles: MobilePiece[] = [];
   let vertices = 0;
   for (const place of places) {
-    if (!hasWorldHabitant(place) || !withTool(place)) continue;
+    if (!hasWorldHabitant(place)) continue;
+    if (!withTool(place)) {
+      // La ruine : ni outil ni support, mais le bloc où l'habitant est assis (./corps.ts), fixe.
+      const at = worldHabitantAt(place, ground);
+      if (!at) continue;
+      const seat = new FacetBuilder();
+      seatFacets(seat, { at, yaw: worldHabitantYaw(place), height: worldHabitantHeight(place) }, SEAT_COLOR[levelOfPlace(place)]);
+      const f = seat.build();
+      b.append(f);
+      vertices += f.positions.length / 3;
+      continue;
+    }
     const tool = toolOf(place);
     const frame = tool && habitantFrame(place, ground);
     if (!tool || !frame) continue;
