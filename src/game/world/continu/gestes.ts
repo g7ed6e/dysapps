@@ -438,18 +438,18 @@ export const TOOL_KIT = {
     ...TOOL_KIT.cloche(),
     mobile: (b) => b.prism({ x: 1.15, y: 1.3, z: 0.33, pitch: rad(90) }, 0.25, 0.25, 0.04, 8, BRASS),
   }),
-  /** 13. La balance : le fléau penche de 10° d'un côté puis de l'autre, ses plateaux avec lui. */
+  /** 13. La balance, au large du corps (son plateau intérieur à 0,65) : le fléau penche de 10° d'un côté puis de l'autre, ses plateaux avec lui. */
   balance: (): ToolShape => ({
     fixed: (b) => {
-      b.box(STAND, [0.4, 0.1, 0.4], DARK_WOOD);
-      b.box(v(0.75, 0.1, 0.35), [0.1, 1.4, 0.1], DARK_WOOD);
+      b.box(v(1.0, 0, 0.35), [0.4, 0.1, 0.4], DARK_WOOD);
+      b.box(v(1.0, 0.1, 0.35), [0.1, 1.4, 0.1], DARK_WOOD);
     },
     mobile: (b) => {
-      b.box(v(0.75, 1.475, 0.35), [0.8, 0.05, 0.05], BRASS);
-      b.box(v(0.4, 1.2, 0.35), [0.25, 0.03, 0.25], BRASS);
-      b.box(v(1.1, 1.2, 0.35), [0.25, 0.03, 0.25], BRASS);
+      b.box(v(1.0, 1.475, 0.35), [0.8, 0.05, 0.05], BRASS);
+      b.box(v(0.65, 1.2, 0.35), [0.25, 0.03, 0.25], BRASS);
+      b.box(v(1.35, 1.2, 0.35), [0.25, 0.03, 0.25], BRASS);
     },
-    pivot: v(0.75, 1.5, 0.35),
+    pivot: v(1.0, 1.5, 0.35),
     axis: Z,
     amplitude: rad(10),
   }),
