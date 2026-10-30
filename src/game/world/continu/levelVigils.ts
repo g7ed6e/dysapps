@@ -4,12 +4,14 @@
 // posée qui l'allume ; l'équipier qui monte à bord et le lieu où il le fait ; les plans de chaque veillée (./vigils6e.ts,
 // ./vigils5e.ts, ./vigils4e.ts, ./vigils3e.ts) ; et la ligne de chacune, une seule, littérale, le lieu nommé
 // (docs/contenu/monde-ouvert.md, « Les veillées »). Au 3e, la vue finale de GD-25 tient lieu de départ : aucune veillée
-// de départ (directeur artistique, 30 octobre 2026). Code pur ; la page lance les veillées (OpenWorldPage.tsx,
-// `playVigil`), la scène joue leurs plans.
+// de départ (directeur artistique, 30 octobre 2026). Au 5e et au 4e, la veillée de départ commence par la lueur du
+// niveau d'avant (GD-27, lot 5, « la chaîne des feux » : la lumière du Phare depuis la Lisière, la lanterne du Sémaphore
+// depuis la Crique), le lieu de la lueur nommé par son icône et son nom, sans phrase, puis coupe sur le feu du niveau et
+// sa ligne. Code pur ; la page lance les veillées (OpenWorldPage.tsx, `playVigil`), la scène joue leurs plans.
 import type { PartShape } from './construction';
 import { placeById, type OpenPlace, type OpenWorldLevel, type PlaceId } from './levelPlan';
 import PHRASES from './mondeOuvert.json';
-import type { Vigil } from './vigil';
+import { vigilCutTimes, vigilSeconds, type Vigil } from './vigil';
 import { VIGILS_3E } from './vigils3e';
 import { VIGILS_4E } from './vigils4e';
 import { VIGILS_5E } from './vigils5e';
@@ -39,6 +41,12 @@ export interface LevelVigils {
   readonly boarding: Boarding | null;
   /** Le niveau a une veillée de départ (au 3e, la vue finale en tient lieu). */
   readonly departure: boolean;
+  /**
+   * Le départ commence par la lueur du niveau d'avant, vue du quai (à partir du 5e, GD-27, lot 5) : ses plans, le feu
+   * éteint ou allumé, et le lieu de la lueur, nommé pendant ses `until` premières secondes. Sinon, le départ cadre le feu
+   * seul, comme l'arrivée (au 6e : son propre feu seulement).
+   */
+  readonly beyond?: { readonly place: PlaceId; readonly until: number; readonly vigil: Vigil; readonly vigilLit?: Vigil };
 }
 
 const BY_LEVEL: Readonly<Record<OpenWorldLevel, LevelVigils>> = { '6e': VIGILS_6E, '5e': VIGILS_5E, '4e': VIGILS_4E, '3e': VIGILS_3E };
@@ -50,7 +58,27 @@ export const levelVigils = (level: OpenWorldLevel): LevelVigils => BY_LEVEL[leve
 export function vigilOf(v: LevelVigils, kind: VigilKind, lit = false): Vigil | null {
   if (kind === 'boarding') return v.boarding?.vigil ?? null;
   if (kind === 'departure' && !v.departure) return null;
+  if (kind === 'departure' && v.beyond) return (lit && v.beyond.vigilLit) || v.beyond.vigil;
   return (lit && v.fireVigilLit) || v.fireVigil;
+}
+
+/**
+ * Le voile du fondu pendant une veillée jouée (jamais avec « Réduire les animations ») : à chaque coupe après le début
+ * (`vigilCutTimes`), il couvre `fade` secondes avant et se lève `fade` secondes après ; à la fin, il couvre le retour
+ * derrière Kéo. La coupe du début, s'il y en a une, est couverte avant que la veillée commence (la page). Les instants,
+ * en secondes depuis le début, dans l'ordre.
+ */
+export function vigilVeils(v: Vigil, fade: number): { at: number; on: boolean }[] {
+  const veils: { at: number; on: boolean }[] = [];
+  for (const cut of vigilCutTimes(v)) {
+    if (cut === 0) {
+      veils.push({ at: fade, on: false });
+      continue;
+    }
+    veils.push({ at: cut - fade, on: true }, { at: cut + fade, on: false });
+  }
+  if (veils.length) veils.push({ at: vigilSeconds(v) - fade, on: true });
+  return veils;
 }
 
 /**

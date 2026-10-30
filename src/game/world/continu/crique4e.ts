@@ -20,6 +20,7 @@ import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, CRIQUE_PAVIN
 import type { PortSite } from './port';
 import { RAFIOT_PIECES_CARRIED, rafiotFacets } from './rafiot';
 import { SHADOW_DIR_4E } from './sky';
+import { horizonDiamond } from './surroundingsKit';
 import { heightAt4e, lavaFacets, plumeFacets, volcanoFarFacets } from './terrain4e';
 
 type P3 = [number, number, number];
@@ -323,10 +324,45 @@ export function aiguillesFacets(): Facets {
 }
 
 /**
- * Le décor de la Crique : le volcan vu de loin, sa lave figée et son panache ; la digue, le Rafiot, les Aiguilles ;
- * `returned` : les six pièces du Rafiot rendues au Fanal du 3e, son pont vide.
+ * La lanterne du Sémaphore, vers le 5e (GD-27, lot 5, « la chaîne des feux » : la lueur du niveau d'avant, vue du quai de
+ * la Crique à la veillée de départ ; le pendant de la lumière du Phare de la Lisière) : en tête de la plus haute des
+ * Aiguilles, un mât court et un seul point chaud, immobile, plus large que haut, à la couleur des lanternes, un liseré
+ * sombre derrière lui (le contraste contre le ciel rose). La vue ne les brouille presque pas (levelWorld.ts,
+ * `thinFog`). Sa taille (demi-largeur, demi-hauteur), le mât (sa hauteur au-dessus de la pointe, sa demi-largeur).
  */
-export const criqueDecorFacets = (returned = false): Facets => mergeFacets([volcanoFarFacets(), lavaFacets(), plumeFacets(), digueFacets(), rafiot4eFacets(returned), aiguillesFacets()]);
+export const SEMAPHORE_SPOT_4E = { needle: 1, w: 3.2, h: 1.5, mast: 2.6, mastW: 0.5 } as const;
+
+/** Le gris sombre du mât et du liseré de la lanterne du Sémaphore. */
+export const SEMAPHORE_DARK_4E = 0x4a4650;
+
+/** Où est la lanterne du Sémaphore, dans le monde : au-dessus de la pointe de son Aiguille. */
+export const SEMAPHORE_LIGHT_4E: Vec3 = (() => {
+  const { yaw } = AIGUILLES_4E;
+  const [off, h] = AIGUILLES_4E.needles[SEMAPHORE_SPOT_4E.needle];
+  const fwd = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
+  return { x: AIGUILLES_AT.x - fwd.z * off, y: h + SEMAPHORE_SPOT_4E.mast + SEMAPHORE_SPOT_4E.h, z: AIGUILLES_AT.z + fwd.x * off };
+})();
+
+export function semaphoreLightFacets(): Facets {
+  const b = new FacetBuilder();
+  const p = SEMAPHORE_LIGHT_4E;
+  const q = CRIQUE.toWorld(CRIQUE_QUAY_SPOT[0], CRIQUE_QUAY_SPOT[1]);
+  // Le cap qui regarde le quai depuis la lanterne (0 : le nord ; la largeur du losange court en travers).
+  const yaw = Math.atan2(-(q.x - p.x), -(q.z - p.z));
+  const { w, h, mast, mastW } = SEMAPHORE_SPOT_4E;
+  const back = { x: p.x + 0.3 * Math.sin(yaw), y: p.y, z: p.z + 0.3 * Math.cos(yaw) };
+  horizonDiamond(b, back, 1.25 * w, 1.3 * h, 0.2, yaw, SEMAPHORE_DARK_4E);
+  horizonDiamond(b, p, w, h, 0.35, yaw, C4E.lantern);
+  // Le mât, de la pointe de l'Aiguille à la lanterne : quatre pans.
+  b.prism({ x: p.x, y: p.y - h - mast - 0.4, z: p.z, yaw }, mastW, mastW * 0.7, mast + 0.4, 4, SEMAPHORE_DARK_4E);
+  return b.build();
+}
+
+/**
+ * Le décor de la Crique : le volcan vu de loin, sa lave figée et son panache ; la digue, le Rafiot, les Aiguilles et la
+ * lanterne du Sémaphore ; `returned` : les six pièces du Rafiot rendues au Fanal du 3e, son pont vide.
+ */
+export const criqueDecorFacets = (returned = false): Facets => mergeFacets([volcanoFarFacets(), lavaFacets(), plumeFacets(), digueFacets(), rafiot4eFacets(returned), aiguillesFacets(), semaphoreLightFacets()]);
 
 // ---------- L'aéronef ----------
 

@@ -6,15 +6,20 @@ import type { CameraPose } from './camera';
 import { FERRY_ISLET, placeById } from './plan6e';
 import PHRASES from './mondeOuvert.json';
 import { heightAt, landDistance } from './terrain';
-import { vigilPose, vigilScript, vigilSeconds, type Vigil } from './vigil';
-import { levelVigils, vigilCuts, vigilOf, vigilWords } from './levelVigils';
+import { glanceFirst, vigilCutTimes, vigilPose, vigilScript, vigilSeconds, type Vigil } from './vigil';
+import { levelVigils, vigilCuts, vigilOf, vigilVeils, vigilWords } from './levelVigils';
+import { followPose, screenOf } from './camera';
+import { PHARE_LIGHT } from './lisiere';
+import { SEMAPHORE_LIGHT_4E } from './crique4e';
+import { CRIQUE_LEVEL, DEPARTURE_4E } from './plan4e';
+import { DEPARTURE_5E, LISIERE_LEVEL } from './plan5e';
 import type { PartShape, Stage } from './construction';
 import { heightAt3e } from './terrain3eHeight';
 import { heightAt4e } from './terrain4e';
 import { heightAt5e, landDistance5e } from './terrain5e';
 import { FANAL_3E, FANAL_VIGIL_3E, VIGILS_3E } from './vigils3e';
-import { FORGE_4E, FORGE_VIGIL_4E, VIGILS_4E } from './vigils4e';
-import { FUMEROLLES_5E, FUMEROLLES_VIGIL_5E, SEMAPHORE_5E, SEMAPHORE_LIT_VIGIL_5E, SEMAPHORE_VIGIL_5E, VIGILS_5E } from './vigils5e';
+import { DEPARTURE_VIGIL_4E, FORGE_4E, FORGE_VIGIL_4E, SEMAPHORE_GLANCE_4E, VIGILS_4E } from './vigils4e';
+import { DEPARTURE_LIT_VIGIL_5E, DEPARTURE_VIGIL_5E, FUMEROLLES_5E, FUMEROLLES_VIGIL_5E, PHARE_GLANCE_5E, SEMAPHORE_5E, SEMAPHORE_LIT_VIGIL_5E, SEMAPHORE_VIGIL_5E, VIGILS_5E } from './vigils5e';
 import { FERRY_VIGIL_6E, PHARE_6E, PHARE_VIGIL_6E, VIGILS_6E } from './vigils6e';
 
 const blank = (): CameraPose => ({ position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 });
@@ -45,8 +50,14 @@ const FROM_FUMEROLLES: CameraPose = { position: { x: FUMEROLLES_5E.center.x + 2,
 
 const slow = (v: Vigil, from: CameraPose) => {
   let last = vigilPose(v, 0, from, blank());
+  const cuts = vigilCutTimes(v);
   for (let t = 0.1; t <= vigilSeconds(v) + 0.5; t += 0.1) {
     const now = vigilPose(v, t, from, blank());
+    // Une coupe en route (sous le voile, lot 5) : la caméra y est d'un coup, le pas ne compte pas.
+    if (cuts.some((c) => c > t - 0.1 - 1e-6 && c <= t + 1e-6)) {
+      last = now;
+      continue;
+    }
     // Au plus 1,3 unité par dixième de seconde (Kéo mesure 2,4) ; le regard descend de la pente de la caméra qui suit
     // (une trentaine de degrés) vers celle des plans, jamais à pic, jamais au-dessus de l'horizon.
     expect(Math.hypot(now.position.x - last.position.x, now.position.y - last.position.y, now.position.z - last.position.z), `${t}`).toBeLessThan(1.3);
@@ -134,9 +145,9 @@ describe('Les veillées du 5e, du 4e et du 3e', () => {
     expect(Math.hypot(near.x - top.x, near.y - top.y, near.z - top.z)).toBeLessThan(14);
     expect(SEMAPHORE_LIT_VIGIL_5E.shots[0]).toBe(SEMAPHORE_VIGIL_5E.shots[0]);
     expect(vigilOf(VIGILS_5E, 'arrival')).toBe(SEMAPHORE_VIGIL_5E);
-    expect(vigilOf(VIGILS_5E, 'departure')).toBe(SEMAPHORE_VIGIL_5E);
-    expect(vigilOf(VIGILS_5E, 'departure', true)).toBe(SEMAPHORE_LIT_VIGIL_5E);
-    expect(vigilOf(VIGILS_4E, 'departure', true)).toBe(FORGE_VIGIL_4E);
+    expect(vigilOf(VIGILS_5E, 'departure')).toBe(DEPARTURE_VIGIL_5E);
+    expect(vigilOf(VIGILS_5E, 'departure', true)).toBe(DEPARTURE_LIT_VIGIL_5E);
+    expect(vigilOf(VIGILS_4E, 'departure', true)).toBe(DEPARTURE_VIGIL_4E);
     expect(vigilWords(VIGILS_5E, 'arrival', false)).toBe('Le Sémaphore est éteint.');
     expect(vigilWords(VIGILS_5E, 'departure', true)).toBe('Le Sémaphore est allumé.');
   });
@@ -170,7 +181,7 @@ describe('Les veillées du 5e, du 4e et du 3e', () => {
     expect(heightAt4e(c)).toBeCloseTo(FORGE_4E.ground, 0);
     framesFire(FORGE_VIGIL_4E, { x: c.x, y: FORGE_4E.ground, z: c.z }, { x: c.x, y: FORGE_4E.furnace.top, z: c.z + FORGE_4E.furnace.z }, heightAt4e, 20);
     expect(vigilOf(VIGILS_4E, 'arrival')).toBe(FORGE_VIGIL_4E);
-    expect(vigilOf(VIGILS_4E, 'departure')).toBe(FORGE_VIGIL_4E);
+    expect(vigilOf(VIGILS_4E, 'departure')).toBe(DEPARTURE_VIGIL_4E);
     expect(vigilWords(VIGILS_4E, 'arrival', false)).toBe('La Forge est éteinte.');
     expect(vigilWords(VIGILS_4E, 'departure', true)).toBe('La Forge est allumée.');
   });
@@ -242,5 +253,68 @@ describe('Les veillées du 6e', () => {
       expect(line.split(/\s+/).length).toBeLessThanOrEqual(10);
       expect(line).not.toMatch(/[!?…]/);
     }
+  });
+});
+
+/** La caméra qui suit Kéo au quai de la Lisière et au quai de la Crique, tournée vers le lieu (le cap de l'arrivée). */
+const FROM_LISIERE = followPose({ x: DEPARTURE_5E.at.x, y: LISIERE_LEVEL, z: DEPARTURE_5E.at.z }, 0, undefined, 0.8);
+const FROM_CRIQUE = followPose({ x: DEPARTURE_4E.at.x, y: CRIQUE_LEVEL, z: DEPARTURE_4E.at.z }, 0, undefined, 0.7);
+
+describe('La lueur du niveau d’avant, au départ (GD-27, lot 5)', () => {
+  it('au 5e et au 4e, le départ commence par un coup d’œil depuis le quai : la caméra glisse depuis Kéo (aucune coupe au début), se pose sur la lueur au milieu de l’image, puis coupe sur le feu, sous le voile ; au 6e, le feu seul', () => {
+    for (const [v, glance, light, from, beyond] of [
+      [DEPARTURE_VIGIL_5E, PHARE_GLANCE_5E, PHARE_LIGHT, FROM_LISIERE, VIGILS_5E.beyond!],
+      [DEPARTURE_LIT_VIGIL_5E, PHARE_GLANCE_5E, PHARE_LIGHT, FROM_LISIERE, VIGILS_5E.beyond!],
+      [DEPARTURE_VIGIL_4E, SEMAPHORE_GLANCE_4E, SEMAPHORE_LIGHT_4E, FROM_CRIQUE, VIGILS_4E.beyond!],
+    ] as const) {
+      expect(v.shots[0]).toBe(glance);
+      expect(glance.travel).toBeGreaterThan(0);
+      expect(vigilCuts(v)).toBe(false);
+      // Le coup d'œil : depuis le quai (la caméra à moins de 12 unités de Kéo), la lueur au milieu de l'image, à peine
+      // au-dessus ou au-dessous du milieu ; puis la coupe, à la fin du coup d'œil, et le feu tenu.
+      expect(Math.hypot(glance.position.x - from.position.x, glance.position.z - from.position.z)).toBeLessThan(25);
+      const s = screenOf({ ...glance, fov: 56, lens: 0 }, light, 1024, 768);
+      expect(Math.abs(s.x - 512)).toBeLessThan(8);
+      expect(Math.abs(s.y - 384)).toBeLessThan(60);
+      expect(vigilCutTimes(v)).toEqual([glance.travel + glance.hold]);
+      expect(beyond.until).toBe(glance.travel + glance.hold);
+      expect(v.shots.length).toBe(3);
+      slow(v, from);
+      for (const shot of v.shots) expect(pitch({ ...shot, fov: 56, lens: 0 })).toBeLessThan(25);
+      expect(vigilSeconds(v)).toBeLessThan(20);
+      // L'image fixe (« Réduire les animations ») : le feu, jamais la lueur.
+      expect(vigilPose(v, 0, from, blank(), true).position).toEqual(v.shots[2].position);
+    }
+    expect(VIGILS_5E.beyond?.place).toBe('phare');
+    expect(VIGILS_4E.beyond?.place).toBe('semaphore');
+    expect(VIGILS_6E.beyond).toBeUndefined();
+    expect(VIGILS_3E.beyond).toBeUndefined();
+    expect(vigilOf(VIGILS_6E, 'departure')).toBe(PHARE_VIGIL_6E);
+  });
+
+  it('le feu après le coup d’œil garde ses plans, chacun raccourci d’une seconde, le premier devenu une coupe', () => {
+    const v = glanceFirst(PHARE_GLANCE_5E, SEMAPHORE_LIT_VIGIL_5E);
+    expect(v.shots[1].position).toBe(SEMAPHORE_LIT_VIGIL_5E.shots[0].position);
+    expect(v.shots[1].travel).toBe(0);
+    expect(v.shots[1].hold).toBe(SEMAPHORE_LIT_VIGIL_5E.shots[0].hold - 1);
+    expect(v.shots[2].travel).toBe(SEMAPHORE_LIT_VIGIL_5E.shots[1].travel - 1);
+    expect(v.shots[2].hold).toBe(SEMAPHORE_LIT_VIGIL_5E.shots[1].hold - 1);
+    expect(v.still).toBe(SEMAPHORE_LIT_VIGIL_5E.still);
+  });
+
+  it('le voile du fondu : levé après la coupe du début, ou posé puis levé autour d’une coupe en route, et posé avant le retour ; rien sans coupe', () => {
+    expect(vigilCutTimes(PHARE_VIGIL_6E)).toEqual([]);
+    expect(vigilVeils(PHARE_VIGIL_6E, 0.25)).toEqual([]);
+    expect(vigilCutTimes(SEMAPHORE_VIGIL_5E)).toEqual([0]);
+    expect(vigilVeils(SEMAPHORE_VIGIL_5E, 0.25)).toEqual([
+      { at: 0.25, on: false },
+      { at: vigilSeconds(SEMAPHORE_VIGIL_5E) - 0.25, on: true },
+    ]);
+    const cut = vigilCutTimes(DEPARTURE_VIGIL_4E)[0];
+    expect(vigilVeils(DEPARTURE_VIGIL_4E, 0.25)).toEqual([
+      { at: cut - 0.25, on: true },
+      { at: cut + 0.25, on: false },
+      { at: vigilSeconds(DEPARTURE_VIGIL_4E) - 0.25, on: true },
+    ]);
   });
 });

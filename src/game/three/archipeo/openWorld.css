@@ -2892,6 +2892,13 @@
   padding: 0;
   border: 0;
 }
+/* Le lieu de la lueur du niveau d'avant (GD-27, lot 5), pendant le coup d'œil qui ouvre le départ : son icône et son nom,
+   dans la boîte de la ligne, à sa place et à sa taille, sans glissement (la ligne du feu prend la suite sous le voile). */
+.open-world-veillee > .open-world-veillee-beyond {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
 /* La ligne d'une veillée (GD-27, lot 3) : la boîte de la phrase, avec « Passer » à droite du haut-parleur, un bouton
    discret de 48 px, en mots (le toucher n'importe où passe aussi la veillée ; le bouton le dit, référent dys). */
 .open-world-veillee > .open-world-veillee-pass {

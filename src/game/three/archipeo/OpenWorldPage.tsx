@@ -32,7 +32,7 @@ import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
 import { paruresPoseBlock } from '../../useParuresBuilder';
 import { vehiclePoseBlock } from '../../useVehicleBuilder';
-import { getIle, type BiomeId, type IleId } from '../../biomes';
+import { getBiome, getIle, type BiomeId, type IleId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
 import { todayISO } from '../../engine';
 import { exercisesOf, questProgress } from '../../exercises';
@@ -46,8 +46,8 @@ import type { PartShape } from '../../world/continu/construction';
 import { LOOK_UP } from '../../world/continu/camera';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, keoZone, missionsOfPlace, nextMission, overlaps, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
 import { hasScenette, placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
-import { levelVigils, vigilCuts, vigilOf, vigilWords, type VigilKind } from '../../world/continu/levelVigils';
-import { vigilSeconds } from '../../world/continu/vigil';
+import { levelVigils, vigilCuts, vigilOf, vigilVeils, vigilWords, type VigilKind } from '../../world/continu/levelVigils';
+import { vigilCutTimes } from '../../world/continu/vigil';
 import { vigilSeen } from '../../world/vigilsSaved';
 import { scenetteOf } from '../../world/continu/scenette';
 import type { PortSpot } from '../../world/continu/plan6e';
@@ -322,7 +322,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // Un script de caméra se joue (la vue finale du 3e, une veillée) : la scène seule, comme pendant une question.
   const [scriptPlaying, setScriptPlaying] = useState(false);
   // La veillée en cours (GD-23, GD-27, lot 3) : sa ligne, écrite sur fond uni et lue, relançable, le temps des plans.
-  const [vigil, setVigil] = useState<{ n: number; line: string } | null>(null);
+  // La ligne d'une veillée ; `beyond` : le lieu de la lueur du niveau d'avant, nommé par son icône et son nom à la place
+  // de la ligne pendant le coup d'œil qui ouvre le départ du 5e et du 4e (GD-27, lot 5), puis la ligne, sous le voile.
+  const [vigil, setVigil] = useState<{ n: number; line: string; beyond?: PlaceId } | null>(null);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
   // revient) ; pour un lieu d'une terre fermée, la fiche de sa terre ; jamais en même temps qu'un panneau de l'Escale.
   const [lieu, setLieu] = useState<{ place: PlaceId; focus: string | null } | null>(null);
@@ -1118,7 +1120,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       const vigil = w ? vigilOf(vigils, kind, lit) : null;
       if (!w || !vigil || scriptPlaying || asking || mapOpen) return false;
       const line = vigilWords(vigils, kind, lit);
-      const veiled = vigilCuts(vigil) && !reduceMotion;
+      // Le voile couvre chaque coupe (`vigilVeils`) ; celle du début, avant que la veillée commence.
+      const veiled = vigilCutTimes(vigil).length > 0 && !reduceMotion;
+      const veiledStart = veiled && vigilCuts(vigil);
+      // La lueur du niveau d'avant (GD-27, lot 5) : son lieu nommé pendant le coup d'œil, la ligne et sa voix à la coupe
+      // sur le feu ; avec « Réduire les animations », l'image fixe du feu et sa ligne d'un coup.
+      const beyond = kind === 'departure' && !reduceMotion ? (vigils.beyond ?? null) : null;
       const start = (): boolean => {
         const started = w.playVigil(
           vigil,
@@ -1139,15 +1146,17 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         }
         veiledRun.current = veiled;
         seeVigil(`${level}-${kind}`);
-        setVigil((was) => ({ n: (was?.n ?? 0) + 1, line }));
-        if (settings.autoRead) speak(line);
-        if (veiled) {
-          veilLater(() => setFondu(false), LEVEL_FADE_MS / 2);
-          veilLater(() => setFondu(true), vigilSeconds(vigil) * 1000 - LEVEL_FADE_MS / 2);
-        }
+        setVigil((was) => ({ n: (was?.n ?? 0) + 1, line, beyond: beyond?.place }));
+        if (beyond)
+          veilLater(() => {
+            setVigil((was) => (was ? { n: was.n, line: was.line } : was));
+            if (settings.autoRead) speak(line);
+          }, beyond.until * 1000);
+        else if (settings.autoRead) speak(line);
+        if (veiled) for (const { at, on } of vigilVeils(vigil, LEVEL_FADE_MS / 2000)) veilLater(() => setFondu(on), at * 1000);
         return true;
       };
-      if (!veiled) return start();
+      if (!veiledStart) return start();
       // Le voile couvre d'abord, puis la caméra coupe sous lui. La scène peut refuser entre-temps (un raccourci clavier
       // ouvre la Carte, la Nef est lancée) : la veillée, déjà tenue pour lancée, n'est pas retenue, et `refused` rend à
       // l'appelant ce qu'il attendait de `false` (le départ part sans veillée, l'embarquement reste à jouer).
@@ -1526,8 +1535,15 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               vide le reste du temps, pour que les lecteurs d'écran annoncent la ligne (référent dys). « Passer » écrit
               que la veillée se passe (le toucher n'importe où le fait aussi) : 48 px, discret (consultant UX UI). */}
           <div className="open-world-said open-world-veillee" data-shown={vigil ? 'oui' : 'non'}>
-            <p role="status">{vigil?.line ?? ''}</p>
-            {vigil && <SpeakButton text={vigil.line} label="Réécouter" compact />}
+            {/* Le lieu de la lueur, pendant le coup d'œil : son icône et son nom, sans phrase, dans la même boîte, hors de
+                l'annonce (une seule annonce, la ligne ; consultant UX UI, référent dys) ; ni voix ni « Réécouter » pour lui. */}
+            {vigil?.beyond && (
+              <p className="open-world-veillee-beyond" aria-hidden="true">
+                <Icon name={getBiome(placeById(vigil.beyond).island)?.icon ?? 'map'} /> {placeById(vigil.beyond).name}
+              </p>
+            )}
+            <p role="status">{vigil && !vigil.beyond ? vigil.line : ''}</p>
+            {vigil && !vigil.beyond && <SpeakButton text={vigil.line} label="Réécouter" compact />}
             {vigil && (
               <button type="button" className="open-world-veillee-pass" onClick={() => passVigilRef.current()}>
                 Passer

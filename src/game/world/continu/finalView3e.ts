@@ -78,8 +78,9 @@ const ROCK = { light: FAR_ISLES_3E.stone, shade: FAR_ISLES_3E.stoneShade, top: F
 
 /**
  * Les trois archipels rallumés, dessinés pour la seule vue finale (jamais dans le monde ni sur la Carte) : au 6e, une île
- * basse et son phare blanc, sa lumière ocre ; au 5e, une île et ses trois Aiguilles de pierre ; au 4e, le cône du volcan
- * et son panache immobile. Les trois lumières sont allumées.
+ * basse et son phare blanc, sa lumière ocre ; au 5e, une île et ses trois Aiguilles de pierre, la lanterne du Sémaphore en
+ * tête de la plus haute ; au 4e, le cône du volcan et son panache immobile, le fourneau de la Forge à son pied. Les trois
+ * feux sont allumés (GD-27, « la chaîne des feux » : les quatre feux se répondent, le Fanal devant la caméra à la fin).
  */
 export function farArchipelagos3e(): Facets {
   const b = new FacetBuilder();
@@ -98,14 +99,18 @@ export function farArchipelagos3e(): Facets {
     [9, 3, 26, 3.2],
   ] as const)
     b.prism({ x: fifth.x + dx, y: 2, z: fifth.z + dz, yaw: dx }, r, r * 0.25, h, 5, FAR_ISLES_3E.stoneShade, FAR_ISLES_3E.stone);
-  b.box({ x: fifth.x + 14, y: 5, z: fifth.z + 4 }, [2.4, 2.4, 2.4], FAR_ISLES_3E.light);
-  // Le 4e : le cône du volcan, son panache immobile, et une lumière à son pied.
+  // Le feu du 5e (GD-27, lot 5) : la lanterne de tête du mât du Sémaphore, en tête de la plus haute Aiguille.
+  b.prism({ x: fifth.x, y: 40, z: fifth.z - 3 }, 0.8, 0.6, 5, 4, FAR_ISLES_3E.stoneShade);
+  b.box({ x: fifth.x, y: 45, z: fifth.z - 3 }, [3, 2.6, 3], FAR_ISLES_3E.light);
+  // Le 4e : le cône du volcan, son panache immobile, et le feu du 4e à son pied (GD-27, lot 5) : le fourneau de la Forge,
+  // sa gueule allumée tournée vers le Cirque.
   b.prism({ x: fourth.x, y: -1, z: fourth.z }, 38, 9, 30, 8, FAR_ISLES_3E.stoneShade, FAR_ISLES_3E.stone);
   // Le panache : trois volutes de fumée qui montent en s'élargissant, penchées, immobiles.
   b.prism({ x: fourth.x + 2, y: 28, z: fourth.z }, 6, 8, 12, 6, FAR_ISLES_3E.smoke);
   b.prism({ x: fourth.x + 6, y: 39, z: fourth.z - 2, yaw: 0.5 }, 8, 10, 11, 6, FAR_ISLES_3E.smoke);
   b.prism({ x: fourth.x + 12, y: 49, z: fourth.z - 4, yaw: 1 }, 10, 6, 9, 6, FAR_ISLES_3E.smoke);
-  b.box({ x: fourth.x + 30, y: 3, z: fourth.z - 10 }, [2.4, 2.4, 2.4], FAR_ISLES_3E.light);
+  b.prism({ x: fourth.x + 30, y: -1, z: fourth.z - 10 }, 4.2, 3, 9, 6, FAR_ISLES_3E.stoneShade, FAR_ISLES_3E.stone);
+  b.box({ x: fourth.x + 30, y: 2.6, z: fourth.z - 13.4 }, [3.4, 2.8, 1.6], FAR_ISLES_3E.light);
   return b.build();
 }
 
