@@ -1323,6 +1323,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (k === gestesKey) return;
     gestesKey = k;
     gesteActive = null;
+    // Le corps de l'habitant actif aussi : les outils se refont sans que le maillage des habitants se refasse.
+    worldHabitants.work(null, 0);
     gesteMobile = null;
     gesteHere.x = NaN;
     const g = worldGestes(places, ground, withTool);
