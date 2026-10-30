@@ -888,10 +888,30 @@ Pour tous les items :
    - indice : 2x + 7 = 25.
    - explication : 2x + 7 = 25 donne 2x = 18, puis x = 9 €. Vérifie : 2 × 9 + 7 = 25. 18 € oublie de diviser par 2. 12,50 €, c’est 25 ÷ 2, sans enlever le menu.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je monte les sacs au grenier. · Je mouds le grain sous la meule. · Je range les mesures sur la longue table.
+- lieu : Ici, on garde les provisions de la montagne. · Les casiers partagent les sacs.
+- ruine : Le toit est ouvert au-dessus de la porte. · Les sacs sont éboulés au pied du mur. · Les mesures sont couchées dans l’herbe.
+- chantier : Le toit est refermé. · Les sacs sont en tas.
+- rallumé : La meule tourne sous son petit toit. · Les casiers sont garnis.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `power-rules` | Les mesures vont de la grande à la petite. | Les mesures sont sur la longue table. |
+| `square-equations` | Les sacs se posent en carré au pied du mur. | Le carré de sacs est posé. |
+| `prime-factors` | Les sacs se partagent entre les casiers. | Les casiers sont garnis. |
+| `identities` | Les sacs s’empilent en cube sur la plate-forme. | La plate-forme porte son cube de sacs. |
+| `zero-product` | La poulie monte les sacs sous le faîte. | Les sacs sont montés au grenier. |
+
 ## Les plans
 
 > Ni la grille ni Blocland ne dessinent ces plans : le Grenier n’y est pas. Leurs cases (la forme de `src/game/world/architect.ts`, comme l’Étalon) donnent ses parties au monde ouvert, qui rebâtit le lieu en 3 + 1 + 1 : le premier plan, en trois rangées, porte le corps 1 sur 3 (Puissances), 2 sur 3 (Racines carrées), 3 sur 3 (Diviseurs et premiers) ; le deuxième, le haut (Développer) ; le troisième, les abords (Équations). XP des lieux voisins (40, 50, 60). Aucun nom ni aucune réplique ne dit « grenier » en nom commun (directeur artistique, `da-lieux-3e.md`, point 13), ni le Grappin. La réplique de fin est dite par le meunier, si le monde ouvert la reprend (proposition du consultant : « Ici, chacun avait sa part des provisions. »).
-> Pas de « ## Au lieu · Archipéo » : les jumeaux attendent la catégorie de scène de chaque mission (GD-20) et l’objet des réponses de la scénette (les écuelles). Pas de « ## Les demandes » : un lieu du monde ouvert seulement n’a pas de commande.
+> Pas de « ## Les demandes » : un lieu du monde ouvert seulement n’a pas de commande.
 
 | plan | nom | XP | quand c’est bâti |
 | --- | --- | --- | --- |

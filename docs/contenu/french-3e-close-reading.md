@@ -952,6 +952,26 @@ Pour tous les items :
    - indice : Regarde la date : quelle guerre a lieu en 1916 ?
    - explication : En 1916, la France est dans la Première Guerre mondiale, de 1914 à 1918, la guerre des tranchées. La Seconde Guerre mondiale commence en 1939.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je range les livres sur les rayonnages. · Je pose la lampe sur la grande table. · Je garde la salle de lecture.
+- lieu : Ici, on lit sous la coupole d’émail. · Les livres ont leurs rayonnages.
+- ruine : La coupole est ouverte au sud-est. · Trois plaques d’émail sont tombées. · Les livres sont en piles couchées.
+- chantier : Les pans du mur sont droits. · La grande table est sur ses pieds.
+- rallumé : La lampe brille sur la grande table. · La coupole bleue couvre la salle.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `inference` | Les livres ont des dos sans titre. | Les livres sont sur les rayonnages. |
+| `figures-of-speech` | Les six fenêtres sont hautes et en arc. | Les fenêtres sont vitrées. |
+| `text-connectives` | Les pupitres sont alignés autour de la table. | Les pupitres sont remis droit. |
+| `voices` | La lampe éclaire la grande table. | La lampe est sur la grande table. |
+| `literary-eras` | Les rayonnages montent jusqu’à la coupole. | Les rayonnages sont garnis. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

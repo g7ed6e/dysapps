@@ -1449,6 +1449,31 @@ Pour tous les items :
    - indice : Lis la 2e phrase : deux pays, reliés par und.
    - explication : die Schweiz = la Suisse ; Österreich = l’Autriche. Avec l’Allemagne, ce sont les pays DACH : on y parle allemand (en Suisse, avec d’autres langues).
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je sers les repas aux voyageurs. · Je prépare les lits de l’étage. · Je mets le couvert sur la grande table.
+- lieu : Ici, les voyageurs posent leurs bagages. · La grande table réunit tout le monde.
+- ruine : Le toit est crevé à l’est. · Le balcon penche sur le parvis. · Les bancs sont renversés.
+- chantier : Le toit est refait. · La grande table est remise droite.
+- rallumé : La grande table est mise. · Les lits sont faits.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `es-greetings` | Un voyageur s’assoit à la grande table. | La table est servie. |
+| `es-numbers` | L’aubergiste compte les couverts et les lits. | Les lits sont comptés. |
+| `es-family` | Des familles dorment à l’étage. | Les lits sont faits. |
+| `es-articles` | Chaque chose a sa place dans l’auberge. | Tout est rangé. |
+| `es-sentences` | Les voyageurs se parlent autour de la table. | Le repas est fini. |
+| `de-greetings` | Un voyageur pose ses bagages sur le parvis. | Les bagages sont montés. |
+| `de-numbers` | L’aubergiste note les chambres sur son carnet. | Le carnet est à jour. |
+| `de-family` | Une famille dort à l’étage. | Le lit est fait. |
+| `de-articles` | Les bancs sont rangés autour de la table. | Les bancs sont en ligne. |
+| `de-sentences` | Le courrier des voyageurs arrive à l’auberge. | Le courrier est trié. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

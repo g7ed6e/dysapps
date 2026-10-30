@@ -437,6 +437,24 @@ Pour tous les items :
    - indice : Relis la ligne qui commence par « Plus de la moitié ».
    - explication : Plus de la moitié des grands ports à conteneurs sont en Chine : elle vend ses produits dans le monde entier.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je range les caisses dans la halle. · Je note ce qui part et ce qui arrive. · Je compte les conteneurs.
+- lieu : Ici, les marchandises changent de bateau. · La halle garde ce qui voyage.
+- ruine : Le toit de la halle est ouvert. · Les caisses sont éparpillées. · Le navire penche à quai.
+- chantier : Les murs de la halle tiennent. · Une travée a son toit.
+- rallumé : La halle est pleine. · Les caisses partent vers d’autres ports. · Le navire est droit.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `urbanization` | Les caisses partent vers les grandes villes. | Les villes sont servies. |
+| `mobilities` | Le quai voit passer des voyageurs. | Les voyageurs sont partis. |
+| `globalization` | Les navires chargent les conteneurs à la halle. | Les conteneurs sont embarqués. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

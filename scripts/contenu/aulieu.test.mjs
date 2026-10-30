@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { lireAuLieu, resoudreAuLieu } from './aulieu.mjs';
+import { lireAuLieu, resoudreAuLieu, resoudreParoles, verifierParole } from './aulieu.mjs';
 import { lireIle } from './format.mjs';
 
 const fichier = 'docs/contenu/french-6e-grammar-spelling.md';
@@ -39,5 +39,41 @@ describe('les items du lieu en Markdown (monde ouvert d’Archipéo)', () => {
     expect(relire((s) => s.replace('## Au lieu · Archipéo', '## Au lieu · Blocland'))).toThrow(/monde ouvert inconnu/);
     expect(relire((s) => s.replace('- trou lu : (mot manquant)\n', ''))).toThrow(/« … » resterait/);
     expect(relire((s) => s.replace('- règle : Le nom commande', '- règle : Le verbe commande'))).toThrow(/pas une ligne de la carte/);
+  });
+});
+
+describe('la parole du lieu (GD-27, lot 2) : l’habitant et les missions', () => {
+  const quais = 'docs/contenu/maths-6e-calculation.md';
+  const mdQuais = readFileSync(quais, 'utf8');
+  const ileQuais = lireIle(mdQuais, quais);
+  /** La section « ## Au lieu · Archipéo » des Quais, retouchée par `f`, lue puis résolue en paroles. */
+  const paroles = (f) => () => {
+    const lignes = mdQuais.split('\n');
+    const debut = lignes.findIndex((l) => l.startsWith('## Au lieu · '));
+    const fin = lignes.findIndex((l, i) => i > debut && l.startsWith('## '));
+    const section = f(lignes.slice(debut, fin).join('\n')).split('\n');
+    return resoudreParoles(lireAuLieu(section, debut, quais), ileQuais.missions, quais);
+  };
+
+  it('lit les cinq registres de l’habitant et le cadre et la suite de chaque mission', () => {
+    const p = paroles((s) => s)();
+    expect(Object.keys(p.lines)).toEqual(['metier', 'lieu', 'ruine', 'chantier', 'rallume']);
+    expect(p.lines.metier[0]).toBe('Je charge les caisses sur la barge.');
+    expect(p.missions['times-tables']).toEqual({ frame: 'La barge prend des caisses par rangées.', follow: 'Les rangées sont comptées.' });
+    expect(resoudreParoles(ileQuais.auLieu, ileQuais.missions, quais)).toEqual(p);
+  });
+
+  it('refuse une ligne trop longue, sans point, un mot interdit, un verbe figuré, un cadre qui presse, une mission inconnue', () => {
+    expect(() => verifierParole('Un deux trois quatre cinq six sept huit neuf dix onze.', 'ici')).toThrow(/11 mots, 10 au plus/);
+    expect(() => verifierParole('Je charge la barge', 'ici')).toThrow(/finit par un point/);
+    expect(() => verifierParole('Oh ! la barge est là.', 'ici')).toThrow(/ni « ! »/);
+    expect(() => verifierParole('Je charge 3 caisses.', 'ici')).toThrow(/en lettres/);
+    expect(() => verifierParole('Le rafiot est à quai.', 'ici')).toThrow(/ne se dit pas à l’élève/);
+    expect(() => verifierParole('La grue est en ruine.', 'ici')).toThrow(/ne se dit pas à l’élève/);
+    expect(() => verifierParole('Je dompte la grue.', 'ici')).toThrow(/figuré/);
+    expect(() => verifierParole('La barge attend ses caisses.', 'ici', true)).toThrow(/ni attente, ni urgence/);
+    expect(() => verifierParole('La barge attend ses caisses.', 'ici')).not.toThrow();
+    expect(paroles((s) => s.replace('| `times-tables` |', '| `tables-inconnues` |'))).toThrow(/n’est pas une mission de l’île/);
+    expect(paroles((s) => s.replace('- rallumé :', '- allumé :'))).toThrow();
   });
 });

@@ -835,6 +835,27 @@ Pour tous les items :
    - indice : Cherche le mot qui parle de l’esprit, de ce que l’on ressent.
    - explication : Psi se transcrit ps, et upsilon devient y dans nos mots : psukhê a donné psychologue, celui qui étudie l’esprit.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je raconte les légendes devant la paroi. · Je repeins les panneaux pâlis. · Je garde le cercle des conteurs.
+- lieu : Ici, les premières cités ont peint leurs récits. · La grotte garde les histoires sur sa paroi.
+- ruine : Les panneaux sont pâlis. · Des éclats de peinture sont tombés. · Le bassin est sec et fendu.
+- chantier : Le bassin est réparé. · Les panneaux sont repeints.
+- rallumé : La paroi est peinte de nouveau. · L’eau du bassin est calme.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `la-founding` | Le conteur raconte la fondation d’une première cité. | Le récit est dit. |
+| `la-gods` | Des dieux sont peints sur le fond de la paroi. | Les dieux sont repeints. |
+| `la-cases` | La frise de losanges court sur la paroi. | La frise est repeinte. |
+| `gr-founding` | Le conteur raconte la fondation des cités voisines. | Les récits sont dits. |
+| `gr-gods` | Des héros sont peints sur les côtés de la paroi. | Les héros sont repeints. |
+| `gr-alphabet` | Le conteur trace ses signes au pied de la paroi. | Les signes sont tracés. |
+
 ## La voix
 
 | mot | langue | lu |

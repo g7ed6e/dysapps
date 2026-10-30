@@ -437,6 +437,24 @@ Pour tous les items :
    - indice : La rouille était-elle là avant ?
    - explication : La rouille n’existait pas avant : c’est une espèce chimique nouvelle, le produit d’une transformation chimique du fer.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je relie la dynamo aux lampes. · Je sonne la cloche du poste. · Je contrôle les fils.
+- lieu : Ici, la dynamo fait la lumière. · Les fils portent le courant à l’usine.
+- ruine : Les fils sont tombés. · La cloche est couchée. · La dynamo est sans socle.
+- chantier : La dynamo est huilée. · Le poteau porte ses fils.
+- rallumé : La lampe brille. · La cloche sonne. · Le courant passe dans les fils.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `light-sound` | La lampe et la cloche parlent à l’usine. | Les signaux sont envoyés. |
+| `electric-circuits` | Les fils relient les lampes de l’usine. | Les lampes sont branchées. |
+| `chemical-reactions` | Le charbon brûle sous la chaudière. | La cendre est balayée. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

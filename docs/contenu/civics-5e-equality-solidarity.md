@@ -428,6 +428,24 @@ Pour tous les items :
    - indice : Relis la dernière ligne du rappel.
    - explication : Vacciner avant l’hiver évite des maladies graves : c’est de la prévention. L’État protège la santé de tous, et chacun en est aussi responsable.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je cuis le pain dans le four commun. · Je pétris la pâte avant l’aube. · Je partage les pains du village.
+- lieu : Ici, tout le village cuit au même four. · Les maisons sont sur pilotis dans les racines.
+- ruine : Le dôme du four est ouvert. · Des blocs sont tombés dans l’eau. · Les passerelles pendent coupées.
+- chantier : Le dôme est refermé. · Les passerelles sont rattachées.
+- rallumé : Le four est chaud. · Le pain sort pour tout le village.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `gender-equality` | Chaque maison a sa place au four. | Toutes les maisons ont du pain. |
+| `discrimination` | Les passerelles relient toutes les maisons. | Les passerelles tiennent. |
+| `solidarity` | Le village partage le four et le pain. | Le pain est partagé. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

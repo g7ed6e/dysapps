@@ -331,6 +331,26 @@ Pour tous les items :
    - indice : Après 20 degrés vers le sud, le bateau est sur l’équateur. Combien de degrés reste-t-il ?
    - explication : 20° vers le sud amènent le bateau sur l’équateur. Il lui reste 30 − 20 = 10° : il passe au sud, à 10° Sud. 10° Nord oublie qu’il a passé l’équateur. 50° Nord, c’est 20 + 30 : il serait monté vers le nord.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je taille les verres de la lanterne. · Je polis chaque verre à la main. · Je tourne la manivelle du contrepoids.
+- lieu : Ici, la lanterne envoie sa lumière au large. · La tour domine la mer de nuages.
+- ruine : Le socle est fendu. · Deux blocs sont tombés. · La lanterne est éteinte.
+- chantier : Le socle tient de nouveau. · Le contrepoids pend à sa chaîne.
+- rallumé : La lanterne brille au sommet. · Les verres portent la lumière.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `images` | Le verre prend la lumière et la renvoie. | Le verre est monté dans la lanterne. |
+| `linear` | Les rayons partent droit de la lanterne. | Les rayons sont alignés. |
+| `graphs` | Le faisceau sort de la lanterne vers les nuages. | Le faisceau passe au-dessus des nuages. |
+| `proportions` | Chaque verre est taillé à la mesure de la lanterne. | Les verres tiennent dans leur cage de fer. |
+| `coordinates` | La tour sert de repère à tous les archipels. | La carte des archipels porte la tour. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

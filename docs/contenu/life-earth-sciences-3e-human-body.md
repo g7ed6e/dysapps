@@ -411,6 +411,24 @@ Pour tous les items :
    - indice : Quelle étape donne la cellule-œuf ?
    - explication : D’abord la fécondation, qui donne la cellule-œuf ; puis la nidation dans l’utérus ; puis la grossesse ; enfin la naissance. La liste est dans le désordre.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je greffe une branche sur un arbre. · Je soigne les arbres contre le mur. · Je sèche les plantes sur les claies.
+- lieu : Ici, les plantes poussent en carrés bordés de granit. · Le mur garde la chaleur du soleil.
+- ruine : La moitié du mur est écroulée. · L’herbe sèche déborde des carrés. · Le séchoir est couché.
+- chantier : Le mur est relevé. · Les carrés sont bordés.
+- rallumé : La fontaine coule dans son bassin. · Les arbres portent leurs fleurs.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `effort-brain` | Le greffeur marche sur le sentier entre les carrés. | Les carrés sont arrosés. |
+| `digestion-microbes` | La terre des carrés se nourrit de feuilles sèches. | La terre est nourrie. |
+| `puberty-reproduction` | Les arbres greffés grandissent contre le mur. | Les arbres sont palissés sur le mur. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

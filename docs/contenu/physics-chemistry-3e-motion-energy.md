@@ -435,6 +435,24 @@ Pour tous les items :
    - indice : Relis la ligne « Jamais d’eau de Javel » du rappel.
    - explication : L’eau de Javel et un acide forment un gaz toxique, qui irrite les poumons. On n’utilise jamais deux produits ménagers ensemble.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je mène les pierres sur la pente. · Je charge le traîneau sur ses rouleaux. · Je tourne le cabestan.
+- lieu : Ici, la pente monte jusqu’au socle du Fanal. · Le traîneau glisse sur les rouleaux.
+- ruine : Le dallage est fendu. · Les rouleaux sont épars dans l’herbe. · Le traîneau est de travers.
+- chantier : Le portique est debout. · Les rouleaux sont alignés.
+- rallumé : Le traîneau monte la pente. · Le contrepoids pend à sa chaîne.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `motion-forces` | Le traîneau glisse sur ses rouleaux. | Le traîneau arrive en haut de la pente. |
+| `energy-power` | Le contrepoids tire sur la chaîne du portique. | La chaîne est tendue. |
+| `acids-bases` | Le fer du portique brunit sous la pluie. | Le fer est huilé. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

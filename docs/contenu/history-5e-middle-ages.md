@@ -448,6 +448,24 @@ Pour tous les items :
    - indice : Un roi qui gouverne seul : comment s’appelle-t-il ?
    - explication : Un roi qui gouverne seul et tient les nobles près de lui : c’est la monarchie absolue. Versailles montre sa puissance.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je bâtis les murs de pierre. · Je pose les assises de la tour. · Je taille les pierres du parapet.
+- lieu : Ici, la tour domine le piton. · Chaque âge a posé ses pierres.
+- ruine : Le haut de la tour est écroulé. · Les pierres sont au pied du piton. · Le parapet est cassé.
+- chantier : Les grandes pierres tiennent. · Les assises du milieu sont posées.
+- rallumé : La tour est entière. · La lanterne du guet est allumée.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `christendoms-islam` | Les grandes pierres du bas sont les plus anciennes. | Les grandes pierres sont posées. |
+| `feudal-west` | Les pierres du milieu portent de hautes fentes. | Les fentes de jour sont taillées. |
+| `new-worlds` | La brique du parapet couronne la tour. | Le parapet est posé. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -194,6 +194,26 @@ Pour tous les items :
    - explication : Moins de 7 € : le cinéma et la piscine. Au moins 2 h : seul le cinéma, 2 h ; la piscine ne dure qu’1 h. Le musée dure 2 h, mais coûte 8 € ; le zoo dure 4 h, mais coûte 12 €.
    - figure : tableau sortie · prix (€) · durée (h) / musée · 8 · 2 / cinéma · 6 · 2 / zoo · 12 · 4 / piscine · 4 · 1
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je charge les caisses sur la barge. · Je compte les sacs du quai. · Je range les caisses par dix.
+- lieu : Ici, les bateaux chargent et déchargent. · Tout ce qui arrive passe par le quai.
+- ruine : Le quai est couvert de sable. · La grue est couchée sur le côté.
+- chantier : Le quai est dégagé. · La grue est remise debout.
+- rallumé : La barge est pleine. · Les caisses partent au bon port.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `times-tables` | La barge prend des caisses par rangées. | Les rangées sont comptées. |
+| `make-ten` | Chaque caisse prend dix sacs. | Les caisses sont pleines. |
+| `doubles-halves` | Les sacs se partagent en deux tas. | Les deux tas sont égaux. |
+| `word-problems` | Le passeur note les chargements. | Le carnet est rempli. |
+| `measures` | Les cordes se mesurent avant la coupe. | Les cordes sont à la bonne longueur. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

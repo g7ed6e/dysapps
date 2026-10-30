@@ -332,6 +332,26 @@ Pour tous les items :
    - explication : Gagner au loto est très rare, donc ne pas gagner est presque certain : près de 1. Près de 0, c’est la place de « gagner au loto ». Au milieu, c’est une chance sur deux, comme pile ou face.
    - figure : droite 0 · 1
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je pèse les marchandises sur ma balance. · Je range mes étals sur le radeau. · Je compare les poids avant l’échange.
+- lieu : Ici, les radeaux sont amarrés au chenal. · Le marché se tient sur l’eau.
+- ruine : Un radeau est couché à plat. · Les amarres sont rompues. · Le toit de la cabane est tombé.
+- chantier : Le radeau du quai est remis à flot. · Les amarres sont tendues.
+- rallumé : Les balances sont en place. · Le marché reprend sur l’eau.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `proportion-tables` | Les étals se garnissent sur les radeaux. | Les étals sont garnis. |
+| `percentages` | Les prix changent d’un radeau à l’autre. | Les prix sont affichés. |
+| `ratios` | Les barques font la traversée du chenal. | Les barques sont à quai. |
+| `formulas` | Le marchand note ses comptes sur la toile. | Les comptes sont écrits. |
+| `statistics` | Le marchand tient le registre des ventes. | Le registre est à jour. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

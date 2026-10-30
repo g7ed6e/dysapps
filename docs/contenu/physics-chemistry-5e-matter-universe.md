@@ -415,6 +415,24 @@ Pour tous les items :
    - indice : L’année-lumière est une unité de distance.
    - explication : En kilomètres, la distance de cette étoile serait un nombre immense : environ 40 000 milliards. L’année-lumière sert à dire de très grandes distances avec un petit nombre.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je souffle le verre dans le four. · Je dose et je pèse sur l’établi. · Je polis la lentille.
+- lieu : Ici, la vapeur des sources chauffe le four. · On polit une lentille pour regarder le ciel.
+- ruine : La calotte du four est fendue. · La lentille est en éclats sur le parvis. · La rigole est brisée au milieu.
+- chantier : La calotte est refermée. · La rigole amène de nouveau la vapeur.
+- rallumé : Le four chauffe. · La lentille est sur son chevalet.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `changes-of-state` | Le four chauffe le verre puis le laisse refroidir. | Le verre est refroidi. |
+| `mixtures-density` | Les fioles se dosent et se pèsent sur l’établi. | Les fioles sont rangées. |
+| `universe-atoms` | La lentille sert à regarder le ciel. | La lentille est sur son chevalet. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -438,6 +438,24 @@ Pour tous les items :
    - indice : Que fait-on dans un port ?
    - explication : Par le Rhin, les bateaux portent les marchandises du port jusqu’en Allemagne et plus loin dans l’Europe.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je photographie les villes et les côtes. · Je règle mon appareil. · Je range mes photos par lieu.
+- lieu : Ici, la terrasse montre le monde en grand. · La table d’orientation tourne vers la mer.
+- ruine : Les volets de la baie sont fermés. · Le zinc du toit est tombé.
+- chantier : Les volets de la baie sont ouverts. · La table d’orientation est posée.
+- rallumé : La vitre de la baie brille. · La terrasse donne sur toute la côte.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `metropolises` | Les photos des grandes villes sont étalées. | Les photos sont accrochées. |
+| `low-density` | Les photos des déserts et des monts sont au mur. | Les photos sont classées. |
+| `inhabited-world` | Les photos des ports et des plages sont au mur. | Le mur de photos est garni. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

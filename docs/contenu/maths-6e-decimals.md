@@ -193,6 +193,26 @@ Pour tous les items :
    - explication : 1 km = 1 000 m, donc 2,4 km = 2,4 × 1 000 = 2 400 m. 240 m, c’est multiplier par 100 ; 24 m, par 10.
    - figure : tableau km · m / 1 · 1 000 / 2,4 · ?
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je ratisse le sel. · Je remplis les sacs de sel. · Je vide les bassins à la pelle.
+- lieu : Ici, l’eau de mer devient du sel. · Le vent et le soleil sèchent les bassins.
+- ruine : Le sable a rempli les bassins. · Les murets d’argile sont ébréchés.
+- chantier : Les bassins sont dégagés. · Les murets d’argile sont refaits.
+- rallumé : Le sel sèche au soleil. · Le hangar à sel est plein.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `ordering` | Les bassins sont alignés en rangs. | Les bassins sont en eau. |
+| `operations` | Deux tas de sel sont posés côte à côte. | Les tas sont rangés dans le hangar. |
+| `scale` | La saunière pose des repères le long du muret. | Les repères sont plantés. |
+| `large-numbers` | Le hangar à sel est grand. | Le hangar est rempli de sacs. |
+| `rounding-products` | La saunière pèse le sel avant la vente. | Les sacs sont prêts pour la vente. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

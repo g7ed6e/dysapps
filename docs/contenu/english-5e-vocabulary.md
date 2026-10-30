@@ -694,6 +694,26 @@ Pour tous les items :
    - indice : Le cousin de Jack vit au Texas, aux États-Unis. Lis la dernière ligne jusqu’au bout.
    - explication : My cousin calls it soccer = mon cousin l’appelle soccer : aux États-Unis, notre football se dit soccer. Là-bas, football veut dire le football américain.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je fais signe aux bateaux avec les bras. · Je hisse les fanions sur la drisse. · Je souffle dans la corne de brume.
+- lieu : Ici, la tour parle aux bateaux du large. · Les bras de bois se lisent de loin.
+- ruine : Les bras sont couchés sur le toit. · La drisse est rompue. · La corne est tombée de son tréteau.
+- chantier : Le mât est debout. · Un bras est relevé.
+- rallumé : Les deux bras sont levés. · Les fanions flottent sur la drisse.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `shopping` | Les bateaux du large passent commande par signaux. | Les commandes sont notées. |
+| `routine` | Le signaleur lève ses bras à heure fixe. | Les bras sont levés. |
+| `listening` | La corne de brume sonne au large. | La corne est entendue. |
+| `notices` | Le signaleur affiche ses avis sur la tour. | Les avis sont affichés. |
+| `united-kingdom` | Des bateaux viennent de l’autre côté de la mer. | Les bateaux ont leur signal. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

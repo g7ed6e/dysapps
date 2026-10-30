@@ -373,6 +373,24 @@ Pour tous les items :
 | poisson | [on] | 🐟 | oui |
 | cochon | [on] | 🐷 | oui |
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je garde la lanterne. · Je frotte les vitres de la tour. · Je sonne la cloche.
+- lieu : Ici, la tour montre la côte aux bateaux. · La cloche sonne quand la brume monte.
+- ruine : Les pierres de la tour sont tombées. · La cloche est couchée sur le socle.
+- chantier : Le fût de la tour est monté. · La porte tient dans le mur.
+- rallumé : La lanterne brille sur la mer. · La cloche sonne de nouveau.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `syllables` | La cloche sonne par petits coups. | La cloche est raccrochée. |
+| `sound-hunt` | La gardienne écoute les bruits de la côte. | Les bruits sont notés. |
+| `rhymes` | Une échelle monte à la cabane. | L’échelle tient contre le mur. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

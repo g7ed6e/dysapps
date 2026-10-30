@@ -535,6 +535,25 @@ Pour tous les items :
    - indice : clean = nettoyer. Et rubbish ?
    - explication : students clean the beach = des élèves nettoient la plage. rubbish = les déchets.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je lis les nouvelles au poste. · Je règle les cadrans sur la longue table. · Je tourne le pavillon vers le large.
+- lieu : Ici, le mât porte les ondes au large. · L’auvent abrite les postes.
+- ruine : Les postes sont renversés. · Les haubans du mât pendent. · Le pavillon est tourné vers le sol.
+- chantier : Les postes sont sur la table. · Le mât est haubané.
+- rallumé : Le pavillon écoute le large. · Les cadrans sont réglés.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `understanding` | Les postes sont alignés sur la longue table. | Les postes sont réglés. |
+| `linking-words` | Le mât tient avec ses haubans. | Les haubans sont tendus. |
+| `false-friends` | Le pavillon se tourne vers le large. | Le pavillon est orienté. |
+| `media` | L’auvent abrite les postes de la pluie. | Les postes sont au sec. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

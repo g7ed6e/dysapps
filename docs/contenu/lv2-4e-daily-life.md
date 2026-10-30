@@ -1563,6 +1563,31 @@ Pour tous les items :
    - indice : kaputt = cassé : c’est une mauvaise nouvelle.
    - explication : So ein Pech! = pas de chance ! On réagit à une mauvaise nouvelle. Ich freue mich et gute Idee disent qu’on est content.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je tiens l’épicerie des mineurs. · Je range le garde-manger. · Je sers les plats sur la table.
+- lieu : Ici, on partage les repas de la mine. · L’enseigne montre l’épicerie.
+- ruine : L’enseigne est tombée. · La table est fendue. · Les poteaux penchent.
+- chantier : La table est remise d’aplomb. · Le garde-manger a ses étagères.
+- rallumé : La table est servie. · La vigne pend sur la table. · L’enseigne brille au-dessus de la porte.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `es-time` | La pendule de l’épicerie marque les heures. | La pendule est remontée. |
+| `es-my-day` | Les mineurs passent à l’épicerie chaque matin. | Les mineurs sont partis à la mine. |
+| `es-timetable` | L’épicier affiche le menu de la semaine. | Le menu est affiché. |
+| `es-ser-estar` | L’épicier compte les pots du garde-manger. | Les pots sont rangés. |
+| `es-signs` | Les panneaux de l’épicerie sont repeints. | Les panneaux sont accrochés. |
+| `de-time` | La pendule marque l’heure du repas. | Les mineurs sont à table. |
+| `de-my-day` | Les mineurs racontent leur journée à table. | La table est débarrassée. |
+| `de-timetable` | Le menu du jour est écrit à la craie. | Le menu est servi. |
+| `de-modals` | Chaque mineur choisit son plat. | Les plats sont servis. |
+| `de-signs` | Les panneaux guident les mineurs vers l’épicerie. | Les panneaux sont en place. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

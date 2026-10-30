@@ -898,10 +898,30 @@ Pour tous les items :
    - indice : Au subjonctif, « faire » change de radical, et « vous » prend -iez.
    - explication : Que vous fassiez : le radical « fass- » et la terminaison -iez. « Faisiez » est l’imparfait. « Faites » est l’indicatif présent.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : J’accorde chaque instrument sur le diapason. · Je change les cordes sur l’établi. · Je range les instruments au râtelier.
+- lieu : Ici, les instruments vont du plus grand au plus petit. · L’atelier s’ouvre sur la galerie.
+- ruine : Le toit est ouvert sur le devant. · Les instruments sont couchés. · Les bobines sont éparses.
+- chantier : Le toit est posé sur l’atelier. · Les bobines sont sur l’établi.
+- rallumé : Les instruments sont au râtelier. · Le diapason est sur l’établi.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `verb-moods` | Les instruments se rangent du plus grand au plus petit. | Le rang des instruments est complet. |
+| `complex-agreements` | Les cordes de chaque instrument sont tendues pareil. | Les cordes sont tendues. |
+| `connotation` | Chaque instrument a sa voix. | Chaque instrument est au râtelier. |
+| `emphasis-punctuation` | Le diapason est posé sur l’établi. | Le diapason est rangé. |
+| `verb-stems` | Les bobines de corde sont rangées sur l’établi. | Les bobines sont au complet. |
+
 ## Les plans
 
 > Ni la grille ni Blocland ne dessinent ces plans : la Lutherie n’y est pas. Leurs cases donnent ses parties au monde ouvert, qui rebâtit le lieu en 3 + 1 + 1 : le premier plan, en trois rangées, porte le corps 1 sur 3 (Subjonctif et conditionnel), 2 sur 3 (Accords difficiles), 3 sur 3 (Connotation) ; le deuxième, le haut (Ponctuation et relief) ; le troisième, les abords (Écrire juste). XP des lieux voisins (40, 50, 60). La réplique de fin est dite par l’accordeur, si le monde ouvert la reprend (proposition du consultant : « Ici, chaque instrument trouvait sa juste voix. »). Aucun son d’instrument ne joue : la réplique ne promet pas de musique.
-> Pas de « ## Au lieu · Archipéo » : les jumeaux attendent la catégorie de scène de chaque mission (GD-20) et l’objet des réponses de la scénette (les chevilles). Pas de « ## Les demandes » : un lieu du monde ouvert seulement n’a pas de commande.
+> Pas de « ## Les demandes » : un lieu du monde ouvert seulement n’a pas de commande.
 
 | plan | nom | XP | quand c’est bâti |
 | --- | --- | --- | --- |

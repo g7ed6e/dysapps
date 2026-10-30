@@ -829,6 +829,27 @@ Pour tous les items :
    - indice : Lis la deuxième ligne du document.
    - explication : Syracuse est une colonie grecque, fondée par des Corinthiens. Le savant Archimède y vit ; il meurt quand Rome prend la ville, en 212 avant J.-C.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je taille la pierre des colonnes. · Je sculpte les chapiteaux. · Je polis le marbre.
+- lieu : Ici, la halle abrite les statues des villes anciennes. · Le bassin reflète les colonnes.
+- ruine : Les colonnes sont couchées. · La halle n’a plus de toit. · Le bassin est vide.
+- chantier : Les chapiteaux sont posés sur les fûts. · Le bassin est nettoyé.
+- rallumé : La halle est couverte. · Le bassin est plein. · Les statues sont à leur place.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `la-home` | La sculptrice taille la statue d’une famille. | La statue est posée. |
+| `la-forum` | La sculptrice orne le forum de marbre. | Le forum est sculpté. |
+| `la-mediterranean` | Le bassin figure la mer entre deux rives. | Les rives sont gravées. |
+| `gr-home` | La sculptrice taille une frise de maison grecque. | La frise est scellée. |
+| `gr-agora` | Les statues de l’agora se dressent sous la halle. | Les statues sont en place. |
+| `gr-mediterranean` | Le bassin porte une trière de pierre. | La trière est posée sur l’eau. |
+
 ## La voix
 
 | mot | langue | lu |

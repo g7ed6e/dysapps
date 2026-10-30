@@ -137,6 +137,32 @@ Pour tous les items :
 - `ecrireIle` (`scripts/contenu/format.mjs`, qui réécrit un fichier d’île depuis les JSON, pour une migration) ne garde pas cette section : après une réécriture, la remettre à la main.
 - `npm run contenu` les range dans `src/game/world/continu/placeItems.json`, que seul le monde ouvert lit ; le lecteur est `scripts/contenu/aulieu.mjs`, qui refuse un jumeau absent ou pris deux fois, un nombre de choix différent, une réponse hors des choix et un « … » resté dans le texte lu. Les Quais et les Écluses n’ont pas d’items du lieu : leur phrase et leur scène se tirent des nombres de l’item du générateur (`src/game/world/continu/questions.ts`), y compris le gabarit de Deux rives (deux sas, sa phrase, son indice et sa correction selon le cas), écrit là parce que ce format décrit un jumeau par item fixe. De même, les textes de l’Enclos aux Filets (sa consigne, `ENCLOS_INSTRUCTION` ; sa ligne de règle sur téléphone, `ENCLOS_RULE_LINE` ; les noms de ses paniers, `ENCLOS_BINS`) sont écrits dans `src/game/world/continu/questions.ts`, parce que l’Enclos se joue sur ses items de référence, sans jumeau : textes donnés par le directeur contenu pédagogique (relecture du quatrième lot du point 8 de GD-20, 15 octobre 2026), à changer avec lui ; la ligne de règle est une ligne de la carte de règle de son niveau (vérifié par un test).
 
+### La parole du lieu
+
+Dans la même section, avant le premier `### Niveau`, l’habitant du lieu et ses missions ont leurs phrases ([GD-27](../gameplay/propositions/GD-27.md), lot 2). Toucher l’habitant devant sa porte, hors de sa scénette, lui fait dire une ligne, écrite et lue : le jeu tourne entre son métier, son lieu et l’état du lieu (`ruine` tant qu’aucune partie n’est posée, `chantier` ensuite, `rallumé` quand le lieu est fini). Chaque mission jouée chez lui a son **cadre**, dit à l’entrée de la scénette avant la première consigne, et sa **suite**, dite au bilan après le résultat et la partie posée :
+
+```md
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je charge les caisses sur la barge. · Je compte les sacs du quai.
+- lieu : Ici, les bateaux chargent et déchargent. · Tout ce qui arrive passe par le quai.
+- ruine : Le quai est couvert de sable. · La grue est couchée sur le côté.
+- chantier : Le quai est dégagé. · La grue est remise debout.
+- rallumé : La barge est pleine. · Les caisses partent au bon port.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `times-tables` | La barge prend des caisses par rangées. | Les rangées sont comptées. |
+```
+
+- Les cinq registres sont tous là, deux à quatre lignes chacun, séparées par ` · ` ; chaque mission de l’île a sa ligne, par son identifiant de mission (celui de `docs/contenu/archipel.md`).
+- Chaque phrase fait dix mots au plus, finit par un point, et n’a ni « ! », ni « ? », ni « … », ni « ; », ni chiffre ; un verbe concret, jamais figuré (ni apprivoiser, dompter, réveiller, dévorer, endormir) ; aucun mot qui ne se dit pas à l’élève (rafiot, zeppelin, veillée, ruine, Ferrailleur, pièce maîtresse, cœur du lieu, vite, merci, quête). Le cadre ne presse jamais : ni attente, ni urgence, ni manque (« il faut », « vite », « dépêche », « en retard »). `npm run contenu` refuse tout écart.
+- Tout va dans `src/game/world/continu/paroles.json`, que `src/game/world/continu/paroles.ts` lit ; les tests vérifient que chaque lieu à scénette et chacune de ses missions a sa parole.
+
 ## Les plans des bâtiments
 
 Le fichier d’une île finit par ses plans, un tableau sous le titre `## Les plans`, une rangée par plan dans l’ordre du dessin (les murs, le toit, la cour) :

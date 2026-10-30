@@ -1,0 +1,2824 @@
+{
+  "archipeo": {
+    "civics-3e-democratic-life": {
+      "lines": {
+        "metier": [
+          "Je parle au nom du village.",
+          "Je sonne la cloche avant le débat.",
+          "Je compte les jetons sur le tableau."
+        ],
+        "lieu": [
+          "Ici, le village débat et vote.",
+          "Les gradins regardent le pic."
+        ],
+        "ruine": [
+          "Deux gradins sont tombés.",
+          "L’auvent est tombé.",
+          "La cloche est posée au sol."
+        ],
+        "chantier": [
+          "Les gradins du bout sont posés.",
+          "La cloche pend sous l’auvent."
+        ],
+        "rallume": [
+          "La cloche sonne sous l’auvent.",
+          "Les jetons sont sur le tableau."
+        ]
+      },
+      "missions": {
+        "constitution": {
+          "frame": "Les gradins sont tournés vers l’estrade.",
+          "follow": "L’estrade est dégagée."
+        },
+        "information": {
+          "frame": "La cloche sonne avant chaque débat.",
+          "follow": "La cloche est sous l’auvent."
+        },
+        "civic-engagement": {
+          "frame": "Les jetons ronds sont sur leurs chevilles.",
+          "follow": "Le tableau des votes est garni."
+        }
+      }
+    },
+    "civics-4e-rights-freedoms": {
+      "lines": {
+        "metier": [
+          "Je défends ceux qui viennent me voir.",
+          "Je lis les lois aux gens.",
+          "Je plaide dans la salle."
+        ],
+        "lieu": [
+          "Ici, la salle est ouverte à tous.",
+          "Les gens viennent régler leurs affaires."
+        ],
+        "ruine": [
+          "Les battants sont sortis de leurs gonds.",
+          "Les bancs sont dispersés.",
+          "Le toit de la salle est troué."
+        ],
+        "chantier": [
+          "Un battant est remis en place.",
+          "Les bancs sont rangés."
+        ],
+        "rallume": [
+          "Les deux battants tournent sans bruit.",
+          "Les bancs forment un cercle.",
+          "La salle est pleine."
+        ]
+      },
+      "missions": {
+        "freedoms": {
+          "frame": "Les gens se réunissent dans la salle.",
+          "follow": "Les bancs sont occupés."
+        },
+        "justice": {
+          "frame": "La salle accueille les procès.",
+          "follow": "Le jugement est rendu."
+        },
+        "security-defence": {
+          "frame": "Les gardes tiennent les portes de la ville.",
+          "follow": "Les portes sont fermées pour la nuit."
+        }
+      }
+    },
+    "civics-5e-equality-solidarity": {
+      "lines": {
+        "metier": [
+          "Je cuis le pain dans le four commun.",
+          "Je pétris la pâte avant l’aube.",
+          "Je partage les pains du village."
+        ],
+        "lieu": [
+          "Ici, tout le village cuit au même four.",
+          "Les maisons sont sur pilotis dans les racines."
+        ],
+        "ruine": [
+          "Le dôme du four est ouvert.",
+          "Des blocs sont tombés dans l’eau.",
+          "Les passerelles pendent coupées."
+        ],
+        "chantier": [
+          "Le dôme est refermé.",
+          "Les passerelles sont rattachées."
+        ],
+        "rallume": [
+          "Le four est chaud.",
+          "Le pain sort pour tout le village."
+        ]
+      },
+      "missions": {
+        "gender-equality": {
+          "frame": "Chaque maison a sa place au four.",
+          "follow": "Toutes les maisons ont du pain."
+        },
+        "discrimination": {
+          "frame": "Les passerelles relient toutes les maisons.",
+          "follow": "Les passerelles tiennent."
+        },
+        "solidarity": {
+          "frame": "Le village partage le four et le pain.",
+          "follow": "Le pain est partagé."
+        }
+      }
+    },
+    "civics-6e-democratic-society": {
+      "lines": {
+        "metier": [
+          "Je pose les tuiles vernissées.",
+          "Je monte la charpente de chêne.",
+          "Je scelle les dalles."
+        ],
+        "lieu": [
+          "Ici, les gens du village se réunissent sous le toit.",
+          "Les piliers portent la toiture."
+        ],
+        "ruine": [
+          "Le toit de la halle est tombé.",
+          "Les piliers tiennent sur le dallage."
+        ],
+        "chantier": [
+          "La charpente de chêne est montée.",
+          "Les tuiles couvrent un pan."
+        ],
+        "rallume": [
+          "Le toit couvre tout le dallage.",
+          "Les gens se rassemblent sous la halle."
+        ]
+      },
+      "missions": {
+        "representatives": {
+          "frame": "Les gens du village se réunissent sous le toit.",
+          "follow": "Les bancs sont alignés."
+        },
+        "school-secularism": {
+          "frame": "La halle est ouverte à tous les gens du village.",
+          "follow": "La halle reste ouverte."
+        },
+        "private-life": {
+          "frame": "Chaque maison du village a sa porte.",
+          "follow": "Les portes ferment bien."
+        }
+      }
+    },
+    "english-3e-comprehension": {
+      "lines": {
+        "metier": [
+          "Je lis les nouvelles au poste.",
+          "Je règle les cadrans sur la longue table.",
+          "Je tourne le pavillon vers le large."
+        ],
+        "lieu": [
+          "Ici, le mât porte les ondes au large.",
+          "L’auvent abrite les postes."
+        ],
+        "ruine": [
+          "Les postes sont renversés.",
+          "Les haubans du mât pendent.",
+          "Le pavillon est tourné vers le sol."
+        ],
+        "chantier": [
+          "Les postes sont sur la table.",
+          "Le mât est haubané."
+        ],
+        "rallume": [
+          "Le pavillon écoute le large.",
+          "Les cadrans sont réglés."
+        ]
+      },
+      "missions": {
+        "understanding": {
+          "frame": "Les postes sont alignés sur la longue table.",
+          "follow": "Les postes sont réglés."
+        },
+        "linking-words": {
+          "frame": "Le mât tient avec ses haubans.",
+          "follow": "Les haubans sont tendus."
+        },
+        "false-friends": {
+          "frame": "Le pavillon se tourne vers le large.",
+          "follow": "Le pavillon est orienté."
+        },
+        "media": {
+          "frame": "L’auvent abrite les postes de la pluie.",
+          "follow": "Les postes sont au sec."
+        }
+      }
+    },
+    "english-3e-grammar": {
+      "lines": {
+        "metier": [
+          "Je reçois les messagers sur la terrasse.",
+          "Je frappe le gong à l’arrivée.",
+          "Je pose les messages sur les plateaux."
+        ],
+        "lieu": [
+          "Ici, les messagers montent le grand escalier.",
+          "Les salons se suivent en enfilade."
+        ],
+        "ruine": [
+          "Le toit est ouvert d’un côté.",
+          "Le gong est décroché.",
+          "Les plateaux sont renversés."
+        ],
+        "chantier": [
+          "Les marches sont dégagées.",
+          "Le gong est dans son portique."
+        ],
+        "rallume": [
+          "Le gong résonne sous le portique.",
+          "Les plateaux sont sur leurs pieds."
+        ]
+      },
+      "missions": {
+        "for-since": {
+          "frame": "Le gong sonne à l’arrivée des messagers.",
+          "follow": "Le gong est dans son portique."
+        },
+        "if": {
+          "frame": "Les portes des salons sont alignées.",
+          "follow": "Les portes sont ouvertes."
+        },
+        "passive": {
+          "frame": "Les plateaux portent les messages de chaque archipel.",
+          "follow": "Les messages sont sur les plateaux."
+        },
+        "messages": {
+          "frame": "Les plateaux sont de part et d’autre de l’allée.",
+          "follow": "L’allée est libre."
+        }
+      }
+    },
+    "english-4e-comprehension": {
+      "lines": {
+        "metier": [
+          "Je couds les habits des comédiens.",
+          "Je range les costumes par rôle.",
+          "Je répare les robes de scène."
+        ],
+        "lieu": [
+          "Ici, on joue des histoires sur la scène.",
+          "La loge garde tous les costumes."
+        ],
+        "ruine": [
+          "Le rideau est déchiré.",
+          "La galerie est effondrée.",
+          "Les bancs sont renversés."
+        ],
+        "chantier": [
+          "Le plancher tient.",
+          "Le rideau est accroché."
+        ],
+        "rallume": [
+          "Le rideau est tiré.",
+          "Les costumes sont prêts.",
+          "Les bancs sont en rang."
+        ]
+      },
+      "missions": {
+        "dialogues": {
+          "frame": "Les comédiens répètent leurs répliques.",
+          "follow": "La répétition est finie."
+        },
+        "quantities": {
+          "frame": "Les costumes se comptent avant la pièce.",
+          "follow": "Les costumes sont rangés."
+        },
+        "irregular-past": {
+          "frame": "Les comédiens racontent ce qu’ils ont fait.",
+          "follow": "Les récits sont joués."
+        },
+        "stories": {
+          "frame": "Le conteur monte sur la scène.",
+          "follow": "L’histoire est racontée."
+        }
+      }
+    },
+    "english-4e-grammar": {
+      "lines": {
+        "metier": [
+          "J’envoie le minerai vers la Forge.",
+          "Je charge la caisse à minerai.",
+          "Je contrôle les rails."
+        ],
+        "lieu": [
+          "Ici, les wagons se chargent de minerai.",
+          "Les rails descendent jusqu’à la Forge."
+        ],
+        "ruine": [
+          "Le quai est fendu.",
+          "La remise n’a plus de toit.",
+          "La caisse à minerai est renversée."
+        ],
+        "chantier": [
+          "Le quai est balayé.",
+          "La caisse est remise sur ses pieds."
+        ],
+        "rallume": [
+          "Les wagons partent chargés.",
+          "Le minerai descend vers la Forge.",
+          "Les entrées de la mine sont ouvertes."
+        ]
+      },
+      "missions": {
+        "future": {
+          "frame": "Le prochain train part vers la Forge.",
+          "follow": "Le train est parti."
+        },
+        "modals": {
+          "frame": "Le cheminot contrôle les wagons au départ.",
+          "follow": "Les wagons sont contrôlés."
+        },
+        "present-perfect": {
+          "frame": "Le cheminot tient le registre des trains.",
+          "follow": "Le registre est à jour."
+        },
+        "traditions": {
+          "frame": "Des voyageurs descendent sur le quai.",
+          "follow": "Les voyageurs sont montés dans le train."
+        },
+        "forms": {
+          "frame": "Le cheminot remplit les fiches des wagons.",
+          "follow": "Les fiches sont classées."
+        }
+      }
+    },
+    "english-5e-grammar": {
+      "lines": {
+        "metier": [
+          "Je peins les bateaux des capitaines.",
+          "Je tends mes toiles dans les cadres.",
+          "Je mélange mes couleurs."
+        ],
+        "lieu": [
+          "Ici, les capitaines venus d’ailleurs ont leur galerie.",
+          "Chaque cadre garde un bateau."
+        ],
+        "ruine": [
+          "Le toit est crevé à l’est.",
+          "Les cadres sont tombés.",
+          "La galerie est couverte de poussière."
+        ],
+        "chantier": [
+          "Le toit est refait.",
+          "Les cadres sont remis au mur."
+        ],
+        "rallume": [
+          "Chaque cadre a son bateau.",
+          "La galerie est ouverte."
+        ]
+      },
+      "missions": {
+        "ing": {
+          "frame": "Chaque toile montre un bateau au travail.",
+          "follow": "La toile est accrochée."
+        },
+        "past-simple": {
+          "frame": "Chaque capitaine raconte une ancienne traversée.",
+          "follow": "Le récit est peint."
+        },
+        "comparatives": {
+          "frame": "Les bateaux sont peints l’un à côté de l’autre.",
+          "follow": "Les bateaux sont accrochés côte à côte."
+        },
+        "sentences": {
+          "frame": "La peintre écrit un mot sous chaque cadre.",
+          "follow": "Les cadres ont leur mot."
+        },
+        "portraits": {
+          "frame": "La galerie garde les portraits des capitaines.",
+          "follow": "Les portraits sont accrochés."
+        }
+      }
+    },
+    "english-5e-vocabulary": {
+      "lines": {
+        "metier": [
+          "Je fais signe aux bateaux avec les bras.",
+          "Je hisse les fanions sur la drisse.",
+          "Je souffle dans la corne de brume."
+        ],
+        "lieu": [
+          "Ici, la tour parle aux bateaux du large.",
+          "Les bras de bois se lisent de loin."
+        ],
+        "ruine": [
+          "Les bras sont couchés sur le toit.",
+          "La drisse est rompue.",
+          "La corne est tombée de son tréteau."
+        ],
+        "chantier": [
+          "Le mât est debout.",
+          "Un bras est relevé."
+        ],
+        "rallume": [
+          "Les deux bras sont levés.",
+          "Les fanions flottent sur la drisse."
+        ]
+      },
+      "missions": {
+        "shopping": {
+          "frame": "Les bateaux du large passent commande par signaux.",
+          "follow": "Les commandes sont notées."
+        },
+        "routine": {
+          "frame": "Le signaleur lève ses bras à heure fixe.",
+          "follow": "Les bras sont levés."
+        },
+        "listening": {
+          "frame": "La corne de brume sonne au large.",
+          "follow": "La corne est entendue."
+        },
+        "notices": {
+          "frame": "Le signaleur affiche ses avis sur la tour.",
+          "follow": "Les avis sont affichés."
+        },
+        "united-kingdom": {
+          "frame": "Des bateaux viennent de l’autre côté de la mer.",
+          "follow": "Les bateaux ont leur signal."
+        }
+      }
+    },
+    "english-6e-grammar": {
+      "lines": {
+        "metier": [
+          "Je ferme les malles.",
+          "Je regarde partir les bateaux.",
+          "Je range le quai."
+        ],
+        "lieu": [
+          "Ici, les voyageurs embarquent pour le large.",
+          "L’auvent abrite le quai."
+        ],
+        "ruine": [
+          "Les colonnes de l’auvent sont couchées.",
+          "Le pavillon n’a plus de toit."
+        ],
+        "chantier": [
+          "Le quai de pierre est réparé.",
+          "Le toit du pavillon est posé."
+        ],
+        "rallume": [
+          "L’auvent couvre le quai.",
+          "Les bateaux partent vers le large."
+        ]
+      },
+      "missions": {
+        "to-be": {
+          "frame": "Les voyageurs se présentent au chef de gare.",
+          "follow": "Les voyageurs sont sur le quai."
+        },
+        "have-got": {
+          "frame": "Chaque voyageur porte une malle.",
+          "follow": "Les malles sont rangées."
+        },
+        "present-simple": {
+          "frame": "Les bateaux partent du quai chaque jour.",
+          "follow": "Le quai est libre."
+        },
+        "story": {
+          "frame": "Le chef de gare raconte un voyage.",
+          "follow": "Le récit est fini."
+        }
+      }
+    },
+    "english-6e-vocabulary": {
+      "lines": {
+        "metier": [
+          "Je guide les bateaux dans le chenal.",
+          "Je plante les mâts sur les roches.",
+          "Je regarde la mer."
+        ],
+        "lieu": [
+          "Ici, cinq mâts marquent le passage sûr.",
+          "La cale descend vers le chenal."
+        ],
+        "ruine": [
+          "Les perches sont couchées sur la grève.",
+          "La station n’a plus de toit."
+        ],
+        "chantier": [
+          "Les murs de la station sont montés.",
+          "La cale est dégagée."
+        ],
+        "rallume": [
+          "Les mâts portent leurs voyants.",
+          "Les bateaux suivent le chenal."
+        ]
+      },
+      "missions": {
+        "hello": {
+          "frame": "Les bateaux saluent la station en passant.",
+          "follow": "La station répond aux bateaux."
+        },
+        "numbers": {
+          "frame": "Les mâts se suivent dans la mer.",
+          "follow": "Les mâts sont alignés."
+        },
+        "first-listening": {
+          "frame": "Le pilote écoute les bateaux du chenal.",
+          "follow": "Les bateaux sont passés."
+        },
+        "signs": {
+          "frame": "Les bouées flottent au pied de la cale.",
+          "follow": "Les bouées sont amarrées."
+        },
+        "famous-people": {
+          "frame": "Des visiteurs de loin passent par le chenal.",
+          "follow": "Les visiteurs sont au quai."
+        }
+      }
+    },
+    "french-3e-close-reading": {
+      "lines": {
+        "metier": [
+          "Je range les livres sur les rayonnages.",
+          "Je pose la lampe sur la grande table.",
+          "Je garde la salle de lecture."
+        ],
+        "lieu": [
+          "Ici, on lit sous la coupole d’émail.",
+          "Les livres ont leurs rayonnages."
+        ],
+        "ruine": [
+          "La coupole est ouverte au sud-est.",
+          "Trois plaques d’émail sont tombées.",
+          "Les livres sont en piles couchées."
+        ],
+        "chantier": [
+          "Les pans du mur sont droits.",
+          "La grande table est sur ses pieds."
+        ],
+        "rallume": [
+          "La lampe brille sur la grande table.",
+          "La coupole bleue couvre la salle."
+        ]
+      },
+      "missions": {
+        "inference": {
+          "frame": "Les livres ont des dos sans titre.",
+          "follow": "Les livres sont sur les rayonnages."
+        },
+        "figures-of-speech": {
+          "frame": "Les six fenêtres sont hautes et en arc.",
+          "follow": "Les fenêtres sont vitrées."
+        },
+        "text-connectives": {
+          "frame": "Les pupitres sont alignés autour de la table.",
+          "follow": "Les pupitres sont remis droit."
+        },
+        "voices": {
+          "frame": "La lampe éclaire la grande table.",
+          "follow": "La lampe est sur la grande table."
+        },
+        "literary-eras": {
+          "frame": "Les rayonnages montent jusqu’à la coupole.",
+          "follow": "Les rayonnages sont garnis."
+        }
+      }
+    },
+    "french-3e-language": {
+      "lines": {
+        "metier": [
+          "J’accorde chaque instrument sur le diapason.",
+          "Je change les cordes sur l’établi.",
+          "Je range les instruments au râtelier."
+        ],
+        "lieu": [
+          "Ici, les instruments vont du plus grand au plus petit.",
+          "L’atelier s’ouvre sur la galerie."
+        ],
+        "ruine": [
+          "Le toit est ouvert sur le devant.",
+          "Les instruments sont couchés.",
+          "Les bobines sont éparses."
+        ],
+        "chantier": [
+          "Le toit est posé sur l’atelier.",
+          "Les bobines sont sur l’établi."
+        ],
+        "rallume": [
+          "Les instruments sont au râtelier.",
+          "Le diapason est sur l’établi."
+        ]
+      },
+      "missions": {
+        "verb-moods": {
+          "frame": "Les instruments se rangent du plus grand au plus petit.",
+          "follow": "Le rang des instruments est complet."
+        },
+        "complex-agreements": {
+          "frame": "Les cordes de chaque instrument sont tendues pareil.",
+          "follow": "Les cordes sont tendues."
+        },
+        "connotation": {
+          "frame": "Chaque instrument a sa voix.",
+          "follow": "Chaque instrument est au râtelier."
+        },
+        "emphasis-punctuation": {
+          "frame": "Le diapason est posé sur l’établi.",
+          "follow": "Le diapason est rangé."
+        },
+        "verb-stems": {
+          "frame": "Les bobines de corde sont rangées sur l’établi.",
+          "follow": "Les bobines sont au complet."
+        }
+      }
+    },
+    "french-4e-agreement": {
+      "lines": {
+        "metier": [
+          "Je détache les blocs de la paroi.",
+          "Je dresse les colonnes dans la cour.",
+          "Je tends la chaîne le long du mât."
+        ],
+        "lieu": [
+          "Ici, la pierre sort de la montagne.",
+          "Les colonnes se dressent côte à côte."
+        ],
+        "ruine": [
+          "La cour est pleine de cailloux.",
+          "Les colonnes sont couchées.",
+          "Le mât est tombé."
+        ],
+        "chantier": [
+          "La cour est balayée.",
+          "Une colonne est dressée."
+        ],
+        "rallume": [
+          "Les colonnes se tiennent côte à côte.",
+          "La chaîne est tendue.",
+          "La cour est lisse sous les pas."
+        ]
+      },
+      "missions": {
+        "past-participle": {
+          "frame": "Une corde monte les blocs sur la paroi.",
+          "follow": "Les blocs sont en haut."
+        },
+        "adjectives": {
+          "frame": "Les colonnes se dressent le long de la paroi.",
+          "follow": "La paroi est lisse."
+        },
+        "subject-verb": {
+          "frame": "Le carrier grimpe au sommet.",
+          "follow": "Le sommet est dégagé."
+        },
+        "reflexive-verbs": {
+          "frame": "L’écho répond dans la carrière.",
+          "follow": "La carrière est silencieuse."
+        },
+        "tense-meaning": {
+          "frame": "Le carrier marque la pierre avant la coupe.",
+          "follow": "Les pierres sont coupées."
+        }
+      }
+    },
+    "french-4e-sentence": {
+      "lines": {
+        "metier": [
+          "J’entretiens la voie.",
+          "Je graisse les leviers du poste.",
+          "Je tourne la plaque."
+        ],
+        "lieu": [
+          "Ici, les trains changent de voie.",
+          "Le poste commande les aiguillages."
+        ],
+        "ruine": [
+          "Le poste est sans toit.",
+          "La plaque tournante est rouillée.",
+          "Les rails sont tordus."
+        ],
+        "chantier": [
+          "Les leviers sont graissés.",
+          "Les rails sont redressés."
+        ],
+        "rallume": [
+          "Les trains passent d’une voie à l’autre.",
+          "La plaque tourne.",
+          "Les leviers répondent."
+        ]
+      },
+      "missions": {
+        "relative-clauses": {
+          "frame": "Les wagons s’accrochent à la locomotive.",
+          "follow": "Le convoi est formé."
+        },
+        "subordinate-clauses": {
+          "frame": "Chaque voie de service part du poste.",
+          "follow": "Les voies sont ouvertes."
+        },
+        "passive-reported": {
+          "frame": "Le chef de gare transmet les messages de voie.",
+          "follow": "Les messages sont reçus."
+        },
+        "compound-tenses": {
+          "frame": "Le poste garde le carnet des trains passés.",
+          "follow": "Le carnet est à jour."
+        },
+        "moods": {
+          "frame": "Le poste prépare les trains du jour.",
+          "follow": "Les trains sont aiguillés."
+        }
+      }
+    },
+    "french-4e-vocabulary": {
+      "lines": {
+        "metier": [
+          "Je connais chaque pierre de la montagne.",
+          "Je classe les pierres par case.",
+          "Je note le nom de chaque pierre."
+        ],
+        "lieu": [
+          "Ici, les pierres sont triées et nommées.",
+          "Les étagères portent toutes les pierres."
+        ],
+        "ruine": [
+          "Les murs sont écroulés.",
+          "Les pierres sont mêlées au sol.",
+          "La pluie entre dans la salle."
+        ],
+        "chantier": [
+          "Les étagères sont fixées au mur.",
+          "Le seuil est balayé."
+        ],
+        "rallume": [
+          "Les pierres sont rangées.",
+          "La salle est au sec.",
+          "Chaque case porte son nom."
+        ]
+      },
+      "missions": {
+        "word-roots": {
+          "frame": "Les pierres portent des noms anciens.",
+          "follow": "Les noms sont gravés."
+        },
+        "meaning": {
+          "frame": "Les étiquettes décrivent les pierres.",
+          "follow": "Les étiquettes sont collées."
+        },
+        "nuances": {
+          "frame": "Des pierres voisines se ressemblent dans leurs cases.",
+          "follow": "Les pierres sont triées."
+        },
+        "conjunctions": {
+          "frame": "Un ciment lie les pierres entre elles.",
+          "follow": "Les cases sont solides."
+        }
+      }
+    },
+    "french-5e-conjugation": {
+      "lines": {
+        "metier": [
+          "Je redresse les pierres de la chaussée.",
+          "Je taille les dalles du chemin.",
+          "Je grave le demi-soleil."
+        ],
+        "lieu": [
+          "Ici, une chaussée traverse le marais.",
+          "Les pierres levées guident vers la brume."
+        ],
+        "ruine": [
+          "Les pierres sont couchées dans l’eau.",
+          "Une pierre est cassée en deux.",
+          "La chaussée se perd dans la brume."
+        ],
+        "chantier": [
+          "Les premières pierres sont debout.",
+          "Le chemin de dalles est posé."
+        ],
+        "rallume": [
+          "La chaussée traverse le marais.",
+          "Le demi-soleil se lit sur chaque pierre."
+        ]
+      },
+      "missions": {
+        "past-tenses": {
+          "frame": "La chaussée longe la rive du marais.",
+          "follow": "La rive est dallée."
+        },
+        "future-tense": {
+          "frame": "La chaussée file vers la brume.",
+          "follow": "La chaussée est tracée jusqu’au bout."
+        },
+        "tense-recognition": {
+          "frame": "Chaque pierre porte un demi-soleil gravé.",
+          "follow": "Les pierres sont gravées."
+        },
+        "tense-choice": {
+          "frame": "Le tailleur dresse les pierres une à une.",
+          "follow": "Les pierres sont debout."
+        },
+        "sentence-grammar": {
+          "frame": "Le tailleur grave des signes sur les dalles.",
+          "follow": "Les dalles sont gravées."
+        }
+      }
+    },
+    "french-5e-homophones": {
+      "lines": {
+        "metier": [
+          "Je tresse les cordes des passerelles.",
+          "Je noue les amarres au tronc.",
+          "Je tends les cordes entre les arbres."
+        ],
+        "lieu": [
+          "Ici, les passerelles se séparent.",
+          "Chaque corde mène à un autre arbre."
+        ],
+        "ruine": [
+          "La plateforme est tombée à moitié.",
+          "Les passerelles pendent dans le vide.",
+          "Le treuil est vide."
+        ],
+        "chantier": [
+          "La plateforme tient de nouveau.",
+          "Une passerelle est tendue."
+        ],
+        "rallume": [
+          "Les passerelles sont tendues.",
+          "Chaque palier a sa corde."
+        ]
+      },
+      "missions": {
+        "pairs": {
+          "frame": "Deux passerelles partent ensemble du tronc.",
+          "follow": "Les passerelles sont tendues."
+        },
+        "choices": {
+          "frame": "Une corde est nouée à chaque palier.",
+          "follow": "Les nœuds sont serrés."
+        },
+        "homophone-sentences": {
+          "frame": "Deux cordes se nouent au même palier.",
+          "follow": "Le palier tient par ses cordes."
+        },
+        "participles": {
+          "frame": "La cordière tresse ses cordes au bord de l’eau.",
+          "follow": "Les cordes sont tressées."
+        },
+        "word-meaning": {
+          "frame": "La cordière nomme chaque corde selon son usage.",
+          "follow": "Chaque corde a son nom."
+        }
+      }
+    },
+    "french-6e-grammar-spelling": {
+      "lines": {
+        "metier": [
+          "Je répare les filets.",
+          "Je trie les sardines.",
+          "Je tire la barque sur le sable."
+        ],
+        "lieu": [
+          "Ici, les pêcheurs sèchent leurs filets.",
+          "Les cabanes gardent le matériel de pêche."
+        ],
+        "ruine": [
+          "Les murets des cabanes sont bas.",
+          "Les perches du séchoir sont couchées."
+        ],
+        "chantier": [
+          "Les murs des cabanes sont montés.",
+          "Les toits de chaume sont posés."
+        ],
+        "rallume": [
+          "Les filets sèchent sur le séchoir.",
+          "La barque repose sur le sable."
+        ]
+      },
+      "missions": {
+        "word-classes": {
+          "frame": "Les pêcheurs rentrent avec la pêche.",
+          "follow": "La pêche est triée."
+        },
+        "sorting": {
+          "frame": "Les sardines sont étalées sur le sable.",
+          "follow": "Les paniers sont rangés."
+        },
+        "e-er-ez": {
+          "frame": "Les filets sèchent sur les perches.",
+          "follow": "Les filets sont roulés."
+        },
+        "plurals": {
+          "frame": "La barque rentre avec ses sardines.",
+          "follow": "Les sardines sont au séchoir."
+        }
+      }
+    },
+    "french-6e-letter-confusion": {
+      "lines": {
+        "metier": [
+          "Je tourne la presse à bras.",
+          "Je sèche les feuilles sur la corde.",
+          "Je range l’établi."
+        ],
+        "lieu": [
+          "Ici, les feuilles passent sous la presse.",
+          "Le toit de verre éclaire l’établi."
+        ],
+        "ruine": [
+          "Les poutres de l’atelier sont tombées.",
+          "La presse est couchée dans la cour."
+        ],
+        "chantier": [
+          "Les poutres de l’atelier sont relevées.",
+          "La presse est remise debout."
+        ],
+        "rallume": [
+          "La presse tourne dans l’atelier.",
+          "Les feuilles sèchent sur la corde."
+        ]
+      },
+      "missions": {
+        "sound-discrimination": {
+          "frame": "Deux feuilles sèchent sur la corde.",
+          "follow": "Les feuilles sont sèches."
+        }
+      }
+    },
+    "french-6e-phonology": {
+      "lines": {
+        "metier": [
+          "Je garde la lanterne.",
+          "Je frotte les vitres de la tour.",
+          "Je sonne la cloche."
+        ],
+        "lieu": [
+          "Ici, la tour montre la côte aux bateaux.",
+          "La cloche sonne quand la brume monte."
+        ],
+        "ruine": [
+          "Les pierres de la tour sont tombées.",
+          "La cloche est couchée sur le socle."
+        ],
+        "chantier": [
+          "Le fût de la tour est monté.",
+          "La porte tient dans le mur."
+        ],
+        "rallume": [
+          "La lanterne brille sur la mer.",
+          "La cloche sonne de nouveau."
+        ]
+      },
+      "missions": {
+        "syllables": {
+          "frame": "La cloche sonne par petits coups.",
+          "follow": "La cloche est raccrochée."
+        },
+        "sound-hunt": {
+          "frame": "La gardienne écoute les bruits de la côte.",
+          "follow": "Les bruits sont notés."
+        },
+        "rhymes": {
+          "frame": "Une échelle monte à la cabane.",
+          "follow": "L’échelle tient contre le mur."
+        }
+      }
+    },
+    "french-6e-reading": {
+      "lines": {
+        "metier": [
+          "Je guette la mer depuis la tour.",
+          "Je plie ma longue-vue.",
+          "Je note les bateaux."
+        ],
+        "lieu": [
+          "Ici, la tour voit l’horizon.",
+          "Le plateau domine la côte."
+        ],
+        "ruine": [
+          "Le fût de la tour est écroulé.",
+          "Le mât est brisé dans l’herbe."
+        ],
+        "chantier": [
+          "Le fût est relevé.",
+          "Les fenêtres sont posées."
+        ],
+        "rallume": [
+          "La chambre de guet est ouverte.",
+          "Le mât tient sur le toit."
+        ]
+      },
+      "missions": {
+        "comprehension": {
+          "frame": "Le guetteur lit le ciel et la mer.",
+          "follow": "Le guetteur a noté ce qu’il voit."
+        },
+        "sentence-order": {
+          "frame": "Les vitraux de la chambre sont sur le banc.",
+          "follow": "Les vitraux sont montés."
+        },
+        "tense-values": {
+          "frame": "Le guetteur tient le journal de la tour.",
+          "follow": "Le journal est à jour."
+        }
+      }
+    },
+    "french-6e-word-spelling": {
+      "lines": {
+        "metier": [
+          "Je copie les textes à la main.",
+          "Je range les fiches dans les tiroirs.",
+          "Je taille mes plumes."
+        ],
+        "lieu": [
+          "Ici, la roche garde les textes.",
+          "Les tiroirs gardent les fiches."
+        ],
+        "ruine": [
+          "Les colonnes sont couchées sur le parvis.",
+          "Les niches sont bouchées d’éboulis."
+        ],
+        "chantier": [
+          "Les colonnes sont relevées.",
+          "Le fronton est remis en place."
+        ],
+        "rallume": [
+          "Les niches sont dégagées.",
+          "La façade tient sur le parvis."
+        ]
+      },
+      "missions": {
+        "missing-letters": {
+          "frame": "La copiste recopie une fiche abîmée.",
+          "follow": "La fiche est recopiée."
+        },
+        "word-families": {
+          "frame": "Les fiches se rangent par famille.",
+          "follow": "Les familles sont classées."
+        },
+        "sight-words": {
+          "frame": "Le coffre garde les mots courants.",
+          "follow": "Le coffre est fermé."
+        },
+        "word-forms": {
+          "frame": "Les tiroirs gardent un mot par fiche.",
+          "follow": "Les fiches sont dans leur tiroir."
+        }
+      }
+    },
+    "geography-3e-france": {
+      "lines": {
+        "metier": [
+          "Je dessine les villes sur le relief.",
+          "Je tends les routes entre les villes.",
+          "Je travaille à la table de la halle."
+        ],
+        "lieu": [
+          "Ici, tout le pays tient sous une halle.",
+          "Le relief montre les plaines et les montagnes."
+        ],
+        "ruine": [
+          "Le toit a glissé du bord du relief.",
+          "Les villes sont renversées.",
+          "Les fleuves sont décollés."
+        ],
+        "chantier": [
+          "Le toit est remis sur les poteaux.",
+          "Les villes sont debout."
+        ],
+        "rallume": [
+          "Les routes relient les villes.",
+          "Les fleuves coulent jusqu’à la côte."
+        ]
+      },
+      "missions": {
+        "territories": {
+          "frame": "Les villes sont de petits cubes de bois clair.",
+          "follow": "Les villes sont posées sur le relief."
+        },
+        "planning": {
+          "frame": "Les routes se tendent entre les villes.",
+          "follow": "Le relief porte ses routes."
+        },
+        "france-eu": {
+          "frame": "Les fleuves du relief vont jusqu’à la côte.",
+          "follow": "Les fleuves sont recollés au relief."
+        }
+      }
+    },
+    "geography-4e-globalization": {
+      "lines": {
+        "metier": [
+          "Je range les caisses dans la halle.",
+          "Je note ce qui part et ce qui arrive.",
+          "Je compte les conteneurs."
+        ],
+        "lieu": [
+          "Ici, les marchandises changent de bateau.",
+          "La halle garde ce qui voyage."
+        ],
+        "ruine": [
+          "Le toit de la halle est ouvert.",
+          "Les caisses sont éparpillées.",
+          "Le navire penche à quai."
+        ],
+        "chantier": [
+          "Les murs de la halle tiennent.",
+          "Une travée a son toit."
+        ],
+        "rallume": [
+          "La halle est pleine.",
+          "Les caisses partent vers d’autres ports.",
+          "Le navire est droit."
+        ]
+      },
+      "missions": {
+        "urbanization": {
+          "frame": "Les caisses partent vers les grandes villes.",
+          "follow": "Les villes sont servies."
+        },
+        "mobilities": {
+          "frame": "Le quai voit passer des voyageurs.",
+          "follow": "Les voyageurs sont partis."
+        },
+        "globalization": {
+          "frame": "Les navires chargent les conteneurs à la halle.",
+          "follow": "Les conteneurs sont embarqués."
+        }
+      }
+    },
+    "geography-5e-resources": {
+      "lines": {
+        "metier": [
+          "Je cultive le riz dans l’eau.",
+          "Je règle les vannes des gradins.",
+          "Je garde l’eau de marche en marche."
+        ],
+        "lieu": [
+          "Ici, l’eau descend de gradin en gradin.",
+          "Le canal amène l’eau aux rizières."
+        ],
+        "ruine": [
+          "Les gradins sont presque secs.",
+          "Le canal est fendu.",
+          "La roue du moulin est arrêtée."
+        ],
+        "chantier": [
+          "Les murets retiennent l’eau.",
+          "Le canal haut est remis en place."
+        ],
+        "rallume": [
+          "L’eau descend dans les gradins.",
+          "La roue du moulin tourne."
+        ]
+      },
+      "missions": {
+        "population": {
+          "frame": "Le village vit de ses rizières.",
+          "follow": "Les rizières nourrissent le village."
+        },
+        "resources": {
+          "frame": "L’eau du canal se partage entre les gradins.",
+          "follow": "L’eau est partagée."
+        },
+        "risks": {
+          "frame": "La pluie tombe parfois fort sur les gradins.",
+          "follow": "Les murets tiennent."
+        }
+      }
+    },
+    "geography-6e-living": {
+      "lines": {
+        "metier": [
+          "Je photographie les villes et les côtes.",
+          "Je règle mon appareil.",
+          "Je range mes photos par lieu."
+        ],
+        "lieu": [
+          "Ici, la terrasse montre le monde en grand.",
+          "La table d’orientation tourne vers la mer."
+        ],
+        "ruine": [
+          "Les volets de la baie sont fermés.",
+          "Le zinc du toit est tombé."
+        ],
+        "chantier": [
+          "Les volets de la baie sont ouverts.",
+          "La table d’orientation est posée."
+        ],
+        "rallume": [
+          "La vitre de la baie brille.",
+          "La terrasse donne sur toute la côte."
+        ]
+      },
+      "missions": {
+        "metropolises": {
+          "frame": "Les photos des grandes villes sont étalées.",
+          "follow": "Les photos sont accrochées."
+        },
+        "low-density": {
+          "frame": "Les photos des déserts et des monts sont au mur.",
+          "follow": "Les photos sont classées."
+        },
+        "inhabited-world": {
+          "frame": "Les photos des ports et des plages sont au mur.",
+          "follow": "Le mur de photos est garni."
+        }
+      }
+    },
+    "history-3e-twentieth-century": {
+      "lines": {
+        "metier": [
+          "Je raconte les nouvelles du monde.",
+          "Je plie les feuilles sur les présentoirs.",
+          "Je relève le courrier de la boîte."
+        ],
+        "lieu": [
+          "Ici, les nouvelles arrivent par la radio et la poste.",
+          "Le kiosque s’ouvre sur les alpages."
+        ],
+        "ruine": [
+          "La coupole est glissée dans l’herbe.",
+          "Les présentoirs sont couchés.",
+          "Deux poteaux penchent."
+        ],
+        "chantier": [
+          "La coupole est reposée.",
+          "Les présentoirs sont debout."
+        ],
+        "rallume": [
+          "Le poste de radio parle sur le comptoir.",
+          "Les feuilles sont sur les présentoirs."
+        ]
+      },
+      "missions": {
+        "total-wars": {
+          "frame": "Les cadres sous l’avant-toit montrent les nouvelles anciennes.",
+          "follow": "Les cadres sont accrochés."
+        },
+        "world-since-1945": {
+          "frame": "Le poste de radio apporte les nouvelles d’ailleurs.",
+          "follow": "Le poste de radio est allumé."
+        },
+        "republic": {
+          "frame": "La boîte aux lettres reçoit le courrier du village.",
+          "follow": "Le courrier est trié sur le comptoir."
+        }
+      }
+    },
+    "history-4e-revolutions": {
+      "lines": {
+        "metier": [
+          "Je tisse la toile fil après fil.",
+          "Je règle les machines.",
+          "Je plie les pièces de tissu."
+        ],
+        "lieu": [
+          "Ici, les machines font la toile.",
+          "La verrière donne le jour aux métiers."
+        ],
+        "ruine": [
+          "Les vitres de la verrière sont brisées.",
+          "Les métiers sont couverts de poussière.",
+          "La grande porte est fermée."
+        ],
+        "chantier": [
+          "Les métiers sont remis en rang.",
+          "La verrière couvre la moitié de la halle."
+        ],
+        "rallume": [
+          "Les métiers tournent.",
+          "La toile sort de la machine.",
+          "Le jour entre par la verrière."
+        ]
+      },
+      "missions": {
+        "enlightenment": {
+          "frame": "Les ballots de coton arrivent par bateau.",
+          "follow": "Les ballots sont déchargés."
+        },
+        "industrial-europe": {
+          "frame": "Les machines tournent du matin au soir.",
+          "follow": "La toile est coupée."
+        },
+        "french-society": {
+          "frame": "Les ouvriers entrent par la grande porte.",
+          "follow": "Les ouvriers sont à leur poste."
+        }
+      }
+    },
+    "history-5e-middle-ages": {
+      "lines": {
+        "metier": [
+          "Je bâtis les murs de pierre.",
+          "Je pose les assises de la tour.",
+          "Je taille les pierres du parapet."
+        ],
+        "lieu": [
+          "Ici, la tour domine le piton.",
+          "Chaque âge a posé ses pierres."
+        ],
+        "ruine": [
+          "Le haut de la tour est écroulé.",
+          "Les pierres sont au pied du piton.",
+          "Le parapet est cassé."
+        ],
+        "chantier": [
+          "Les grandes pierres tiennent.",
+          "Les assises du milieu sont posées."
+        ],
+        "rallume": [
+          "La tour est entière.",
+          "La lanterne du guet est allumée."
+        ]
+      },
+      "missions": {
+        "christendoms-islam": {
+          "frame": "Les grandes pierres du bas sont les plus anciennes.",
+          "follow": "Les grandes pierres sont posées."
+        },
+        "feudal-west": {
+          "frame": "Les pierres du milieu portent de hautes fentes.",
+          "follow": "Les fentes de jour sont taillées."
+        },
+        "new-worlds": {
+          "frame": "La brique du parapet couronne la tour.",
+          "follow": "Le parapet est posé."
+        }
+      }
+    },
+    "history-6e-antiquity": {
+      "lines": {
+        "metier": [
+          "Je dégage les dalles à la brosse.",
+          "Je range les pierres de la fouille.",
+          "Je dessine les arcs."
+        ],
+        "lieu": [
+          "Ici, les Passeurs ont bâti une arcade.",
+          "Le dallage descend jusqu’à l’eau."
+        ],
+        "ruine": [
+          "Les piles de l’arcade sont dans l’eau.",
+          "Les dalles sont couvertes de sable."
+        ],
+        "chantier": [
+          "Les dalles du dallage sont dégagées.",
+          "L’escalier descend jusqu’à l’eau."
+        ],
+        "rallume": [
+          "Les arcs de l’arcade sont complets.",
+          "Les clés des arcs sont en place."
+        ]
+      },
+      "missions": {
+        "early-humans": {
+          "frame": "Les outils de pierre sont dans la fouille.",
+          "follow": "Les outils sont dans leurs caisses."
+        },
+        "ancient-peoples": {
+          "frame": "Les Passeurs ont bâti l’arcade au bord de l’eau.",
+          "follow": "L’arcade est dessinée."
+        },
+        "roman-empire": {
+          "frame": "Une route mène à l’escalier de pierre.",
+          "follow": "La route est tracée sur le plan."
+        },
+        "viewpoints": {
+          "frame": "Les documents de la fouille sont sur la planche.",
+          "follow": "Les documents sont rangés."
+        }
+      }
+    },
+    "lca-3e-ideas": {
+      "lines": {
+        "metier": [
+          "Je traduis les textes sous les pins.",
+          "Je m’assieds à la table ronde.",
+          "Je puise l’eau de la fontaine."
+        ],
+        "lieu": [
+          "Ici, les colonnes entourent un banc rond.",
+          "Les pins gardent la clairière."
+        ],
+        "ruine": [
+          "Deux colonnes sont couchées.",
+          "La fontaine est sèche.",
+          "Le banc est fendu."
+        ],
+        "chantier": [
+          "Les linteaux reposent sur les colonnes.",
+          "La table ronde est droite."
+        ],
+        "rallume": [
+          "L’eau coule dans la fontaine.",
+          "Le banc rond fait le cercle."
+        ]
+      },
+      "missions": {
+        "la-empire": {
+          "frame": "Les colonnes portent l’anneau de linteaux.",
+          "follow": "Le cercle est refermé sous le ciel."
+        },
+        "la-provinces": {
+          "frame": "Le banc rond fait le tour de la table.",
+          "follow": "Le banc est remis en rond."
+        },
+        "la-heritage": {
+          "frame": "La fontaine coule dans son bassin d’eau sombre.",
+          "follow": "Le bassin est plein."
+        },
+        "gr-myth-history": {
+          "frame": "Les colonnes sont lisses, sans inscription.",
+          "follow": "Les colonnes sont droites."
+        },
+        "gr-greek-world": {
+          "frame": "Le cercle de colonnes s’ouvre sur le ciel.",
+          "follow": "Les colonnes se tiennent ensemble."
+        },
+        "gr-heritage": {
+          "frame": "Les pins entourent la clairière.",
+          "follow": "La clairière est dégagée."
+        }
+      }
+    },
+    "lca-4e-cities": {
+      "lines": {
+        "metier": [
+          "Je taille la pierre des colonnes.",
+          "Je sculpte les chapiteaux.",
+          "Je polis le marbre."
+        ],
+        "lieu": [
+          "Ici, la halle abrite les statues des villes anciennes.",
+          "Le bassin reflète les colonnes."
+        ],
+        "ruine": [
+          "Les colonnes sont couchées.",
+          "La halle n’a plus de toit.",
+          "Le bassin est vide."
+        ],
+        "chantier": [
+          "Les chapiteaux sont posés sur les fûts.",
+          "Le bassin est nettoyé."
+        ],
+        "rallume": [
+          "La halle est couverte.",
+          "Le bassin est plein.",
+          "Les statues sont à leur place."
+        ]
+      },
+      "missions": {
+        "la-home": {
+          "frame": "La sculptrice taille la statue d’une famille.",
+          "follow": "La statue est posée."
+        },
+        "la-forum": {
+          "frame": "La sculptrice orne le forum de marbre.",
+          "follow": "Le forum est sculpté."
+        },
+        "la-mediterranean": {
+          "frame": "Le bassin figure la mer entre deux rives.",
+          "follow": "Les rives sont gravées."
+        },
+        "gr-home": {
+          "frame": "La sculptrice taille une frise de maison grecque.",
+          "follow": "La frise est scellée."
+        },
+        "gr-agora": {
+          "frame": "Les statues de l’agora se dressent sous la halle.",
+          "follow": "Les statues sont en place."
+        },
+        "gr-mediterranean": {
+          "frame": "Le bassin porte une trière de pierre.",
+          "follow": "La trière est posée sur l’eau."
+        }
+      }
+    },
+    "lca-5e-legends": {
+      "lines": {
+        "metier": [
+          "Je raconte les légendes devant la paroi.",
+          "Je repeins les panneaux pâlis.",
+          "Je garde le cercle des conteurs."
+        ],
+        "lieu": [
+          "Ici, les premières cités ont peint leurs récits.",
+          "La grotte garde les histoires sur sa paroi."
+        ],
+        "ruine": [
+          "Les panneaux sont pâlis.",
+          "Des éclats de peinture sont tombés.",
+          "Le bassin est sec et fendu."
+        ],
+        "chantier": [
+          "Le bassin est réparé.",
+          "Les panneaux sont repeints."
+        ],
+        "rallume": [
+          "La paroi est peinte de nouveau.",
+          "L’eau du bassin est calme."
+        ]
+      },
+      "missions": {
+        "la-founding": {
+          "frame": "Le conteur raconte la fondation d’une première cité.",
+          "follow": "Le récit est dit."
+        },
+        "la-gods": {
+          "frame": "Des dieux sont peints sur le fond de la paroi.",
+          "follow": "Les dieux sont repeints."
+        },
+        "la-cases": {
+          "frame": "La frise de losanges court sur la paroi.",
+          "follow": "La frise est repeinte."
+        },
+        "gr-founding": {
+          "frame": "Le conteur raconte la fondation des cités voisines.",
+          "follow": "Les récits sont dits."
+        },
+        "gr-gods": {
+          "frame": "Des héros sont peints sur les côtés de la paroi.",
+          "follow": "Les héros sont repeints."
+        },
+        "gr-alphabet": {
+          "frame": "Le conteur trace ses signes au pied de la paroi.",
+          "follow": "Les signes sont tracés."
+        }
+      }
+    },
+    "life-earth-sciences-3e-human-body": {
+      "lines": {
+        "metier": [
+          "Je greffe une branche sur un arbre.",
+          "Je soigne les arbres contre le mur.",
+          "Je sèche les plantes sur les claies."
+        ],
+        "lieu": [
+          "Ici, les plantes poussent en carrés bordés de granit.",
+          "Le mur garde la chaleur du soleil."
+        ],
+        "ruine": [
+          "La moitié du mur est écroulée.",
+          "L’herbe sèche déborde des carrés.",
+          "Le séchoir est couché."
+        ],
+        "chantier": [
+          "Le mur est relevé.",
+          "Les carrés sont bordés."
+        ],
+        "rallume": [
+          "La fontaine coule dans son bassin.",
+          "Les arbres portent leurs fleurs."
+        ]
+      },
+      "missions": {
+        "effort-brain": {
+          "frame": "Le greffeur marche sur le sentier entre les carrés.",
+          "follow": "Les carrés sont arrosés."
+        },
+        "digestion-microbes": {
+          "frame": "La terre des carrés se nourrit de feuilles sèches.",
+          "follow": "La terre est nourrie."
+        },
+        "puberty-reproduction": {
+          "frame": "Les arbres greffés grandissent contre le mur.",
+          "follow": "Les arbres sont palissés sur le mur."
+        }
+      }
+    },
+    "life-earth-sciences-4e-cells-evolution": {
+      "lines": {
+        "metier": [
+          "Je fais pousser les plantes de la serre.",
+          "Je replante les bacs.",
+          "J’arrose avec l’eau de la citerne."
+        ],
+        "lieu": [
+          "Ici, chaque plante a son bac.",
+          "La serre garde les plantes au chaud."
+        ],
+        "ruine": [
+          "Les vitres de la serre sont cassées.",
+          "Les bacs sont vides.",
+          "La citerne est sèche."
+        ],
+        "chantier": [
+          "Les bacs sont remplis de terre noire.",
+          "Des vitres sont remises."
+        ],
+        "rallume": [
+          "La serre est verte.",
+          "La citerne est pleine.",
+          "Les plantes poussent dans leurs bacs."
+        ]
+      },
+      "missions": {
+        "cells-nutrition": {
+          "frame": "Les plantes boivent l’eau de la citerne.",
+          "follow": "Les bacs sont arrosés."
+        },
+        "heredity": {
+          "frame": "Les graines sont semées dans les bacs.",
+          "follow": "Les graines sont en terre."
+        },
+        "species-evolution": {
+          "frame": "Les plantes de la serre viennent de loin.",
+          "follow": "Les plantes sont étiquetées."
+        }
+      }
+    },
+    "life-earth-sciences-5e-active-planet": {
+      "lines": {
+        "metier": [
+          "Je plante mes sondes dans le sol.",
+          "Je lis la girouette et le récipient de pluie.",
+          "Je note ce que disent les bouches."
+        ],
+        "lieu": [
+          "Ici, des sources chaudes sortent de la roche.",
+          "Les instruments lisent la terre et le ciel."
+        ],
+        "ruine": [
+          "Les sondes sont couchées côte à côte.",
+          "Le mât de la girouette est couché.",
+          "La margelle est tombée en blocs."
+        ],
+        "chantier": [
+          "Les sondes sont replantées.",
+          "La margelle est refaite."
+        ],
+        "rallume": [
+          "Les trois bouches fument.",
+          "Les instruments sont en place."
+        ]
+      },
+      "missions": {
+        "active-earth": {
+          "frame": "Les bouches chaudes sortent de la roche.",
+          "follow": "Les bouches ont leur margelle."
+        },
+        "weather-climate": {
+          "frame": "La girouette tourne sur son mât.",
+          "follow": "La girouette est dressée."
+        },
+        "human-impact": {
+          "frame": "Le récipient de pluie est posé sur la dalle.",
+          "follow": "Le récipient est relevé."
+        }
+      }
+    },
+    "life-earth-sciences-6e-living-world": {
+      "lines": {
+        "metier": [
+          "Je note les plantes de la rive.",
+          "Je marche sur la passerelle.",
+          "Je suis les racines dans la vase."
+        ],
+        "lieu": [
+          "Ici, les palétuviers poussent dans l’eau.",
+          "Le carbet sur pilotis domine la rive."
+        ],
+        "ruine": [
+          "La passerelle est tombée dans la vase.",
+          "Les pieux sont penchés."
+        ],
+        "chantier": [
+          "Le platelage de la rive est posé.",
+          "La passerelle mène au carbet."
+        ],
+        "rallume": [
+          "Les palétuviers font de l’ombre.",
+          "Le carbet tient sur ses pilotis."
+        ]
+      },
+      "missions": {
+        "living-groups": {
+          "frame": "Les plantes de la rive poussent en groupes.",
+          "follow": "Les groupes sont notés."
+        },
+        "food-growth": {
+          "frame": "Les palétuviers nourrissent les oiseaux de la rive.",
+          "follow": "Les oiseaux nichent dans les branches."
+        },
+        "planet-earth": {
+          "frame": "L’eau monte et descend avec la mer.",
+          "follow": "Le niveau de l’eau est noté."
+        },
+        "life-enquiry": {
+          "frame": "La botaniste observe une feuille de près.",
+          "follow": "La feuille est dessinée."
+        }
+      }
+    },
+    "lv2-3e-travel": {
+      "lines": {
+        "metier": [
+          "Je charge les malles des voyageurs.",
+          "Je lève la barrière du col.",
+          "Je pose les tampons sur le comptoir."
+        ],
+        "lieu": [
+          "Ici, le col laisse passer les voyageurs.",
+          "La maison de pierre garde la route."
+        ],
+        "ruine": [
+          "La barrière est rompue.",
+          "Le comptoir est fendu.",
+          "Les malles sont renversées."
+        ],
+        "chantier": [
+          "La barrière tient sur ses poteaux.",
+          "Les tampons sont en rang."
+        ],
+        "rallume": [
+          "La barrière se lève au passage.",
+          "Les tampons sont sur le comptoir."
+        ]
+      },
+      "missions": {
+        "es-past": {
+          "frame": "La carte du col montre les routes des voyageurs.",
+          "follow": "La carte est accrochée au mur."
+        },
+        "es-stories": {
+          "frame": "Les voyageurs racontent leur route sur le banc.",
+          "follow": "Les voyageurs ont repris la route."
+        },
+        "es-countries": {
+          "frame": "Les tampons marquent les pays traversés.",
+          "follow": "Les pays sont tamponnés."
+        },
+        "es-connectives": {
+          "frame": "Les malles se lient avec des sangles.",
+          "follow": "Les malles sont sanglées."
+        },
+        "es-media": {
+          "frame": "Le mur porte les affiches du col.",
+          "follow": "Les affiches sont collées."
+        },
+        "de-past": {
+          "frame": "Le chemin de dalles mène à la barrière.",
+          "follow": "Le chemin est dégagé."
+        },
+        "de-stories": {
+          "frame": "Le porteur écoute les récits des voyageurs.",
+          "follow": "Les récits ont fait le tour du col."
+        },
+        "de-on-the-road": {
+          "frame": "Les voyageurs marchent sur le chemin du col.",
+          "follow": "Les voyageurs ont passé la barrière."
+        },
+        "de-connectives": {
+          "frame": "La barrière tient sur ses deux poteaux.",
+          "follow": "Le contrepoids retient la barrière."
+        },
+        "de-media": {
+          "frame": "Les cartes du col s’affichent au mur.",
+          "follow": "Les cartes sont fixées au mur."
+        }
+      }
+    },
+    "lv2-4e-daily-life": {
+      "lines": {
+        "metier": [
+          "Je tiens l’épicerie des mineurs.",
+          "Je range le garde-manger.",
+          "Je sers les plats sur la table."
+        ],
+        "lieu": [
+          "Ici, on partage les repas de la mine.",
+          "L’enseigne montre l’épicerie."
+        ],
+        "ruine": [
+          "L’enseigne est tombée.",
+          "La table est fendue.",
+          "Les poteaux penchent."
+        ],
+        "chantier": [
+          "La table est remise d’aplomb.",
+          "Le garde-manger a ses étagères."
+        ],
+        "rallume": [
+          "La table est servie.",
+          "La vigne pend sur la table.",
+          "L’enseigne brille au-dessus de la porte."
+        ]
+      },
+      "missions": {
+        "es-time": {
+          "frame": "La pendule de l’épicerie marque les heures.",
+          "follow": "La pendule est remontée."
+        },
+        "es-my-day": {
+          "frame": "Les mineurs passent à l’épicerie chaque matin.",
+          "follow": "Les mineurs sont partis à la mine."
+        },
+        "es-timetable": {
+          "frame": "L’épicier affiche le menu de la semaine.",
+          "follow": "Le menu est affiché."
+        },
+        "es-ser-estar": {
+          "frame": "L’épicier compte les pots du garde-manger.",
+          "follow": "Les pots sont rangés."
+        },
+        "es-signs": {
+          "frame": "Les panneaux de l’épicerie sont repeints.",
+          "follow": "Les panneaux sont accrochés."
+        },
+        "de-time": {
+          "frame": "La pendule marque l’heure du repas.",
+          "follow": "Les mineurs sont à table."
+        },
+        "de-my-day": {
+          "frame": "Les mineurs racontent leur journée à table.",
+          "follow": "La table est débarrassée."
+        },
+        "de-timetable": {
+          "frame": "Le menu du jour est écrit à la craie.",
+          "follow": "Le menu est servi."
+        },
+        "de-modals": {
+          "frame": "Chaque mineur choisit son plat.",
+          "follow": "Les plats sont servis."
+        },
+        "de-signs": {
+          "frame": "Les panneaux guident les mineurs vers l’épicerie.",
+          "follow": "Les panneaux sont en place."
+        }
+      }
+    },
+    "lv2-5e-introductions": {
+      "lines": {
+        "metier": [
+          "Je sers les repas aux voyageurs.",
+          "Je prépare les lits de l’étage.",
+          "Je mets le couvert sur la grande table."
+        ],
+        "lieu": [
+          "Ici, les voyageurs posent leurs bagages.",
+          "La grande table réunit tout le monde."
+        ],
+        "ruine": [
+          "Le toit est crevé à l’est.",
+          "Le balcon penche sur le parvis.",
+          "Les bancs sont renversés."
+        ],
+        "chantier": [
+          "Le toit est refait.",
+          "La grande table est remise droite."
+        ],
+        "rallume": [
+          "La grande table est mise.",
+          "Les lits sont faits."
+        ]
+      },
+      "missions": {
+        "es-greetings": {
+          "frame": "Un voyageur s’assoit à la grande table.",
+          "follow": "La table est servie."
+        },
+        "es-numbers": {
+          "frame": "L’aubergiste compte les couverts et les lits.",
+          "follow": "Les lits sont comptés."
+        },
+        "es-family": {
+          "frame": "Des familles dorment à l’étage.",
+          "follow": "Les lits sont faits."
+        },
+        "es-articles": {
+          "frame": "Chaque chose a sa place dans l’auberge.",
+          "follow": "Tout est rangé."
+        },
+        "es-sentences": {
+          "frame": "Les voyageurs se parlent autour de la table.",
+          "follow": "Le repas est fini."
+        },
+        "de-greetings": {
+          "frame": "Un voyageur pose ses bagages sur le parvis.",
+          "follow": "Les bagages sont montés."
+        },
+        "de-numbers": {
+          "frame": "L’aubergiste note les chambres sur son carnet.",
+          "follow": "Le carnet est à jour."
+        },
+        "de-family": {
+          "frame": "Une famille dort à l’étage.",
+          "follow": "Le lit est fait."
+        },
+        "de-articles": {
+          "frame": "Les bancs sont rangés autour de la table.",
+          "follow": "Les bancs sont en ligne."
+        },
+        "de-sentences": {
+          "frame": "Le courrier des voyageurs arrive à l’auberge.",
+          "follow": "Le courrier est trié."
+        }
+      }
+    },
+    "maths-3e-functions": {
+      "lines": {
+        "metier": [
+          "Je taille les verres de la lanterne.",
+          "Je polis chaque verre à la main.",
+          "Je tourne la manivelle du contrepoids."
+        ],
+        "lieu": [
+          "Ici, la lanterne envoie sa lumière au large.",
+          "La tour domine la mer de nuages."
+        ],
+        "ruine": [
+          "Le socle est fendu.",
+          "Deux blocs sont tombés.",
+          "La lanterne est éteinte."
+        ],
+        "chantier": [
+          "Le socle tient de nouveau.",
+          "Le contrepoids pend à sa chaîne."
+        ],
+        "rallume": [
+          "La lanterne brille au sommet.",
+          "Les verres portent la lumière."
+        ]
+      },
+      "missions": {
+        "images": {
+          "frame": "Le verre prend la lumière et la renvoie.",
+          "follow": "Le verre est monté dans la lanterne."
+        },
+        "linear": {
+          "frame": "Les rayons partent droit de la lanterne.",
+          "follow": "Les rayons sont alignés."
+        },
+        "graphs": {
+          "frame": "Le faisceau sort de la lanterne vers les nuages.",
+          "follow": "Le faisceau passe au-dessus des nuages."
+        },
+        "proportions": {
+          "frame": "Chaque verre est taillé à la mesure de la lanterne.",
+          "follow": "Les verres tiennent dans leur cage de fer."
+        },
+        "coordinates": {
+          "frame": "La tour sert de repère à tous les archipels.",
+          "follow": "La carte des archipels porte la tour."
+        }
+      }
+    },
+    "maths-3e-geometry": {
+      "lines": {
+        "metier": [
+          "Je mesure le terrain et je le dessine.",
+          "Je suis l’ombre du gnomon sur le dallage.",
+          "Je vise le Fanal depuis la terrasse."
+        ],
+        "lieu": [
+          "Ici, on mesure la montagne depuis la terrasse.",
+          "La terrasse regarde la mer de nuages."
+        ],
+        "ruine": [
+          "Le gnomon est couché le long du muret.",
+          "Deux dalles sont soulevées.",
+          "La boule a roulé contre le muret."
+        ],
+        "chantier": [
+          "Le gnomon est debout.",
+          "Le cercle de visée est sur son pied."
+        ],
+        "rallume": [
+          "L’ombre du gnomon court sur le dallage.",
+          "Le cercle de visée regarde vers le Fanal."
+        ]
+      },
+      "missions": {
+        "pythagoras": {
+          "frame": "L’équerre de pierre est un grand L debout.",
+          "follow": "L’équerre est à sa place."
+        },
+        "thales": {
+          "frame": "Le gnomon jette son ombre sur le dallage.",
+          "follow": "L’ombre est tracée sur le dallage."
+        },
+        "trigonometry": {
+          "frame": "Le cercle de visée se tourne vers le Fanal.",
+          "follow": "La visée est notée dans l’abri."
+        },
+        "scaling": {
+          "frame": "La topographe dessine le terrain en plus petit.",
+          "follow": "Le dessin est rangé dans l’abri."
+        },
+        "transformations": {
+          "frame": "Les flèches de fer montrent toutes le même sens.",
+          "follow": "Les flèches restent dans le même sens."
+        }
+      }
+    },
+    "maths-3e-numbers": {
+      "lines": {
+        "metier": [
+          "Je monte les sacs au grenier.",
+          "Je mouds le grain sous la meule.",
+          "Je range les mesures sur la longue table."
+        ],
+        "lieu": [
+          "Ici, on garde les provisions de la montagne.",
+          "Les casiers partagent les sacs."
+        ],
+        "ruine": [
+          "Le toit est ouvert au-dessus de la porte.",
+          "Les sacs sont éboulés au pied du mur.",
+          "Les mesures sont couchées dans l’herbe."
+        ],
+        "chantier": [
+          "Le toit est refermé.",
+          "Les sacs sont en tas."
+        ],
+        "rallume": [
+          "La meule tourne sous son petit toit.",
+          "Les casiers sont garnis."
+        ]
+      },
+      "missions": {
+        "power-rules": {
+          "frame": "Les mesures vont de la grande à la petite.",
+          "follow": "Les mesures sont sur la longue table."
+        },
+        "square-equations": {
+          "frame": "Les sacs se posent en carré au pied du mur.",
+          "follow": "Le carré de sacs est posé."
+        },
+        "prime-factors": {
+          "frame": "Les sacs se partagent entre les casiers.",
+          "follow": "Les casiers sont garnis."
+        },
+        "identities": {
+          "frame": "Les sacs s’empilent en cube sur la plate-forme.",
+          "follow": "La plate-forme porte son cube de sacs."
+        },
+        "zero-product": {
+          "frame": "La poulie monte les sacs sous le faîte.",
+          "follow": "Les sacs sont montés au grenier."
+        }
+      }
+    },
+    "maths-3e-statistics": {
+      "lines": {
+        "metier": [
+          "Je relève la pluie et le vent.",
+          "Je lis les pluviomètres matin et soir.",
+          "Je note le temps sur la table de relevés."
+        ],
+        "lieu": [
+          "Ici, on suit le temps du sommet.",
+          "Les instruments restent à l’air libre."
+        ],
+        "ruine": [
+          "L’abri penche sur un pied cassé.",
+          "Deux pluviomètres sont couchés.",
+          "Les manches à air sont tombées au pied du mât."
+        ],
+        "chantier": [
+          "L’abri est redressé.",
+          "Les pluviomètres sont debout."
+        ],
+        "rallume": [
+          "Les manches à air se gonflent au vent.",
+          "La roue de tirage tourne sur son socle."
+        ]
+      },
+      "missions": {
+        "mean": {
+          "frame": "Les pluviomètres reçoivent la pluie du matin.",
+          "follow": "Les relevés sont notés sur la table."
+        },
+        "probability": {
+          "frame": "Les boules de la roue sont en bois clair.",
+          "follow": "Les boules sont rangées dans la roue."
+        },
+        "data": {
+          "frame": "La table porte les relevés de la semaine.",
+          "follow": "Les relevés sont rangés sous le petit toit."
+        },
+        "ratio-sharing": {
+          "frame": "La météorologue partage ses relevés en deux tas.",
+          "follow": "Chaque tas a sa place sur la table."
+        }
+      }
+    },
+    "maths-4e-algebra": {
+      "lines": {
+        "metier": [
+          "Je mesure et je trace chaque pièce.",
+          "Je dessine les plans sur le plancher.",
+          "Je règle l’équerre."
+        ],
+        "lieu": [
+          "Ici, chaque pièce se trace en grand.",
+          "Le plancher sert de grande table."
+        ],
+        "ruine": [
+          "Le plancher est fendu.",
+          "La galerie est tombée.",
+          "La grue a perdu son bras."
+        ],
+        "chantier": [
+          "L’étage est remis sur ses poutres.",
+          "Le plancher tient sous les pas."
+        ],
+        "rallume": [
+          "Le plancher est plat.",
+          "La grue lève ses pièces.",
+          "Les tracés sont nets."
+        ]
+      },
+      "missions": {
+        "simplifying": {
+          "frame": "Les mesures sont notées sur le plancher.",
+          "follow": "Les mesures sont rangées."
+        },
+        "expanding": {
+          "frame": "Les grandes pièces se découpent en morceaux.",
+          "follow": "Les morceaux sont taillés."
+        },
+        "equations": {
+          "frame": "Les deux pièces se posent sur la balance.",
+          "follow": "La balance est rangée."
+        },
+        "rationals": {
+          "frame": "Les pièces se rangent selon leur longueur.",
+          "follow": "Les pièces sont alignées."
+        },
+        "pythagorean-theorem": {
+          "frame": "L’équerre contrôle chaque angle droit.",
+          "follow": "Les angles sont tracés."
+        }
+      }
+    },
+    "maths-4e-data": {
+      "lines": {
+        "metier": [
+          "Je pèse les sacs sur la bascule.",
+          "Je trie les grains par taille.",
+          "Je note chaque poids."
+        ],
+        "lieu": [
+          "Ici, les poids se comparent à un modèle.",
+          "La bascule dit le poids de chaque chose."
+        ],
+        "ruine": [
+          "La bascule est de travers.",
+          "Le tonneau est tombé de ses chevalets.",
+          "Le toit laisse passer la pluie."
+        ],
+        "chantier": [
+          "La bascule est à plat.",
+          "Le tonneau est sur ses chevalets."
+        ],
+        "rallume": [
+          "La bascule pèse juste.",
+          "Les cuves sont pleines.",
+          "La trieuse tourne de nouveau."
+        ]
+      },
+      "missions": {
+        "weighted-mean": {
+          "frame": "Les sacs passent un par un sur la bascule.",
+          "follow": "Les poids sont notés."
+        },
+        "events": {
+          "frame": "La trieuse envoie les grains dans les cuves.",
+          "follow": "Les cuves sont remplies."
+        },
+        "proportional-reasoning": {
+          "frame": "Le tonneau se remplit sac après sac.",
+          "follow": "Le tonneau est plein."
+        },
+        "calculation-programs": {
+          "frame": "La peseuse répète les mêmes gestes pour chaque sac.",
+          "follow": "Chaque sac est pesé."
+        },
+        "translations": {
+          "frame": "Les cuves sont alignées dans la cour.",
+          "follow": "La cour est rangée."
+        }
+      }
+    },
+    "maths-4e-powers": {
+      "lines": {
+        "metier": [
+          "Je façonne le métal en grandes feuilles.",
+          "Je frappe la tôle sur l’enclume.",
+          "Je trempe les pièces dans l’eau."
+        ],
+        "lieu": [
+          "Ici, le métal de la montagne devient des pièces.",
+          "Le fourneau chauffe toute la forge."
+        ],
+        "ruine": [
+          "Le fourneau est froid et fendu.",
+          "Le grand marteau est couché.",
+          "La suie couvre les roues dentées."
+        ],
+        "chantier": [
+          "Le fourneau tient debout.",
+          "Le marteau est remis sur son axe."
+        ],
+        "rallume": [
+          "Le fourneau est chaud.",
+          "La lave coule dans la rigole.",
+          "Le marteau frappe de nouveau."
+        ]
+      },
+      "missions": {
+        "powers": {
+          "frame": "Les étincelles jaillissent de la tôle chaude.",
+          "follow": "Les étincelles éclairent la forge."
+        },
+        "square-roots": {
+          "frame": "L’enclume reçoit les pièces chaudes.",
+          "follow": "Les pièces sont forgées."
+        },
+        "scientific-notation": {
+          "frame": "Les pièces chaudes plongent dans l’eau.",
+          "follow": "Le métal est durci."
+        },
+        "subtracting": {
+          "frame": "Le fourneau garde la chaleur de la lave.",
+          "follow": "Le fourneau est chargé."
+        },
+        "volumes": {
+          "frame": "Chaque pièce a sa forme et son moule.",
+          "follow": "Les moules sont posés sur l’établi."
+        }
+      }
+    },
+    "maths-5e-proportionality": {
+      "lines": {
+        "metier": [
+          "Je pèse les marchandises sur ma balance.",
+          "Je range mes étals sur le radeau.",
+          "Je compare les poids avant l’échange."
+        ],
+        "lieu": [
+          "Ici, les radeaux sont amarrés au chenal.",
+          "Le marché se tient sur l’eau."
+        ],
+        "ruine": [
+          "Un radeau est couché à plat.",
+          "Les amarres sont rompues.",
+          "Le toit de la cabane est tombé."
+        ],
+        "chantier": [
+          "Le radeau du quai est remis à flot.",
+          "Les amarres sont tendues."
+        ],
+        "rallume": [
+          "Les balances sont en place.",
+          "Le marché reprend sur l’eau."
+        ]
+      },
+      "missions": {
+        "proportion-tables": {
+          "frame": "Les étals se garnissent sur les radeaux.",
+          "follow": "Les étals sont garnis."
+        },
+        "percentages": {
+          "frame": "Les prix changent d’un radeau à l’autre.",
+          "follow": "Les prix sont affichés."
+        },
+        "ratios": {
+          "frame": "Les barques font la traversée du chenal.",
+          "follow": "Les barques sont à quai."
+        },
+        "formulas": {
+          "frame": "Le marchand note ses comptes sur la toile.",
+          "follow": "Les comptes sont écrits."
+        },
+        "statistics": {
+          "frame": "Le marchand tient le registre des ventes.",
+          "follow": "Le registre est à jour."
+        }
+      }
+    },
+    "maths-5e-signed-numbers": {
+      "lines": {
+        "metier": [
+          "Je monte l’eau, godet par godet.",
+          "Je tends les cordes du rail.",
+          "Je graisse les poulies."
+        ],
+        "lieu": [
+          "Ici, l’eau monte le long du rail.",
+          "Une lanterne brille au sommet du rail."
+        ],
+        "ruine": [
+          "Le rail est cassé en haut.",
+          "La lanterne est éteinte.",
+          "Un godet est tombé au pied."
+        ],
+        "chantier": [
+          "Le bas du rail est remonté.",
+          "Les poulies sont en haut."
+        ],
+        "rallume": [
+          "La lanterne est allumée.",
+          "L’eau arrive au sommet."
+        ]
+      },
+      "missions": {
+        "thermometer": {
+          "frame": "Le rail porte des encoches du bas en haut.",
+          "follow": "Le godet est accroché à son encoche."
+        },
+        "adding": {
+          "frame": "Les godets montent et descendent le long du rail.",
+          "follow": "Les godets sont revenus sur le rail."
+        },
+        "fractions": {
+          "frame": "Le bassin se remplit godet après godet.",
+          "follow": "Le bassin garde son eau."
+        },
+        "order-of-operations": {
+          "frame": "La fontainière règle ses poulies une à une.",
+          "follow": "Les poulies sont réglées."
+        },
+        "conversions-angles": {
+          "frame": "Le rail se mesure en cordes.",
+          "follow": "Le rail est mesuré."
+        }
+      }
+    },
+    "maths-6e-calculation": {
+      "lines": {
+        "metier": [
+          "Je charge les caisses sur la barge.",
+          "Je compte les sacs du quai.",
+          "Je range les caisses par dix."
+        ],
+        "lieu": [
+          "Ici, les bateaux chargent et déchargent.",
+          "Tout ce qui arrive passe par le quai."
+        ],
+        "ruine": [
+          "Le quai est couvert de sable.",
+          "La grue est couchée sur le côté."
+        ],
+        "chantier": [
+          "Le quai est dégagé.",
+          "La grue est remise debout."
+        ],
+        "rallume": [
+          "La barge est pleine.",
+          "Les caisses partent au bon port."
+        ]
+      },
+      "missions": {
+        "times-tables": {
+          "frame": "La barge prend des caisses par rangées.",
+          "follow": "Les rangées sont comptées."
+        },
+        "make-ten": {
+          "frame": "Chaque caisse prend dix sacs.",
+          "follow": "Les caisses sont pleines."
+        },
+        "doubles-halves": {
+          "frame": "Les sacs se partagent en deux tas.",
+          "follow": "Les deux tas sont égaux."
+        },
+        "word-problems": {
+          "frame": "Le passeur note les chargements.",
+          "follow": "Le carnet est rempli."
+        },
+        "measures": {
+          "frame": "Les cordes se mesurent avant la coupe.",
+          "follow": "Les cordes sont à la bonne longueur."
+        }
+      }
+    },
+    "maths-6e-decimals": {
+      "lines": {
+        "metier": [
+          "Je ratisse le sel.",
+          "Je remplis les sacs de sel.",
+          "Je vide les bassins à la pelle."
+        ],
+        "lieu": [
+          "Ici, l’eau de mer devient du sel.",
+          "Le vent et le soleil sèchent les bassins."
+        ],
+        "ruine": [
+          "Le sable a rempli les bassins.",
+          "Les murets d’argile sont ébréchés."
+        ],
+        "chantier": [
+          "Les bassins sont dégagés.",
+          "Les murets d’argile sont refaits."
+        ],
+        "rallume": [
+          "Le sel sèche au soleil.",
+          "Le hangar à sel est plein."
+        ]
+      },
+      "missions": {
+        "ordering": {
+          "frame": "Les bassins sont alignés en rangs.",
+          "follow": "Les bassins sont en eau."
+        },
+        "operations": {
+          "frame": "Deux tas de sel sont posés côte à côte.",
+          "follow": "Les tas sont rangés dans le hangar."
+        },
+        "scale": {
+          "frame": "La saunière pose des repères le long du muret.",
+          "follow": "Les repères sont plantés."
+        },
+        "large-numbers": {
+          "frame": "Le hangar à sel est grand.",
+          "follow": "Le hangar est rempli de sacs."
+        },
+        "rounding-products": {
+          "frame": "La saunière pèse le sel avant la vente.",
+          "follow": "Les sacs sont prêts pour la vente."
+        }
+      }
+    },
+    "maths-6e-fractions": {
+      "lines": {
+        "metier": [
+          "J’ouvre et je ferme les portes.",
+          "Je tourne le treuil.",
+          "Je guide les bateaux dans le bassin."
+        ],
+        "lieu": [
+          "Ici, le canal monte et descend les bateaux.",
+          "L’eau passe de bassin en bassin."
+        ],
+        "ruine": [
+          "Les bassins du canal sont à sec.",
+          "Les murs sont ébréchés."
+        ],
+        "chantier": [
+          "Les murs du canal sont refaits.",
+          "L’eau remplit le premier bassin."
+        ],
+        "rallume": [
+          "Les portes s’ouvrent sur le canal.",
+          "Les bateaux passent d’un bassin à l’autre."
+        ]
+      },
+      "missions": {
+        "number-line": {
+          "frame": "Des nénuphars flottent sur le bassin.",
+          "follow": "Les nénuphars sont à leur place."
+        },
+        "equivalence": {
+          "frame": "Deux rives bordent le canal.",
+          "follow": "Les deux rives sont reliées."
+        },
+        "sharing": {
+          "frame": "Le gâteau de l’éclusier est sur la table.",
+          "follow": "Les parts sont servies."
+        },
+        "place-value": {
+          "frame": "Les galets du fond sont ramassés par tas.",
+          "follow": "Les tas de galets sont posés."
+        },
+        "fraction-sums": {
+          "frame": "L’éclusier note le niveau de chaque bassin.",
+          "follow": "Le niveau est inscrit."
+        }
+      }
+    },
+    "physics-chemistry-3e-motion-energy": {
+      "lines": {
+        "metier": [
+          "Je mène les pierres sur la pente.",
+          "Je charge le traîneau sur ses rouleaux.",
+          "Je tourne le cabestan."
+        ],
+        "lieu": [
+          "Ici, la pente monte jusqu’au socle du Fanal.",
+          "Le traîneau glisse sur les rouleaux."
+        ],
+        "ruine": [
+          "Le dallage est fendu.",
+          "Les rouleaux sont épars dans l’herbe.",
+          "Le traîneau est de travers."
+        ],
+        "chantier": [
+          "Le portique est debout.",
+          "Les rouleaux sont alignés."
+        ],
+        "rallume": [
+          "Le traîneau monte la pente.",
+          "Le contrepoids pend à sa chaîne."
+        ]
+      },
+      "missions": {
+        "motion-forces": {
+          "frame": "Le traîneau glisse sur ses rouleaux.",
+          "follow": "Le traîneau arrive en haut de la pente."
+        },
+        "energy-power": {
+          "frame": "Le contrepoids tire sur la chaîne du portique.",
+          "follow": "La chaîne est tendue."
+        },
+        "acids-bases": {
+          "frame": "Le fer du portique brunit sous la pluie.",
+          "follow": "Le fer est huilé."
+        }
+      }
+    },
+    "physics-chemistry-4e-signals-circuits": {
+      "lines": {
+        "metier": [
+          "Je relie la dynamo aux lampes.",
+          "Je sonne la cloche du poste.",
+          "Je contrôle les fils."
+        ],
+        "lieu": [
+          "Ici, la dynamo fait la lumière.",
+          "Les fils portent le courant à l’usine."
+        ],
+        "ruine": [
+          "Les fils sont tombés.",
+          "La cloche est couchée.",
+          "La dynamo est sans socle."
+        ],
+        "chantier": [
+          "La dynamo est huilée.",
+          "Le poteau porte ses fils."
+        ],
+        "rallume": [
+          "La lampe brille.",
+          "La cloche sonne.",
+          "Le courant passe dans les fils."
+        ]
+      },
+      "missions": {
+        "light-sound": {
+          "frame": "La lampe et la cloche parlent à l’usine.",
+          "follow": "Les signaux sont envoyés."
+        },
+        "electric-circuits": {
+          "frame": "Les fils relient les lampes de l’usine.",
+          "follow": "Les lampes sont branchées."
+        },
+        "chemical-reactions": {
+          "frame": "Le charbon brûle sous la chaudière.",
+          "follow": "La cendre est balayée."
+        }
+      }
+    },
+    "physics-chemistry-5e-matter-universe": {
+      "lines": {
+        "metier": [
+          "Je souffle le verre dans le four.",
+          "Je dose et je pèse sur l’établi.",
+          "Je polis la lentille."
+        ],
+        "lieu": [
+          "Ici, la vapeur des sources chauffe le four.",
+          "On polit une lentille pour regarder le ciel."
+        ],
+        "ruine": [
+          "La calotte du four est fendue.",
+          "La lentille est en éclats sur le parvis.",
+          "La rigole est brisée au milieu."
+        ],
+        "chantier": [
+          "La calotte est refermée.",
+          "La rigole amène de nouveau la vapeur."
+        ],
+        "rallume": [
+          "Le four chauffe.",
+          "La lentille est sur son chevalet."
+        ]
+      },
+      "missions": {
+        "changes-of-state": {
+          "frame": "Le four chauffe le verre puis le laisse refroidir.",
+          "follow": "Le verre est refroidi."
+        },
+        "mixtures-density": {
+          "frame": "Les fioles se dosent et se pèsent sur l’établi.",
+          "follow": "Les fioles sont rangées."
+        },
+        "universe-atoms": {
+          "frame": "La lentille sert à regarder le ciel.",
+          "follow": "La lentille est sur son chevalet."
+        }
+      }
+    },
+    "physics-chemistry-6e-matter-energy": {
+      "lines": {
+        "metier": [
+          "Je chauffe la chaudière.",
+          "Je graisse le rotor.",
+          "Je règle les conduites."
+        ],
+        "lieu": [
+          "Ici, l’eau chaude de la source fait tourner le rotor.",
+          "La vapeur monte dans les conduites."
+        ],
+        "ruine": [
+          "La chaudière est couchée sur ses briques.",
+          "Le carter du rotor est ouvert."
+        ],
+        "chantier": [
+          "La chaudière est remise sur son massif.",
+          "Les conduites de cuivre sont reliées."
+        ],
+        "rallume": [
+          "Le rotor tourne dans son carter.",
+          "La vapeur monte des conduites."
+        ]
+      },
+      "missions": {
+        "states-of-matter": {
+          "frame": "La source chaude fume au bord du bassin.",
+          "follow": "La vapeur est dans les conduites."
+        },
+        "motion-signals": {
+          "frame": "Le rotor tourne dans son carter.",
+          "follow": "Le rotor est graissé."
+        },
+        "energy-circuits": {
+          "frame": "Les conduites de cuivre courent le long du mur.",
+          "follow": "Les conduites sont reliées."
+        },
+        "materials-light": {
+          "frame": "La brique, le fer et le cuivre font la machine.",
+          "follow": "Les pièces sont remontées."
+        }
+      }
+    },
+    "technology-3e-digital": {
+      "lines": {
+        "metier": [
+          "Je branche les cordons sur le tableau.",
+          "Je mets le casque pour écouter les fils.",
+          "Je surveille les lampes témoins."
+        ],
+        "lieu": [
+          "Ici, les fils relient le Fanal aux archipels.",
+          "Le tableau fait passer chaque message."
+        ],
+        "ruine": [
+          "Le toit est ouvert sur le devant.",
+          "Les cordons pendent en boucles.",
+          "Les poteaux sont penchés."
+        ],
+        "chantier": [
+          "Le toit est refermé.",
+          "Les poteaux portent les fils."
+        ],
+        "rallume": [
+          "Les lampes brillent sur le tableau.",
+          "Les fils portent les messages."
+        ]
+      },
+      "missions": {
+        "computer-networks": {
+          "frame": "Les fils vont de poteau en poteau.",
+          "follow": "Les poteaux portent les fils jusqu’au bout."
+        },
+        "connected-objects": {
+          "frame": "Chaque lampe témoin répond à un cordon.",
+          "follow": "Les lampes répondent aux cordons."
+        },
+        "algorithms": {
+          "frame": "La télégraphiste branche les cordons un par un.",
+          "follow": "Les cordons sont branchés."
+        },
+        "data-tables": {
+          "frame": "Le tableau garde chaque fiche dans sa douille.",
+          "follow": "Les fiches sont rangées dans leurs douilles."
+        }
+      }
+    },
+    "technology-4e-modeling": {
+      "lines": {
+        "metier": [
+          "J’invente des machines et je les essaie.",
+          "Je lance les maquettes dans le bassin.",
+          "Je règle le treuil."
+        ],
+        "lieu": [
+          "Ici, les bateaux s’essaient en petit.",
+          "Le bassin sert aux essais."
+        ],
+        "ruine": [
+          "Le bassin est à sec.",
+          "Le chariot est rouillé sur ses rails.",
+          "Le treuil est sans toit."
+        ],
+        "chantier": [
+          "Le bassin est rempli à moitié.",
+          "Le treuil est à l’abri."
+        ],
+        "rallume": [
+          "Le bassin est plein.",
+          "Le chariot roule sur ses rails.",
+          "Le treuil tire les maquettes."
+        ]
+      },
+      "missions": {
+        "energy-chain": {
+          "frame": "Le treuil tire le chariot le long des rails.",
+          "follow": "Le chariot est au bout du bassin."
+        },
+        "information-chain": {
+          "frame": "Les capteurs notent chaque essai du chariot.",
+          "follow": "Les essais sont notés."
+        },
+        "simulation": {
+          "frame": "Les maquettes sont essayées avant la grande coque.",
+          "follow": "Les essais sont rangés."
+        },
+        "troubleshooting": {
+          "frame": "Un chariot est démonté sur l’établi.",
+          "follow": "Le chariot est remonté."
+        }
+      }
+    },
+    "technology-5e-design": {
+      "lines": {
+        "metier": [
+          "Je tends les câbles entre les aiguilles.",
+          "Je graisse les rouages de la gare.",
+          "Je range les nacelles au quai."
+        ],
+        "lieu": [
+          "Ici, deux câbles partent vers deux aiguilles.",
+          "Les nacelles passaient d’un sommet à l’autre."
+        ],
+        "ruine": [
+          "Les câbles sont détendus.",
+          "Un rouage est tombé.",
+          "Les nacelles sont au quai."
+        ],
+        "chantier": [
+          "Un câble est retendu.",
+          "Le mât et ses poulies tiennent."
+        ],
+        "rallume": [
+          "Les deux câbles sont tendus.",
+          "Les nacelles sont au quai."
+        ]
+      },
+      "missions": {
+        "specifications": {
+          "frame": "La gare est adossée au piton.",
+          "follow": "La gare est debout."
+        },
+        "technical-solutions": {
+          "frame": "Chaque rouage a sa place dans la machinerie.",
+          "follow": "Les rouages sont en place."
+        },
+        "life-cycle": {
+          "frame": "Les nacelles sont faites de bois et de fer.",
+          "follow": "Les nacelles sont réparées."
+        },
+        "project-management": {
+          "frame": "La câbliste monte la gare pièce après pièce.",
+          "follow": "La gare est remontée."
+        }
+      }
+    },
+    "technology-6e-objects": {
+      "lines": {
+        "metier": [
+          "Je rabote les planches.",
+          "Je pose le bordé sur la quille.",
+          "Je goudronne la coque."
+        ],
+        "lieu": [
+          "Ici, on construit et on répare les bateaux.",
+          "La cale descend vers l’eau."
+        ],
+        "ruine": [
+          "La cale est couverte de sable.",
+          "La quille est couchée sur les rails."
+        ],
+        "chantier": [
+          "Les rails de la cale sont dégagés.",
+          "La quille est posée."
+        ],
+        "rallume": [
+          "La coque repose sur la cale.",
+          "L’atelier sent le bois neuf."
+        ]
+      },
+      "missions": {
+        "object-function": {
+          "frame": "Le charpentier regarde la coque sur la cale.",
+          "follow": "La coque est vérifiée."
+        },
+        "materials": {
+          "frame": "Les planches sont empilées dans l’atelier.",
+          "follow": "Les planches sont triées."
+        },
+        "information-networks": {
+          "frame": "Le charpentier tient un registre des bateaux.",
+          "follow": "Le registre est à jour."
+        },
+        "solve-program": {
+          "frame": "La coque glisse sur les rails de la cale.",
+          "follow": "La coque est sur ses rails."
+        }
+      }
+    }
+  }
+}

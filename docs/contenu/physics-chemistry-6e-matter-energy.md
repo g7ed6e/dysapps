@@ -564,6 +564,25 @@ Pour tous les items :
    - indice : Relis la ligne « En été » du rappel.
    - explication : Plus le Soleil est haut dans le ciel, plus l’ombre est courte. En été, il monte haut : l’ombre de midi raccourcit. En hiver, il reste bas : l’ombre s’allonge.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je chauffe la chaudière. · Je graisse le rotor. · Je règle les conduites.
+- lieu : Ici, l’eau chaude de la source fait tourner le rotor. · La vapeur monte dans les conduites.
+- ruine : La chaudière est couchée sur ses briques. · Le carter du rotor est ouvert.
+- chantier : La chaudière est remise sur son massif. · Les conduites de cuivre sont reliées.
+- rallumé : Le rotor tourne dans son carter. · La vapeur monte des conduites.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `states-of-matter` | La source chaude fume au bord du bassin. | La vapeur est dans les conduites. |
+| `motion-signals` | Le rotor tourne dans son carter. | Le rotor est graissé. |
+| `energy-circuits` | Les conduites de cuivre courent le long du mur. | Les conduites sont reliées. |
+| `materials-light` | La brique, le fer et le cuivre font la machine. | Les pièces sont remontées. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -51,6 +51,7 @@ import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { REVISION_PHRASES } from '../../world/continu/remise';
 import { hasWorldHabitant } from '../../world/continu/worldHabitants';
+import { habitantLine, type PlaceMood } from '../../world/continu/paroles';
 import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
@@ -476,6 +477,10 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     // passait sous le bord droit (deuxième relecture du lot 1 du 4e, consultant UX UI : « La Forg »).
   }, [layout, next, suggestedId, walking, asking, remise, sheetOpen, ready, mapOpen, here]);
 
+  // L'état des lieux lu au toucher d'un habitant (le monde est créé une fois), et le rang du prochain toucher par lieu.
+  const constructionsRef = useRef(constructions);
+  constructionsRef.current = constructions;
+  const habitantTurns = useRef(new Map<PlaceId, number>());
   useEffect(() => {
     const el = host.current;
     if (!el) return;
@@ -524,6 +529,18 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         yawRef.current = yaw;
         if (needleRef.current) needleRef.current.style.transform = `rotate(${yaw.toFixed(3)}rad)`;
         setTurned(Math.abs(yaw) > 0.01);
+      },
+      // L'habitant d'un lieu touché près de sa porte (GD-27, la parole du lieu) : une ligne de dix mots au plus, écrite
+      // dans la phrase du monde et lue, qui tourne à chaque toucher (son métier, son lieu, l'état du lieu) ; la rotation
+      // n'est pas sauvegardée. Kéo ne bouge pas.
+      onHabitant: (placeId) => {
+        const state = constructionState(constructionsRef.current[placeId]);
+        const mood: PlaceMood = state === 'restauree' ? 'rallume' : state === 'en-chantier' ? 'chantier' : 'ruine';
+        const n = habitantTurns.current.get(placeId) ?? 0;
+        const line = habitantLine(placeId, mood, n);
+        if (!line) return;
+        habitantTurns.current.set(placeId, n + 1);
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0 }));
       },
       // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
       onClosed: (land) => {

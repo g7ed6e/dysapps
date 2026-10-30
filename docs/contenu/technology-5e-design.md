@@ -564,6 +564,25 @@ Pour tous les items :
    - indice : Avant de fabriquer, il faut savoir ce que l’objet doit faire.
    - explication : On écrit d’abord le cahier des charges, puis on fabrique le prototype, et enfin on le teste. Tester vient en dernier, même si c’est la première ligne.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je tends les câbles entre les aiguilles. · Je graisse les rouages de la gare. · Je range les nacelles au quai.
+- lieu : Ici, deux câbles partent vers deux aiguilles. · Les nacelles passaient d’un sommet à l’autre.
+- ruine : Les câbles sont détendus. · Un rouage est tombé. · Les nacelles sont au quai.
+- chantier : Un câble est retendu. · Le mât et ses poulies tiennent.
+- rallumé : Les deux câbles sont tendus. · Les nacelles sont au quai.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `specifications` | La gare est adossée au piton. | La gare est debout. |
+| `technical-solutions` | Chaque rouage a sa place dans la machinerie. | Les rouages sont en place. |
+| `life-cycle` | Les nacelles sont faites de bois et de fer. | Les nacelles sont réparées. |
+| `project-management` | La câbliste monte la gare pièce après pièce. | La gare est remontée. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

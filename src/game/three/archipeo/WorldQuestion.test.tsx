@@ -739,6 +739,15 @@ describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot
     renderPlace('printworks', 'sound-discrimination');
     expect(await screen.findByText('L’imprimeur')).toBeInTheDocument();
     await start();
+    // Le cadre de la mission (GD-27, lot 2) s'écrit et se dit d'abord ; un toucher sur la phrase passe à la consigne.
+    const cadre = await vi.waitFor(() => {
+      const el = document.querySelector<HTMLElement>('.world-scenette-cadre');
+      expect(el).not.toBeNull();
+      return el!;
+    });
+    expect(cadre.textContent).toMatch(/\.$/);
+    await userEvent.setup().click(cadre);
+    expect(document.querySelector('.world-scenette-cadre')).toBeNull();
     expect(screen.getByRole('button', { name: /Réécouter/ })).toBeInTheDocument();
     await vi.waitFor(() => expect(speak).toHaveBeenCalled());
     const spoken = speak.mock.calls.map((c) => (c[0] as { text?: string }).text ?? '');

@@ -750,6 +750,26 @@ Pour tous les items :
    - indice : M est le centre du cercle circonscrit, et A est sur ce cercle.
    - explication : M est le centre du cercle circonscrit ; A est sur le cercle : AM est un rayon, la moitié de l’hypoténuse, 13 ÷ 2 = 6,5 cm. 13 cm est le diamètre ; 26 cm le double.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je pèse les sacs sur la bascule. · Je trie les grains par taille. · Je note chaque poids.
+- lieu : Ici, les poids se comparent à un modèle. · La bascule dit le poids de chaque chose.
+- ruine : La bascule est de travers. · Le tonneau est tombé de ses chevalets. · Le toit laisse passer la pluie.
+- chantier : La bascule est à plat. · Le tonneau est sur ses chevalets.
+- rallumé : La bascule pèse juste. · Les cuves sont pleines. · La trieuse tourne de nouveau.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `weighted-mean` | Les sacs passent un par un sur la bascule. | Les poids sont notés. |
+| `events` | La trieuse envoie les grains dans les cuves. | Les cuves sont remplies. |
+| `proportional-reasoning` | Le tonneau se remplit sac après sac. | Le tonneau est plein. |
+| `calculation-programs` | La peseuse répète les mêmes gestes pour chaque sac. | Chaque sac est pesé. |
+| `translations` | Les cuves sont alignées dans la cour. | La cour est rangée. |
+
 ## Les plans
 
 > Ni la grille ni Blocland ne dessinent ces plans : l’Étalon n’y est pas. Leurs cases (la forme `maison` de `src/game/world/architect.ts`, comme la Forge) donnent ses parties au monde ouvert, qui rebâtit le lieu en 3 + 1 + 1 (le corps en trois rangées, le toit, la cour). La réplique de fin est dite par la peseuse.

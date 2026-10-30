@@ -756,6 +756,25 @@ Pour tous les items :
    - indice : « Avant que » + subjonctif : que vous partiez.
    - explication : Après « avant que » : subjonctif, « partiez ».
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je connais chaque pierre de la montagne. · Je classe les pierres par case. · Je note le nom de chaque pierre.
+- lieu : Ici, les pierres sont triées et nommées. · Les étagères portent toutes les pierres.
+- ruine : Les murs sont écroulés. · Les pierres sont mêlées au sol. · La pluie entre dans la salle.
+- chantier : Les étagères sont fixées au mur. · Le seuil est balayé.
+- rallumé : Les pierres sont rangées. · La salle est au sec. · Chaque case porte son nom.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `word-roots` | Les pierres portent des noms anciens. | Les noms sont gravés. |
+| `meaning` | Les étiquettes décrivent les pierres. | Les étiquettes sont collées. |
+| `nuances` | Des pierres voisines se ressemblent dans leurs cases. | Les pierres sont triées. |
+| `conjunctions` | Un ciment lie les pierres entre elles. | Les cases sont solides. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

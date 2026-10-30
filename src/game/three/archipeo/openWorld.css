@@ -719,6 +719,15 @@
 .world-question .in-world.intro .quiz-steps {
   display: none;
 }
+/* Le cadre de la mission (GD-27, lot 2) : la bulle ne porte que le rôle et la phrase de l'habitant ; la consigne, ses
+   réponses, « Lire la suite » et l'offre de « Vue simple » attendent qu'il soit levé. */
+.world-question .in-world.cadre .world-question-prompt,
+.world-question .in-world.cadre .world-answers,
+.world-question .in-world.cadre .quiz-steps,
+.world-question .in-world.cadre .world-consigne-more,
+.world-question .in-world.cadre .world-question-offer {
+  display: none;
+}
 /* La phrase en pleine largeur (un très grand texte) : « Presque ! » reste dans le panneau. */
 .world-question .in-world.full > .feedback {
   position: static;
@@ -821,6 +830,15 @@
   font-weight: 700;
   font-size: max(18px, 1.15rem);
   white-space: nowrap;
+}
+/* La suite de la mission (GD-27, lot 2) : la phrase de l'habitant après le résultat et la partie posée, lue après eux. */
+.world-question .world-done-follow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0;
+  overflow-wrap: break-word;
+  hyphens: none;
 }
 .world-question .world-done-detail {
   min-height: 48px;
@@ -1237,6 +1255,31 @@
   align-items: center;
   gap: 0.4rem;
   margin: 0.2rem 0 0;
+}
+/* Le cadre (GD-27) : la phrase de l'habitant en toutes lettres, comme sa phrase d'accueil ; toute la phrase se touche
+   pour passer à la consigne (cible d'au moins 48 px), sans bouton de plus. */
+.world-scenette-cadre-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.world-scenette-cadre-ligne .world-scenette-role {
+  flex-basis: 100%;
+}
+.world-scenette-cadre {
+  flex: 1 1 12rem;
+  min-height: 48px;
+  margin: 0;
+  padding: 0.3rem 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: break-word;
+  hyphens: none;
 }
 /* Sur un téléphone, la phrase d'accueil prend toute la largeur du panneau et le haut-parleur passe dessous, comme sous
    les phrases de Kéo : à côté de lui, un mot plus long que la colonne restante se coupait (« signaleu / r » en

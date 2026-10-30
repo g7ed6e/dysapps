@@ -725,6 +725,26 @@ Pour tous les items :
    - indice : Qu’est-ce qui apparaît ? Le sujet peut être placé après le verbe.
    - explication : Qu’est-ce qui apparaît ? La maison de mes grands-parents : c’est le sujet, placé après le verbe. « Au bout du chemin » dit où ; « mes grands-parents » n’est qu’une partie du groupe sujet.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je redresse les pierres de la chaussée. · Je taille les dalles du chemin. · Je grave le demi-soleil.
+- lieu : Ici, une chaussée traverse le marais. · Les pierres levées guident vers la brume.
+- ruine : Les pierres sont couchées dans l’eau. · Une pierre est cassée en deux. · La chaussée se perd dans la brume.
+- chantier : Les premières pierres sont debout. · Le chemin de dalles est posé.
+- rallumé : La chaussée traverse le marais. · Le demi-soleil se lit sur chaque pierre.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `past-tenses` | La chaussée longe la rive du marais. | La rive est dallée. |
+| `future-tense` | La chaussée file vers la brume. | La chaussée est tracée jusqu’au bout. |
+| `tense-recognition` | Chaque pierre porte un demi-soleil gravé. | Les pierres sont gravées. |
+| `tense-choice` | Le tailleur dresse les pierres une à une. | Les pierres sont debout. |
+| `sentence-grammar` | Le tailleur grave des signes sur les dalles. | Les dalles sont gravées. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

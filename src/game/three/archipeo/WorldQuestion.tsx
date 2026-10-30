@@ -21,7 +21,7 @@ import { Loading } from '../../../components/Loading';
 import { ForeignWordsProvider, Marked } from '../../../components/ForeignWords';
 import { RichText, frenchTypography } from '../../../components/math/RichText';
 import { gluedEnds } from '../../../core/typography';
-import { isSpeechAvailable, langAttr, type Lang } from '../../../core/speech';
+import { isSpeechAvailable, langAttr, speak, stopSpeaking, type Lang } from '../../../core/speech';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { Syllabified } from '../../../components/Syllabified';
 import { fractionWords } from '../../../core/fractions';
@@ -40,6 +40,7 @@ import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
 import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelPlan';
+import { missionWords } from '../../world/continu/paroles';
 import { placePoseWords } from './constructionParts';
 import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
@@ -93,6 +94,8 @@ export interface WorldRevisionPart {
 
 /** La scénette d'un lieu qui n'en a pas (le 5e, GD-22, lot 2) : ni rôle ni phrase d'accueil. */
 const NO_SCENETTE: Scenette = { role: '', greeting: null, placement: 'rangee' };
+// Le cadre d'une mission (GD-27) se lève seul après ce délai, si ni un toucher ni la fin de la voix ne l'ont levé.
+const FRAME_MS = 7000;
 
 export function WorldQuestion({ place, mission, plain = false, world, onClose, revision }: Props) {
   const { state, completeRevision } = useBlocland();
@@ -233,6 +236,26 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // la scène prend l'écran. Ni « Commencer » ni phrase d'accueil : la consigne se lit dans la bulle.
   const bulle = !plain && !simple && !finished && hasScenette(place);
   const intro = !bulle && layout.low && !introDone && !finished && !offer && !simple;
+  // La raison du lieu (GD-27, lot 2) : à l'entrée d'une scénette, l'habitant dit en une phrase pourquoi il a besoin de
+  // l'élève (le cadre), avant la première bulle de consigne ; la scène est là, sans ses objets. Un toucher sur la bulle
+  // passe à la consigne ; la voix qui finit de la lire aussi ; sinon, la bulle se lève seule après quelques secondes.
+  // Jamais en révision (sa consigne commence par « Tu revois… »), ni sur l'écran habituel. La suite se dit au bilan.
+  const words = useMemo(() => (plain || revision ? null : missionWords(place, mission)), [plain, revision, place, mission]);
+  const [framed, setFramed] = useState(false);
+  const framing = bulle && Boolean(item) && words !== null && !framed;
+  const passFrame = useCallback(() => {
+    stopSpeaking();
+    setFramed(true);
+  }, []);
+  useEffect(() => {
+    if (!framing || !words) return;
+    const timer = window.setTimeout(passFrame, FRAME_MS);
+    if (settings.autoRead) speak(frenchTypography(words.frame), 0.9, passFrame);
+    return () => {
+      window.clearTimeout(timer);
+      stopSpeaking();
+    };
+  }, [framing, words, settings.autoRead, passFrame]);
   // La phrase de l'habitant, à la première rencontre : au premier item sur tablette ; sur un écran bas, avec
   // « Commencer » seulement (consultant UX UI) ; jamais dans la ligne repliée. Comptée comme vue une fois affichée.
   const greeting = scenette.greeting && greetItem === itemKey && (!layout.low || intro) ? scenette.greeting : null;
@@ -394,7 +417,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   }, [simple, finished, loaded]);
   useEffect(() => {
     if (plain || !size.w || !size.h || !item || finished) return;
-    const shown = world.question({ place, mission, layout, item, answersOut: objectsOut });
+    const shown = world.question({ place, mission, layout, item, answersOut: objectsOut || framing });
     // Un repère dont le point sort de la scène visible (sous le panneau, au bord de l'écran) ne se montre pas.
     const r = box.current?.querySelector('.quiz.in-world')?.getBoundingClientRect();
     const origin = box.current?.getBoundingClientRect();
@@ -406,7 +429,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // cachés jusqu'à la première réponse, lot L5).
     // La caméra tournée à deux doigts pendant la scénette (« caméra libre ») : les repères suivent le décor.
     return world.onSceneTurn((labels) => setLabels(visible(labels)));
-  }, [world, place, mission, plain, layout, item, size, finished, intro, objectsOut]);
+  }, [world, place, mission, plain, layout, item, size, finished, intro, objectsOut, framing]);
   // Un repère de la scène ne passe jamais sous les boutons du haut (« Vue simple », la pause, à droite d'elle) : sur un
   // téléphone couché, l'entier du haut de la jauge les touchait (relecture du lot L5, consultant UX UI). Il descend alors
   // sous son point, ou se cache ; mesuré une fois par pose des repères, jamais à chaque image.
@@ -502,6 +525,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // L'écran habituel (le temps de la transition) : l'écran de la grille, ses items, sa consigne, sur un panneau uni ;
     // le bilan et le retour du lieu. Ni rôle, ni scène, ni « Vue simple » : la même forme dans tous les lieux.
     if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done, revision: runnerRevision, pose: poseWords, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
+    // Le cadre de la mission, à la place de la ligne de consigne : la phrase entière, lue, et un toucher la lève.
+    const frame = framing && words ? frenchTypography(words.frame) : null;
     const extra: ReactNode = (
       <>
         {intro && (
@@ -562,7 +587,17 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // défile (dérogation du 16 octobre 2026, choix du mainteneur : ce seul réglage, l'Enclos seulement).
     const rule = ranges && grandTexte && simpleLow ? placeRuleLine(place, exerciseId, readyLevel) : null;
     const line = bulle ? bubbleLine : instruction;
-    const head: ReactNode = tight ? (
+    const head: ReactNode = frame ? (
+        <div className="world-scenette-head world-scenette-cadre-ligne">
+          <p className="world-scenette-role">
+            <RoleName role={scenette.role} />
+          </p>
+          <button type="button" className="world-scenette-cadre" onClick={passFrame} aria-label={`${frame} Continuer.`}>
+            <Syllabified text={frame} />
+          </button>
+          <SpeakButton text={frame} compact />
+        </div>
+      ) : tight ? (
         <div className="world-scenette-head world-consigne-line">
           <p className="world-consigne-fold" id="consigne-ligne">
             <strong className="world-scenette-role">
@@ -626,10 +661,12 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       Done,
       revision: runnerRevision,
       pose: poseWords,
+      follow: words?.follow,
+      quiet: framing,
       className:
         simple && !finished
           ? `in-world scenette simple${foldedSimple ? ' simple-bas' : ''}${consigneOpen ? ' consigne-ouverte' : ''}`
-          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${hasAid ? ' avec-rappel' : ''}${bulle ? ' bulle simple-bas' : ''}`,
+          : `in-world scenette${layout.low ? ' low' : ''}${layout.low && widen >= WIDEN_FULL ? ' full' : ''}${offer ? ' offer' : ''}${intro ? ' intro' : ''}${finished ? ' finished' : ''}${sheetWide ? ' sheet-wide' : ''}${objectsOut ? ' answers-out' : ''}${rowBeside ? ' rangee-a-cote' : ''}${bare ? ' sans-image' : ''}${hasAid ? ' avec-rappel' : ''}${bulle ? ' bulle simple-bas' : ''}${framing ? ' cadre' : ''}`,
     };
   }, [
     exerciseId,
@@ -653,7 +690,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     layout.low,
     finished,
     sheetWide,
-    answersOut,
+    objectsOut,
     scenette,
     simple,
     bare,
@@ -668,6 +705,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     bulle,
     simpleLow,
     shortCut,
+    framing,
+    words,
+    passFrame,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,

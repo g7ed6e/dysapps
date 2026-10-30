@@ -154,6 +154,11 @@ export interface OpenWorldOptions {
   /** Dans le monde, un lieu d'une terre fermée ou son pont tombé touché (GD-20, point 3) : la page ouvre la fiche de la terre. */
   onClosed(land: LinkedLand): void;
   /**
+   * L'habitant d'un lieu touché près de sa porte, hors de sa scénette (GD-27, la parole du lieu) : la page lui fait dire
+   * une ligne ; Kéo ne bouge pas.
+   */
+  onHabitant?(place: PlaceId): void;
+  /**
    * À l'Escale (GD-20, lot 2) : Kéo est devant une porte de l'école, la galerie ou le lieu d'assemblage (la page en ouvre
    * le panneau), ou l'on a touché le reste du Port (`fiche`, la page ouvre sa fiche).
    */
@@ -1261,6 +1266,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les habitants près de leur porte, hors de leur scénette (choix du mainteneur, 23 octobre 2026 : en modèle 3D, aux
   // quatre niveaux ; ./worldHabitantModels.ts) : leurs versions de loin, un maillage texturé à part, un appel.
   const worldHabitants = createWorldHabitantModels(scene, PLACES.map((p) => p.id), ground, (t) => renderer.initTexture(t));
+  /** Les habitants montrés près de leur porte à la dernière pose des lieux : ceux qu'un toucher peut atteindre. */
+  let habitantsOnShow: readonly PlaceId[] = [];
   // L'équipier qui guide le lieu (GD-23, lot 1, ./equipierModels.ts) : préparé avec l'habitant, montré dans la scénette.
   const equipiers = createEquipierModels(scene, prepareLater);
   habitants.mesh.onBeforeRender = finishShown;
@@ -2115,6 +2122,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Ce que des lieux posent bien au-delà de leur emprise (GD-22, lot 16 : les câbles des Nacelles), dans le monde seulement.
     const reaches: Facets[] = [];
     const habitantsShown: PlaceId[] = [];
+    habitantsOnShow = habitantsShown;
     lampShown = sixth && lanternLit(posedOf('phare'));
     for (const p of PLACES) {
       const ruin = ruins.get(p.id);
@@ -2828,6 +2836,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (cabinBusy()) return;
     manualView = null;
     if (carTouched(e.clientX, e.clientY)) return touchCar();
+    // L'habitant d'un lieu, près de sa porte (GD-27) : il dit une ligne, Kéo reste où il est.
+    const habitant = habitantAt(e.clientX, e.clientY);
+    if (habitant && options.onHabitant) return options.onHabitant(habitant);
     // Un aménagement posé (GD-20, point 4, lot L1) : son lieu, toujours le sien, par son dessin ou le disque autour de lui ;
     // Kéo y marche, puis son panneau s'ouvre ; d'une terre fermée, la fiche de la terre.
     const object = objectAt(e.clientX, e.clientY);
@@ -2853,6 +2864,32 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const touched = nearestPlace(p, PLACES);
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startFreeWalk(p);
+  };
+  /**
+   * L'habitant montré près de sa porte sous un toucher (`clientX`, `clientY`), s'il y en a un : sa boîte (ses pieds, sa
+   * hauteur, une demi-unité de côté) projetée à l'écran, et le disque de 48 px au moins autour d'elle, comme un
+   * aménagement ; ni derrière la caméra, ni dans la brume.
+   */
+  const habitantAt = (clientX: number, clientY: number): PlaceId | null => {
+    if (!habitantsOnShow.length || !options.onHabitant) return null;
+    const targets: ObjectTarget[] = [];
+    for (const place of habitantsOnShow) {
+      const at = worldHabitantAt(place, ground);
+      if (!at || distance(here, at) > FOG.far) continue;
+      const h = worldHabitantHeight(place);
+      const points: { x: number; y: number }[] = [];
+      let behind = false;
+      for (const x of [at.x - 0.5, at.x + 0.5])
+        for (const y of [at.y, at.y + h])
+          for (const z of [at.z - 0.5, at.z + 0.5]) {
+            corner.set(x, y, z).project(camera);
+            behind ||= corner.z >= 1;
+            points.push({ x: sx(corner), y: sy(corner) });
+          }
+      if (!behind) targets.push({ place, rect: screenRect(points) });
+    }
+    const r = renderer.domElement.getBoundingClientRect();
+    return touchedObject(clientX - r.left, clientY - r.top, targets);
   };
   /**
    * Le lieu de l'aménagement montré sous un toucher (`clientX`, `clientY`), s'il y en a un : sa boîte projetée à l'écran,

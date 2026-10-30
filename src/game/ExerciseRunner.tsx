@@ -84,6 +84,13 @@ export interface RunnerStage {
    * et sa réplique (la grille).
    */
   pose?: PoseWords;
+  /**
+   * La suite de la mission (GD-27, la raison du lieu) : la phrase de l'habitant au bilan, écrite sous les pastilles et
+   * lue une fois, après le résultat et la partie posée ; jamais selon le score.
+   */
+  follow?: string;
+  /** Le lieu dit autre chose d'abord (le cadre de la mission, GD-27) : la première lecture de la partie attend. */
+  quiet?: boolean;
 }
 
 /**
@@ -111,6 +118,8 @@ export interface StageDoneProps {
   /** La pause de session quand elle tombe à la fin de cette mission, sinon `null`. */
   pause: ReactNode;
   back: RunnerStage['back'];
+  /** La suite de la mission (GD-27), écrite et relançable, sous les pastilles. */
+  follow?: string;
 }
 
 /** Le carillon de fin (`playDone`) : deux notes, la seconde à 160 ms, de 450 ms ; la voix vient après. */
@@ -189,13 +198,15 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     const synthese = window.speechSynthesis;
     if (ecranOuvert.current === ecran && !synthese.speaking && !synthese.pending) speak(texte, undefined, def.lang);
   };
+  // Dans une scénette, le cadre de la mission se dit d'abord (GD-27) : la lecture de la partie vient quand il est passé.
+  const quiet = Boolean(inWorld?.quiet);
   useEffect(() => {
-    if (!autoRead) return;
+    if (!autoRead || quiet) return;
     const dictee = dicteeAutoText(screens[0], def.lang, type?.listening);
     speak(autoReadText(instruction, screens[0]), dictee ? puisDire(dictee, 0) : undefined);
     // Une lecture par partie.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [def.id]);
+  }, [def.id, quiet]);
   useEffect(() => {
     if (!autoRead || index === 0) return;
     // Seule une question ou un mot de dictée se lit à chaque écran : un texte vide couperait une lecture en cours.
@@ -210,13 +221,23 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
 
   // Une partie du bâtiment posée par cette mission (GD-6) : le « clac » de pose de l'univers, le carillon, puis la phrase
   // lue (les sons se taisent pendant la voix). Une fois, à l'apparition de l'écran de fin, jamais pendant une question.
+  // La suite de la mission (GD-27) se dit après la phrase de la pose, ou seule quand rien n'est posé ; une seule chose
+  // lue à la fois.
   useEffect(() => {
-    const pose = done?.pose;
-    if (!pose?.posees.length) return;
+    if (!done) return;
+    const pose = done.pose?.posees.length ? done.pose : null;
+    const follow = inWorld?.follow;
+    if (!pose && !follow) return;
     const timers: number[] = [];
     const plusTard = (f: () => void, ms: number) => timers.push(window.setTimeout(f, ms));
-    const dire = () => settings.autoRead && speak(frenchTypography(phraseDeLaPose(pose, inWorld?.pose)));
-    if (!settings.sounds) dire();
+    const dire = () => {
+      if (!settings.autoRead) return;
+      const suite = follow ? () => speak(frenchTypography(follow)) : undefined;
+      if (pose) speak(frenchTypography(phraseDeLaPose(pose, inWorld?.pose)), suite);
+      else suite?.();
+    };
+    if (!pose) dire();
+    else if (!settings.sounds) dire();
     else if (habillageDuMonde().pose === 'geste') {
       sonDePose('geste')();
       plusTard(playDone, 120);
@@ -421,7 +442,7 @@ export function ExerciseRunner({ biome, def, onReplay, onComplete, onRound, etap
     if (inWorld?.Done)
       return (
         <section className={`quiz${sectionClass}`} ref={sectionRef} aria-labelledby="fin-titre">
-          <inWorld.Done completion={done} detail={detail} pause={pause} back={inWorld.back} />
+          <inWorld.Done completion={done} detail={detail} pause={pause} back={inWorld.back} follow={inWorld.follow} />
         </section>
       );
     return (

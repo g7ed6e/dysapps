@@ -463,6 +463,25 @@ Pour tous les items :
    - indice : Dîner se dit have dinner. Écoute la dernière phrase.
    - explication : They have dinner in a small restaurant = ils dînent dans un petit restaurant. La plage (the beach), c’est pour nager et jouer au foot sur le sable.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je ferme les malles. · Je regarde partir les bateaux. · Je range le quai.
+- lieu : Ici, les voyageurs embarquent pour le large. · L’auvent abrite le quai.
+- ruine : Les colonnes de l’auvent sont couchées. · Le pavillon n’a plus de toit.
+- chantier : Le quai de pierre est réparé. · Le toit du pavillon est posé.
+- rallumé : L’auvent couvre le quai. · Les bateaux partent vers le large.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `to-be` | Les voyageurs se présentent au chef de gare. | Les voyageurs sont sur le quai. |
+| `have-got` | Chaque voyageur porte une malle. | Les malles sont rangées. |
+| `present-simple` | Les bateaux partent du quai chaque jour. | Le quai est libre. |
+| `story` | Le chef de gare raconte un voyage. | Le récit est fini. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

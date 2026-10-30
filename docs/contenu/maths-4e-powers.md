@@ -186,6 +186,26 @@ Pour tous les items :
    - explication : La chambre est un prisme droit à base rectangulaire : 4 × 3 × 2 = 24 m³, en mètres cubes. 24 m² est une aire, et 9 additionne les longueurs.
    - figure : tableau longueur (m) · largeur (m) · hauteur (m) · volume / 4 · 3 · 2 · ?
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je façonne le métal en grandes feuilles. · Je frappe la tôle sur l’enclume. · Je trempe les pièces dans l’eau.
+- lieu : Ici, le métal de la montagne devient des pièces. · Le fourneau chauffe toute la forge.
+- ruine : Le fourneau est froid et fendu. · Le grand marteau est couché. · La suie couvre les roues dentées.
+- chantier : Le fourneau tient debout. · Le marteau est remis sur son axe.
+- rallumé : Le fourneau est chaud. · La lave coule dans la rigole. · Le marteau frappe de nouveau.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `powers` | Les étincelles jaillissent de la tôle chaude. | Les étincelles éclairent la forge. |
+| `square-roots` | L’enclume reçoit les pièces chaudes. | Les pièces sont forgées. |
+| `scientific-notation` | Les pièces chaudes plongent dans l’eau. | Le métal est durci. |
+| `subtracting` | Le fourneau garde la chaleur de la lave. | Le fourneau est chargé. |
+| `volumes` | Chaque pièce a sa forme et son moule. | Les moules sont posés sur l’établi. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |
