@@ -11,7 +11,7 @@ import { habitantFit } from './habitants';
 import type { PlaceId } from './levelPlan';
 import PHRASES from './mondeOuvert.json';
 import type { PlaceId as PlaceId6e } from './plan6e';
-import { groundUnderFeet, hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
+import { FOOT, groundUnderFeet, hasWorldHabitant, worldHabitantAt, worldHabitantHeight, worldHabitantScale, worldHabitantYaw } from './worldHabitants';
 
 /** Les équipiers qui ont un modèle dans le monde ouvert (GD-23, lot 1 : Zia et Malo). */
 export const EQUIPIERS: readonly Equipier[] = ['zia', 'malo'];
@@ -33,7 +33,8 @@ export const EQUIPIER_OFFSET = { left: 0.52, back: 0.11 } as const;
  * La place propre à un lieu, en part de la hauteur de l'habitant, quand sa gauche est prise (vérifié en captures, à
  * l'arrivée et de près) : `side`, vers sa droite si positif (au-delà de son outil), `back`, le retrait. Aux Quais, le
  * hangar cachait l'équipier à gauche, et devant il paraissait devant l'habitant (retrait d'un quart de pas) ; aux
- * Écluses, le mur du sas le prenait (directeur artistique, référent dys, consultant d'Archipéo, 30 octobre 2026).
+ * Écluses, le mur du sas le prenait à gauche, et à droite à 0,8, Kéo le cachait de près (directeur artistique, référent
+ * dys, consultant d'Archipéo, 30 octobre 2026).
  */
 export const EQUIPIER_SPOT_OF: Readonly<Partial<Record<PlaceId6e, { side: number; back: number }>>> = {
   quais: { side: 0.8, back: 0.25 },
@@ -113,9 +114,11 @@ export function equipierFrame(place: PlaceId, ground: (x: number, z: number) => 
   const spot = EQUIPIER_SPOT_OF[place as PlaceId6e] ?? { side: -EQUIPIER_OFFSET.left, back: EQUIPIER_OFFSET.back };
   const x = at.x + r.x * spot.side * h - f.x * spot.back * h;
   const z = at.z + r.z * spot.side * h - f.z * spot.back * h;
-  // Au sol, au plus haut du pas (sur une pente, le sol à facettes coupait ses cuisses aux Écluses : directeur artistique,
-  // troisième passe), jamais plus bas que l'habitant (sur un quai ou un seuil, le sol dessiné à côté peut être l'eau).
-  return { at: { x, y: Math.max(groundUnderFeet(x, z, ground), at.y), z }, yaw, height: equipierWorldHeight(place) };
+  // Au sol, au plus haut de son pas, plus court que celui de l'habitant (sur une pente, le sol à facettes coupait ses
+  // cuisses aux Écluses : directeur artistique, troisième passe), jamais plus bas que l'habitant (sur un quai ou un seuil,
+  // le sol dessiné à côté peut être l'eau).
+  const height = equipierWorldHeight(place);
+  return { at: { x, y: Math.max(groundUnderFeet(x, z, ground, (FOOT * height) / h), at.y), z }, yaw, height };
 }
 
 /**
