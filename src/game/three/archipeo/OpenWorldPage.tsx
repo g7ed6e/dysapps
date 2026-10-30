@@ -405,6 +405,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const focusAfter = useRef<string | null>(null);
   // Au plus grand texte, un lieu ouvert sans la place de son nom : la vue de départ de la Carte change (GD-20, « La Carte
   // au plus grand texte »).
+  // Le geste du métier (GD-27, lot 5) attend tant qu'une phrase du monde est écrite et dite, ou qu'une fiche, un
+  // panneau ou les commandes couvrent la scène (référent dys : rien ne bouge pendant qu'on lit).
+  const gestesHeld = said !== null || lieu !== null || panel !== null || commandsOpen;
+  useEffect(() => {
+    world.current?.holdGestes(gestesHeld);
+  }, [gestesHeld]);
   const reframeMap = useCallback((crowded: (spots: readonly MapSpotOnScreen[]) => number) => world.current?.reframeMap(crowded), []);
   const mapPick = useRef<(place: PlaceId | 'port' | BridgeSpot) => void>(() => {});
   const mapButton = useRef<HTMLButtonElement>(null);

@@ -32,6 +32,7 @@ import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
 import { farArchipelagos3e } from './finalView3e';
 import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { WORLD_HABITANT_TRIANGLES, hasWorldHabitant } from './worldHabitants';
+import { GESTE_TRIANGLES, TOOL_OF } from './gestes';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
@@ -205,7 +206,7 @@ export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly tria
 };
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef' | 'habitants';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef' | 'habitants' | 'gestes';
   triangles: number;
   calls: number;
 }
@@ -431,7 +432,7 @@ export function openWorldCost(amenagements: number, view: 'scenette' | 'monde' =
     // Pendant une scénette, la question et le décor de près ; hors scénette (`monde`), les habitants près de leur porte
     // à leur place (choix du mainteneur, 23 octobre 2026), cachés pendant une scénette.
     ...(view === 'monde'
-      ? [{ poste: 'habitants' as const, ...worldHabitantsCost('6e') }]
+      ? [{ poste: 'habitants' as const, ...worldHabitantsCost('6e') }, { poste: 'gestes' as const, ...worldGestesCost('6e') }]
       : [
           { poste: 'question' as const, ...questionCost() },
           { poste: 'scénette' as const, ...scenetteCost() },
@@ -480,6 +481,15 @@ export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldC
 export function worldHabitantsCost(level: OpenWorldLevel): { triangles: number; calls: number } {
   const count = planFor(level).places.filter((p) => hasWorldHabitant(p.id)).length;
   return { triangles: count * WORLD_HABITANT_TRIANGLES, calls: count ? 1 : 0 };
+}
+
+/**
+ * Le geste du métier (GD-27, lot 5, ./gestes.ts) : les outils des habitants du niveau qui en ont un, au plus
+ * `GESTE_TRIANGLES` chacun, tous hors ruine (le pire), dans un maillage à part (un appel), montré avec les habitants.
+ */
+export function worldGestesCost(level: OpenWorldLevel): { triangles: number; calls: number } {
+  const count = planFor(level).places.filter((p) => hasWorldHabitant(p.id) && TOOL_OF[p.id as keyof typeof TOOL_OF]).length;
+  return { triangles: count * GESTE_TRIANGLES, calls: count ? 1 : 0 };
 }
 
 /** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
@@ -622,9 +632,9 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost5e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }, { poste: 'gestes' as const, ...worldGestesCost('5e') }]
       : view === 'monde'
-      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }]
+      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }, { poste: 'gestes' as const, ...worldGestesCost('5e') }]
       : [
           { poste: 'question' as const, ...questionCost5e() },
           { poste: 'scénette' as const, ...scenetteCost5e() },
@@ -804,13 +814,13 @@ export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde')
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost4e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }, { poste: 'gestes' as const, ...worldGestesCost('4e') }]
       : view === 'scenette'
       ? [
           { poste: 'question' as const, ...questionCost4e() },
           { poste: 'scénette' as const, ...scenetteCost4e() },
         ]
-      : [{ poste: 'pose' as const, ...poseCost4e() }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }]),
+      : [{ poste: 'pose' as const, ...poseCost4e() }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }, { poste: 'gestes' as const, ...worldGestesCost('4e') }]),
   ];
 }
 
@@ -971,15 +981,15 @@ export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' | 'finale'
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost3e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }, { poste: 'gestes' as const, ...worldGestesCost('3e') }]
       : view === 'finale'
-      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]
+      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }, { poste: 'gestes' as const, ...worldGestesCost('3e') }]
       : view === 'scenette'
       ? [
           { poste: 'question' as const, ...questionCost3e() },
           { poste: 'scénette' as const, ...scenetteCost3e() },
         ]
-      : [{ poste: 'pose' as const, ...poseCost3e() }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]),
+      : [{ poste: 'pose' as const, ...poseCost3e() }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }, { poste: 'gestes' as const, ...worldGestesCost('3e') }]),
   ];
 }
 

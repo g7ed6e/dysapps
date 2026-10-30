@@ -43,7 +43,7 @@ import { perchoirFacets } from '../../world/continu/perchoir5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayColors, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
-import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId, type ScenePlaceId } from '../../world/continu/levelPlan';
 import { HABITANT_HEIGHT, hasHabitantModel } from '../../world/continu/habitants';
 import { arrivalViewOf, doorFrameOf, doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
@@ -106,6 +106,7 @@ import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
 import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight } from '../../world/continu/worldHabitants';
+import { GESTE_SETTLE, activeGeste, gestePhase, moveMobile, worldGestes, type MobilePiece } from '../../world/continu/gestes';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
@@ -226,6 +227,11 @@ export interface OpenWorld {
   goTo(place: PlaceId, jump?: boolean): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
+  /**
+   * Retient le geste du métier (GD-27, lot 5) : tant que `on`, l'outil de l'habitant actif reste au repos, le temps
+   * d'une ligne écrite et dite dans la phrase du monde (référent dys : rien ne bouge pendant qu'on lit).
+   */
+  holdGestes(on: boolean): void;
   /**
    * La cabine de la Montée (GD-22, lot 3, le bouton « Monter » ou « Descendre », ou la caisse touchée) : de la gare où se
    * tient Kéo, elle monte ou descend ; rien ailleurs, pendant un trajet, une question ou sur la Carte, ni tant que la
@@ -1287,6 +1293,65 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les habitants près de leur porte, hors de leur scénette (choix du mainteneur, 23 octobre 2026 : en modèle 3D, aux
   // quatre niveaux ; ./worldHabitantModels.ts) : leurs versions de loin, un maillage texturé à part, un appel.
   const worldHabitants = createWorldHabitantModels(scene, PLACES.map((p) => p.id), ground, (t) => renderer.initTexture(t));
+  // Le geste du métier (GD-27, lot 5, piste A « l'outil qui travaille » ; ../../world/continu/gestes.ts) : les outils des
+  // habitants montrés, dans un maillage à part (un appel), montré et caché avec eux ; la pièce mobile d'un seul, celui
+  // du lieu rallumé le plus proche de Kéo arrêté, tournée sommet par sommet quand le monde est calme.
+  const gestesMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  gestesMesh.visible = false;
+  gestesMesh.name = 'gestes';
+  scene.add(still(gestesMesh));
+  let gestesKey = '';
+  let gestesRest: Float32Array | null = null;
+  let gestesMobiles: readonly MobilePiece[] = [];
+  /** Les lieux rallumés dont l'habitant est montré : ceux dont l'outil peut bouger. */
+  let gesteCandidates: ScenePlaceId[] = [];
+  let gesteActive: ScenePlaceId | null = null;
+  let gesteStart = 0;
+  let gesteHeld = false;
+  /** Le dernier instant où Kéo bougeait (en marchant, dans la cabine) : le geste attend `GESTE_SETTLE` après.
+   */
+  let keoMovedAt = 0;
+  const showGestes = (places: readonly PlaceId[]) => {
+    // Dans la ruine, ni outil ni support (directeur artistique) : l'outil paraît avec la première partie posée.
+    const withTool = (p: PlaceId) => posedOf(p).length > 0;
+    const k = places.map((p) => `${p}${withTool(p) ? '+' : ''}`).join(',');
+    if (k === gestesKey) return;
+    gestesKey = k;
+    if (gesteActive) gesteActive = null;
+    const g = worldGestes(places, ground, withTool);
+    gestesRest = g.facets.positions.slice();
+    gestesMobiles = g.mobiles;
+    setGeometry(gestesMesh, g.facets);
+  };
+  /** Remet la pièce mobile de l'habitant `place` au repos. */
+  const restGeste = (place: ScenePlaceId) => {
+    const m = gestesMobiles.find((x) => x.place === place);
+    if (!m || !gestesRest) return;
+    const attr = gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+    moveMobile(gestesRest, attr.array as Float32Array, m, 0);
+    attr.addUpdateRange(m.start * 3, m.count * 3);
+    attr.needsUpdate = true;
+  };
+  /**
+   * Le geste de l'image : `calm`, rien d'autre ne se joue (ni question, ni scénette, ni Carte, ni script, ni voile, ni
+   * ligne retenue, ni « Réduire les animations ») et Kéo est arrêté depuis `GESTE_SETTLE` ; sinon, l'outil actif revient
+   * au repos. Le choix de l'habitant ne dépend que de Kéo, jamais de la caméra.
+   */
+  const stepGestes = (t: number, now: number, calm: boolean) => {
+    const next = calm && gestesMobiles.length && now - keoMovedAt >= GESTE_SETTLE * 1000 ? activeGeste(here, gesteCandidates, gesteActive, ground) : null;
+    if (next !== gesteActive) {
+      if (gesteActive) restGeste(gesteActive);
+      gesteActive = next;
+      gesteStart = t;
+    }
+    if (!gesteActive || !gestesRest) return;
+    const m = gestesMobiles.find((x) => x.place === gesteActive);
+    if (!m) return;
+    const attr = gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+    moveMobile(gestesRest, attr.array as Float32Array, m, gestePhase(t - gesteStart));
+    attr.addUpdateRange(m.start * 3, m.count * 3);
+    attr.needsUpdate = true;
+  };
   /** Les habitants montrés près de leur porte à la dernière pose des lieux : ceux qu'un toucher peut atteindre. */
   let habitantsOnShow: readonly PlaceId[] = [];
   // L'équipier qui guide le lieu (GD-23, lot 1, ./equipierModels.ts) : préparé avec l'habitant, montré dans la scénette.
@@ -2185,6 +2250,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (!mapView && !scenette && !(isLinkedLand(land) && closed.includes(land)) && hasWorldHabitant(p.id)) habitantsShown.push(p.id);
     }
     worldHabitants.show(habitantsShown);
+    showGestes(habitantsShown);
+    gesteCandidates = habitantsShown.filter((p): p is ScenePlaceId => hasScenette(p) && isWhole(posedOf(p)));
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
     for (const land of LINKED_LANDS) {
@@ -4599,6 +4666,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Le rotor de la Turbine tourne lentement, à l'arrêt pendant toute question et sur la Carte (il reprend où il s'était
     // arrêté).
     if (!reduceMotion && !asked && !scenette && !mapView) rotorAngle.value = (rotorAngle.value + dt * ROTOR.turn) % (2 * Math.PI);
+    // Le geste du métier : seulement quand le monde est calme et Kéo arrêté (référent dys) ; sinon l'outil au repos.
+    if (walk || carRolling) keoMovedAt = now;
+    stepGestes(t, now, !reduceMotion && !asked && !scenette && !mapView && !scriptRun && !nefTrip && !poseRun.active && !remise && !assembly && !walk && !carRolling && !gesteHeld && veilShown === 0);
     let moving = false;
     if (walk) {
       const state = walkAt(walk, now, reduceMotion);
@@ -4810,6 +4880,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     map: setMap,
     reframeMap: reframeStart,
+    holdGestes: (on) => {
+      gesteHeld = on;
+    },
     scenetteEnd,
     setPlaces,
     remiseView: (place) => remiseView(place),
@@ -4883,7 +4956,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       worldHabitants.dispose();
       equipiers.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh, nefMesh, bancMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh, nefMesh, bancMesh, gestesMesh]) m.geometry.dispose();
       lampMaterial.dispose();
       poseMaterial.dispose();
       faunaMaterial.dispose();
