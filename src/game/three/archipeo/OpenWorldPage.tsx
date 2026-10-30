@@ -27,7 +27,7 @@ import { frenchTypography } from '../../../components/math/RichText';
 import { useProgress } from '../../../core/ProgressContext';
 import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
-import { isSpeechAvailable } from '../../../core/speech';
+import { isSpeechAvailable, stopSpeaking } from '../../../core/speech';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
 import { paruresPoseBlock } from '../../useParuresBuilder';
@@ -412,10 +412,13 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const [assembling, setAssembling] = useState(false);
   useHoldCelebrations(posePending || assembling || Boolean(remise) || scriptPlaying);
   // La vue finale et les veillées se terminent aussi au clavier, comme au toucher : Échap, Entrée ou Espace (référent dys).
+  // Entrée ou Espace sur un bouton (« Réécouter », « Passer ») reste au bouton : la veillée ne se passe pas d'elle-même
+  // quand on la réécoute au clavier (consultant UX UI, référent dys, relecture du lot 3 de GD-27) ; Échap passe toujours.
   useEffect(() => {
     if (!scriptPlaying) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' && e.key !== 'Enter' && e.key !== ' ') return;
+      if (e.key !== 'Escape' && e.target instanceof Element && e.target.closest('button')) return;
       e.preventDefault();
       world.current?.endScript();
     };
@@ -1059,24 +1062,29 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const departNef = useCallback(
     (stage: VehicleStage) => {
       const w = world.current;
-      if (!w) return;
+      // Pendant une veillée (ou la vue finale), rien ne part : un second « Partir » attendrait la fin du script, puis
+      // partirait quand même (expert frontend, relecture du lot 3 de GD-27).
+      if (!w || scriptPlaying) return;
       setPanel(null);
       // Au 6e, une fois, la veillée de départ d'abord (GD-27 : le Phare tel qu'il est) ; le départ suit, par n'importe
       // quel chemin (sa fin, ou le toucher qui la passe).
       if (level === '6e' && !vigilSeen(state.world, '6e-departure') && playVigilRef.current('departure', () => leave(stage))) return;
       leave(stage);
     },
-    [level, state.world, leave],
+    [level, state.world, leave, scriptPlaying],
   );
   // Les veillées du 6e (GD-23, « trois veillées par niveau » ; GD-27, lot 3) : la caméra quitte Kéo pour les plans de la
   // veillée, sa ligne s'écrit sur fond uni et se dit avec la lecture automatique ; un toucher passe tout. Une veillée vue
-  // ne se rejoue pas, quoi qu'il arrive ensuite (`seeVigil`). `after` à la fin, par n'importe quel chemin.
+  // ne se rejoue pas, quoi qu'il arrive ensuite (`seeVigil`). `after` à la fin, par n'importe quel chemin ; la voix de la
+  // ligne s'arrête avec la veillée (passée d'un toucher, elle ne continue pas sur le monde revenu : référent dys). La
+  // scène peut refuser (la Carte ouverte, la Nef en route, un autre script) : `false`, rien n'est retenu.
   const playVigil = useCallback(
     (kind: VigilKind, after?: () => void): boolean => {
       const w = world.current;
       if (!w || level !== '6e') return false;
       const line = vigilWords6e(kind, lanternLit(posedShapes(constructionsRef.current['phare'])));
       if (!w.playVigil(vigil6e(kind), () => {
+        stopSpeaking();
         setVigil(null);
         after?.();
       })) return false;
@@ -1090,7 +1098,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const playVigilRef = useRef(playVigil);
   playVigilRef.current = playVigil;
   // L'arrivée : la première fois que l'élève entre dans le monde, au quai de l'Escale, tant qu'aucun lieu n'est rallumé
-  // (le Phare est éteint). Une partie plus avancée ne la voit jamais : elle est retenue comme vue.
+  // (le Phare est éteint). Une partie plus avancée ne la voit jamais : elle est retenue comme vue. Une fois par entrée :
+  // si la scène refuse (la Nef en route, un autre script), l'arrivée n'est ni jouée ni retenue, et se rejouera à l'entrée
+  // suivante.
   const arrivalVigilTried = useRef(false);
   useEffect(() => {
     if (!ready || arrivalVigilTried.current || level !== '6e' || vigilSeen(state.world, '6e-arrival')) return;
@@ -1113,11 +1123,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     }
     if (whole && !was && !vigilSeen(state.world, '6e-boarding')) setBoardingPending(true);
   }, [ready, level, constructions, state.world, seeVigil]);
+  // Elle attend aussi la Carte fermée ; refusée par la scène (la Nef en route), elle reste à jouer (expert frontend).
   useEffect(() => {
-    if (!boardingPending || posePending || asking || scriptPlaying || Boolean(remise)) return;
-    setBoardingPending(false);
-    playVigil('boarding');
-  }, [boardingPending, posePending, asking, scriptPlaying, remise, playVigil]);
+    if (!boardingPending || posePending || asking || scriptPlaying || Boolean(remise) || mapOpen) return;
+    if (playVigil('boarding')) setBoardingPending(false);
+  }, [boardingPending, posePending, asking, scriptPlaying, remise, mapOpen, playVigil]);
   // Quand le monde est prêt, après un voyage entre niveaux : à la première arrivée par la Nef, le carillon, une fois ;
   // après un retour, le nom du niveau, dans la zone du lecteur d'écran et à la voix (référent dys). Puis l'adresse
   // oublie le voyage : un rechargement ne le rejoue pas (expert frontend).
@@ -1438,13 +1448,18 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
             {saidOn && said && <SpeakButton text={said.voice ?? said.lines.join(' ')} label="Réécouter" compact />}
           </div>
           {/* La ligne d'une veillée (GD-23, GD-27, lot 3) : une seule, écrite sur fond uni le temps des plans, dite avec la
-              lecture automatique, à réentendre d'un toucher ; jamais nécessaire pour avancer. */}
-          {vigil && (
-            <div key={vigil.n} className="open-world-said open-world-veillee">
-              <p role="status">{vigil.line}</p>
-              <SpeakButton text={vigil.line} label="Réécouter" compact />
-            </div>
-          )}
+              lecture automatique, à réentendre d'un toucher ; jamais nécessaire pour avancer. La zone reste dans la page,
+              vide le reste du temps, pour que les lecteurs d'écran annoncent la ligne (référent dys). « Passer » écrit
+              que la veillée se passe (le toucher n'importe où le fait aussi) : 48 px, discret (consultant UX UI). */}
+          <div className="open-world-said open-world-veillee" data-shown={vigil ? 'oui' : 'non'}>
+            <p role="status">{vigil?.line ?? ''}</p>
+            {vigil && <SpeakButton text={vigil.line} label="Réécouter" compact />}
+            {vigil && (
+              <button type="button" className="open-world-veillee-pass" onClick={() => world.current?.endScript()}>
+                Passer
+              </button>
+            )}
+          </div>
           {asking && world.current && (
             asking.revision ? (
               <WorldRevision key={`${asking.place}-revision`} plan={asking.revision} world={world.current} onClose={closeQuestion} />

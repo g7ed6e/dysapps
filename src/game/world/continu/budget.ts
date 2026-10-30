@@ -328,7 +328,7 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
  * allumée (sa couleur dessinée sans ombre, dans le même matériau) ; le lieu suivi, seul hors de la brume, dans un
  * second (son matériau sans brouillard). Deux appels, quel que soit le nombre de lieux. L'Escale y entre (GD-20, lot 2),
  * au plus chargé : toutes les places de sa galerie prises, ses portes pavoisées, ses barques, sa pile pleine
- * (`PORT_WORST`) ; aucun appel de plus. Le Rafiot des Ferrailleurs à quai (GD-23, lot 2 ; GD-27, lot 3 : rafiot6e.ts),
+ * (`PORT_WORST`) ; aucun appel de plus. Le Rafiot des Ferrailleurs au mouillage (GD-23, lot 2 ; GD-27, lot 3 : rafiot6e.ts),
  * tant qu'un lieu qui l'amarre est éteint, dans le même maillage.
  */
 function placesCost(): { triangles: number; calls: number } {

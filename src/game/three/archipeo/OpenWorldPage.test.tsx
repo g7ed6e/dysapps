@@ -589,7 +589,7 @@ describe('Les veillées du 6e', () => {
     expect(saved()).toEqual(['6e-arrival', '6e-departure']);
   });
 
-  test('la Gare maritime rallumée sous les yeux de l’élève : la veillée de l’embarquement vient après la pose, « La radio monte à bord. » ; déjà rallumée en arrivant, jamais', async () => {
+  test('la Gare maritime rallumée sous les yeux de l’élève : la veillée de l’embarquement vient après la pose, « L’équipière radio monte à bord. » ; déjà rallumée en arrivant, jamais', async () => {
     scene.playVigils = true;
     const ferry = PLACES.find((p) => p.id === 'ferry')!;
     const island = getIle(ferry.island)!;
@@ -612,9 +612,57 @@ describe('Les veillées du 6e', () => {
     act(() => {
       pay.ctx!.chargerPourLesMesures({ ...pay.ctx!.state, world: { ...pay.ctx!.state.world, parts } });
     });
-    await screen.findByText('La radio monte à bord.');
+    await screen.findByText('L’équipière radio monte à bord.');
     expect(scene.vigils[0].vigil).toBe(FERRY_VIGIL_6E);
     // La partie chargée pour les mesures ne s'écrit pas sur l'appareil : la veillée vue se lit dans l'état.
     expect(pay.ctx!.state.world.vigils).toContain('6e-boarding');
+  });
+
+  test('la scène refuse la veillée de l’embarquement (la Carte ouverte, la Nef en route) : rien n’est retenu, elle vient dès que la scène accepte', async () => {
+    const ferry = PLACES.find((p) => p.id === 'ferry')!;
+    const plans = plansFor(getIle(ferry.island)!.id);
+    const parts = Object.fromEntries(plans.map((p) => [p.id, planCells(p).map((c) => c.key)]));
+    const last = plans[plans.length - 1];
+    const before = { ...parts, [last.id]: planCells(last).map((c) => c.key).slice(0, -1) };
+    localStorage.setItem('dysapps:game', JSON.stringify({ stock: {}, world: { links: [], vigils: ['6e-arrival'], parts: before } }));
+    renderPage();
+    await screen.findByRole('button', { name: /Carte/ });
+    // La Carte ouverte : la veillée attend ; la scène refuse (`playVigils` à faux) : rien n'est retenu.
+    await userEvent.setup().click(screen.getByRole('button', { name: /Carte/ }));
+    act(() => {
+      pay.ctx!.chargerPourLesMesures({ ...pay.ctx!.state, world: { ...pay.ctx!.state.world, parts } });
+    });
+    expect(scene.vigils).toHaveLength(0);
+    expect(pay.ctx!.state.world.vigils ?? []).not.toContain('6e-boarding');
+    await userEvent.setup().keyboard('{Escape}');
+    await screen.findByRole('button', { name: /Carte/ });
+    expect(scene.vigils).toHaveLength(0);
+    expect(pay.ctx!.state.world.vigils ?? []).not.toContain('6e-boarding');
+    expect(screen.queryByText('L’équipière radio monte à bord.')).toBeNull();
+    // La scène accepte : la veillée vient au premier changement d'état qui la relance.
+    scene.playVigils = true;
+    act(() => {
+      pay.ctx!.chargerPourLesMesures({ ...pay.ctx!.state, world: { ...pay.ctx!.state.world, parts } });
+    });
+    expect(scene.vigils).toHaveLength(0);
+  });
+
+  test('au clavier : Entrée ou Espace sur « Réécouter » ou « Passer » reste au bouton, Échap passe la veillée ; « Passer » la passe', async () => {
+    scene.playVigils = true;
+    renderPage();
+    await screen.findByText('Le Phare est éteint.');
+    act(() => scene.options!.onCameraScript!(true));
+    const w = scene.world!;
+    const pass = screen.getByRole('button', { name: 'Passer' });
+    pass.focus();
+    fireEvent.keyDown(pass, { key: ' ' });
+    fireEvent.keyDown(pass, { key: 'Enter' });
+    expect(w.endScript).not.toHaveBeenCalled();
+    fireEvent.keyDown(document.body, { key: 'Enter' });
+    expect(w.endScript).toHaveBeenCalledTimes(1);
+    fireEvent.keyDown(pass, { key: 'Escape' });
+    expect(w.endScript).toHaveBeenCalledTimes(2);
+    fireEvent.click(pass);
+    expect(w.endScript).toHaveBeenCalledTimes(3);
   });
 });

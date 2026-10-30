@@ -51,6 +51,6 @@
 
 > Les trois veillées d’un niveau ([GD-23](../gameplay/propositions/GD-23.md) ; [GD-27](../gameplay/propositions/GD-27.md), « Par quels canaux le récit se raconte ») : l’arrivée cadre le feu du niveau éteint, le départ le cadre tel qu’il est, l’embarquement cadre le lieu où un équipier monte à bord. Une seule ligne par veillée, littérale, le lieu nommé, écrite sur fond uni et lue, relançable, jamais nécessaire pour avancer ; un toucher la passe. Les jetons, que le jeu remplace :
 > - `{Feu}` : le nom du lieu qui porte le feu du niveau, avec son article (au 6e, « Le Phare », dont la lanterne s’allume avec son haut) ;
-> - `{Équipier}` : l’équipier qui monte à bord, par son rôle, avec son article (au 6e, « La radio », à la Gare maritime) ; jamais un prénom.
+> - `{Équipier}` : l’équipier qui monte à bord, par son rôle, avec son article (au 6e, « L’équipière radio », à la Gare maritime) ; un rôle qui désigne une personne, jamais un objet (« La radio » se lisait comme l’appareil), jamais un prénom.
 >
-> Dix mots au plus, un point à la fin, jamais « ! » ; ni « vite », ni « merci », ni le Rafiot, ni « veillée » (le mot est celui d’un lieu du 4e).
+> Dix mots au plus, un point à la fin, jamais « ! » ; ni « vite », ni « merci », ni le Rafiot, ni « veillée » dans la ligne elle-même (le mot est celui d’un lieu du 4e ; le manuel, lui, peut dire « les veillées »).

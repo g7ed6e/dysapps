@@ -1,7 +1,7 @@
 // Les trois veillées du 6e (GD-23, « trois veillées par niveau » ; GD-27, « Par quels canaux le récit se raconte » ;
 // lot 3) : l'arrivée et le départ cadrent le feu du niveau, la lanterne du Phare, éteinte à l'arrivée, telle qu'elle est
 // au départ (la veillée de départ du 6e ne montre que son propre feu) ; l'embarquement cadre la Gare maritime rallumée,
-// où la radio monte à bord (son modèle 3D n'existe pas encore, GD-19 : la veillée montre le lieu, la ligne dit
+// où l'équipière radio monte à bord (son modèle 3D n'existe pas encore, GD-19 : la veillée montre le lieu, la ligne dit
 // l'équipier). Deux plans chacune, lents, le regard à peine sous l'horizon, jamais à pic ; puis la caméra revient
 // derrière Kéo. Une seule ligne, littérale, le lieu nommé (docs/contenu/monde-ouvert.md, « Les veillées »). Code pur.
 import type { Vec3 } from './geometry';
@@ -28,15 +28,17 @@ const shot = (position: Vec3, target: Vec3, travel: number, hold: number) => ({ 
 /**
  * Le regard sur le Phare, depuis le sud-sud-ouest (la caméra qui suit regarde vers le nord, du quai de l'Escale : le
  * Phare est droit devant, de l'autre côté du lagon) : d'abord l'îlot entier, à cinquante pas, puis la tour de plus
- * près, à trente-cinq pas (l'îlot s'étend jusqu'à vingt-neuf pas au sud du Phare : la caméra reste au-dessus de
- * l'eau), le pied de la tour un peu sous le milieu de l'image : en ruine (un moignon de quatre pas) comme rallumé (la
+ * près, à trente-quatre pas, presque de face (quelques pas à l'est du premier plan : l'habitant du Phare se tient au
+ * sud-ouest de la tour, il est à côté de la ruine, jamais devant, directeur artistique, relecture du lot 3 ; l'îlot
+ * s'étend jusqu'à vingt-neuf pas au sud du Phare : la caméra reste au-dessus de l'eau), le pied de la tour un peu sous
+ * le milieu de l'image : en ruine (un moignon de quatre pas) comme rallumé (la
  * lanterne à quinze), le Phare tient dans l'image, la lanterne dans son tiers haut. Le même regard à l'arrivée (la lanterne éteinte) et au départ (telle
  * qu'elle est).
  */
 export const PHARE_VIGIL_6E: Vigil = {
   shots: [
     shot({ x: PHARE_6E.foot.x - 26, y: 14, z: PHARE_6E.foot.z + 56 }, { x: PHARE_6E.foot.x, y: 5, z: PHARE_6E.foot.z }, TIMES.travel, TIMES.hold),
-    shot({ x: PHARE_6E.foot.x - 11, y: 10, z: PHARE_6E.foot.z + 34 }, { x: PHARE_6E.foot.x, y: 6, z: PHARE_6E.foot.z }, TIMES.near, TIMES.read),
+    shot({ x: PHARE_6E.foot.x - 3, y: 10, z: PHARE_6E.foot.z + 34 }, { x: PHARE_6E.foot.x, y: 6, z: PHARE_6E.foot.z }, TIMES.near, TIMES.read),
   ],
   still: STILL,
 };
@@ -56,8 +58,12 @@ export const FERRY_VIGIL_6E: Vigil = {
 /** La veillée de chaque moment du 6e. */
 export const vigil6e = (kind: VigilKind): Vigil => (kind === 'boarding' ? FERRY_VIGIL_6E : PHARE_VIGIL_6E);
 
-/** L'équipier qui monte à bord au 6e, par son rôle (GD-19 : son prénom ne s'affiche jamais). */
-const BOARDING_6E = 'La radio';
+/**
+ * L'équipier qui monte à bord au 6e, par son rôle (GD-19 : son prénom ne s'affiche jamais) : un rôle qui désigne une
+ * personne, jamais un objet (« La radio monte à bord » se lisait comme l'appareil ; directeur du contenu pédagogique,
+ * relecture du lot 3).
+ */
+const BOARDING_6E = 'L’équipière radio';
 
 /**
  * La ligne de la veillée `kind` au 6e : le feu nommé et son état (`lit` : la lanterne du Phare allumée, avec le haut du

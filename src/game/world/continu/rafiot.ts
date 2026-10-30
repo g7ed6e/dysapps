@@ -1,5 +1,5 @@
 // Le Rafiot des Ferrailleurs (GD-19 ; fiche d'Archipéo, § 6 ; intention, § 5), le même bateau à chaque niveau où il
-// paraît : au 4e, amarré au quai abandonné de la Crique (./crique4e.ts) ; au 6e, à quai près d'un lieu éteint, la seule
+// paraît : au 4e, amarré au quai abandonné de la Crique (./crique4e.ts) ; au 6e, au mouillage près d'un lieu éteint, la seule
 // trace de la bande dans ce niveau (GD-23, lot 2 ; GD-27 ; GD-28 : ./rafiot6e.ts). Un remorqueur lisible, sans voile ni
 // mât : sa coque basse de fer rouillé sombre, la proue relevée, sa ligne de flottaison sombre, son liston de bois ; sa
 // cabine de bois, ses fenêtres en aplats sombres, sans lanterne ; une cheminée courte ceinte de fer bruni et, s'il
@@ -151,12 +151,26 @@ const RAFIOT_PIECE_AT: Readonly<Record<RafiotPiece, readonly [number, number]>> 
   vasque: [0.9, 3.45],
 };
 
+/** La caisse du pont avant : un bois plus clair que le pont, qui détache le bronze posé dessus. */
+const RAFIOT_CRATE_COLORS = { side: 0xb3a088, top: 0xc2b09a } as const;
+/** La caisse : son milieu sur le pont avant, tirée vers −x (la rive, pour un Rafiot vu de flanc de sa rive), et ses dimensions. */
+const RAFIOT_CRATE = { x: -0.3, z: -1.5, size: [1.0, 0.5, 2.1] as P3 } as const;
+/** Les trois places sur la caisse, en file le long du bateau : de flanc, aucune n'en cache une autre. */
+const RAFIOT_CRATE_AT: readonly number[] = [-0.85, -1.5, -2.15];
+
 /**
- * Les pièces de bronze `pieces` du Rafiot, boulonnées sur le pont arrière, chacune à sa place, en décor, sans texte ;
- * leurs faces debout regardent les flancs (on voit le Rafiot de flanc). Elles ne changent pas avec les lieux du niveau.
+ * Les pièces de bronze `pieces` du Rafiot, en décor, sans texte ; leurs faces debout regardent les flancs (on voit le
+ * Rafiot de flanc). Elles ne changent pas avec les lieux du niveau. Boulonnées sur le pont arrière, chacune à sa place
+ * (`stern`, le 4e) ; ou posées en file sur une caisse du pont avant, la première en tête (`bow`, le 6e : trois au plus).
  */
-function bronzes(b: FacetBuilder, pieces: readonly RafiotPiece[]): void {
-  for (const id of pieces) rafiotPiece(b, id, RAFIOT_PIECE_AT[id][0], RAFIOT_DECK, RAFIOT_PIECE_AT[id][1], PIECES_BRONZE);
+function bronzes(b: FacetBuilder, pieces: readonly RafiotPiece[], stowed: 'stern' | 'bow'): void {
+  if (stowed === 'stern') {
+    for (const id of pieces) rafiotPiece(b, id, RAFIOT_PIECE_AT[id][0], RAFIOT_DECK, RAFIOT_PIECE_AT[id][1], PIECES_BRONZE);
+    return;
+  }
+  const c = RAFIOT_CRATE;
+  b.box({ x: c.x, y: RAFIOT_DECK, z: c.z }, c.size, RAFIOT_CRATE_COLORS.side, RAFIOT_CRATE_COLORS.top);
+  pieces.slice(0, RAFIOT_CRATE_AT.length).forEach((id, i) => rafiotPiece(b, id, c.x, RAFIOT_DECK + c.size[1], RAFIOT_CRATE_AT[i], PIECES_BRONZE));
 }
 
 /** Où le Rafiot est amarré : son milieu dans le monde, et son cap (la proue vers −z de son repère, tourné de `yaw`). */
@@ -165,9 +179,15 @@ export interface RafiotSite {
   readonly yaw: number;
 }
 
-/** Ce que le Rafiot montre à un niveau : les pièces sur son pont, et sa fumée (il chauffe) ou rien (il attend, à quai). */
+/**
+ * Ce que le Rafiot montre à un niveau : les pièces sur son pont, où elles sont rangées (`stowed` : boulonnées sur le pont
+ * arrière, derrière la cabine, au 4e ; posées sur une caisse sur le pont avant, du côté de la rive, au 6e, où elles sont
+ * la seule trace et doivent se lire de près, directeur artistique, relecture du lot 3 de GD-27), et sa fumée (il
+ * chauffe) ou rien (il attend).
+ */
 export interface RafiotLook {
   readonly pieces: readonly RafiotPiece[];
+  readonly stowed?: 'stern' | 'bow';
   readonly smoke: boolean;
 }
 
@@ -226,7 +246,7 @@ export function rafiotFacets(site: RafiotSite, sun: Vec2, look: RafiotLook): Fac
   const funnel = { z: 1.5, y: roof + 0.14, h: 1.05, r: 0.36 } as const;
   b.prism({ x: 0, y: funnel.y, z: funnel.z }, funnel.r, funnel.r - 0.02, funnel.h, 8, C.funnel, C.roof);
   b.band({ x: 0, y: funnel.y + 0.6, z: funnel.z }, funnel.r + 0.03, 0.18, 8, C.iron);
-  bronzes(b, look.pieces);
+  bronzes(b, look.pieces, look.stowed ?? 'stern');
   if (!look.smoke) return placeFacets(b.build(), { x: site.at.x, y: 0, z: site.at.z, yaw: site.yaw });
   // La fumée, un panache court (retouche 1 du directeur artistique et du consultant d'Archipéo : trois prismes posés en
   // l'air se lisaient comme des pierres) : la première bouffée posée sur le haut de la cheminée, plus large en bas qu'en

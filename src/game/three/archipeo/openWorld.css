@@ -2892,6 +2892,27 @@
   padding: 0;
   border: 0;
 }
+/* La ligne d'une veillée (GD-27, lot 3) : la boîte de la phrase, avec « Passer » à droite du haut-parleur, un bouton
+   discret de 48 px, en mots (le toucher n'importe où passe aussi la veillée ; le bouton le dit, référent dys). */
+.open-world-veillee > .open-world-veillee-pass {
+  pointer-events: auto;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 0.6rem;
+  border: 0;
+  border-radius: var(--radius-control, 12px);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: max(18px, 1rem);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.open-world-veillee > .open-world-veillee-pass:focus-visible {
+  outline: 3px solid var(--focus, #142b38);
+  outline-offset: 2px;
+}
 
 /* Les habitants (GD-20, point 4, lot L1 « Livrer »). Les pastilles : rondes, 48 px, posées à chaque image par la scène
    au-dessus de la place de l'habitant (là où la remise se joue), centrées sur leur point ; un contour clair (Brume,

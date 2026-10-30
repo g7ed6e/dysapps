@@ -110,7 +110,7 @@ describe('Les veillées du 6e', () => {
     expect(vigilWords6e('arrival', false)).toBe('Le Phare est éteint.');
     expect(vigilWords6e('departure', true)).toBe('Le Phare est allumé.');
     expect(vigilWords6e('departure', false)).toBe('Le Phare est éteint.');
-    expect(vigilWords6e('boarding', false)).toBe('La radio monte à bord.');
+    expect(vigilWords6e('boarding', false)).toBe('L’équipière radio monte à bord.');
     expect(placeById('phare').name).toBe('Le Phare');
     for (const line of [PHRASES.fireOut, PHRASES.fireLit, PHRASES.boarding]) {
       expect(line.endsWith('.')).toBe(true);
