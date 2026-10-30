@@ -705,7 +705,7 @@ export const ONDES_LAYOUT = {
  * feuille descend de sous l'auvent et se plaque contre le mur. Son papier est clair et chaud, un cran plus chaud que les
  * cadrans ; son épingle, de fer.
  */
-const SHEET = { w: 0.46, h: 0.46, edge: 0.03, paper: 0xe8dcc0 } as const;
+const SHEET = { w: 0.46, h: 0.46, edge: 0.07, paper: 0xe8dcc0, frame: 0x4e5560 } as const;
 /** Chaque feuille : sa place le long de la façade, la hauteur de son haut ; deux lignes en quinconce, remplies en alternance. */
 const SHEETS: readonly (readonly [number, number])[] = [
   [2.15, 1.94],
@@ -720,9 +720,10 @@ const SHEETS: readonly (readonly [number, number])[] = [
 
 /** Une feuille épinglée, à l'origine (le haut de son milieu, contre un mur dont le devant regarde +z), son épingle. */
 function pinnedSheet(b: FacetBuilder): void {
-  // Un liseré de fer sombre déborde de la feuille : le papier clair se détache de la pierre claire de la façade
-  // (référent dys, consultant d'Archipéo : jamais par la seule couleur), sans assombrir le papier.
-  b.box({ x: 0, y: -SHEET.h - SHEET.edge, z: -0.004 }, [SHEET.w + 2 * SHEET.edge, SHEET.h + 2 * SHEET.edge, 0.012], C3E.iron, C3E.iron);
+  // Un cadre de fer sombre, large d'un bon doigt, déborde de la feuille : le papier clair se détache de la pierre claire
+  // de la façade (référent dys, consultant d'Archipéo : jamais par la seule couleur), sans assombrir le papier ; le
+  // cadre est sombre sans être presque noir.
+  b.box({ x: 0, y: -SHEET.h - SHEET.edge, z: -0.004 }, [SHEET.w + 2 * SHEET.edge, SHEET.h + 2 * SHEET.edge, 0.012], SHEET.frame, SHEET.frame);
   b.box({ x: 0, y: -SHEET.h, z: 0 }, [SHEET.w, SHEET.h, 0.02], SHEET.paper, SHEET.paper);
   b.box({ x: 0, y: -0.08, z: 0.012 }, [0.07, 0.07, 0.03], C3E.iron, C3E.iron);
 }
