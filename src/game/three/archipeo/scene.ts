@@ -1559,6 +1559,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La marche vers la station de l'épreuve sur place (GD-27, lot 6) : ce que la page attend à l'arrivée, à la place de
   // l'arrivée devant un lieu.
   let walkDone: (() => void) | null = null;
+  /** D'où la marche vers la station est partie (GD-27, lot 6) : Kéo y revient à la coupe de fin, ou en quittant. */
+  let stationFrom: Vec2 | null = null;
   // Les Détours (GD-20, déplacement libre, lot 2) : ceux trouvés (leur sente tracée), les cairns rallumés, celui où Kéo
   // s'est arrêté (dit à la page), depuis quand il s'y tient immobile, et l'avancée de la vue qui monte.
   let detoursFound: readonly DetourId[] = [];
@@ -2791,11 +2793,15 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     carAt = side;
     placeVisibility();
   };
-  const arrive = (place: PlaceId | null) => {
+  /** La marche s'arrête : plus de trajet, la montée finie, la caisse rangée, le repère libre effacé. */
+  const stopWalk = () => {
     walk = null;
     rideUp = null;
     parkCar();
     showFreeMark(null);
+  };
+  const arrive = (place: PlaceId | null) => {
+    stopWalk();
     // Arrivé à la station de l'épreuve sur place : la page reprend la main, rien du lieu ne s'ouvre.
     if (walkDone) {
       const done = walkDone;
@@ -2862,7 +2868,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!target) {
       if (!walkDone) return;
       walkDone = null;
-      walk = null;
+      stopWalk();
       return;
     }
     if (asked) askQuestion(null);
@@ -2872,6 +2878,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walkTarget = null;
     heldBridge = null;
     walkDone = done ?? null;
+    stationFrom = { ...here };
     showFreeMark(null);
     if (!route || route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05 || reduceMotion) {
       here = { ...to };
@@ -3846,8 +3853,6 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     walk = null;
     walkDone = null;
     unlitReaction();
-    finishRespond();
-    respond = null;
     here = { ...site.keo.at };
     heading = site.keo.yaw;
     keo.rotation.y = heading;
@@ -3869,6 +3874,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     itemShown = true;
     reaction = null;
     reactionMesh.visible = false;
+    // Le monde qui répond (GD-28), depuis la station aussi : les propagules déjà posées, de l'autre côté de l'eau, et la
+    // suivante qui tombe à chaque bonne réponse (directeur artistique : le monde répond là où l'élève le voit).
+    countResponded(place, q.mission, item.key ?? JSON.stringify(item.scene), q.responded);
+    showResponded();
     asked = { place, pose: qp.pose, objectsKey: `${place}|${viewW}x${viewH}|station`, itemKey: `${JSON.stringify(item.scene)}|${item.right.join(',')}`, answered: item.answered, scene: item.scene, scale: 1 };
     const onScreen = (x: number, y: number, z: number) => {
       projected.set(x, y, z).project(camera);
@@ -3893,6 +3902,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
       if (!asked) return [];
+      const left = asked;
       asked = null;
       reaction = null;
       itemShown = false;
@@ -3900,6 +3910,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reactionMesh.visible = false;
       respond = null;
       itemFacets = null;
+      // La question fermée depuis la station (« Quitter », GD-27, lot 6) : Kéo revient devant le lieu par la même coupe
+      // que le bilan, et sort de la scénette comme d'habitude (le lieu encadré est bien celui où il se tient).
+      if (left.scene.kind === 'surPlace' && !scenette) {
+        enterScenette(left.place);
+        if (stationFrom) here = { ...stationFrom };
+      }
+      stationFrom = null;
       leaveScenette();
       keo.visible = true;
       ring.visible = true;
@@ -4229,6 +4246,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reaction = null;
       itemFacets = null;
       enterScenette(place);
+      if (stationFrom) here = { ...stationFrom };
+      stationFrom = null;
       sceneYaw = scenetteStartYaw(place, posed);
       stopSceneReturn(sceneReturn);
       const qp = scenettePose(place, lastQuestion.layout.scenette.stage, viewW, viewH, posed);

@@ -979,8 +979,14 @@ describe('L’épreuve hors des murs (GD-27, lot 6) : la Mangrove, « Classer le
   // Les quatre items sans jumeau, joués dans la scénette d'abord : leurs réponses.
   const SCENETTE_ANSWERS = ['la truite', 'mammifères et vertébrés', 'attribut', 'ce qu’ils ont'];
   // Les quatre jumeaux joués sur place (placeItems.json) : la réponse de celui dont les choix sont à l'écran.
-  const twins = (placeItemsJson as { archipeo: Record<string, { choices: string[]; answer: string }[]> }).archipeo['life-earth-sciences-6e-living-world-living-groups-1'];
-  const stationAnswer = (texts: string[]) => twins.find((t) => t.choices.every((c) => texts.includes(c)))!.answer;
+  const twins = (placeItemsJson as { archipeo: Record<string, { prompt: string; answer: string }[]> }).archipeo['life-earth-sciences-6e-living-world-living-groups-1'];
+  // Le jumeau à l'écran se reconnaît à sa phrase (deux jumeaux ont les mêmes trois mots pour choix, dans un autre ordre,
+  // avec une autre réponse ; les items viennent dans un ordre tiré au sort).
+  const plainText = (t: string) => t.replace(/\s/g, '').replace(/…$/, '');
+  const stationAnswer = () => {
+    const shown = plainText(document.querySelector('.world-question-prompt')?.textContent ?? '');
+    return twins.find((t) => shown.startsWith(plainText(t.prompt)))!.answer;
+  };
   const station = (i: number) => ({ text: '', x: 300 + 200 * i, y: 420, center: true, answer: i, box: { left: 270 + 200 * i, top: 400, right: 330 + 200 * i, bottom: 470 } });
   beforeEach(() => {
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
@@ -1051,8 +1057,7 @@ describe('L’épreuve hors des murs (GD-27, lot 6) : la Mangrove, « Classer le
     // Aucun repère nu de la scène : l'étiquette est dans la cible.
     expect(document.querySelectorAll('.world-question-label')).toHaveLength(0);
     // La bonne réponse : la coche dans son étiquette, le cadre épais ; les deux autres partent d'un coup.
-    const texts = answers().map((a) => a.textContent?.trim() ?? '');
-    const right = answers().find((a) => a.textContent?.trim() === stationAnswer(texts))!;
+    const right = answers().find((a) => a.textContent?.trim() === stationAnswer())!;
     expect(right).toBeDefined();
     await user.click(right);
     await screen.findByRole('button', { name: /Suivant/ });

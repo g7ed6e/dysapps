@@ -159,6 +159,21 @@ describe('L’épreuve hors des murs dans la scène', () => {
     expect(triangles()).toBe(shown);
   });
 
+  it('la question fermée depuis la station (« Quitter ») ramène Kéo devant le lieu par la même coupe que le bilan', () => {
+    world.question({ place: 'mangrove', mission: 'living-groups', layout, item: { key: 'a', scene: { kind: 'column' }, answered: false, right: [0], picked: [] } });
+    const station = surPlaceStation('mangrove')!;
+    world.walkTo(station, () => {});
+    world.question({ place: 'mangrove', mission: 'living-groups', layout, item: { key: 'b', scene: scene1, answered: false, right: [], picked: [] } });
+    expect(Math.hypot(world.keoAt().x - station.x, world.keoAt().z - station.z)).toBeLessThan(9);
+    world.question(null);
+    const fromStation = world.keoAt();
+    expect(Math.hypot(fromStation.x - station.x, fromStation.z - station.z)).toBeGreaterThan(8);
+    // Là même où une question de la scénette le laisse en sortant.
+    world.question({ place: 'mangrove', mission: 'living-groups', layout, item: { key: 'a', scene: { kind: 'column' }, answered: false, right: [0], picked: [] } });
+    world.question(null);
+    expect(fromStation).toEqual(world.keoAt());
+  });
+
   it('une marche arrêtée en chemin (la question fermée) ne prévient plus la page', () => {
     const done = vi.fn();
     world.walkTo(null, done);

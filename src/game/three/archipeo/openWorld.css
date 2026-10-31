@@ -672,6 +672,11 @@
   max-width: 30rem;
   margin: 0;
 }
+/* À la station (sur place, GD-27, lot 6), l'indice redit couvrirait l'étiquette d'une cible : « Presque ! » seul, l'indice
+   reste derrière l'ampoule, comme sur un écran bas. */
+.world-question .in-world.scenette.sur-place > .feedback .feedback-body {
+  display: none;
+}
 /* « Presque ! » sur un écran bas : une étiquette à droite de la colonne, sous la barre du haut ; l'indice reste
    derrière l'ampoule. */
 .world-question .in-world.low > .feedback {

@@ -71,9 +71,6 @@ export interface SurPlaceContext {
   /** À la station sans marche (« Vue simple » : la liste tient lieu de trajet). */
   arrive(): void;
   enter(on: boolean): void;
-  /** Un écran bas ou le plus grand texte : des cibles qui ne tiennent pas ouvrent « Vue simple » d'office. */
-  tight: boolean;
-  simplify(): void;
 }
 
 /** L'air autour d'une cible de la station, et la cible la plus petite (référent dys : 48 px, 8 px entre deux). */

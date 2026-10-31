@@ -6,7 +6,8 @@ import { questionLayout } from './questionScene';
 import { isItemScene, placeInstruction, placeItems, SUR_PLACE_OBJECTS, surPlaceLast, COLUMN } from './questions';
 import { scenetteLayout } from './scenette';
 import { playsSurPlace, surPlaceOf } from './paroles';
-import { SUR_PLACE_CAMERA, SUR_PLACE_OBJECT_TRIANGLES, SUR_PLACE_STONE_TRIANGLES, SUR_PLACE_TRIANGLES_MAX, hasSurPlaceStation, surPlaceFacets, surPlaceObject, surPlacePose, surPlaceSite, surPlaceStation, surPlaceStone, type SurPlaceScene } from './surPlace';
+import { SUR_PLACE_CAMERA, SUR_PLACE_OBJECT_TRIANGLES, SUR_PLACE_OBJECT_WIDTH, SUR_PLACE_STONE_TRIANGLES, SUR_PLACE_TRIANGLES_MAX, hasSurPlaceStation, surPlaceFacets, surPlaceObject, surPlacePose, surPlaceSite, surPlaceStation, surPlaceStone, type SurPlaceScene } from './surPlace';
+import { boundsOf } from './facets';
 import livingGroups from '../../exercises/data/life-earth-sciences-6e-living-world-living-groups-1.json';
 import type { QuestionItem } from './questions';
 
@@ -55,9 +56,24 @@ describe('l’épreuve hors des murs (GD-27, lot 6) : le kit, la station, la cam
     expect(Math.min(...ys)).toBeGreaterThan(0);
     expect(site.keo.at.x).toBeGreaterThan(at.x);
     expect(Math.abs(site.keo.at.z - at.z)).toBeGreaterThan(1);
+    // Kéo tourné vers l'objet du milieu, au cap de la scène (`atan2(-dx, -dz)` vers ce qu'il regarde).
+    const d = { x: at.x - site.keo.at.x, z: at.z - site.keo.at.z };
+    expect(site.keo.yaw).toBeCloseTo(Math.atan2(-d.x, -d.z), 6);
   });
 
-  it('la caméra fixe : à l’ouest, le regard vers l’est, l’œil entre 1,8 et 2,2 au-dessus du sol, à six unités et demie de l’objet du milieu, en plongée de quinze degrés ; le point visé au même endroit de l’écran quelle que soit la bulle', () => {
+  it('chaque objet du kit tient dans une unité de large, de gauche à droite comme de près en loin, posé sur sa pierre', () => {
+    for (const name of SUR_PLACE_OBJECTS) {
+      const { min, max } = boundsOf(surPlaceObject(name));
+      expect(max[2] - min[2], name).toBeLessThanOrEqual(SUR_PLACE_OBJECT_WIDTH);
+      expect(max[0] - min[0], name).toBeLessThanOrEqual(SUR_PLACE_OBJECT_WIDTH);
+      // Posé sur sa pierre, rien ne s'enfonce.
+      expect(min[1], name).toBeGreaterThanOrEqual(-0.001);
+    }
+    // Chaque objet a son dessin (`surPlaceObject` les connaît tous, par leur type) ; le kit du lecteur du contenu est
+    // comparé à celui-ci dans scripts/contenu/aulieu.test.mjs.
+  });
+
+  it('la caméra fixe : à l’ouest, le regard vers l’est, l’œil entre 1,8 et 2,2 au-dessus du sol, à cinq unités et demie de l’objet du milieu, en plongée de quinze degrés ; le point visé au même endroit de l’écran quelle que soit la bulle', () => {
     const site = surPlaceSite('mangrove', ground)!;
     const [w, h] = [1024, 768];
     const base = questionLayout({ count: 3 }, w, h);
@@ -68,8 +84,8 @@ describe('l’épreuve hors des murs (GD-27, lot 6) : le kit, la station, la cam
     expect(pose.position.z).toBeCloseTo(mid.z, 6);
     const d = Math.hypot(pose.position.x - pose.target.x, pose.position.y - pose.target.y, pose.position.z - pose.target.z);
     expect(d).toBeCloseTo(SUR_PLACE_CAMERA.distance, 6);
-    expect(d).toBeGreaterThanOrEqual(6);
-    expect(d).toBeLessThanOrEqual(7);
+    expect(d).toBeGreaterThanOrEqual(5);
+    expect(d).toBeLessThanOrEqual(6);
     const eye = pose.position.y - site.floor.y;
     expect(eye).toBeGreaterThanOrEqual(1.8);
     expect(eye).toBeLessThanOrEqual(2.2);

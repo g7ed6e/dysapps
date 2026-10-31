@@ -8,9 +8,12 @@
 // Le kit : cinq animaux (aigrette, chauve-souris, libellule, poisson, araignée), chacun 40 à 80 triangles en aplats
 // francs, aux silhouettes distinctes même en gris ; une pierre, 12 triangles : trois objets et trois pierres font au plus
 // `SUR_PLACE_TRIANGLES_MAX` triangles, dans le maillage de l'item, aucun appel de plus (artiste technique 3D, budget).
-// La caméra est fixe pour tout l'item, quoi que fasse la bulle : l'œil à deux unités du sol, six et demie en arrière de
-// l'objet du milieu (le cadrage disait cinq : le trio tenait trop de place), en plongée de quinze degrés, le champ de la scénette ; le trio au centre-bas, un peu à droite du milieu pour
-// laisser le rappel à gauche, Kéo derrière les pierres, au tiers gauche, le lieu et sa porte au fond.
+// La caméra est fixe pour tout l'item, quoi que fasse la bulle : l'œil à deux unités du sol, cinq et demie en arrière de
+// l'objet du milieu (le cadrage disait cinq ; à six et demie le trio ne prenait qu'un tiers de la hauteur, directeur
+// artistique), en plongée de quinze degrés, le champ de la scénette ; le trio au centre-bas, un peu à droite du milieu,
+// Kéo derrière les pierres, au tiers gauche, tourné vers elles, le lieu au fond : au bord de l'eau, le carbet et ses
+// propagules (le monde qui répond) en face. Chaque objet tient dans une unité de large (`SUR_PLACE_OBJECT_WIDTH`) :
+// deux cibles gardent huit pixels entre elles ; les pattes se comptent, en éventail face à la caméra.
 // Code pur : la scène (../../three/archipeo/scene.ts) pose Kéo, la caméra et le maillage ; la page écrit les étiquettes.
 import { CAMERA_FOV, type CameraPose } from './camera';
 import { FacetBuilder, boundsOf, type Facets } from './facets';
@@ -28,28 +31,32 @@ const SUR_PLACE_STONES = { count: 3, step: 1.4, radius: 0.5, height: 0.12 } as c
 
 /** Le plafond des triangles d'un objet du kit, et celui de la scène entière (trois objets et trois pierres). */
 export const SUR_PLACE_OBJECT_TRIANGLES = { min: 40, max: 80 } as const;
+/** La largeur au plus d'un objet du kit (de gauche à droite pour la caméra, et de près en loin) : moins que le pas des pierres. */
+export const SUR_PLACE_OBJECT_WIDTH = 1;
 export const SUR_PLACE_STONE_TRIANGLES = 12;
 export const SUR_PLACE_TRIANGLES_MAX = SUR_PLACE_STONES.count * (SUR_PLACE_OBJECT_TRIANGLES.max + SUR_PLACE_STONE_TRIANGLES);
 
 /**
  * La station de chaque lieu joué sur place, depuis le sol de sa scénette (`sceneSpot`) : à la Mangrove, douze unités à
- * l'ouest et quatre au sud du platelage, hors de la boîte du lieu où l'on ne marche pas, sur un sol plat où l'on marche
- * (relevé du terrain du 31 octobre 2026) ; le lieu, son ponton et sa cabane restent au fond, à droite la porte.
+ * l'ouest et quatre au nord du platelage, au bord de l'eau (la rive passe une unité plus à l'est), hors de la boîte du
+ * lieu où l'on ne marche pas, sur un sol plat où l'on marche (relevé du terrain du 31 octobre 2026) ; en face, de
+ * l'autre côté de l'eau, le carbet, le ponton et les propagules que posent les bonnes réponses (directeur artistique :
+ * le fond dit le lieu, et le monde qui répond se voit).
  */
-const STATIONS: Readonly<Partial<Record<PlaceId, { dx: number; dz: number }>>> = { mangrove: { dx: -12, dz: 4 } };
+const STATIONS: Readonly<Partial<Record<PlaceId, { dx: number; dz: number }>>> = { mangrove: { dx: -12, dz: -4 } };
 
 /** Un lieu qui a sa station (et donc son kit). */
 export const hasSurPlaceStation = (place: PlaceId): boolean => Object.hasOwn(STATIONS, place);
 
 /** Kéo à la station : derrière les pierres (à l'est, loin de la caméra), au tiers gauche de l'image, tourné vers les objets. */
-const KEO_AT_STATION = { dx: 3.6, dz: -4.2 } as const;
+const KEO_AT_STATION = { dx: 6, dz: -4.8 } as const;
 
 /**
  * La caméra de la station : la plongée, le recul depuis l'objet du milieu, la hauteur visée au-dessus des pierres, et où
  * ce point tombe à l'écran (`across` de la largeur, `down` de la hauteur) : toujours au même endroit, la bulle et le
  * rappel n'y changent rien (référent dys : rien ne bouge à la station).
  */
-export const SUR_PLACE_CAMERA = { pitch: (15.5 * Math.PI) / 180, distance: 6.5, aim: 0.3, across: 0.6, down: 0.64 } as const;
+export const SUR_PLACE_CAMERA = { pitch: (15.5 * Math.PI) / 180, distance: 5.5, aim: 0.3, across: 0.55, down: 0.64 } as const;
 
 /** Le point du sol où Kéo s'arrête (la marche y mène), ou rien si le lieu ne se joue pas sur place. */
 export function surPlaceStation(place: PlaceId): Vec2 | null {
@@ -77,8 +84,8 @@ export function surPlaceSite(place: PlaceId, ground: (x: number, z: number) => n
     return { x: at.x, y: groundUnderFeet(at.x, z, ground) + height, z };
   });
   const keo = { x: at.x + KEO_AT_STATION.dx, z: at.z + KEO_AT_STATION.dz };
-  // Le visage vers +z au cap nul : Kéo regarde l'objet du milieu.
-  const yaw = Math.atan2(at.x - keo.x, at.z - keo.z);
+  // Le cap de Kéo vers un point, comme dans la scène (`atan2(-dx, -dz)`) : il regarde l'objet du milieu.
+  const yaw = Math.atan2(keo.x - at.x, keo.z - at.z);
   return { floor: { x: at.x, y: groundUnderFeet(at.x, at.z, ground), z: at.z }, stones, keo: { at: keo, yaw } };
 }
 
@@ -103,7 +110,7 @@ export function surPlacePose(site: SurPlaceSite, width: number, height: number):
 const K = {
   stone: 0xc8bfae,
   stoneSide: 0x9c937f,
-  water: 0x2f8fc8,
+  water: 0x8fd3ee,
   white: 0xf2eee4,
   whiteShade: 0xd9d4c8,
   beak: 0xd9a441,
@@ -114,13 +121,13 @@ const K = {
   wing: 0x55423a,
   teal: 0x3a8f9f,
   tealTop: 0x5fb3c2,
-  wingPale: 0xdbe7ea,
+  wingPale: 0xeaf2f4,
   fish: 0x5b8db0,
   fishTop: 0x9cc3da,
   fishTail: 0x46769a,
   eye: 0x2f3e46,
-  spider: 0x6b5a4e,
-  spiderTop: 0x8d7a6a,
+  spider: 0x8a7664,
+  spiderTop: 0xa8927e,
   grey: 0x9aa0a3,
   greyTop: 0xb5babd,
 } as const;
@@ -134,31 +141,40 @@ function stroke(b: FacetBuilder, x: number, from: readonly [number, number], to:
   b.quad([x, lo[0], lo[1] - w / 2], [x, lo[0], lo[1] + w / 2], [x, hi[0], hi[1] + w / 2], [x, hi[0], hi[1] - w / 2], color);
 }
 
-/** Un pan dressé face à la caméra, du point bas au point haut, de largeur `w` à son bout : une aile. */
+/**
+ * Un pan dressé face à la caméra (à l'ouest), du point bas au point haut, de largeur `w` à son bout : une aile, une
+ * nageoire. Toujours tourné vers la caméra (le maillage n'a qu'une face), quel que soit le sens du trait.
+ */
 function wing(b: FacetBuilder, x: number, from: readonly [number, number], to: readonly [number, number], w: number, color: number): void {
   const d = Math.hypot(to[0] - from[0], to[1] - from[1]) || 1;
-  const nx = (-(to[1] - from[1]) / d) * (w / 2);
-  const ny = ((to[0] - from[0]) / d) * (w / 2);
-  b.quad([x, from[0], from[1]], [x, to[0] - ny * 0.3, to[1] - nx * 0.3], [x, to[0] + ny, to[1] + nx], [x, from[0] + ny * 0.5, from[1] + nx * 0.5], color);
+  // La perpendiculaire au trait, dans le plan (y, z), longue de la demi-largeur.
+  const py = (-(to[1] - from[1]) / d) * (w / 2);
+  const pz = ((to[0] - from[0]) / d) * (w / 2);
+  const a: [number, number, number] = [x, from[0], from[1]];
+  const q: [number, number, number] = [x, to[0] - py * 0.3, to[1] - pz * 0.3];
+  const c: [number, number, number] = [x, to[0] + py, to[1] + pz];
+  const e: [number, number, number] = [x, from[0] + py * 0.5, from[1] + pz * 0.5];
+  const nx = (q[1] - a[1]) * (c[2] - a[2]) - (q[2] - a[2]) * (c[1] - a[1]);
+  if (nx <= 0) b.quad(a, q, c, e, color);
+  else b.quad(a, e, c, q, color);
 }
 
-/** Une aile plate, vue de dessus, relevée vers la caméra du côté est (`lift`) pour qu'elle se lise en plongée. */
-function flat(b: FacetBuilder, x0: number, x1: number, y: number, z0: number, z1: number, color: number, lift = 0.08): void {
-  b.quad([x0, y, z0], [x0, y, z1], [x1, y + lift, z1], [x1, y + lift, z0], color);
-}
-
-/** L'aigrette, debout, de profil : les plumes blanches, deux longues pattes, le long cou, le bec. */
+/**
+ * L'aigrette, debout, de profil : les plumes blanches (le blanc reste blanc, les faces vues par la caméra en blanc, le
+ * dessus un peu ombré), deux longues pattes, le long cou, le bec ; moins haute que le cadrage ne la dessinait, pour
+ * que son étiquette reste sous la bulle.
+ */
 function aigrette(b: FacetBuilder, o: Vec3, c: Palette): void {
-  const leg = 0.42;
+  const leg = 0.34;
   b.box({ x: o.x, y: o.y, z: o.z - 0.1 }, [0.05, leg, 0.05], c.legs);
   b.box({ x: o.x, y: o.y, z: o.z + 0.1 }, [0.05, leg, 0.05], c.legs);
-  b.box({ x: o.x, y: o.y + leg, z: o.z }, [0.26, 0.26, 0.56], c.whiteShade, c.white);
+  b.box({ x: o.x, y: o.y + leg, z: o.z }, [0.26, 0.26, 0.56], c.white, c.whiteShade);
   // La queue, un peu relevée, vers le sud.
-  b.box({ x: o.x, y: o.y + leg + 0.14, z: o.z + 0.36 }, [0.14, 0.08, 0.2], c.whiteShade, c.white);
+  b.box({ x: o.x, y: o.y + leg + 0.14, z: o.z + 0.32 }, [0.14, 0.08, 0.18], c.white, c.whiteShade);
   // Le cou vers le nord, la tête au bout, le bec jaune.
-  b.box({ x: o.x, y: o.y + leg + 0.22, z: o.z - 0.26 }, [0.09, 0.4, 0.09], c.whiteShade, c.white);
-  b.box({ x: o.x, y: o.y + leg + 0.6, z: o.z - 0.3 }, [0.13, 0.13, 0.2], c.whiteShade, c.white);
-  b.prism({ x: o.x, y: o.y + leg + 0.66, z: o.z - 0.4, pitch: -Math.PI / 2 }, 0.03, 0, 0.22, 4, c.beak);
+  b.box({ x: o.x, y: o.y + leg + 0.22, z: o.z - 0.26 }, [0.09, 0.32, 0.09], c.white, c.whiteShade);
+  b.box({ x: o.x, y: o.y + leg + 0.52, z: o.z - 0.3 }, [0.13, 0.13, 0.2], c.white, c.whiteShade);
+  b.prism({ x: o.x, y: o.y + leg + 0.58, z: o.z - 0.38, pitch: -Math.PI / 2 }, 0.03, 0, 0.12, 4, c.beak);
 }
 
 /** La chauve-souris, posée, les ailes de peau à demi ouvertes : le corps brun à poils, les oreilles pointues. */
@@ -169,62 +185,75 @@ function chauveSouris(b: FacetBuilder, o: Vec3, c: Palette): void {
   b.prism({ x: o.x, y: o.y + 0.46, z: o.z - 0.06 }, 0.035, 0, 0.12, 3, c.fur);
   b.prism({ x: o.x, y: o.y + 0.46, z: o.z + 0.06 }, 0.035, 0, 0.12, 3, c.fur);
   // Les deux ailes, étalées de part et d'autre, leurs doigts en traits.
-  b.box({ x: o.x, y: o.y + 0.1, z: o.z - 0.31 }, [0.03, 0.26, 0.38], c.wing);
-  b.box({ x: o.x, y: o.y + 0.1, z: o.z + 0.31 }, [0.03, 0.26, 0.38], c.wing);
-  stroke(b, o.x - 0.02, [o.y + 0.1, o.z - 0.14], [o.y + 0.38, o.z - 0.44], 0.03, c.fur);
-  stroke(b, o.x - 0.02, [o.y + 0.1, o.z + 0.14], [o.y + 0.38, o.z + 0.44], 0.03, c.fur);
-  stroke(b, o.x - 0.02, [o.y + 0.1, o.z - 0.28], [o.y + 0.36, o.z - 0.5], 0.03, c.fur);
-  stroke(b, o.x - 0.02, [o.y + 0.1, o.z + 0.28], [o.y + 0.36, o.z + 0.5], 0.03, c.fur);
+  b.box({ x: o.x, y: o.y + 0.1, z: o.z - 0.3 }, [0.03, 0.26, 0.36], c.wing);
+  b.box({ x: o.x, y: o.y + 0.1, z: o.z + 0.3 }, [0.03, 0.26, 0.36], c.wing);
+  stroke(b, o.x - 0.02, [o.y + 0.1, o.z - 0.14], [o.y + 0.38, o.z - 0.42], 0.03, c.fur);
+  stroke(b, o.x - 0.02, [o.y + 0.1, o.z + 0.14], [o.y + 0.38, o.z + 0.42], 0.03, c.fur);
+  stroke(b, o.x - 0.02, [o.y + 0.1, o.z - 0.28], [o.y + 0.36, o.z - 0.47], 0.03, c.fur);
+  stroke(b, o.x - 0.02, [o.y + 0.1, o.z + 0.28], [o.y + 0.36, o.z + 0.47], 0.03, c.fur);
 }
 
 /**
- * La libellule, posée, de profil : le long corps fin, six pattes qui se comptent, et quatre ailes pâles dressées en
- * éventail face à la caméra (des ailes à plat ne se liraient pas en plongée).
+ * La libellule, posée, de profil : le long corps fin, six pattes qui se comptent (chacune à sa place de gauche à droite,
+ * en éventail face à la caméra, les deux côtés décalés pour qu'aucune n'en cache une autre), et quatre ailes pâles
+ * dressées depuis le dos, larges (des ailes à plat ne se liraient pas en plongée ; trop fines, elles faisaient des
+ * antennes).
  */
 function libellule(b: FacetBuilder, o: Vec3, c: Palette): void {
   const y = o.y + 0.18;
-  // Les six pattes, trois de chaque côté du corps, en traits verticaux.
-  for (const dz of [-0.14, 0, 0.14]) {
-    stroke(b, o.x - 0.07, [o.y, o.z + dz - 0.05], [y + 0.04, o.z + dz], 0.025, c.teal);
-    stroke(b, o.x + 0.07, [o.y, o.z + dz + 0.05], [y + 0.04, o.z + dz], 0.025, c.teal);
+  // Six pattes : trois par côté, les deux côtés en quinconce, chaque patte vers le sol un peu plus loin que sa hanche.
+  for (const [i, dz] of [-0.2, -0.04, 0.12].entries()) {
+    const near = o.x - 0.07;
+    const far = o.x + 0.07;
+    stroke(b, near, [o.y, o.z + dz - 0.08], [y + 0.04, o.z + dz], 0.025, c.teal);
+    stroke(b, far, [o.y, o.z + dz + 0.08 + i * 0.01], [y + 0.04, o.z + dz + 0.08], 0.025, c.teal);
   }
   b.box({ x: o.x, y, z: o.z - 0.05 }, [0.12, 0.11, 0.3], c.teal, c.tealTop);
-  b.box({ x: o.x, y: y + 0.01, z: o.z + 0.38 }, [0.06, 0.06, 0.56], c.teal, c.tealTop);
+  b.box({ x: o.x, y: y + 0.01, z: o.z + 0.3 }, [0.06, 0.06, 0.42], c.teal, c.tealTop);
   b.box({ x: o.x, y: y - 0.01, z: o.z - 0.26 }, [0.14, 0.14, 0.14], c.teal, c.tealTop);
   // Quatre ailes, deux de chaque côté, dressées depuis le dos : les deux du devant plus hautes, celles de derrière plus
-  // couchées, chacune un long pan pâle.
+  // couchées, chacune un large pan pâle.
   const back = y + 0.1;
   for (const side of [-1, 1]) {
-    wing(b, o.x - 0.02, [back, o.z + side * 0.02], [back + 0.46, o.z + side * 0.34], 0.1, c.wingPale);
-    wing(b, o.x + 0.02, [back, o.z + side * 0.04], [back + 0.26, o.z + side * 0.46], 0.09, c.wingPale);
+    wing(b, o.x - 0.02, [back, o.z + side * 0.02], [back + 0.44, o.z + side * 0.3], 0.2, c.wingPale);
+    wing(b, o.x + 0.02, [back, o.z + side * 0.04], [back + 0.24, o.z + side * 0.44], 0.18, c.wingPale);
   }
 }
 
-/** Le poisson, dans sa flaque peinte sur la pierre : le corps bleu à écailles, la queue, la nageoire du dos, l'œil. */
+/**
+ * Le poisson, dans sa flaque claire sur la pierre : le corps effilé (un prisme qui s'amincit vers la queue), la queue
+ * fourchue, la nageoire du dos, l'œil. La flaque est d'une eau claire, jamais sombre (elle se confondait avec l'ombre).
+ */
 function poisson(b: FacetBuilder, o: Vec3, c: Palette): void {
-  // La flaque : un aplat d'eau sur la pierre.
-  b.quad([o.x - 0.42, o.y + 0.005, o.z - 0.5], [o.x - 0.42, o.y + 0.005, o.z + 0.5], [o.x + 0.42, o.y + 0.005, o.z + 0.5], [o.x + 0.42, o.y + 0.005, o.z - 0.5], c.water);
-  b.box({ x: o.x, y: o.y + 0.02, z: o.z - 0.06 }, [0.16, 0.3, 0.56], c.fish, c.fishTop);
-  b.box({ x: o.x, y: o.y + 0.08, z: o.z + 0.34 }, [0.04, 0.26, 0.2], c.fishTail);
-  flat(b, o.x - 0.02, o.x + 0.02, o.y + 0.32, o.z - 0.2, o.z + 0.1, c.fishTail, 0.1);
-  stroke(b, o.x - 0.09, [o.y + 0.08, o.z + 0.02], [o.y + 0.14, o.z + 0.14], 0.05, c.fishTail);
-  b.box({ x: o.x - 0.08, y: o.y + 0.2, z: o.z - 0.26 }, [0.02, 0.06, 0.06], c.eye);
-  b.box({ x: o.x + 0.08, y: o.y + 0.2, z: o.z - 0.26 }, [0.02, 0.06, 0.06], c.eye);
+  b.quad([o.x - 0.4, o.y + 0.005, o.z - 0.48], [o.x - 0.4, o.y + 0.005, o.z + 0.48], [o.x + 0.4, o.y + 0.005, o.z + 0.48], [o.x + 0.4, o.y + 0.005, o.z - 0.48], c.water);
+  // La tête vers le nord : le corps, un prisme couché, large à la tête, fin à la queue.
+  b.prism({ x: o.x, y: o.y + 0.17, z: o.z - 0.3, pitch: Math.PI / 2, yaw: Math.PI / 6 }, 0.15, 0.05, 0.56, 6, c.fish, c.fishTop);
+  // La queue fourchue : deux pans qui s'écartent, vers le sud.
+  wing(b, o.x, [o.y + 0.16, o.z + 0.26], [o.y + 0.3, o.z + 0.46], 0.09, c.fishTail);
+  wing(b, o.x, [o.y + 0.16, o.z + 0.26], [o.y + 0.07, o.z + 0.46], 0.09, c.fishTail);
+  // La nageoire du dos, dressée, et l'œil.
+  wing(b, o.x, [o.y + 0.28, o.z - 0.1], [o.y + 0.4, o.z + 0.06], 0.1, c.fishTail);
+  b.box({ x: o.x - 0.13, y: o.y + 0.18, z: o.z - 0.36 }, [0.03, 0.06, 0.06], c.eye);
+  b.box({ x: o.x + 0.13, y: o.y + 0.18, z: o.z - 0.36 }, [0.03, 0.06, 0.06], c.eye);
 }
 
-/** L'araignée : le gros abdomen, la tête, huit pattes écartées en arceaux, quatre de chaque côté, qui se comptent. */
+/**
+ * L'araignée : le gros abdomen, la tête, huit pattes en arceaux qui se comptent (quatre par côté, les deux côtés en
+ * quinconce : huit pieds à huit places de gauche à droite, dans une unité de large).
+ */
 function araignee(b: FacetBuilder, o: Vec3, c: Palette): void {
   const y = o.y + 0.16;
-  for (const [i, dz] of [-0.3, -0.1, 0.1, 0.3].entries()) {
-    const out = (i < 2 ? -1 : 1) * 0.42;
-    for (const side of [-1, 1]) {
-      const x = o.x + side * 0.1;
-      // Un arceau : de la pierre jusqu'au genou, puis du genou au corps.
-      stroke(b, x, [o.y, o.z + dz + out], [y + 0.14, o.z + dz + out / 2], 0.03, c.spider);
-      stroke(b, x, [y + 0.14, o.z + dz + out / 2], [y + 0.04, o.z + dz], 0.03, c.spider);
-    }
+  // Les pieds, du nord au sud : près, loin, près, loin… ; les hanches sur le corps, à leur côté.
+  const feet = [-0.47, -0.35, -0.21, -0.09, 0.09, 0.21, 0.35, 0.47];
+  for (const [i, foot] of feet.entries()) {
+    const side = i % 2 === 0 ? -1 : 1;
+    const x = o.x + side * 0.1;
+    const hip = foot * 0.45;
+    // Un arceau : de la pierre jusqu'au genou, puis du genou au corps.
+    stroke(b, x, [o.y, o.z + foot], [y + 0.14, o.z + (foot + hip) / 2], 0.03, c.spider);
+    stroke(b, x, [y + 0.14, o.z + (foot + hip) / 2], [y + 0.04, o.z + hip], 0.03, c.spider);
   }
-  b.box({ x: o.x, y: y - 0.04, z: o.z + 0.1 }, [0.3, 0.26, 0.36], c.spider, c.spiderTop);
+  b.box({ x: o.x, y: y - 0.04, z: o.z + 0.1 }, [0.3, 0.26, 0.34], c.spider, c.spiderTop);
   b.box({ x: o.x, y, z: o.z - 0.2 }, [0.2, 0.16, 0.2], c.spider, c.spiderTop);
 }
 

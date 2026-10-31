@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { lireAuLieu, resoudreAuLieu, resoudreParoles, verifierParole } from './aulieu.mjs';
+import { KITS_SUR_PLACE, lireAuLieu, resoudreAuLieu, resoudreParoles, verifierParole } from './aulieu.mjs';
 import { lireIle } from './format.mjs';
 
 const fichier = 'docs/contenu/french-6e-grammar-spelling.md';
@@ -69,6 +69,14 @@ describe('l’épreuve hors des murs (GD-27, lot 6) : le niveau sur place et ses
       rule: 'On classe selon ce que les êtres vivants ont : leurs attributs.',
     });
     expect(jumeaux[3].scene).toEqual({ objects: ['aigrette', 'libellule', 'araignée'] });
+  });
+
+  it('le kit du lecteur est celui du jeu (src/game/world/continu/questions.ts, SUR_PLACE_OBJECTS), écrit une fois de chaque côté', () => {
+    const code = readFileSync('src/game/world/continu/questions.ts', 'utf8');
+    const liste = code.match(/export const SUR_PLACE_OBJECTS = \[([^\]]*)\]/)?.[1] ?? '';
+    const objets = [...liste.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    expect(objets.length).toBeGreaterThan(0);
+    expect(KITS_SUR_PLACE['life-earth-sciences-6e-living-world']).toEqual(objets);
   });
 
   it('refuse un objet hors du kit, posé deux fois, en nombre différent des choix, une scène des Filets au niveau sur place, une phrase qui presse', () => {
