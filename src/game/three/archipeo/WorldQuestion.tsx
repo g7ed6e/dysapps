@@ -1185,17 +1185,6 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
     if (speakOnOpen && settings.autoRead && !quiet) speak(spoken, undefined, lang);
   });
   useEffect(() => readOnOpen(), [itemKeyOf, speakOnOpen, quiet]);
-  if (!item || !scene) return null;
-  // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière (ou le mot sous elle, `gapWord`).
-  const gap = question || gapWord ? null : filledGap(prompt, answer, answered?.results);
-  const wordGap = gapWord ? filledGap(gapWord, answer, answered?.results) : null;
-  const filled = gap !== null && rightIndex >= 0;
-  const whole = gap ? `${gap.before}${answer}${gap.after}` : prompt;
-
-  // Les réponses : posées sur la rangée, sous la scène (GD-26) ; en « Vue simple », après la question (Story time : avant
-  // l'histoire à écouter).
-  // Deux rives : ses trois réponses sur une seule rangée, la plus longue (« Elles sont égales ») passant à la ligne dans
-  // son étiquette plutôt que sous les deux fractions (GD-20, point 8, lot L3, au plus grand texte sur téléphone).
   // Sur place (GD-27, lot 6) : chaque réponse est l'objet de la station et son étiquette, une seule cible ; après la bonne
   // réponse, les deux autres partent. Un objet hors de l'écran ou deux cibles qui se touchent : la rangée habituelle.
   const gone = scene?.kind === 'surPlace' && right ? choices.flatMap((c, i) => (c !== answer ? [i] : [])) : [];
@@ -1209,6 +1198,17 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
     autoStation.current = true;
     surPlace.simplify();
   }, [stationFallback, surPlace]);
+  if (!item || !scene) return null;
+  // Après « Bravo », le mot juste entre dans le trou : la phrase se lit entière (ou le mot sous elle, `gapWord`).
+  const gap = question || gapWord ? null : filledGap(prompt, answer, answered?.results);
+  const wordGap = gapWord ? filledGap(gapWord, answer, answered?.results) : null;
+  const filled = gap !== null && rightIndex >= 0;
+  const whole = gap ? `${gap.before}${answer}${gap.after}` : prompt;
+
+  // Les réponses : posées sur la rangée, sous la scène (GD-26) ; en « Vue simple », après la question (Story time : avant
+  // l'histoire à écouter).
+  // Deux rives : ses trois réponses sur une seule rangée, la plus longue (« Elles sont égales ») passant à la ligne dans
+  // son étiquette plutôt que sous les deux fractions (GD-20, point 8, lot L3, au plus grand texte sur téléphone).
   const answersBlock = (
     <div className={`world-answers${scene?.kind === 'lockPair' ? ' une-rangee' : ''}`} role="group" aria-label="Réponses possibles">
       {choices.map((choice, i) => {
