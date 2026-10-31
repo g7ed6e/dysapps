@@ -12,7 +12,7 @@ import type { RevisionPlan } from './revisionOf';
 import { WorldRevision, revisedSummary } from './WorldRevision';
 import type { Completion } from '../../engine';
 
-const world = { question: vi.fn(() => []), onSceneTurn: vi.fn(() => () => {}), scenetteEnd: vi.fn() } as unknown as OpenWorld;
+const world = { question: vi.fn(() => []), onSceneTurn: vi.fn(() => () => {}), scenetteEnd: vi.fn(), walkTo: vi.fn(), skip: vi.fn() } as unknown as OpenWorld;
 
 beforeEach(() => {
   vi.stubGlobal(

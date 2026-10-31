@@ -1701,6 +1701,12 @@
           "frame": "La botaniste observe une feuille de près.",
           "follow": "La botaniste dessine la feuille."
         }
+      },
+      "surPlace": {
+        "mission": "living-groups",
+        "level": 1,
+        "go": "Va voir les animaux de la rive.",
+        "instruction": "Touche le bon animal."
       }
     },
     "lv2-3e-travel": {

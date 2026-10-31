@@ -26,9 +26,21 @@ export interface MissionWords {
   readonly follow: string;
 }
 
+/**
+ * L'épreuve hors des murs (GD-27, lot 6) : le niveau d'une mission joué sur place, aux abords du lieu, la phrase de
+ * l'habitant avant la marche (« Va voir les animaux de la rive. ») et la consigne sur place (huit mots au plus).
+ */
+export interface SurPlace {
+  readonly mission: string;
+  readonly level: number;
+  readonly go: string;
+  readonly instruction: string;
+}
+
 interface Paroles {
   readonly lines?: HabitantLines;
   readonly missions?: Readonly<Record<string, MissionWords>>;
+  readonly surPlace?: SurPlace;
 }
 
 const BY_ISLAND: Readonly<Record<string, Paroles>> = (PAROLES as { archipeo?: Record<string, Paroles> }).archipeo ?? {};
@@ -60,3 +72,18 @@ export function habitantLine(place: PlaceId, mood: PlaceMood, n: number): string
 
 /** Le cadre et la suite d'une mission de `place`, ou rien. */
 export const missionWords = (place: PlaceId, mission: string): MissionWords | null => parolesOf(place)?.missions?.[mission] ?? null;
+
+/** Ce qu'une île joue sur place, ou rien. */
+export const surPlaceOfIsland = (island: string): SurPlace | null => BY_ISLAND[island]?.surPlace ?? null;
+
+/** Ce qu'un lieu joue sur place (GD-27, lot 6), ou rien. */
+export const surPlaceOf = (place: PlaceId): SurPlace | null => parolesOf(place)?.surPlace ?? null;
+
+/** Les îles qui jouent un niveau sur place. */
+export const ISLANDS_WITH_SUR_PLACE: readonly string[] = Object.keys(BY_ISLAND).filter((island) => BY_ISLAND[island].surPlace);
+
+/** L'exercice (`<île>-<mission>-<niveau>`) qu'un lieu joue sur place : ses jumeaux ont leur scène à trois objets. */
+export function playsSurPlace(place: PlaceId, exerciseId: string): boolean {
+  const s = surPlaceOf(place);
+  return s !== null && exerciseId === `${placeById(place).island}-${s.mission}-${s.level}`;
+}

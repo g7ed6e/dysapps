@@ -254,6 +254,8 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
 /**
  * Une question, au pire : la scène de l'item répondu et six objets de réponse (un maillage), plus la réaction (un
  * maillage). Kéo s'efface pendant la question : son poste ne compte pas en même temps, mais il reste compté (le pire cas).
+ * L'épreuve hors des murs (GD-27, lot 6, ./surPlace.ts) passe par le même maillage de l'item, trois objets et trois
+ * pierres au plus (`SUR_PLACE_TRIANGLES_MAX`, bien sous ce poste) : aucun appel de plus, aucune hausse.
  */
 function questionCost(): { triangles: number; calls: number } {
   let triangles = 0;

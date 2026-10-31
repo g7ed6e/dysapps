@@ -48,6 +48,20 @@
 //   | mission | cadre | suite |
 //   | --- | --- | --- |
 //   | `plurals` | Le bateau prend le sel. | Le sel est prêt. |
+//
+// L'épreuve hors des murs (GD-27, lot 6) : un lieu peut jouer un niveau d'une mission « sur place », aux abords du lieu,
+// sur trois objets de son kit posés sur trois pierres (« ### Sur place », avant les niveaux : la mission, le niveau, la
+// phrase « va voir » dite par l'habitant avant la marche, mêmes règles qu'un cadre, et la consigne sur place, huit mots au
+// plus). Chaque jumeau de ce niveau écrit sa scène comme trois objets du kit, dans l'ordre des choix (« scène : aigrette ·
+// chauve-souris · libellule ») ; un objet porte l'étiquette de son choix, jamais le sujet de la phrase. Les items de
+// référence sans jumeau se jouent en scénette, d'abord ; les jumeaux suivent, groupés, après une seule marche.
+//
+//   ### Sur place
+//
+//   - mission : `living-groups`
+//   - niveau : 1
+//   - va voir : Va voir les animaux de la rive.
+//   - consigne : Touche le bon animal.
 import { lireTexte, motsDe } from './texte.mjs';
 
 /** Le début de la section : « ## Au lieu · <univers> ». */
@@ -58,6 +72,13 @@ const UNIVERS = { Archipéo: 'archipeo' };
 
 /** Ce que le monde ouvert sait poser dans la scène des Filets : ce qui est dans le filet ou à côté. */
 export const SCENES = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
+
+/** Le kit d'un lieu joué sur place (GD-27, lot 6), par île : les objets que le monde ouvert sait poser sur ses pierres. */
+export const KITS_SUR_PLACE = {
+  'life-earth-sciences-6e-living-world': ['aigrette', 'chauve-souris', 'libellule', 'poisson', 'araignée'],
+};
+/** Le plafond de la consigne sur place, en mots (référent dys, lot 6). */
+export const MOTS_CONSIGNE = 8;
 
 /** Les registres de la parole de l'habitant : [étiquette, clé dans le JSON]. L'état du lieu : la ruine, le chantier, rallumé. */
 export const REGISTRES = [
@@ -130,6 +151,11 @@ export function lireAuLieu(lignes, debut, fichier) {
   let missions = null;
   let mode = null;
   let enTete = false;
+  // L'épreuve hors des murs (GD-27, lot 6) : le niveau joué sur place et ses deux phrases.
+  const ile = fichier.replace(/^.*\//, '').replace(/\.md$/, '');
+  const kit = KITS_SUR_PLACE[ile] ?? [];
+  let surPlace = null;
+  const niveauSurPlace = () => (surPlace ? `${ile}-${surPlace.mission}-${surPlace.level}` : null);
   const texte = (v) => {
     try {
       return lireTexte(v, debut + i + 1);
@@ -143,6 +169,14 @@ export function lireAuLieu(lignes, debut, fichier) {
     const [, etiquette, valeur] = m;
     if (etiquette === 'scène') {
       if (item.scene) throw erreur('« scène » écrite deux fois');
+      if (niveau.id === niveauSurPlace()) {
+        const objets = valeur.split(' · ');
+        const inconnu = objets.find((o) => !kit.includes(o));
+        if (inconnu !== undefined) throw erreur(`« ${inconnu} » n’est pas un objet du kit (${kit.join(', ')})`);
+        if (new Set(objets).size !== objets.length) throw erreur('un objet est posé deux fois');
+        item.scene = { objects: objets };
+        return;
+      }
       const s = /^(\S+) · (\d+)$/.exec(valeur);
       if (!s || !SCENES.includes(s[1])) throw erreur(`scène attendue sous la forme « sardines · 3 » (${SCENES.join(', ')}), lu « ${valeur} »`);
       item.scene = { catch: s[1], count: Number(s[2]) };
@@ -161,6 +195,7 @@ export function lireAuLieu(lignes, debut, fichier) {
       for (const k of OBLIGATOIRES) if (it[k] === undefined) throw new Error(`${fichier}, ${niveau.id}, item du lieu ${n + 1} : « ${k === 'scene' ? 'scène' : CHAMPS.find((c) => c[1] === k)[0]} » manque`);
       if (!it.choices.includes(it.answer)) throw new Error(`${fichier}, ${niveau.id}, item du lieu ${n + 1} : la réponse n’est pas dans les choix`);
       if (new Set(it.choices).size !== it.choices.length) throw new Error(`${fichier}, ${niveau.id}, item du lieu ${n + 1} : un choix est écrit deux fois`);
+      if (it.scene.objects && it.scene.objects.length !== it.choices.length) throw new Error(`${fichier}, ${niveau.id}, item du lieu ${n + 1} : autant d’objets posés que de choix (${it.choices.length})`);
       // Le trou se lit, comme dans la référence : jamais « … » dans le texte lu.
       it.spoken = niveau.trou === undefined ? it.prompt : it.prompt.replace('…', niveau.trou);
       if (niveau.regle !== undefined) it.rule = niveau.regle;
@@ -177,13 +212,18 @@ export function lireAuLieu(lignes, debut, fichier) {
     }
     if (l.startsWith('> ')) continue;
     let m;
-    if (l === '### L’habitant' || l === '### Les missions') {
+    if (l === '### L’habitant' || l === '### Les missions' || l === '### Sur place') {
       finirNiveau();
       if (niveaux.length) throw erreur(`« ${l} » va avant les niveaux`);
       if (l === '### L’habitant') {
         if (habitant) throw erreur('« ### L’habitant » écrit deux fois');
         habitant = {};
         mode = 'habitant';
+      } else if (l === '### Sur place') {
+        if (surPlace) throw erreur('« ### Sur place » écrit deux fois');
+        if (!kit.length) throw erreur(`l’île ${ile} n’a pas de kit sur place (scripts/contenu/aulieu.mjs, KITS_SUR_PLACE)`);
+        surPlace = {};
+        mode = 'surPlace';
       } else {
         if (missions) throw erreur('« ### Les missions » écrit deux fois');
         missions = {};
@@ -200,6 +240,31 @@ export function lireAuLieu(lignes, debut, fichier) {
       if (lignes.length < LIGNES_PAR_REGISTRE.min || lignes.length > LIGNES_PAR_REGISTRE.max) throw erreur(`« ${m[1]} » : de ${LIGNES_PAR_REGISTRE.min} à ${LIGNES_PAR_REGISTRE.max} lignes, lu ${lignes.length}`);
       for (const ligne of lignes) verifierParole(ligne, `${fichier}, ligne ${debut + i + 1}`);
       habitant[cle] = lignes;
+      continue;
+    }
+    if (mode === 'surPlace' && (m = /^- (.+?) : (.+)$/.exec(l))) {
+      const [, etiquette, valeur] = m;
+      const ou = `${fichier}, ligne ${debut + i + 1}`;
+      if (etiquette === 'mission') {
+        const id = /^`([a-z0-9-]+)`$/.exec(valeur)?.[1];
+        if (!id) throw erreur(`identifiant de mission attendu entre accents graves, lu « ${valeur} »`);
+        if (surPlace.mission) throw erreur('« mission » écrite deux fois');
+        surPlace.mission = id;
+      } else if (etiquette === 'niveau') {
+        if (!/^\d+$/.test(valeur)) throw erreur(`numéro de niveau attendu, lu « ${valeur} »`);
+        if (surPlace.level) throw erreur('« niveau » écrit deux fois');
+        surPlace.level = Number(valeur);
+      } else if (etiquette === 'va voir') {
+        if (surPlace.go) throw erreur('« va voir » écrit deux fois');
+        surPlace.go = texte(valeur);
+        verifierParole(surPlace.go, ou, true);
+      } else if (etiquette === 'consigne') {
+        if (surPlace.instruction) throw erreur('« consigne » écrite deux fois');
+        surPlace.instruction = texte(valeur);
+        verifierParole(surPlace.instruction, ou, true);
+        const n = motsDe(surPlace.instruction);
+        if (n > MOTS_CONSIGNE) throw erreur(`la consigne sur place « ${surPlace.instruction} » a ${n} mots, ${MOTS_CONSIGNE} au plus`);
+      } else throw erreur(`champ inconnu « ${etiquette} » (mission, niveau, va voir, consigne)`);
       continue;
     }
     if (mode === 'missions' && l.startsWith('|')) {
@@ -259,18 +324,31 @@ export function lireAuLieu(lignes, debut, fichier) {
   }
   finirNiveau();
   if (habitant) for (const [etiquette, cle] of REGISTRES) if (!habitant[cle]) throw new Error(`${fichier}, « ### L’habitant » : « ${etiquette} » manque`);
-  return { univers, niveaux, habitant, missions };
+  if (surPlace) {
+    for (const [etiquette, cle] of [['mission', 'mission'], ['niveau', 'level'], ['va voir', 'go'], ['consigne', 'instruction']])
+      if (surPlace[cle] === undefined) throw new Error(`${fichier}, « ### Sur place » : « ${etiquette} » manque`);
+    const niveau = niveaux.find((n) => n.id === niveauSurPlace());
+    if (!niveau) throw new Error(`${fichier}, « ### Sur place » : le niveau ${niveauSurPlace()} n’a aucun item du lieu`);
+    for (const [n, it] of niveau.items.entries()) if (!it.scene.objects) throw new Error(`${fichier}, ${niveau.id}, item du lieu ${n + 1} : la scène du niveau sur place pose trois objets du kit`);
+  }
+  return { univers, niveaux, habitant, missions, surPlace };
 }
 
 /**
- * La parole du lieu d'une île (GD-27), rattachée à ses missions : chaque mission du tableau est une mission de l'île.
- * Rend { lines, missions } (ou null quand l'île n'en écrit pas), pour src/game/world/continu/paroles.json.
+ * La parole du lieu d'une île (GD-27), rattachée à ses missions : chaque mission du tableau est une mission de l'île, le
+ * niveau sur place aussi. Rend { lines, missions, surPlace } (ou null quand l'île n'en écrit rien), pour
+ * src/game/world/continu/paroles.json.
  */
 export function resoudreParoles(auLieu, missions, fichier) {
-  if (!auLieu.habitant && !auLieu.missions) return null;
+  if (!auLieu.habitant && !auLieu.missions && !auLieu.surPlace) return null;
   const ids = new Set(missions.map((m) => m.id));
   for (const id of Object.keys(auLieu.missions ?? {})) if (!ids.has(id)) throw new Error(`${fichier}, « ### Les missions » : « ${id} » n’est pas une mission de l’île`);
-  return { ...(auLieu.habitant ? { lines: auLieu.habitant } : {}), ...(auLieu.missions ? { missions: auLieu.missions } : {}) };
+  if (auLieu.surPlace && !ids.has(auLieu.surPlace.mission)) throw new Error(`${fichier}, « ### Sur place » : « ${auLieu.surPlace.mission} » n’est pas une mission de l’île`);
+  return {
+    ...(auLieu.habitant ? { lines: auLieu.habitant } : {}),
+    ...(auLieu.missions ? { missions: auLieu.missions } : {}),
+    ...(auLieu.surPlace ? { surPlace: auLieu.surPlace } : {}),
+  };
 }
 
 /**

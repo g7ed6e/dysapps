@@ -40,16 +40,17 @@ import { NoticeQuestion } from '../../exercises/CalculationScreen';
 import type { ScreenProps } from '../../exercises/registry';
 import { exercisesToReview } from '../../review';
 import { hasScenette, placeById, type PlaceId } from '../../world/continu/levelPlan';
-import { missionWords } from '../../world/continu/paroles';
+import { missionWords, surPlaceOf } from '../../world/continu/paroles';
+import { surPlaceStation } from '../../world/continu/surPlace';
 import { placePoseWords } from './constructionParts';
 import { ANSWER_LAYOUT, WIDEN_FULL, WIDEN_OFFER, questionLayout } from '../../world/continu/questionScene';
 import { scenetteLayout, scenetteOf, type Scenette } from '../../world/continu/scenette';
-import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_GRAND_WIDE_ROUND, RANGE_PER_LONG_LOW_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds } from '../../world/continu/questions';
+import { BELLS_PER_ROUND, BELLS_PER_SMALL_ROUND, bellRounds, gestureScreens, itemGesture, missionIs, phareGesture, placeInstruction, placeItems, placeShortInstruction, placeRuleLine, sceneDrawsFigure, RANGE_PER_GRAND_ROUND, RANGE_PER_GRAND_WIDE_ROUND, RANGE_PER_LONG_LOW_ROUND, RANGE_PER_ROUND, RANGE_PER_SMALL_ROUND, rangeGesture, rangeRounds, surPlaceLast } from '../../world/continu/questions';
 import type { LabelOnScreen, OpenWorld } from './scene';
 import { BellScreen, BellTarget } from './BellScreen';
 import { DialScreen } from './DialScreen';
 import { SortScreen } from './SortScreen';
-import { ConsigneIcon, IconLabel, PlaceAid, PlaceCarnet, PlaceDocument, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, useQuestion, useStopOnLeave, type ItemShown } from './placeScreen';
+import { ConsigneIcon, IconLabel, PlaceAid, PlaceCarnet, PlaceDocument, QuestionContext, aidOf, figureOf, placeSceneOf, sameItem, slotStyles, surPlaceLabelRoom, surPlaceSlots, useQuestion, useStopOnLeave, type ItemShown, type SurPlaceContext } from './placeScreen';
 import { WorldDone } from './WorldDone';
 import { filledGap, inVisibleScene, labelBesideBar, overflows, wordsCut } from './fit';
 
@@ -203,6 +204,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // Un mot de réponse coupé dans son étiquette (les cloches en grand texte) : on ne répond que dans « Vue simple »,
   // proposé d'emblée, la voix gardée ; les étiquettes ne passent jamais sur deux rangées.
   const [answersOut, setAnswersOut] = useState(false);
+  // Sur place (GD-27, lot 6) : où en est Kéo (dans la scénette, en marche, à la station), et si la bulle est au départ.
+  const [station, setStation] = useState<'scenette' | 'marche' | 'station'>('scenette');
+  const [departing, setDeparting] = useState(false);
   // Sur tablette, un mot coupé fait d'abord tomber l'image devant les mots (comme sur un écran bas), puis seulement
   // propose « Vue simple » (référent dys : « pantalon » en OpenDyslexic).
   const [bare, setBare] = useState(false);
@@ -229,7 +233,17 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   useEffect(() => {
     if (meeting && itemKey && greetItem === null) setGreetItem(itemKey);
   }, [meeting, itemKey, greetItem]);
-  const offer = !simple && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
+  // Le départ sur place (GD-27, lot 6) n'a pas de réponse : rien à sortir de la bulle, « Aller voir » seul.
+  const offer = !simple && !departing && ((layout.low && widen >= WIDEN_OFFER) || (!layout.low && answersOut));
+  // À la station, les réponses sont les objets de la scène, pas les étiquettes de la bulle : les crans pris par la bulle
+  // (réponses sorties, pleine largeur, sans image) repartent de zéro ; une étiquette coupée sur place les reprend.
+  useEffect(() => {
+    if (station !== 'station') return;
+    setAnswersOut(false);
+    setWiden(0);
+    setBare(false);
+    setWideRow(false);
+  }, [station]);
   // Les réponses sorties de la scène (l'offre de « Vue simple ») : la scène ne dessine plus leurs objets, qui resteraient
   // sans étiquette et sembleraient se toucher (retouche 3 du lot 5 du 5e, les miches du Hameau en portrait).
   const objectsOut = answersOut || (layout.low && offer);
@@ -251,7 +265,32 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
   // le cadre reste jusqu'au toucher. Jamais en révision (sa consigne commence par « Tu revois… »), ni sur l'écran
   // habituel. La suite se dit au bilan.
   const words = useMemo(() => (plain || revision ? null : missionWords(place, mission)), [plain, revision, place, mission]);
+  // L'épreuve hors des murs (GD-27, lot 6) : un niveau de la mission se joue sur place, aux abords du lieu. Les items de
+  // la scénette d'abord ; puis l'écran du départ (la phrase de l'habitant, « Aller voir »), une seule marche de Kéo
+  // jusqu'à la station (« Passer le trajet » dès la première image ; d'un coup avec « Réduire les animations »), puis les
+  // items sur place ; la fin coupe à la scénette pour le bilan. Jamais en révision ni sur l'écran habituel.
+  const surPlaceWords = useMemo(() => (plain || revision ? null : surPlaceOf(place)), [plain, revision, place]);
+  const depart = useCallback(() => {
+    stopSpeaking();
+    const at = surPlaceStation(place);
+    if (!at) return setStation('station');
+    setStation('marche');
+    world.walkTo(at, () => setStation('station'));
+  }, [place, world]);
   const [framed, setFramed] = useState(false);
+  // La bulle du départ prend la place du cadre de la mission : s'il n'a pas encore été levé (la scénette jouée en
+  // « Vue simple »), il l'est, pour ne pas reparaître à la station.
+  const enter = useCallback((on: boolean) => {
+    setDeparting(on);
+    if (on) setFramed(true);
+  }, []);
+  const surPlace = useMemo<SurPlaceContext | null>(
+    () =>
+      surPlaceWords
+        ? { go: surPlaceWords.go, phase: station, depart, skip: () => world.skip(), arrive: () => setStation('station'), enter, tight: layout.low || grandTexte, simplify: openSimple }
+        : null,
+    [surPlaceWords, station, depart, world, layout.low, grandTexte, openSimple, enter],
+  );
   const framing = bulle && words !== null && !framed;
   // Le focus clavier posé sur le cadre quand il se lève revient sur la ligne de consigne qui le remplace.
   const frameFocused = useRef(false);
@@ -485,8 +524,18 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     world.scenetteEnd(success);
     setLabels([]);
   }, [world, plain, finished, success]);
-  // En partant (« Revenir », Quitter, « Vue simple »), la scène reprend son cadrage.
-  useEffect(() => () => void world.question(null), [world]);
+  // Sans item montré (l'écran du départ sur place), aucun repère ne reste à l'écran.
+  useEffect(() => {
+    if (!item) setLabels([]);
+  }, [item]);
+  // En partant (« Revenir », Quitter, « Vue simple »), la scène reprend son cadrage ; une marche en cours s'arrête là.
+  useEffect(
+    () => () => {
+      world.walkTo(null);
+      world.question(null);
+    },
+    [world],
+  );
 
   const show = useCallback((next: ItemShown | null) => {
     setItem((prev) => (next && prev && sameItem(prev, next) ? prev : next));
@@ -515,7 +564,12 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     [revision, completeRevision],
   );
   const Done = revision?.Done ?? WorldDone;
-  const context = useMemo(() => ({ place, layout, show, instruction, simple, lowScreen, quiet: framing }), [place, layout, show, instruction, simple, lowScreen, framing]);
+  // Les objets de la station à l'écran : les cibles des réponses sur place.
+  const anchors = useMemo(() => labels.filter((l) => l.answer !== undefined), [labels]);
+  const context = useMemo(
+    () => ({ place, layout, show, instruction, simple, lowScreen, quiet: framing, surPlace, anchors }),
+    [place, layout, show, instruction, simple, lowScreen, framing, surPlace, anchors],
+  );
 
   const exerciseId = ready?.def.id;
   const readyLevel = ready?.level ?? 1;
@@ -556,6 +610,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     if (plain) return { instruction, back: { label: `Revenir ${lieu.at}`, onClick: onClose }, Done, revision: runnerRevision, pose: poseWords, className: `in-world ecran-habituel${finished ? ' finished' : ''}` };
     // Le cadre de la mission, à la place de la ligne de consigne : la phrase entière, lue, et un toucher la lève.
     const frame = framing && words ? frenchTypography(words.frame) : null;
+    // Le départ sur place (GD-27, lot 6) : la phrase de l'habitant à la place de la ligne de consigne, lue ; « Aller voir »
+    // est dans la bulle, sous elle.
+    const go = departing && surPlace ? frenchTypography(surPlace.go) : null;
     const extra: ReactNode = (
       <>
         {intro && (
@@ -616,7 +673,17 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     // défile (dérogation du 16 octobre 2026, choix du mainteneur : ce seul réglage, l'Enclos seulement).
     const rule = ranges && grandTexte && simpleLow ? placeRuleLine(place, exerciseId, readyLevel) : null;
     const line = bulle ? bubbleLine : instruction;
-    const head: ReactNode = frame ? (
+    const head: ReactNode = go ? (
+        <div className="world-scenette-head world-scenette-cadre-ligne" tabIndex={-1}>
+          <p className="world-scenette-role">
+            <RoleName role={scenette.role} />
+          </p>
+          <p className="world-sur-place-go">
+            <Syllabified text={go} />
+          </p>
+          <SpeakButton text={go} compact />
+        </div>
+      ) : frame ? (
         <div className="world-scenette-head world-scenette-cadre-ligne" tabIndex={-1}>
           <p className="world-scenette-role">
             <RoleName role={scenette.role} />
@@ -684,7 +751,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
         ? (items, seed) => bellRounds(placeItems(place, exerciseId, items), seeded(`${seed}:cloches`), bellsPerRound(seed))
         : ranges
           ? (items, seed) => rangeRounds(placeItems(place, exerciseId, items), sortsPerRound(seed).perRound)
-          : (items, seed) => gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple), sortsPerRound(seed).perRound, sortsPerRound(seed).longPerRound),
+          : (items, seed) => surPlaceLast(gestureScreens(placeItems(place, exerciseId, items, fractionWords, simple, !revision), sortsPerRound(seed).perRound, sortsPerRound(seed).longPerRound)),
       Screen: marks ? BellScreen : ranges ? SortScreen : GestureScreen,
       instruction,
       back: { label: `Revenir ${lieu.at}`, onClick: onClose },
@@ -739,6 +806,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     framing,
     words,
     passFrame,
+    departing,
+    surPlace,
+    revision,
   ]);
 
   // La ligne repliée se coupe après un mot entier, jamais au milieu : les mots qui passeraient à la ligne sont cachés,
@@ -818,7 +888,9 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
     '--question-left': `${layout.panel.left}px`,
     '--question-top': `${layout.panel.top}px`,
     '--question-width': `${layout.panel.width}px`,
-    '--question-max-height': `${layout.panel.maxHeight}px`,
+    // Au départ sur place, la bulle n'a que la phrase de l'habitant et « Aller voir » : elle prend leur hauteur plutôt
+    // que de défiler (au plus grand texte sur un écran bas, sa place ne suffit pas), rien d'autre n'est à voir.
+    '--question-max-height': departing ? `${Math.max(layout.panel.maxHeight, size.h - layout.panel.top - 16)}px` : `${layout.panel.maxHeight}px`,
   } as CSSProperties;
 
   return (
@@ -862,6 +934,8 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
                 setAnswersOut(false);
                 setBare(false);
                 setWideRow(false);
+                setStation('scenette');
+                setDeparting(false);
                 lastItem.current = '';
                 setItem(null);
                 setRun((r) => r + 1);
@@ -885,7 +959,7 @@ export function WorldQuestion({ place, mission, plain = false, world, onClose, r
       )}
       {!finished &&
         !simple &&
-        labels.map((l, i) => (
+        labels.filter((l) => l.answer === undefined).map((l, i) => (
           <span
             key={`${i}-${l.text}`}
             className={`world-question-label${l.center ? ' centre' : ''}`}
@@ -984,14 +1058,60 @@ export function PlaceText({ text }: { text: string }) {
  * par objet du lieu).
  */
 function GestureScreen(props: ScreenProps) {
+  const { surPlace } = useQuestion();
   const gesture = itemGesture(props.items[0]);
   if (gesture === 'ranger' || gesture === 'placer') return <SortScreen {...props} />;
   if (gesture === 'régler') return <DialScreen {...props} />;
+  // Le premier item sur place (GD-27, lot 6) attend que Kéo soit à la station : l'écran du départ, puis la marche.
+  if (surPlace && surPlace.phase !== 'station' && placeSceneOf(props.items[0])?.kind === 'surPlace') return <SurPlaceDeparture />;
   return <PlaceChoiceScreen {...props} />;
 }
 
+/**
+ * Le départ vers la station (GD-27, lot 6) : la phrase de l'habitant est dans la bulle (`enter`), lue si la lecture
+ * automatique est choisie ; « Aller voir » lance la marche ; pendant elle, « Passer le trajet » dès la première image.
+ * Aucun item n'est montré : la scène garde la scénette, puis suit Kéo.
+ */
+function SurPlaceDeparture() {
+  const { surPlace, show, quiet, simple } = useQuestion();
+  const { settings, speak } = useSettings();
+  useStopOnLeave();
+  // En « Vue simple », pas de trajet : la liste des réponses tient lieu de station (référent dys : la vue simple reste
+  // la même mission, en liste) ; la scène, derrière, pose Kéo à la station d'un coup.
+  useEffect(() => {
+    if (simple) surPlace?.arrive();
+  }, [simple, surPlace]);
+  useEffect(() => {
+    if (simple) return;
+    show(null);
+    surPlace?.enter(true);
+    return () => surPlace?.enter(false);
+    // `surPlace` change à chaque phase ; l'écran n'entre et ne sort qu'une fois.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [show]);
+  const go = surPlace?.go ?? '';
+  const readOnOpen = useEffectEvent(() => {
+    if (go && !simple && settings.autoRead && !quiet) speak(frenchTypography(go));
+  });
+  useEffect(() => readOnOpen(), [go, quiet]);
+  if (!surPlace || simple) return null;
+  return (
+    <div className="question world-place world-sur-place-depart">
+      {surPlace.phase === 'scenette' ? (
+        <button type="button" className="button primary world-aller-voir" onClick={surPlace.depart}>
+          <Icon name="footprints" /> Aller voir
+        </button>
+      ) : (
+        <button type="button" className="button world-passer-trajet" onClick={surPlace.skip}>
+          <Icon name="play" /> Passer le trajet
+        </button>
+      )}
+    </div>
+  );
+}
+
 function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang = 'fr' }: ScreenProps) {
-  const { layout, show, simple, quiet } = useQuestion();
+  const { layout, show, simple, quiet, anchors, surPlace } = useQuestion();
   useStopOnLeave();
   const { settings, speak } = useSettings();
   const item = items[0];
@@ -1076,28 +1196,46 @@ function PlaceChoiceScreen({ items, answered, onAnswer, ruledOut, onHelp, lang =
   // l'histoire à écouter).
   // Deux rives : ses trois réponses sur une seule rangée, la plus longue (« Elles sont égales ») passant à la ligne dans
   // son étiquette plutôt que sous les deux fractions (GD-20, point 8, lot L3, au plus grand texte sur téléphone).
+  // Sur place (GD-27, lot 6) : chaque réponse est l'objet de la station et son étiquette, une seule cible ; après la bonne
+  // réponse, les deux autres partent. Un objet hors de l'écran ou deux cibles qui se touchent : la rangée habituelle.
+  const gone = scene?.kind === 'surPlace' && right ? choices.flatMap((c, i) => (c !== answer ? [i] : [])) : [];
+  const stationSlots = scene?.kind === 'surPlace' && !simple ? surPlaceSlots(anchors, choices.length, gone, surPlaceLabelRoom(choices, settings.fontSize, settings.letterSpacing)) : null;
+  // Sur un écran bas ou au plus grand texte, des cibles qui ne tiennent pas sur leurs objets ouvrent « Vue simple »
+  // d'office, une fois par station (référent dys) ; « Scène » rend ensuite la rangée habituelle.
+  const stationFallback = scene?.kind === 'surPlace' && !simple && stationSlots === null && anchors.length > 0;
+  const autoStation = useRef(false);
+  useEffect(() => {
+    if (!stationFallback || !surPlace?.tight || autoStation.current) return;
+    autoStation.current = true;
+    surPlace.simplify();
+  }, [stationFallback, surPlace]);
   const answersBlock = (
     <div className={`world-answers${scene?.kind === 'lockPair' ? ' une-rangee' : ''}`} role="group" aria-label="Réponses possibles">
       {choices.map((choice, i) => {
-        const slot = layout.slots[i] ?? layout.slots[0];
+        const slot = stationSlots ? stationSlots[i] : (layout.slots[i] ?? layout.slots[0]);
         // En « Vue simple », ou quand elles restent dans la colonne, les réponses sont une liste qui passe à la ligne :
         // rien n'est posé sur la scène.
         const styles = simple || !slot ? { hit: undefined, label: undefined } : slotStyles(slot);
         const isAnswer = answered && choice === answer;
         // Au deuxième essai, la réponse déjà tentée reste barrée.
         const isWrong = Boolean(answered && chosen === choice && choice !== answer) || Boolean(ruledOut?.includes(choice));
+        // Sur place, le choix se lit au cadre épais et à la coche ou à la croix, jamais à la couleur seule (référent dys).
+        const onStation = Boolean(stationSlots);
         return (
           <button
             key={choice}
             type="button"
             style={styles.hit}
-            className={`choice world-answer${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}`}
+            className={`choice world-answer${isAnswer ? ' right' : ''}${isWrong ? ' wrong' : ''}${onStation ? ' sur-place' : ''}`}
             data-choisie={answered && chosen === choice ? '' : undefined}
             disabled={Boolean(answered) || Boolean(ruledOut?.includes(choice))}
+            hidden={onStation && gone.includes(i)}
             onClick={() => onAnswer({ results: [{ key: item.key, correct: choice === answer }], detail: { chosen: choice } })}
           >
             <span className="world-answer-label" style={styles.label} lang={langAttr(choicesLang)}>
               <RichText text={labels[i]} lang={choicesLang} />
+              {onStation && isAnswer && <Icon name="check" />}
+              {onStation && isWrong && <Icon name="close" />}
             </span>
           </button>
         );

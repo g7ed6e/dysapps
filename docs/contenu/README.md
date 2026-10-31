@@ -131,7 +131,7 @@ Pour tous les items :
 ```
 
 - **jumeau** : le rang de l’item de référence dans le niveau ; chaque item de référence a au plus un jumeau.
-- **scène** : ce que le lieu pose (pour les Filets : `sardines`, `filets`, `mouette`, `bocaux`, `crabes`, `pêche`, `seaux`, `crabe`) et combien ; la phrase dit ce qu’on voit.
+- **scène** : ce que le lieu pose (pour les Filets : `sardines`, `filets`, `mouette`, `bocaux`, `crabes`, `pêche`, `seaux`, `crabe`) et combien ; la phrase dit ce qu’on voit. Au niveau joué sur place (« ### Sur place », ci-dessous), la scène est faite de trois objets du kit du lieu, un par choix, dans l’ordre des choix : `aigrette · chauve-souris · libellule`.
 - **règle** (pour tous les items) : la seule ligne de la carte de règle de la référence que le lieu montre, sous le titre de la carte (une ligne de cette carte, vérifié) ; ce qui manque passe dans les indices. La carte entière reste dans « Vue simple ».
 - **point** et **pièges** : ce que le jumeau garde de la référence, relu par le directeur contenu pédagogique ; ils ne s’affichent pas.
 - `ecrireIle` (`scripts/contenu/format.mjs`, qui réécrit un fichier d’île depuis les JSON, pour une migration) ne garde pas cette section : après une réécriture, la remettre à la main.
@@ -162,6 +162,36 @@ Dans la même section, avant le premier `### Niveau`, l’habitant du lieu et se
 - Les cinq registres sont tous là, deux à quatre lignes chacun, séparées par ` · ` ; chaque mission de l’île a sa ligne, par son identifiant de mission (celui de `docs/contenu/archipel.md`).
 - Chaque phrase fait dix mots au plus, finit par un point, et n’a ni « ! », ni « ? », ni « … », ni « ; », ni chiffre ; un verbe concret, jamais figuré (ni apprivoiser, dompter, réveiller, dévorer, endormir) ; aucun mot qui ne se dit pas à l’élève (rafiot, zeppelin, veillée, ruine, Ferrailleur, pièce maîtresse, cœur du lieu, vite, merci, quête). Le cadre ne presse jamais : ni attente, ni urgence, ni manque (« il faut », « vite », « dépêche », « en retard »). `npm run contenu` refuse tout écart.
 - Tout va dans `src/game/world/continu/paroles.json`, que `src/game/world/continu/paroles.ts` lit ; les tests vérifient que chaque lieu à scénette et chacune de ses missions a sa parole.
+
+### Sur place
+
+Un lieu peut jouer un niveau d’une mission hors de ses murs ([GD-27](../gameplay/propositions/GD-27.md), lot 6, « aller voir sur place ») : les items sans jumeau se jouent d’abord dans la scénette, puis l’habitant dit d’aller voir, Kéo marche une seule fois jusqu’à la station, et les jumeaux se jouent en touchant un des trois objets posés sur leurs pierres. La sous-section `### Sur place`, dans « ## Au lieu · Archipéo » après « ### Les missions », nomme ce niveau et ses deux phrases ; chaque jumeau du niveau donne alors ses trois objets en `scène` :
+
+```md
+### Sur place
+
+- mission : `living-groups`
+- niveau : 1
+- va voir : Va voir les animaux de la rive.
+- consigne : Touche le bon animal.
+
+### Niveau 1 · `life-earth-sciences-6e-living-world-living-groups-1`
+
+Pour tous les items :
+- trou lu : (mot manquant)
+- règle : On classe selon ce que les êtres vivants ont : leurs attributs.
+
+1. jumeau : 1
+   - scène : aigrette · chauve-souris · libellule
+   - énoncé : Un animal a des ailes et des poils. C’est un …
+   - choix : oiseau · mammifère · insecte
+   - réponse : mammifère
+   …
+```
+
+- **mission** et **niveau** : une mission de l’île et un de ses niveaux ; ses jumeaux ont tous une `scène` de trois objets du kit du lieu (la Mangrove : `aigrette`, `chauve-souris`, `libellule`, `poisson`, `araignée` ; le kit est dans `scripts/contenu/aulieu.mjs`, `KITS_SUR_PLACE`, et son dessin dans `src/game/world/continu/surPlace.ts`), un par choix, dans l’ordre des choix, jamais deux fois le même ; les autres items du niveau n’ont pas de jumeau et se jouent en scénette.
+- **va voir** : la phrase de l’habitant avant la marche, aux règles de la parole du lieu (dix mots, point final, ni attente ni urgence) ; **consigne** : la consigne de la station, huit mots au plus, aux mêmes règles.
+- Le lecteur refuse un objet hors du kit, posé deux fois, en nombre différent des choix, une scène d’un autre lieu à ce niveau, une sous-section incomplète, et une `scène` à objets hors du niveau nommé. `npm run contenu` range la sous-section dans `paroles.json` (`surPlace`) ; `paroles.ts` la lit (`surPlaceOf`, `playsSurPlace`) et `questions.ts` donne aux jumeaux leur scène à trois objets dans la scénette seulement (jamais en révision).
 
 ## Les plans des bâtiments
 

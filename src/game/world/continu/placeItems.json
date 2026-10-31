@@ -181,6 +181,110 @@
         "spoken": "Regarde : (mot manquant) crabe pince le filet.",
         "rule": "Le nom commande : déterminant et adjectif prennent son genre et son nombre."
       }
+    ],
+    "life-earth-sciences-6e-living-world-living-groups-1": [
+      {
+        "key": "life-earth-sciences-6e-living-world-living-groups-1-0",
+        "scene": {
+          "objects": [
+            "aigrette",
+            "chauve-souris",
+            "libellule"
+          ]
+        },
+        "prompt": "Un animal a des ailes et des poils. C’est un …",
+        "choices": [
+          "oiseau",
+          "mammifère",
+          "insecte"
+        ],
+        "answer": "mammifère",
+        "point": "les poils classent, pas les ailes : un animal qui vole peut être un mammifère",
+        "traps": [
+          "ailes prises pour le signe de l’oiseau",
+          "vol pris pour le signe de l’insecte"
+        ],
+        "hint": "Regarde ce que chacun a sur le corps : des poils ou des plumes ?",
+        "explanation": "Cet animal a des poils : c’est un mammifère, comme la chauve-souris. Voler ne compte pas : on classe selon ce qu’on a, pas selon ce qu’on fait.",
+        "spoken": "Un animal a des ailes et des poils. C’est un (mot manquant)",
+        "rule": "On classe selon ce que les êtres vivants ont : leurs attributs."
+      },
+      {
+        "key": "life-earth-sciences-6e-living-world-living-groups-1-1",
+        "scene": {
+          "objects": [
+            "poisson",
+            "chauve-souris",
+            "aigrette"
+          ]
+        },
+        "prompt": "Le manchot ne vole pas, mais il a des plumes. C’est un …",
+        "choices": [
+          "poisson",
+          "mammifère",
+          "oiseau"
+        ],
+        "answer": "oiseau",
+        "point": "les plumes classent dans les oiseaux, même sans vol",
+        "traps": [
+          "absence de vol prise pour un signe de non-oiseau",
+          "vie dans l’eau prise pour un signe de poisson"
+        ],
+        "hint": "Quel groupe a des plumes ?",
+        "explanation": "Le manchot a des plumes : c’est un oiseau, même s’il nage et ne vole pas.",
+        "spoken": "Le manchot ne vole pas, mais il a des plumes. C’est un (mot manquant)",
+        "rule": "On classe selon ce que les êtres vivants ont : leurs attributs."
+      },
+      {
+        "key": "life-earth-sciences-6e-living-world-living-groups-1-2",
+        "scene": {
+          "objects": [
+            "poisson",
+            "aigrette",
+            "chauve-souris"
+          ]
+        },
+        "prompt": "La baleine vit dans la mer. Elle a des mamelles. C’est un …",
+        "choices": [
+          "poisson",
+          "oiseau",
+          "mammifère"
+        ],
+        "answer": "mammifère",
+        "point": "les mamelles classent dans les mammifères, pas le lieu de vie",
+        "traps": [
+          "mer prise pour le signe du poisson"
+        ],
+        "hint": "Le lieu de vie ne compte pas. Que possède-t-elle ?",
+        "explanation": "La baleine a des mamelles : c’est un mammifère. Vivre dans la mer ne fait pas d’elle un poisson.",
+        "spoken": "La baleine vit dans la mer. Elle a des mamelles. C’est un (mot manquant)",
+        "rule": "On classe selon ce que les êtres vivants ont : leurs attributs."
+      },
+      {
+        "key": "life-earth-sciences-6e-living-world-living-groups-1-4",
+        "scene": {
+          "objects": [
+            "aigrette",
+            "libellule",
+            "araignée"
+          ]
+        },
+        "prompt": "L’araignée a huit pattes. Un insecte en a …",
+        "choices": [
+          "deux",
+          "six",
+          "huit"
+        ],
+        "answer": "six",
+        "point": "l’insecte a six pattes, l’araignée huit",
+        "traps": [
+          "nombre de pattes de l’araignée repris pour l’insecte"
+        ],
+        "hint": "Compte les pattes de chacun.",
+        "explanation": "Un insecte a six pattes, une araignée en a huit : l’araignée n’est donc pas un insecte.",
+        "spoken": "L’araignée a huit pattes. Un insecte en a (mot manquant)",
+        "rule": "On classe selon ce que les êtres vivants ont : leurs attributs."
+      }
     ]
   }
 }

@@ -13,6 +13,7 @@ import type { ExerciseItem } from '../../exercises/types';
 import { Aid } from '../../exercises/Aid';
 import type { AidData } from '../../exercises/maths';
 import type { AnswerSlot, QuestionLayout, ScreenBox, SortLook } from '../../world/continu/questionScene';
+import type { LabelOnScreen } from './scene';
 import type { PlaceId } from '../../world/continu/levelPlan';
 import type { DialShown } from '../../world/continu/placeArt';
 import type { ScenetteLayout } from '../../world/continu/scenette';
@@ -52,6 +53,81 @@ export interface QuestionContextValue {
   lowScreen: boolean;
   /** Le cadre de la mission (GD-27) à l'écran : rien d'autre ne se dit tant qu'il est là. */
   quiet: boolean;
+  /**
+   * L'épreuve hors des murs (GD-27, lot 6) : ce que le lieu joue sur place, où en est l'élève (dans la scénette, en
+   * marche, à la station), la phrase « va voir » de l'habitant, le départ et le saut de la marche ; `enter` dit que
+   * l'écran du départ est là (la bulle montre alors la phrase). `null` : rien ne se joue sur place ici.
+   */
+  surPlace: SurPlaceContext | null;
+  /** Les objets de réponse de la station à l'écran (`LabelOnScreen.answer`) : les cibles des boutons de réponse. */
+  anchors: readonly LabelOnScreen[];
+}
+
+export interface SurPlaceContext {
+  go: string;
+  phase: 'scenette' | 'marche' | 'station';
+  depart(): void;
+  skip(): void;
+  /** À la station sans marche (« Vue simple » : la liste tient lieu de trajet). */
+  arrive(): void;
+  enter(on: boolean): void;
+  /** Un écran bas ou le plus grand texte : des cibles qui ne tiennent pas ouvrent « Vue simple » d'office. */
+  tight: boolean;
+  simplify(): void;
+}
+
+/** L'air autour d'une cible de la station, et la cible la plus petite (référent dys : 48 px, 8 px entre deux). */
+const SUR_PLACE_TARGET = { min: 48, pad: 6, gap: 8 } as const;
+
+/** La place qu'une étiquette de la station demande : sa hauteur, et la largeur de chaque mot (une ligne, jamais coupée). */
+export interface SurPlaceLabelRoom {
+  height: number;
+  widths: readonly number[];
+}
+
+/**
+ * La place des étiquettes de la station d'après le réglage de texte : la police des étiquettes vaut 1,15 fois la taille
+ * de texte (`.world-answer-label`), sur une ligne ; la largeur d'un mot est estimée large (0,68 em par lettre, l'espace
+ * des lettres compris, la police OpenDyslexic étant la plus large), plus l'icône (coche ou croix) et les marges.
+ */
+export function surPlaceLabelRoom(choices: readonly string[], fontSize: number, letterSpacing: number): SurPlaceLabelRoom {
+  const font = Math.max(18, fontSize * 1.15);
+  return {
+    height: Math.ceil(font * 1.4 + 12),
+    widths: choices.map((c) => Math.ceil(c.length * font * (0.68 + letterSpacing) + font * 1.5 + fontSize * 0.8 + 8)),
+  };
+}
+
+/**
+ * Les cibles des réponses sur place : pour chaque choix, la boîte de son objet à l'écran élargie à 48 px au moins et à
+ * la largeur de son étiquette, son étiquette au-dessus (`label`), une seule cible pour l'objet et son mot ; `null` pour
+ * un objet parti. Un objet sans boîte (hors de l'écran) ou deux cibles qui se touchent (moins de `gap` entre elles) :
+ * `null`, et la page prend sa rangée habituelle sous la scène (référent dys : toujours une étiquette, jamais deux cibles
+ * qui se touchent).
+ */
+export function surPlaceSlots(anchors: readonly LabelOnScreen[], count: number, gone: readonly number[], room: SurPlaceLabelRoom): (AnswerSlot | null)[] | null {
+  const slots: (AnswerSlot | null)[] = [];
+  for (let i = 0; i < count; i++) {
+    const a = anchors.find((l) => l.answer === i);
+    if (!a?.box) {
+      if (gone.includes(i)) {
+        slots.push(null);
+        continue;
+      }
+      return null;
+    }
+    const { min, pad } = SUR_PLACE_TARGET;
+    const label = room.height;
+    const cx = (a.box.left + a.box.right) / 2;
+    const width = Math.max(min, a.box.right - a.box.left + 2 * pad, room.widths[i] ?? 0);
+    const top = Math.min(a.box.top, a.y) - label - pad;
+    const bottom = Math.max(a.box.bottom + pad, top + label + min);
+    const hit = { left: cx - width / 2, top, right: cx + width / 2, bottom };
+    slots.push({ hit, label: { left: hit.left, top, right: hit.right, bottom: top + label }, foot: { x: cx, y: a.box.bottom } });
+  }
+  const placed = slots.filter((s): s is AnswerSlot => s !== null);
+  for (let i = 1; i < placed.length; i++) if (placed[i].hit.left < placed[i - 1].hit.right + SUR_PLACE_TARGET.gap) return null;
+  return slots;
 }
 
 export const QuestionContext = createContext<QuestionContextValue | null>(null);

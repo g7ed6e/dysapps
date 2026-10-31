@@ -583,6 +583,58 @@ Pour tous les items :
 | `planet-earth` | L’eau monte et descend avec la mer. | Le niveau de l’eau est noté. |
 | `life-enquiry` | La botaniste observe une feuille de près. | La botaniste dessine la feuille. |
 
+### Sur place
+
+- mission : `living-groups`
+- niveau : 1
+- va voir : Va voir les animaux de la rive.
+- consigne : Touche le bon animal.
+
+> L’épreuve hors des murs (GD-27, lot 6) : au niveau 1 de « Classer le vivant », les items sans jumeau (le document, le schéma des boîtes, le mot « attribut », le critère) se jouent d’abord dans la scénette ; puis la botaniste dit « Va voir les animaux de la rive. », Kéo marche jusqu’à la rive, et les quatre jumeaux ci-dessous se jouent sur place, en touchant un des trois animaux posés sur leurs pierres (chaque objet porte l’étiquette de son choix ; la chauve-souris porte « mammifère », elle n’est donc plus le sujet du premier item). Le kit du lieu : aigrette, chauve-souris, libellule, poisson, araignée. Proposés par le directeur du contenu pédagogique (31 octobre 2026).
+
+### Niveau 1 · `life-earth-sciences-6e-living-world-living-groups-1`
+
+Pour tous les items :
+- trou lu : (mot manquant)
+- règle : On classe selon ce que les êtres vivants ont : leurs attributs.
+
+1. jumeau : 1
+   - scène : aigrette · chauve-souris · libellule
+   - énoncé : Un animal a des ailes et des poils. C’est un …
+   - choix : oiseau · mammifère · insecte
+   - réponse : mammifère
+   - point : les poils classent, pas les ailes : un animal qui vole peut être un mammifère
+   - pièges : ailes prises pour le signe de l’oiseau · vol pris pour le signe de l’insecte
+   - indice : Regarde ce que chacun a sur le corps : des poils ou des plumes ?
+   - explication : Cet animal a des poils : c’est un mammifère, comme la chauve-souris. Voler ne compte pas : on classe selon ce qu’on a, pas selon ce qu’on fait.
+2. jumeau : 2
+   - scène : poisson · chauve-souris · aigrette
+   - énoncé : Le manchot ne vole pas, mais il a des plumes. C’est un …
+   - choix : poisson · mammifère · oiseau
+   - réponse : oiseau
+   - point : les plumes classent dans les oiseaux, même sans vol
+   - pièges : absence de vol prise pour un signe de non-oiseau · vie dans l’eau prise pour un signe de poisson
+   - indice : Quel groupe a des plumes ?
+   - explication : Le manchot a des plumes : c’est un oiseau, même s’il nage et ne vole pas.
+3. jumeau : 3
+   - scène : poisson · aigrette · chauve-souris
+   - énoncé : La baleine vit dans la mer. Elle a des mamelles. C’est un …
+   - choix : poisson · oiseau · mammifère
+   - réponse : mammifère
+   - point : les mamelles classent dans les mammifères, pas le lieu de vie
+   - pièges : mer prise pour le signe du poisson
+   - indice : Le lieu de vie ne compte pas. Que possède-t-elle ?
+   - explication : La baleine a des mamelles : c’est un mammifère. Vivre dans la mer ne fait pas d’elle un poisson.
+4. jumeau : 5
+   - scène : aigrette · libellule · araignée
+   - énoncé : L’araignée a huit pattes. Un insecte en a …
+   - choix : deux · six · huit
+   - réponse : six
+   - point : l’insecte a six pattes, l’araignée huit
+   - pièges : nombre de pattes de l’araignée repris pour l’insecte
+   - indice : Compte les pattes de chacun.
+   - explication : Un insecte a six pattes, une araignée en a huit : l’araignée n’est donc pas un insecte.
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

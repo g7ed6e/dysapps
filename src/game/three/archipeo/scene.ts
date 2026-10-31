@@ -61,7 +61,8 @@ import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternL
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { assemblyScene, portFacets, portHeading, portMapPoint, portRooflines, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { HELD_LIFT, SALT_PUMP, answerScale, facingAnswerObjects, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
-import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
+import { COLUMN, REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
+import { surPlaceFacets, surPlacePose, surPlaceSite, type SurPlaceScene } from '../../world/continu/surPlace';
 import { RESPOND_MAX, RESPOND_SECONDS, type RespondMove, respondMove, respondPlaced, responds } from '../../world/continu/respond';
 import {
   EXIT_VIEW,
@@ -232,6 +233,13 @@ export interface OpenWorld {
   goTo(place: PlaceId, jump?: boolean): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
+  /**
+   * L'épreuve hors des murs (GD-27, lot 6) : Kéo quitte la scénette et marche, une seule fois, jusqu'à la station du
+   * lieu (`target`, un point du sol : ./surPlace.ts) ; la caméra le suit comme dans le monde ; `skip` saute la marche ;
+   * avec « Réduire les animations », il y est posé d'un coup. `done` à l'arrivée, puis la page pose ses questions sur
+   * place (`question`, une scène « surPlace »). `null` : la marche s'arrête là (la question fermée en chemin).
+   */
+  walkTo(target: Vec2 | null, done?: () => void): void;
   /**
    * Retient le geste du métier (GD-27, lot 5) : tant que `on`, l'outil de l'habitant actif reste au repos, le temps
    * d'une ligne écrite et dite dans la phrase du monde (référent dys : rien ne bouge pendant qu'on lit).
@@ -483,6 +491,12 @@ export interface LabelOnScreen {
   y: number;
   /** Centré sous son point (les fractions sous les deux sas de Deux rives). */
   center?: boolean;
+  /**
+   * Sur place (GD-27, lot 6) : le repère est un objet de réponse, celui du choix `answer` ; la page y pose le bouton de
+   * la réponse (son étiquette au-dessus de l'objet), sur la boîte de l'objet à l'écran (`box`), en pixels.
+   */
+  answer?: number;
+  box?: { left: number; top: number; right: number; bottom: number };
 }
 
 /** La distance (en unités du monde) en deçà de laquelle toucher l'habitant d'un lieu le fait parler (GD-27). */
@@ -1256,6 +1270,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
+  // Nommé pour les tests de la scène (l'épreuve hors des murs), rien d'autre ne lit ce nom.
+  keo.name = 'keo';
   scene.add(keo);
   let body: CorpsDuBonhomme = corpsDuBonhomme(level);
   keo.add(body.mesh);
@@ -1540,6 +1556,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(portNode(startSpot!)).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
+  // La marche vers la station de l'épreuve sur place (GD-27, lot 6) : ce que la page attend à l'arrivée, à la place de
+  // l'arrivée devant un lieu.
+  let walkDone: (() => void) | null = null;
   // Les Détours (GD-20, déplacement libre, lot 2) : ceux trouvés (leur sente tracée), les cairns rallumés, celui où Kéo
   // s'est arrêté (dit à la page), depuis quand il s'y tient immobile, et l'avancée de la vue qui monte.
   let detoursFound: readonly DetourId[] = [];
@@ -2777,6 +2796,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     rideUp = null;
     parkCar();
     showFreeMark(null);
+    // Arrivé à la station de l'épreuve sur place : la page reprend la main, rien du lieu ne s'ouvre.
+    if (walkDone) {
+      const done = walkDone;
+      walkDone = null;
+      done();
+      return;
+    }
     if (place) framed = place;
     startPrebuild();
     options.onArrive(place);
@@ -2793,6 +2819,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!free && distance(here, from.at) > 0.05) route.unshift(here);
     showFreeMark(null);
     walkTarget = place;
+    walkDone = null;
     // Kéo part vers un lieu : le modèle de son habitant se prépare pendant la marche, avant « Livrer » ou une mission.
     if (place && hasHabitantModel(place)) habitants.prefetch(place);
     if (place) prefetchGuide(place);
@@ -2814,6 +2841,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const route = to ? freeRoute(g, here, to, walkClosed) : null;
     if (!to || !route) return startWalkTo(snapToNetwork(p), null);
     walkTarget = null;
+    walkDone = null;
     heldBridge = null;
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) {
       arrive(null);
@@ -2825,11 +2853,43 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
 
   /**
+   * La marche vers la station de l'épreuve sur place (GD-27, lot 6, `OpenWorld.walkTo`) : la scénette quittée d'abord
+   * (Kéo à sa sortie, à sa taille, la caméra derrière lui), puis le trajet libre jusqu'au point du sol le plus proche où
+   * l'on marche ; la page est prévenue à l'arrivée (`walkDone`), jamais le panneau d'un lieu. D'un coup avec « Réduire
+   * les animations », ou sans trajet à faire.
+   */
+  const walkTo = (target: Vec2 | null, done?: () => void) => {
+    if (!target) {
+      if (!walkDone) return;
+      walkDone = null;
+      walk = null;
+      return;
+    }
+    if (asked) askQuestion(null);
+    const g = grid();
+    const to = nearestWalkable(g, target, walkClosed) ?? target;
+    const route = freeRoute(g, here, to, walkClosed);
+    walkTarget = null;
+    heldBridge = null;
+    walkDone = done ?? null;
+    showFreeMark(null);
+    if (!route || route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05 || reduceMotion) {
+      here = { ...to };
+      placeKeo(here);
+      followStep(focus, aimed(), 0, true);
+      follow();
+      return arrive(null);
+    }
+    beginWalk(route);
+  };
+
+  /**
    * Kéo d'un coup devant un lieu : la caméra le suit d'un bloc (une coupe, jamais un long travelling). Devant un lieu
    * d'une terre fermée, sur la culée du pont à rebâtir d'abord, tourné vers l'eau.
    */
   const jumpTo = (place: PlaceId) => {
     heldBridge = null;
+    walkDone = null;
     const door = atNode(placeById(place).door);
     const stop = clampToOpen(door, closed, plan);
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
@@ -3766,6 +3826,70 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
     if (pose.position.y < floor) pose.position.y = floor;
   };
+  /**
+   * Un item joué sur place (GD-27, lot 6, ../../world/continu/surPlace.ts) : Kéo à la station, à sa taille du monde,
+   * tourné vers les trois pierres ; la caméra fixe, à l'ouest, le trio au centre-bas de la scène laissée par la bulle, le
+   * lieu et sa porte au fond (l'habitant devant elle, comme dans le monde) ; les objets du kit sur leurs pierres, dans le
+   * maillage de l'item (aucun appel de plus). Rien ne tourne ni ne bouge : ni la caméra à deux doigts (pas de scénette),
+   * ni la faune, ni les gestes, ni l'équipage (le monde n'est pas calme pendant une question). Rend, pour chaque objet
+   * encore là, son repère : le haut de l'objet pour l'étiquette, sa boîte à l'écran pour le bouton de la réponse.
+   */
+  const askSurPlace = (q: QuestionRequest): LabelOnScreen[] => {
+    const { place, item } = q;
+    const scene = item.scene as SurPlaceScene;
+    const site = surPlaceSite(place, ground);
+    if (!site) return [];
+    // La scénette a été quittée pour la marche ; si elle ne l'était pas (une question posée sans marche), elle le devient.
+    if (scenette) leaveScenette();
+    lastQuestion = q;
+    scenetteMission = q.mission;
+    walk = null;
+    walkDone = null;
+    unlitReaction();
+    finishRespond();
+    respond = null;
+    here = { ...site.keo.at };
+    heading = site.keo.yaw;
+    keo.rotation.y = heading;
+    keo.scale.setScalar(KEO_SCALE);
+    placeKeo(here);
+    keo.visible = true;
+    ring.visible = false;
+    fog.near = FOG.near;
+    fog.far = FOG.far;
+    descent.active = false;
+    const qp = surPlacePose(site, viewW, viewH);
+    setShift(qp.shift);
+    applyPose(qp.pose);
+    camera.updateMatrixWorld();
+    const { facets, anchors } = surPlaceFacets(site, scene, { answered: item.answered, right: item.right, picked: item.picked });
+    itemFacets = facets;
+    setGeometry(itemMesh, facets);
+    itemMesh.visible = true;
+    itemShown = true;
+    reaction = null;
+    reactionMesh.visible = false;
+    asked = { place, pose: qp.pose, objectsKey: `${place}|${viewW}x${viewH}|station`, itemKey: `${JSON.stringify(item.scene)}|${item.right.join(',')}`, answered: item.answered, scene: item.scene, scale: 1 };
+    const onScreen = (x: number, y: number, z: number) => {
+      projected.set(x, y, z).project(camera);
+      return { x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH };
+    };
+    return anchors.flatMap((a, i) => {
+      if (!a) return [];
+      const top = onScreen(a.top.x, a.top.y, a.top.z);
+      const box = { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity };
+      for (const x of [a.min[0], a.max[0]])
+        for (const y of [a.min[1], a.max[1]])
+          for (const z of [a.min[2], a.max[2]]) {
+            const p = onScreen(x, y, z);
+            box.left = Math.min(box.left, p.x);
+            box.right = Math.max(box.right, p.x);
+            box.top = Math.min(box.top, p.y);
+            box.bottom = Math.max(box.bottom, p.y);
+          }
+      return [{ text: '', x: top.x, y: top.y, center: true, answer: i, box }];
+    });
+  };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
       if (!asked) return [];
@@ -3802,6 +3926,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const { place, layout, item } = q;
     // Au 5e, la Montée seule a sa scénette (GD-22, lot 3) : les missions des autres lieux se jouent sur l'écran habituel.
     if (!hasScenette(place)) return [];
+    // L'épreuve hors des murs (GD-27, lot 6) : l'item se joue à la station, hors de la scénette.
+    if (item.scene.kind === 'surPlace') return askSurPlace(q);
     // Une autre scénette, et chaque nouvel item, repartent de la pose prévue, à son cap de départ (de face, sauf aux
     // Écluses, dans l'axe du canal ; référent dys, consultant UX UI : un élève qui a tourné par mégarde retrouve la scène
     // qui aide à répondre sans refaire le geste).
@@ -4092,6 +4218,25 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const remiseFinish = () => remiseRun.finish();
   const stepRemise = (t: number) => remiseRun.step(t);
   const scenetteEnd = (lit: boolean) => {
+    // Sur place (GD-27, lot 6) : la coupe de fin, jamais une seconde marche. La scénette reprend son cadrage devant
+    // l'habitant (Kéo à sa place, le décor de près), les objets de la station partent ; le bilan se montre là, et la
+    // réussite se pose comme après une scénette.
+    if (asked?.scene.kind === 'surPlace' && lastQuestion) {
+      const place = asked.place;
+      itemShown = false;
+      itemMesh.visible = false;
+      reactionMesh.visible = false;
+      reaction = null;
+      itemFacets = null;
+      enterScenette(place);
+      sceneYaw = scenetteStartYaw(place, posed);
+      stopSceneReturn(sceneReturn);
+      const qp = scenettePose(place, lastQuestion.layout.scenette.stage, viewW, viewH, posed);
+      turnScenePose(qp.pose);
+      setShift(qp.shift);
+      applyPose(qp.pose);
+      asked = { ...asked, pose: qp.pose, scene: COLUMN, objectsKey: '', itemKey: '' };
+    }
     if (!asked || !scenette) return;
     // Le monde qui répond : l'objet en vol se pose ; les objets restent derrière le panneau du bilan, jusqu'à la sortie.
     finishRespond();
@@ -4924,6 +5069,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (jump) jumpTo(place);
       else startWalkTo(atNode(placeById(place).door), place);
     },
+    walkTo,
     skip: () => {
       if (!walk) return;
       // Dans la caisse : elle finit son trajet proprement, Kéo au bout du sien (« Passer le trajet »).

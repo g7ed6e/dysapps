@@ -11,7 +11,7 @@ import { BloclandProvider } from '../../BloclandContext';
 import { getBiome } from '../../biomes';
 import type { MissionMark } from '../../world/continu/mission';
 import { placeById, type PlaceId } from '../../world/continu/plan6e';
-import { IN_PLACE_LABEL, PlacePanel, placeFromParam, placeResume, placeReturn } from './PlacePanel';
+import { IN_PLACE_LABEL, PlacePanel, SUR_PLACE_LABEL, placeFromParam, placeResume, placeReturn } from './PlacePanel';
 import { placeById as placeById5, planFor } from '../../world/continu/levelPlan';
 
 /** Le plan du 6e, le seul enregistré (GD-22). */
@@ -61,6 +61,17 @@ it('les Filets complets (GD-20, point 8, lot L4) : le signe sur chacune de leurs
   expect(rows).toHaveLength(4);
   expect(rows.some((r) => r.getAttribute('aria-current'))).toBe(false);
   expect(rows.find((r) => r.querySelector('.app-title')?.textContent === 'Récolte -é / -er / -ez')).toHaveFocus();
+});
+
+it('la Mangrove (GD-27, lot 6) : « Sur place » et ses pas sur « Classer le vivant », « Scène » sur les trois autres', () => {
+  const { sheet } = renderPanel('mangrove', marks('life-earth-sciences-6e-living-world'), null);
+  const rows = within(sheet).getAllByRole('button').filter((b) => b.classList.contains('app-card'));
+  expect(rows).toHaveLength(4);
+  const surPlace = rows.filter((r) => within(r).queryByRole('img', { name: SUR_PLACE_LABEL }));
+  expect(surPlace.map((r) => r.querySelector('.app-title')?.textContent)).toEqual(['Classer le vivant']);
+  expect(surPlace[0].querySelector('.mission-sign .icon-footprints, .mission-sign svg')).not.toBeNull();
+  expect(rows.filter((r) => within(r).queryByRole('img', { name: IN_PLACE_LABEL }))).toHaveLength(3);
+  expect(surPlace[0]).toHaveAccessibleName('Classer le vivant Sur place Nouveau');
 });
 
 it('au retour d’une autre mission, la suggestion reste mise en avant, le focus sur la ligne jouée ; la voix lit titre, « Scène », étoiles', () => {

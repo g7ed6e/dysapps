@@ -3450,3 +3450,42 @@
 .world-question .in-world.simple .world-sort > .world-simple-validate {
   order: 4;
 }
+
+/* L'épreuve hors des murs (GD-27, lot 6) : la bulle du départ (la phrase de l'habitant, lue), « Aller voir » puis
+   « Passer le trajet », 48 px au moins, au clavier comme au doigt. */
+.world-sur-place-go {
+  flex: 1 1 12rem;
+  min-height: 48px;
+  margin: 0;
+  padding: 0.3rem 0.2rem;
+  display: flex;
+  align-items: center;
+}
+.world-question .quiz.in-world .world-aller-voir,
+.world-question .quiz.in-world .world-passer-trajet {
+  min-height: 48px;
+  margin: 0.4rem 0 0;
+}
+/* Sur place, la cible d'une réponse est l'objet et son étiquette, ensemble ; le choix se lit au cadre épais et à la
+   coche (ou à la croix), jamais à la couleur seule (référent dys). Après la bonne réponse, les deux autres partent. */
+.world-question .world-answers .world-answer.sur-place {
+  border: 3px solid transparent;
+}
+.world-question .world-answers .world-answer.sur-place.right {
+  border-color: var(--success);
+}
+.world-question .world-answers .world-answer.sur-place.wrong {
+  border-color: var(--error);
+}
+.world-question .world-answers .world-answer.sur-place.right .world-answer-label,
+.world-question .world-answers .world-answer.sur-place.wrong .world-answer-label {
+  border-width: 3px;
+}
+.world-question .world-answers .world-answer.sur-place[hidden] {
+  display: none;
+}
+.world-answer-label .icon {
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;
+}
