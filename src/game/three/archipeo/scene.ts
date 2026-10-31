@@ -4982,13 +4982,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (asked) {
       // Pendant une question, la caméra ne bouge pas (sauf la descente dans une scénette, moins d'une seconde) ; seule
-      // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume.
+      // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume. À la
+      // station aussi (GD-27, lot 6) : arrivé de sa marche, il revient au repos au lieu de rester figé en plein pas.
       stepDescent(t);
       placeReaction(t);
       stepRespond(t);
       stepFinale(t);
       stepLamp(t);
-      if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
+      if (scenette || asked.scene.kind === 'surPlace') body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
       seeScene();
