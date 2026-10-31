@@ -145,6 +145,8 @@ describe('L’épreuve hors des murs dans la scène', () => {
     // Kéo sur la rive, derrière les pierres (à l'est, loin de la caméra), tourné vers elles.
     expect(world.keoAt().x).toBeGreaterThan(station.x);
     expect(world.keoAt().x).toBeLessThan(station.x + 1);
+    // À sa taille de scénette, à l'échelle des animaux (directeur artistique).
+    expect(keo().scale.x).toBeCloseTo(keoScenette.scale, 3);
     // La bonne réponse : la bonne reste seule, les deux autres partent d'un coup ; les pierres restent.
     const won = world.question({ place: 'mangrove', mission: 'living-groups', layout, item: { key: 'b', scene: scene1, answered: true, right: [1], picked: [0] } });
     expect(won.map((l) => l.answer)).toEqual([1]);

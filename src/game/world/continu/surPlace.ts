@@ -51,7 +51,7 @@ export const hasSurPlaceStation = (place: PlaceId): boolean => Object.hasOwn(STA
 /**
  * Kéo à la station : sur la rive, au dernier point où l'on marche (l'eau commence une unité à l'est des pierres), un peu
  * en arrière et au nord d'elles, au tiers gauche de l'image, tourné vers les objets (directeur artistique : jamais sur
- * l'eau).
+ * l'eau), à sa taille de scénette (la scène le réduit : à sa taille du monde il couvrait le tiers gauche).
  */
 const KEO_AT_STATION = { dx: 0.4, dz: -2.6 } as const;
 

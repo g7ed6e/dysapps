@@ -3838,7 +3838,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (pose.position.y < floor) pose.position.y = floor;
   };
   /**
-   * Un item joué sur place (GD-27, lot 6, ../../world/continu/surPlace.ts) : Kéo à la station, à sa taille du monde,
+   * Un item joué sur place (GD-27, lot 6, ../../world/continu/surPlace.ts) : Kéo à la station, à sa taille de scénette,
    * tourné vers les trois pierres ; la caméra fixe, à l'ouest, le trio au centre-bas de la scène laissée par la bulle, le
    * lieu et sa porte au fond (l'habitant devant elle, comme dans le monde) ; les objets du kit sur leurs pierres, dans le
    * maillage de l'item (aucun appel de plus). Rien ne tourne ni ne bouge : ni la caméra à deux doigts (pas de scénette),
@@ -3860,7 +3860,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     here = { ...site.keo.at };
     heading = site.keo.yaw;
     keo.rotation.y = heading;
-    keo.scale.setScalar(KEO_SCALE);
+    // À la taille de la scénette, comme devant chaque habitant : à sa taille du monde (1,25), il prenait le tiers gauche au
+    // premier plan, plus grand que les animaux, la tête sous la bulle (directeur artistique, troisième passe du lot 6).
+    keo.scale.setScalar(scenetteKeo(place, posed).scale);
     placeKeo(here);
     keo.visible = true;
     ring.visible = false;
