@@ -160,12 +160,20 @@ describe('Les jumeaux des Filets (règle « à l’essai »)', () => {
   });
 
   it('chaque jumeau montre la carte de sa référence réduite à une ligne, la même pour tous ; la référence reste entière', () => {
-    const rule = 'Le nom commande : déterminant et adjectif prennent son genre et son nombre.';
-    for (const id of Object.keys(all)) {
+    // Chaque île à jumeaux : son lieu et la ligne de sa carte (les Filets ; la Mangrove sur place, GD-27 lot 6).
+    const rules: Record<string, [Parameters<typeof placeItems>[0], string]> = {
+      'french-6e-grammar-spelling': ['filets', 'Le nom commande : déterminant et adjectif prennent son genre et son nombre.'],
+      'life-earth-sciences-6e-living-world': ['mangrove', 'On classe selon ce que les êtres vivants ont : leurs attributs.'],
+    };
+    for (const [id, twins] of Object.entries(all)) {
+      const [place, rule] = rules[Object.keys(rules).find((island) => id.startsWith(`${island}-`)) ?? ''] ?? [];
+      expect(place, id).toBeDefined();
       const items = reference(id).items;
-      const placed = placeItems('filets', id, items);
-      for (const [i, p] of placed.entries()) {
-        const ref = items[i].aid as { kind: string; props: { title: string; lines: string[] } };
+      const placed = placeItems(place, id, items);
+      const twinKeys = new Set(twins.map((t) => t.key));
+      for (const p of placed) {
+        if (!twinKeys.has(p.key)) continue;
+        const ref = items.find((it) => it.key === p.key)!.aid as { kind: string; props: { title: string; lines: string[] } };
         expect(p.aid, p.key).toEqual({ ...ref, props: { ...ref.props, lines: [rule] } });
         expect(ref.props.lines.length).toBeGreaterThan(1);
       }
@@ -785,9 +793,12 @@ describe('La Mangrove (GD-20, point 8, lot L8a)', () => {
 
   it('ses quatre missions, aux deux niveaux, sur le décor neutre : les items de référence tels quels, les réponses sur la rangée (GD-26)', () => {
     expect(ids.length).toBe(8);
+    const surPlace = 'life-earth-sciences-6e-living-world-living-groups-1';
+    expect(ids).toContain(surPlace);
     for (const id of ids) {
       const items = reference(id).items;
-      const placed = placeItems('mangrove', id, items);
+      // Le niveau joué sur place (GD-27, lot 6) prend ses jumeaux dans la scénette seulement, jamais en révision.
+      const placed = id === surPlace ? placeItems('mangrove', id, items, undefined, false, false) : placeItems('mangrove', id, items);
       expect(placed.map((it) => it.key), id).toEqual(items.map((it) => it.key));
       for (const it of placed) {
         expect(it.placeScene, it.key).toEqual(COLUMN);

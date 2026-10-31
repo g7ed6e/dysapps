@@ -1,5 +1,6 @@
-// Le Sémaphore (GD-22, lot 14) : le lieu par parties (3 + 1 + 1), une seule lanterne allumée dans la ruine et trois au
-// plus, toutes sous 4 (aucune lumière au-dessus de la corniche), une trace par mission avec sa partie, le signe du pivot
+// Le Sémaphore (GD-22, lot 14) : le lieu par parties (3 + 1 + 1), une seule lanterne allumée dans la ruine et quatre au
+// plus, trois sous 4 et la lanterne de tête du mât, le feu du 5e (GD-27, lot 3 bis ; aucune autre lumière au-dessus de la
+// corniche), une trace par mission avec sa partie, le signe du pivot
 // pris, la tour à six pans au sommet plat, les bras attachés au mât par le bout, relevés et parallèles, le mât qui dépasse,
 // la corne tournée vers l'ouest, rien sur le chemin de marche ni sur la chaussée, le seuil où la chaussée arrive, la
 // scénette sur la cour, le cap de « Y aller » un peu à gauche du nord et le regard d'arrivée qui cadre le mât et ses bras,
@@ -98,20 +99,29 @@ describe('Le Sémaphore, lieu complet', () => {
     expect(shown(5).triangles + placeTrace('semaphore', MISSIONS).triangles).toBe(worst);
   });
 
-  it('une seule lanterne allumée dans la ruine, celle du signaleur ; le haut allume la potence, les abords le chemin : trois au plus, toutes sous 4', () => {
+  it('une seule lanterne allumée dans la ruine, celle du signaleur ; le haut allume la potence et la tête du mât (le feu du 5e), les abords le chemin : quatre au plus, trois sous 4', () => {
     // Une lanterne : sa vitre, un pavé (dix triangles, trente sommets).
     const lit = (n: number) => countColor(shown(n), COLORS_5E.lantern);
     expect(lit(0)).toBe(30);
     expect(lit(3)).toBe(30);
-    expect(lit(4)).toBe(60);
-    expect(lit(5)).toBe(90);
-    // Les deux lanternes éteintes de la ruine (la potence, celle du chemin couchée) partent avec leur partie.
-    expect(countColor(shown(0), 0xbfc4b8)).toBe(60);
+    expect(lit(4)).toBe(90);
+    expect(lit(5)).toBe(120);
+    // Les trois lanternes éteintes de la ruine (la potence, la tête du mât couchée, celle du chemin couchée) partent avec
+    // leur partie.
+    expect(countColor(shown(0), 0xbfc4b8)).toBe(90);
     expect(countColor(shown(4), 0xbfc4b8)).toBe(30);
     expect(countColor(shown(5), 0xbfc4b8)).toBe(0);
-    // Aucune lumière au-dessus de la corniche, ni sur la cabine ni sur le mât : toutes sous 4 au-dessus de la cour.
+    // Aucune lumière au-dessus de la corniche, ni sur la cabine ni sur le mât, hors la lanterne de tête du mât, au-dessus
+    // de son chapeau (GD-27, le feu du 5e, décision du directeur artistique du 30 octobre 2026) : les autres sous 4.
     const f = shown(5);
-    for (const i of verticesOf(f, COLORS_5E.lantern)) expect(f.positions[i + 1] - L.courtTop).toBeLessThan(4);
+    const mastTop = L.courtTop + L.mast.top + L.mast.capH;
+    let atMast = 0;
+    for (const i of verticesOf(f, COLORS_5E.lantern)) {
+      const y = f.positions[i + 1];
+      if (y > mastTop && Math.hypot(f.positions[i] - L.mast.x, f.positions[i + 2] - L.mast.z) < 0.4) atMast++;
+      else expect(y - L.courtTop).toBeLessThan(4);
+    }
+    expect(atMast).toBe(30);
     // Le chapeau des trois lanternes est de fer : plus de bronze nulle part, aucune face ocre hors des vitres allumées.
     for (let n = 0; n <= 5; n++) expect(countColor(shown(n), 0xb8954f), String(n)).toBe(0);
   });

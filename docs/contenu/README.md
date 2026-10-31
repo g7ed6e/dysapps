@@ -131,11 +131,67 @@ Pour tous les items :
 ```
 
 - **jumeau** : le rang de l’item de référence dans le niveau ; chaque item de référence a au plus un jumeau.
-- **scène** : ce que le lieu pose (pour les Filets : `sardines`, `filets`, `mouette`, `bocaux`, `crabes`, `pêche`, `seaux`, `crabe`) et combien ; la phrase dit ce qu’on voit.
+- **scène** : ce que le lieu pose (pour les Filets : `sardines`, `filets`, `mouette`, `bocaux`, `crabes`, `pêche`, `seaux`, `crabe`) et combien ; la phrase dit ce qu’on voit. Au niveau joué sur place (« ### Sur place », ci-dessous), la scène est faite de trois objets du kit du lieu, un par choix, dans l’ordre des choix : `aigrette · chauve-souris · libellule`.
 - **règle** (pour tous les items) : la seule ligne de la carte de règle de la référence que le lieu montre, sous le titre de la carte (une ligne de cette carte, vérifié) ; ce qui manque passe dans les indices. La carte entière reste dans « Vue simple ».
 - **point** et **pièges** : ce que le jumeau garde de la référence, relu par le directeur contenu pédagogique ; ils ne s’affichent pas.
 - `ecrireIle` (`scripts/contenu/format.mjs`, qui réécrit un fichier d’île depuis les JSON, pour une migration) ne garde pas cette section : après une réécriture, la remettre à la main.
 - `npm run contenu` les range dans `src/game/world/continu/placeItems.json`, que seul le monde ouvert lit ; le lecteur est `scripts/contenu/aulieu.mjs`, qui refuse un jumeau absent ou pris deux fois, un nombre de choix différent, une réponse hors des choix et un « … » resté dans le texte lu. Les Quais et les Écluses n’ont pas d’items du lieu : leur phrase et leur scène se tirent des nombres de l’item du générateur (`src/game/world/continu/questions.ts`), y compris le gabarit de Deux rives (deux sas, sa phrase, son indice et sa correction selon le cas), écrit là parce que ce format décrit un jumeau par item fixe. De même, les textes de l’Enclos aux Filets (sa consigne, `ENCLOS_INSTRUCTION` ; sa ligne de règle sur téléphone, `ENCLOS_RULE_LINE` ; les noms de ses paniers, `ENCLOS_BINS`) sont écrits dans `src/game/world/continu/questions.ts`, parce que l’Enclos se joue sur ses items de référence, sans jumeau : textes donnés par le directeur contenu pédagogique (relecture du quatrième lot du point 8 de GD-20, 15 octobre 2026), à changer avec lui ; la ligne de règle est une ligne de la carte de règle de son niveau (vérifié par un test).
+
+### La parole du lieu
+
+Dans la même section, avant le premier `### Niveau`, l’habitant du lieu et ses missions ont leurs phrases ([GD-27](../gameplay/propositions/GD-27.md), lot 2). Toucher l’habitant devant sa porte, hors de sa scénette, lui fait dire une ligne, écrite et lue : le jeu tourne entre son métier, son lieu et l’état du lieu (`ruine` tant qu’aucune partie n’est posée, `chantier` ensuite, `rallumé` quand le lieu est fini). Chaque mission jouée chez lui a son **cadre**, dit à l’entrée de la scénette avant la première consigne, et sa **suite**, dite au bilan après le résultat et la partie posée :
+
+```md
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je charge les caisses sur la barge. · Je compte les sacs du quai.
+- lieu : Ici, les bateaux chargent et déchargent. · Tout ce qui arrive passe par le quai.
+- ruine : Le quai est couvert de sable. · La grue est couchée sur le côté.
+- chantier : Le quai est dégagé. · La grue est remise debout.
+- rallumé : La barge est pleine. · Les caisses partent au bon port.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `times-tables` | La barge prend des caisses par rangées. | Les rangées sont comptées. |
+```
+
+- Les cinq registres sont tous là, deux à quatre lignes chacun, séparées par ` · ` ; chaque mission de l’île a sa ligne, par son identifiant de mission (celui de `docs/contenu/archipel.md`).
+- Chaque phrase fait dix mots au plus, finit par un point, et n’a ni « ! », ni « ? », ni « … », ni « ; », ni chiffre ; un verbe concret, jamais figuré (ni apprivoiser, dompter, réveiller, dévorer, endormir) ; aucun mot qui ne se dit pas à l’élève (rafiot, zeppelin, veillée, ruine, Ferrailleur, pièce maîtresse, cœur du lieu, vite, merci, quête). Le cadre ne presse jamais : ni attente, ni urgence, ni manque (« il faut », « vite », « dépêche », « en retard »). `npm run contenu` refuse tout écart.
+- Tout va dans `src/game/world/continu/paroles.json`, que `src/game/world/continu/paroles.ts` lit ; les tests vérifient que chaque lieu à scénette et chacune de ses missions a sa parole.
+
+### Sur place
+
+Un lieu peut jouer un niveau d’une mission hors de ses murs ([GD-27](../gameplay/propositions/GD-27.md), lot 6, « aller voir sur place ») : les items sans jumeau se jouent d’abord dans la scénette, puis l’habitant dit d’aller voir, Kéo marche une seule fois jusqu’à la station, et les jumeaux se jouent en touchant un des trois objets posés sur leurs pierres. La sous-section `### Sur place`, dans « ## Au lieu · Archipéo » après « ### Les missions », nomme ce niveau et ses deux phrases ; chaque jumeau du niveau donne alors ses trois objets en `scène` :
+
+```md
+### Sur place
+
+- mission : `living-groups`
+- niveau : 1
+- va voir : Va voir les animaux de la rive.
+- consigne : Touche le bon animal.
+
+### Niveau 1 · `life-earth-sciences-6e-living-world-living-groups-1`
+
+Pour tous les items :
+- trou lu : (mot manquant)
+- règle : On classe selon ce que les êtres vivants ont : leurs attributs.
+
+1. jumeau : 1
+   - scène : aigrette · chauve-souris · libellule
+   - énoncé : Un animal a des ailes et des poils. C’est un …
+   - choix : oiseau · mammifère · insecte
+   - réponse : mammifère
+   …
+```
+
+- **mission** et **niveau** : une mission de l’île et un de ses niveaux ; ses jumeaux ont tous une `scène` de trois objets du kit du lieu (la Mangrove : `aigrette`, `chauve-souris`, `libellule`, `poisson`, `araignée` ; le kit est dans `scripts/contenu/aulieu.mjs`, `KITS_SUR_PLACE`, et son dessin dans `src/game/world/continu/surPlace.ts`), un par choix, dans l’ordre des choix, jamais deux fois le même ; les autres items du niveau n’ont pas de jumeau et se jouent en scénette.
+- **va voir** : la phrase de l’habitant avant la marche, aux règles de la parole du lieu (dix mots, point final, ni attente ni urgence) ; **consigne** : la consigne de la station, huit mots au plus, aux mêmes règles.
+- Le lecteur refuse un objet hors du kit, posé deux fois, en nombre différent des choix, une scène d’un autre lieu à ce niveau, une sous-section incomplète, et une `scène` à objets hors du niveau nommé. `npm run contenu` range la sous-section dans `paroles.json` (`surPlace`) ; `paroles.ts` la lit (`surPlaceOf`, `playsSurPlace`) et `questions.ts` donne aux jumeaux leur scène à trois objets dans la scénette seulement (jamais en révision).
 
 ## Les plans des bâtiments
 
@@ -204,7 +260,7 @@ Les phrases sont celles de la grille, les mêmes dans Blocland et dans Archipéo
 
 ## Les phrases des habitants du monde ouvert
 
-`monde-ouvert.md` n’est pas une île : il tient les phrases des habitants du monde ouvert d’Archipéo ([GD-20](../gameplay/propositions/GD-20.md), point 4, prototype du 6e derrière `?monde=ouvert`), une seule forme par moment de la commande, que le jeu remplit avec la commande de chaque île. Les phrases de « Les demandes » restent celles de la grille. `npm run contenu` les écrit dans `src/game/world/continu/mondeOuvert.json`, que seul le monde ouvert lit :
+`monde-ouvert.md` n’est pas une île : il tient les phrases des habitants du monde ouvert d’Archipéo ([GD-20](../gameplay/propositions/GD-20.md), point 4, prototype du 6e derrière `?monde=ouvert`), une seule forme par moment de la commande, que le jeu remplit avec la commande de chaque île. Il tient aussi, sous « Les veillées », la seule ligne de chaque veillée ([GD-23](../gameplay/propositions/GD-23.md), [GD-27](../gameplay/propositions/GD-27.md)) : une forme par moment (le feu éteint, le feu allumé, l’embarquement), que le jeu remplit avec le nom du lieu du feu ou le rôle de l’équipier. Sous « L’équipage », la ligne fixe que dit chaque équipier au toucher dans le monde du 6e ([GD-27](../gameplay/propositions/GD-27.md), lot 5 : une ligne par prénom, dix mots au plus, sans le prénom dans la phrase). Les phrases de « Les demandes » restent celles de la grille. `npm run contenu` les écrit dans `src/game/world/continu/mondeOuvert.json`, que seul le monde ouvert lit :
 
 ```md
 ## Les habitants

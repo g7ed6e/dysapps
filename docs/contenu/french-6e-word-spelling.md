@@ -451,6 +451,25 @@ Pour tous les items :
    - indice : Quels mots de la phrase t’aident ? Pense au chef d’orchestre.
    - explication : Le chef d’orchestre dirige les musiciens avec un petit bâton : ici, la baguette n’est pas le pain.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je copie les textes à la main. · Je range les fiches dans les tiroirs. · Je taille mes plumes.
+- lieu : Ici, la roche garde les textes. · Les tiroirs gardent les fiches.
+- ruine : Les colonnes sont couchées sur le parvis. · Les niches sont bouchées de pierres tombées.
+- chantier : Les colonnes sont relevées. · Le fronton est remis en place.
+- rallumé : Les niches sont dégagées. · La façade tient sur le parvis.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `missing-letters` | La copiste recopie une fiche abîmée. | La copiste a une fiche toute propre. |
+| `word-families` | Les fiches se rangent par famille. | La copiste classe les familles. |
+| `sight-words` | Le coffre garde les mots courants. | Le coffre est fermé. |
+| `word-forms` | Les tiroirs gardent un mot par fiche. | Les fiches sont dans leur tiroir. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

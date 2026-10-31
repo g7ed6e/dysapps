@@ -662,6 +662,26 @@ Pour tous les items :
      - pm = après midi : on ajoute 12 ; because of = à cause de ; next = prochain
      - speak up = parler plus fort ; slow down = ralentir
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je peins les bateaux des capitaines. · Je tends mes toiles dans les cadres. · Je mélange mes couleurs.
+- lieu : Ici, les capitaines venus d’ailleurs ont leur galerie. · Chaque cadre garde un bateau.
+- ruine : Le toit de la galerie est ouvert. · Les cadres sont tombés. · La galerie est couverte de poussière.
+- chantier : Le toit de la galerie est refait. · Les cadres sont remis au mur.
+- rallumé : Chaque cadre a son bateau. · La galerie est ouverte.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `ing` | Chaque toile montre un bateau au travail. | La peintre accroche la toile. |
+| `past-simple` | Chaque capitaine raconte une ancienne traversée. | La peintre peint le récit. |
+| `comparatives` | Les bateaux sont peints l’un à côté de l’autre. | Les bateaux sont accrochés côte à côte. |
+| `sentences` | La peintre écrit un mot sous chaque cadre. | Chaque cadre porte un mot. |
+| `portraits` | La galerie garde les portraits des capitaines. | Les portraits sont accrochés. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

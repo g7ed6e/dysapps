@@ -9,7 +9,7 @@
 // Module sans effet : generer.mjs (npm run contenu) et importer.mjs s'en servent.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { resoudreAuLieu } from './aulieu.mjs';
+import { resoudreAuLieu, resoudreParoles } from './aulieu.mjs';
 import { lireIle, principal } from './format.mjs';
 import { MISSIONS_PORTAIL } from './portail.mjs';
 import { FICHIER_ASSEMBLAGE, ecrireRecettes, lireAssemblage, lireQuestions } from './assemblage.mjs';
@@ -30,6 +30,8 @@ export const QUETES = join(racine, 'src/game/world/stories.json');
 export const PROJETS = join(racine, 'src/game/world/projects.json');
 /** Les items du lieu des univers à monde ouvert (scripts/contenu/aulieu.mjs), lus par le seul monde ouvert. */
 export const AU_LIEU = join(racine, 'src/game/world/continu/placeItems.json');
+/** La parole du lieu et la raison du lieu (GD-27) : les lignes de l'habitant, le cadre et la suite des missions, par île. */
+export const PAROLES = join(racine, 'src/game/world/continu/paroles.json');
 /** Les phrases des habitants du monde ouvert (docs/contenu/monde-ouvert.md), lues par le seul monde ouvert. */
 export const MONDE_OUVERT = join(racine, 'src/game/world/continu/mondeOuvert.json');
 
@@ -66,9 +68,10 @@ export function produire() {
   const demandesParIle = new Map();
   const plansParIle = new Map();
   const auLieuParUnivers = {};
+  const parolesParUnivers = {};
   for (const f of readdirSync(CONTENU).filter((n) => n.endsWith('.md') && n !== 'README.md' && n !== 'archipel.md' && n !== FICHIER_ASSEMBLAGE && n !== FICHIER_QUETES && n !== FICHIER_PROJETS && n !== FICHIER_MONDE_OUVERT).sort()) {
     const fichier = join('docs/contenu', f);
-    const { ile, biome, exercices, plans, demandes, auLieu } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
+    const { ile, biome, exercices, plans, demandes, auLieu, missions } = lireIle(readFileSync(join(CONTENU, f), 'utf8'), fichier);
     if (f !== `${ile}.md`) throw new Error(`${fichier} : le fichier d'une île s'appelle <île>.md (${ile}.md)`);
     for (const k of CHAMPS_ILE) if (biome[k] === undefined && !(biome.openWorldOnly && FACULTATIFS_LIEU_SEUL.has(k))) throw new Error(`${fichier} : l'île n'a pas de « ${k} » (voir docs/contenu/README.md)`);
     if (!MATIERES.includes(biome.subject)) throw new Error(`${fichier} : matière « ${biome.subject} » inconnue (${MATIERES.join(', ')})`);
@@ -93,6 +96,8 @@ export function produire() {
     if (auLieu) {
       auLieuParUnivers[auLieu.univers] ??= {};
       Object.assign(auLieuParUnivers[auLieu.univers], resoudreAuLieu(auLieu, exercices, fichier));
+      const paroles = resoudreParoles(auLieu, missions, fichier);
+      if (paroles) (parolesParUnivers[auLieu.univers] ??= {})[ile] = paroles;
     }
     for (const plan of plans) {
       const chemin = join(PLANS, `${plan.id}.json`);
@@ -101,6 +106,7 @@ export function produire() {
     }
   }
   sortie.set(AU_LIEU, JSON.stringify(auLieuParUnivers, null, 2) + '\n');
+  sortie.set(PAROLES, JSON.stringify(parolesParUnivers, null, 2) + '\n');
   // Les phrases des habitants du monde ouvert (GD-20) : docs/contenu/monde-ouvert.md → src/game/world/continu/mondeOuvert.json.
   sortie.set(MONDE_OUVERT, JSON.stringify(lireMondeOuvert(readFileSync(join(CONTENU, FICHIER_MONDE_OUVERT), 'utf8'), join('docs/contenu', FICHIER_MONDE_OUVERT)), null, 2) + '\n');
   const ordre = ordreDesIles();

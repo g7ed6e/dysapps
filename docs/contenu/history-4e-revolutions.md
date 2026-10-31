@@ -443,6 +443,24 @@ Pour tous les items :
    - indice : Relis la ligne qui contient « demande ».
    - explication : Hubertine Auclert se bat pour que les femmes votent. Au XIXe siècle, elles n’ont pas ce droit.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je tisse la toile fil après fil. · Je règle les machines. · Je plie les pièces de tissu.
+- lieu : Ici, les machines font la toile. · La verrière donne le jour aux métiers.
+- ruine : Les vitres de la verrière sont brisées. · Les métiers sont couverts de poussière. · La grande porte est fermée.
+- chantier : Les métiers sont remis en rang. · La verrière couvre la moitié de la halle.
+- rallumé : Les métiers tournent. · La toile sort de la machine. · Le jour entre par la verrière.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `enlightenment` | Les ballots de coton arrivent par bateau. | Les ballots sont déchargés. |
+| `industrial-europe` | Les machines tournent dans la halle. | La toile est coupée. |
+| `french-society` | Les ouvriers entrent par la grande porte. | Les ouvriers sont à leur poste. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

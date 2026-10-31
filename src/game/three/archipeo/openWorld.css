@@ -672,6 +672,11 @@
   max-width: 30rem;
   margin: 0;
 }
+/* À la station (sur place, GD-27, lot 6), l'indice redit couvrirait l'étiquette d'une cible : « Presque ! » seul, l'indice
+   reste derrière l'ampoule, comme sur un écran bas. */
+.world-question .in-world.scenette.sur-place > .feedback .feedback-body {
+  display: none;
+}
 /* « Presque ! » sur un écran bas : une étiquette à droite de la colonne, sous la barre du haut ; l'indice reste
    derrière l'ampoule. */
 .world-question .in-world.low > .feedback {
@@ -717,6 +722,15 @@
 .world-question .in-world.intro .world-question-prompt,
 .world-question .in-world.intro .world-answers,
 .world-question .in-world.intro .quiz-steps {
+  display: none;
+}
+/* Le cadre de la mission (GD-27, lot 2) : la bulle ne porte que le rôle et la phrase de l'habitant ; la consigne, ses
+   réponses, « Lire la suite » et l'offre de « Vue simple » attendent qu'il soit levé. */
+.world-question .in-world.cadre .world-question-prompt,
+.world-question .in-world.cadre .world-answers,
+.world-question .in-world.cadre .quiz-steps,
+.world-question .in-world.cadre .world-consigne-more,
+.world-question .in-world.cadre .world-question-offer {
   display: none;
 }
 /* La phrase en pleine largeur (un très grand texte) : « Presque ! » reste dans le panneau. */
@@ -821,6 +835,20 @@
   font-weight: 700;
   font-size: max(18px, 1.15rem);
   white-space: nowrap;
+}
+/* La suite de la mission (GD-27, lot 2) : la phrase de l'habitant après le résultat et la partie posée, lue après eux. */
+.world-question .world-done-follow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0 0;
+  text-align: left;
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+.world-question .world-done-follow > :first-child {
+  flex: 1 1 12rem;
 }
 .world-question .world-done-detail {
   min-height: 48px;
@@ -1237,6 +1265,45 @@
   align-items: center;
   gap: 0.4rem;
   margin: 0.2rem 0 0;
+}
+/* Le cadre (GD-27) : la phrase de l'habitant en toutes lettres, comme sa phrase d'accueil ; toute la phrase se touche
+   pour passer à la consigne (cible d'au moins 48 px), sans bouton de plus. */
+.world-scenette-cadre-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+}
+.world-scenette-cadre-ligne .world-scenette-role {
+  flex-basis: 100%;
+}
+.world-scenette-cadre {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: 1 1 12rem;
+  min-height: 48px;
+  margin: 0;
+  padding: 0.3rem 0.2rem;
+  border: 0;
+  border-radius: 0.5rem;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  overflow-wrap: break-word;
+  hyphens: none;
+}
+.world-scenette-cadre .icon {
+  flex: 0 0 auto;
+}
+.world-scenette-cadre:focus-visible {
+  outline: 3px solid var(--focus, currentColor);
+  outline-offset: 2px;
+}
+.world-scenette-head:focus {
+  outline: none;
 }
 /* Sur un téléphone, la phrase d'accueil prend toute la largeur du panneau et le haut-parleur passe dessous, comme sous
    les phrases de Kéo : à côté de lui, un mot plus long que la colonne restante se coupait (« signaleu / r » en
@@ -2773,6 +2840,12 @@
 .open-world-said > p > span {
   display: block;
 }
+/* Le rôle de l'habitant qui parle (GD-27), en étiquette au-dessus de sa ligne, du style du rôle de la bulle : pas une
+   phrase de plus, et pas un pas de quatre secondes à lui sur un petit écran. */
+.open-world-said > p > .open-world-said-label {
+  font-weight: 400;
+  font-size: max(18px, 0.9em);
+}
 .open-world-said > .speak-button {
   pointer-events: auto;
 }
@@ -2823,6 +2896,34 @@
 .open-world-said[data-shown='non'] {
   padding: 0;
   border: 0;
+}
+/* Le lieu de la lueur du niveau d'avant (GD-27, lot 5), pendant le coup d'œil qui ouvre le départ : son icône et son nom,
+   dans la boîte de la ligne, à sa place et à sa taille, sans glissement (la ligne du feu prend la suite sous le voile). */
+.open-world-veillee > .open-world-veillee-beyond {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+/* La ligne d'une veillée (GD-27, lot 3) : la boîte de la phrase, avec « Passer » à droite du haut-parleur, un bouton
+   discret de 48 px, en mots (le toucher n'importe où passe aussi la veillée ; le bouton le dit, référent dys). */
+.open-world-veillee > .open-world-veillee-pass {
+  pointer-events: auto;
+  min-width: 48px;
+  min-height: 48px;
+  margin: 0;
+  padding: 0 0.6rem;
+  border: 0;
+  border-radius: var(--radius-control, 12px);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: max(18px, 1rem);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.open-world-veillee > .open-world-veillee-pass:focus-visible {
+  outline: 3px solid var(--focus, #142b38);
+  outline-offset: 2px;
 }
 
 /* Les habitants (GD-20, point 4, lot L1 « Livrer »). Les pastilles : rondes, 48 px, posées à chaque image par la scène
@@ -3353,4 +3454,43 @@
 }
 .world-question .in-world.simple .world-sort > .world-simple-validate {
   order: 4;
+}
+
+/* L'épreuve hors des murs (GD-27, lot 6) : la bulle du départ (la phrase de l'habitant, lue), « Aller voir » puis
+   « Passer le trajet », 48 px au moins, au clavier comme au doigt. */
+.world-sur-place-go {
+  flex: 1 1 12rem;
+  min-height: 48px;
+  margin: 0;
+  padding: 0.3rem 0.2rem;
+  display: flex;
+  align-items: center;
+}
+.world-question .quiz.in-world .world-aller-voir,
+.world-question .quiz.in-world .world-passer-trajet {
+  min-height: 48px;
+  margin: 0.4rem 0 0;
+}
+/* Sur place, la cible d'une réponse est l'objet et son étiquette, ensemble ; le choix se lit au cadre épais et à la
+   coche (ou à la croix), jamais à la couleur seule (référent dys). Après la bonne réponse, les deux autres partent. */
+.world-question .world-answers .world-answer.sur-place {
+  border: 3px solid transparent;
+}
+.world-question .world-answers .world-answer.sur-place.right {
+  border-color: var(--success);
+}
+.world-question .world-answers .world-answer.sur-place.wrong {
+  border-color: var(--error);
+}
+.world-question .world-answers .world-answer.sur-place.right .world-answer-label,
+.world-question .world-answers .world-answer.sur-place.wrong .world-answer-label {
+  border-width: 3px;
+}
+.world-question .world-answers .world-answer.sur-place[hidden] {
+  display: none;
+}
+.world-answer-label .icon {
+  flex: 0 0 auto;
+  width: 1em;
+  height: 1em;
 }

@@ -566,6 +566,25 @@ Pour tous les items :
    - indice : Honorer quelqu’un, est-ce être pour lui ou contre lui ?
    - explication : En honorant Rome et l’empereur, les Gaulois montrent qu’ils lui sont fidèles. Le document ne l’écrit pas en toutes lettres : c’est son sens implicite. Les Gaulois vivent désormais à la romaine : c’est la romanisation.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je dégage les dalles à la brosse. · Je range les pierres de la fouille. · Je dessine les arcs.
+- lieu : Ici, une arcade se dresse au bord de l’eau. · Le dallage descend jusqu’à l’eau.
+- ruine : Les piles de l’arcade sont dans l’eau. · Les dalles sont couvertes de sable.
+- chantier : Les dalles du dallage sont dégagées. · L’escalier descend jusqu’à l’eau.
+- rallumé : Les arcs de l’arcade sont complets. · Les clés des arcs sont en place.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `early-humans` | Les outils de pierre sont dans la fouille. | Les outils sont dans leurs caisses. |
+| `ancient-peoples` | Les peuples anciens ont bâti près de l’eau. | L’archéologue dessine l’arcade. |
+| `roman-empire` | Une route mène à l’escalier de pierre. | La route est tracée sur le plan. |
+| `viewpoints` | Les documents de la fouille sont sur la planche. | L’archéologue range les documents. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

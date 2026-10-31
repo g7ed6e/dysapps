@@ -701,6 +701,26 @@ Pour tous les items :
    - indice : Une plage le soir, un ciel rose, orange et doré : c’est beau, triste ou effrayant ?
    - explication : It’s beautiful! = c’est beau ! Le ciel du soir a de belles couleurs. scary = qui fait peur, sad = triste.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je guide les bateaux dans le chenal. · Je plante les mâts sur les roches. · Je regarde la mer.
+- lieu : Ici, cinq mâts marquent le passage sûr. · La cale descend vers le chenal.
+- ruine : Les perches sont couchées sur la plage. · Le toit de la station est tombé.
+- chantier : Les murs de la station sont montés. · La cale est dégagée.
+- rallumé : Les mâts portent leurs signaux. · Les bateaux suivent le chenal.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `hello` | Les bateaux saluent la station en passant. | La station répond aux bateaux. |
+| `numbers` | Les mâts se suivent dans la mer. | Les mâts sont alignés. |
+| `first-listening` | Le pilote écoute les bateaux du chenal. | Le pilote du chenal voit passer les bateaux. |
+| `signs` | Les bouées flottent au pied de la cale. | Les bouées tiennent à leur amarre. |
+| `famous-people` | Des visiteurs de loin passent par le chenal. | Les visiteurs sont au quai. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

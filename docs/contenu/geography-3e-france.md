@@ -425,6 +425,24 @@ Pour tous les items :
    - indice : Relis la ligne qui commence par « Un Français ».
    - explication : Avec l’euro, un Français paie en Espagne ou en Italie avec la même monnaie : plus besoin de changer d’argent.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je dessine les villes sur le relief. · Je tends les routes entre les villes. · Je travaille à la table de la halle.
+- lieu : Ici, tout le pays tient sous une halle. · Le relief montre les plaines et les montagnes.
+- ruine : Le toit a glissé du bord du relief. · Les villes sont renversées. · Les fleuves sont décollés.
+- chantier : Le toit est remis sur les poteaux. · Les villes sont debout.
+- rallumé : Les routes relient les villes. · Les fleuves coulent jusqu’à la côte.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `territories` | Les villes sont de petits cubes de bois clair. | Les villes sont posées sur le relief. |
+| `planning` | Les routes se tendent entre les villes. | Le relief porte ses routes. |
+| `france-eu` | Les fleuves du relief traversent des frontières. | Les frontières sont posées sur le relief. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

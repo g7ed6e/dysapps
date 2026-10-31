@@ -21,15 +21,19 @@ import { placeArt } from './northShore';
 import { networkSamples, pathRibbons } from './paths';
 import { PLACES, type PlaceId } from './plan6e';
 import { lanternLight, modelOfPlace } from './places';
+import { rafiot6eFacets } from './rafiot6e';
 import { constructionFacets, WHOLE } from './construction';
 import { PORT_WORST, assemblyScene, portFacets } from './port';
 import { answerObjects, itemScene, placeTrace, sceneSpot } from './questionScene';
+import { respondTriangles } from './respond';
 import type { ItemScene } from './questions';
 import { HABITANT_TRIANGLES, HABITANT_TRIANGLES_3E, HABITANT_TRIANGLES_4E, HABITANT_TRIANGLES_5E, hasHabitantModel } from './habitants';
 import { EQUIPIER_TRIANGLES, guideOf } from './equipage';
 import { farArchipelagos3e } from './finalView3e';
 import { GUIDE_SHADOW_TRIANGLES, bellPlane, habitantHand, scenetteDecor, scenetteFinale, scenetteSetting } from './scenette';
 import { WORLD_HABITANT_TRIANGLES, hasWorldHabitant } from './worldHabitants';
+import { EQUIPIERS, equipageCost } from './equipageMonde';
+import { GESTE_TRIANGLES, TOOL_OF } from './gestes';
 import { landTileCounts } from './flora';
 import { buildHeightField, heightOnMesh, tileRings } from './terrain';
 import { buildHeightField5e, groundOn5e, tileCounts5e } from './terrain5e';
@@ -203,7 +207,7 @@ export const OPEN_WORLD_BUDGETS: Readonly<Record<OpenWorldLevel, { readonly tria
 };
 
 export interface OpenWorldCost {
-  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef' | 'habitants';
+  poste: 'ciel' | 'sol' | 'mer' | 'chemins' | 'lieux' | 'aménagements' | 'détours' | 'faune' | 'pose' | 'brume' | 'kéo' | 'question' | 'scénette' | 'nef' | 'habitants' | 'gestes' | 'équipage';
   triangles: number;
   calls: number;
 }
@@ -250,6 +254,8 @@ const HEAVIEST: readonly { place: PlaceId; scene: ItemScene }[] = [
 /**
  * Une question, au pire : la scène de l'item répondu et six objets de réponse (un maillage), plus la réaction (un
  * maillage). Kéo s'efface pendant la question : son poste ne compte pas en même temps, mais il reste compté (le pire cas).
+ * L'épreuve hors des murs (GD-27, lot 6, ./surPlace.ts) passe par le même maillage de l'item, trois objets et trois
+ * pierres au plus (`SUR_PLACE_TRIANGLES_MAX`, bien sous ce poste) : aucun appel de plus, aucune hausse.
  */
 function questionCost(): { triangles: number; calls: number } {
   let triangles = 0;
@@ -281,7 +287,9 @@ function scenetteCost(): { triangles: number; calls: number } {
   // La scénette d'assemblage de l'Escale (GD-20, lot 2) passe par le maillage de la réaction : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST);
   const guide = (p: PlaceId) => (guideOf(p) ? EQUIPIER_TRIANGLES + GUIDE_SHADOW_TRIANGLES : 0);
-  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES + guide(p)), assembly.pieces.triangles, assembly.made.triangles);
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés, huit au plus, dans le maillage de l'item ; celui qui
+  // se pose vole dans le maillage de la réaction, libre à sa place : aucun appel de plus.
+  const triangles = Math.max(...SCENETTE_PLACES.map((p) => Math.max(scenetteDecor(p).triangles, successTriangles(p)) - pawnTriangles(p) + HABITANT_TRIANGLES + guide(p) + respondTriangles(p)), assembly.pieces.triangles, assembly.made.triangles);
   return { triangles, calls: 3 };
 }
 
@@ -327,11 +335,12 @@ const SCENETTE_PLACES: readonly PlaceId[] = PLACES.map((p) => p.id);
  * allumée (sa couleur dessinée sans ombre, dans le même matériau) ; le lieu suivi, seul hors de la brume, dans un
  * second (son matériau sans brouillard). Deux appels, quel que soit le nombre de lieux. L'Escale y entre (GD-20, lot 2),
  * au plus chargé : toutes les places de sa galerie prises, ses portes pavoisées, ses barques, sa pile pleine
- * (`PORT_WORST`) ; aucun appel de plus.
+ * (`PORT_WORST`) ; aucun appel de plus. Le Rafiot des Ferrailleurs au mouillage (GD-23, lot 2 ; GD-27, lot 3 : rafiot6e.ts),
+ * tant qu'un lieu qui l'amarre est éteint, dans le même maillage.
  */
 function placesCost(): { triangles: number; calls: number } {
   const triangles = PLACES.reduce((s, p) => s + modelOfPlace(p.id).facets.triangles + placeTrace(p.id, [...p.scenes, ...(p.panels ?? [])]).triangles, 0);
-  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles + bridgesCost(), calls: 2 };
+  return { triangles: triangles + lanternLight().triangles + portFacets(PORT_WORST).triangles + bridgesCost() + (rafiot6eFacets(() => false)?.triangles ?? 0), calls: 2 };
 }
 
 /**
@@ -426,7 +435,7 @@ export function openWorldCost(amenagements: number, view: 'scenette' | 'monde' =
     // Pendant une scénette, la question et le décor de près ; hors scénette (`monde`), les habitants près de leur porte
     // à leur place (choix du mainteneur, 23 octobre 2026), cachés pendant une scénette.
     ...(view === 'monde'
-      ? [{ poste: 'habitants' as const, ...worldHabitantsCost('6e') }]
+      ? [{ poste: 'habitants' as const, ...worldHabitantsCost('6e') }, { poste: 'gestes' as const, ...worldGestesCost('6e') }, { poste: 'équipage' as const, ...equipageCost() }]
       : [
           { poste: 'question' as const, ...questionCost() },
           { poste: 'scénette' as const, ...scenetteCost() },
@@ -475,6 +484,17 @@ export type OpenWorldCost5e = Omit<OpenWorldCost, 'poste'> & { poste: OpenWorldC
 export function worldHabitantsCost(level: OpenWorldLevel): { triangles: number; calls: number } {
   const count = planFor(level).places.filter((p) => hasWorldHabitant(p.id)).length;
   return { triangles: count * WORLD_HABITANT_TRIANGLES, calls: count ? 1 : 0 };
+}
+
+/**
+ * Le geste du métier (GD-27, lot 5, ./gestes.ts) : les outils des habitants du niveau qui en ont un, au plus
+ * `GESTE_TRIANGLES` chacun, tous hors ruine (le pire), dans un maillage à part (un appel), montré avec les habitants.
+ */
+export function worldGestesCost(level: OpenWorldLevel): { triangles: number; calls: number } {
+  const count = planFor(level).places.filter((p) => hasWorldHabitant(p.id) && TOOL_OF[p.id as keyof typeof TOOL_OF]).length;
+  // Au 6e, les outils des équipiers dans le monde (piste B), dans le même maillage.
+  const equipage = level === '6e' ? EQUIPIERS.length : 0;
+  return { triangles: (count + equipage) * GESTE_TRIANGLES, calls: count ? 1 : 0 };
 }
 
 /** Le sol du 5e, compté comme celui du 6e (`groundCost`) : autour des points de son réseau, dans huit directions. */
@@ -572,7 +592,9 @@ function scenetteCost5e(): { triangles: number; calls: number } {
     const full = scenetteDecor(place, open).triangles;
     return hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_5E : full;
   };
-  const worst = Math.max(...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés dans le maillage de l'item, celui qui vole dans celui
+  // de la réaction, libre à sa place : aucun appel de plus.
+  const worst = Math.max(...places.map((p) => Math.max(decor(p, false), decor(p, true)) + respondTriangles(p)));
   // La scénette d'assemblage de la Lisière (lot 4), jamais en même temps qu'une autre : les pièces, puis le bloc.
   const assembly = assemblyScene(PORT_WORST, LISIERE_SITE);
   return { triangles: Math.max(worst, assembly.pieces.triangles, assembly.made.triangles), calls: places.some(hasHabitantModel) ? 2 : 1 };
@@ -615,9 +637,9 @@ export function openWorldCost5e(view: 'scenette' | 'monde' | 'depart' = 'scenett
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost5e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }, { poste: 'gestes' as const, ...worldGestesCost('5e') }]
       : view === 'monde'
-      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }]
+      ? [{ poste: 'pose' as const, ...poseCost5e() }, { poste: 'habitants' as const, ...worldHabitantsCost('5e') }, { poste: 'gestes' as const, ...worldGestesCost('5e') }]
       : [
           { poste: 'question' as const, ...questionCost5e() },
           { poste: 'scénette' as const, ...scenetteCost5e() },
@@ -765,7 +787,9 @@ function questionCost4e(): { triangles: number; calls: number } {
 function scenetteCost4e(): { triangles: number; calls: number } {
   const places = PLAN_4E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
   const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_4E : scenetteDecor(place, open).triangles);
-  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés dans le maillage de l'item, celui qui vole dans celui
+  // de la réaction, libre à sa place : aucun appel de plus.
+  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true)) + respondTriangles(p)));
   return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
@@ -795,13 +819,13 @@ export function openWorldCost4e(view: 'monde' | 'scenette' | 'depart' = 'monde')
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost4e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }, { poste: 'gestes' as const, ...worldGestesCost('4e') }]
       : view === 'scenette'
       ? [
           { poste: 'question' as const, ...questionCost4e() },
           { poste: 'scénette' as const, ...scenetteCost4e() },
         ]
-      : [{ poste: 'pose' as const, ...poseCost4e() }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }]),
+      : [{ poste: 'pose' as const, ...poseCost4e() }, { poste: 'habitants' as const, ...worldHabitantsCost('4e') }, { poste: 'gestes' as const, ...worldGestesCost('4e') }]),
   ];
 }
 
@@ -929,7 +953,9 @@ function questionCost3e(): { triangles: number; calls: number } {
 function scenetteCost3e(): { triangles: number; calls: number } {
   const places = PLAN_3E.places.filter((p) => p.scenes.length).map((p) => scenePlace(p.id));
   const decor = (place: ScenePlaceId, open: boolean) => (hasHabitantModel(place) ? scenetteSetting(place, open).triangles + HABITANT_TRIANGLES_3E : scenetteDecor(place, open).triangles);
-  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true))));
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : ses objets posés dans le maillage de l'item, celui qui vole dans celui
+  // de la réaction, libre à sa place : aucun appel de plus.
+  const worst = Math.max(0, ...places.map((p) => Math.max(decor(p, false), decor(p, true)) + respondTriangles(p)));
   return { triangles: worst, calls: places.some(hasHabitantModel) ? 2 : 1 };
 }
 
@@ -960,15 +986,15 @@ export function openWorldCost3e(view: 'monde' | 'scenette' | 'depart' | 'finale'
     { poste: 'kéo', ...KEO },
     { poste: 'nef', ...nefCost3e() },
     ...(view === 'depart'
-      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]
+      ? [{ poste: 'départ' as const, triangles: 0, calls: 2 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }, { poste: 'gestes' as const, ...worldGestesCost('3e') }]
       : view === 'finale'
-      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]
+      ? [{ poste: 'vue finale' as const, triangles: farArchipelagos3e().triangles, calls: 1 }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }, { poste: 'gestes' as const, ...worldGestesCost('3e') }]
       : view === 'scenette'
       ? [
           { poste: 'question' as const, ...questionCost3e() },
           { poste: 'scénette' as const, ...scenetteCost3e() },
         ]
-      : [{ poste: 'pose' as const, ...poseCost3e() }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }]),
+      : [{ poste: 'pose' as const, ...poseCost3e() }, { poste: 'habitants' as const, ...worldHabitantsCost('3e') }, { poste: 'gestes' as const, ...worldGestesCost('3e') }]),
   ];
 }
 

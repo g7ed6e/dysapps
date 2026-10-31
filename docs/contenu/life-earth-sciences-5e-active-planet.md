@@ -411,6 +411,24 @@ Pour tous les items :
    - indice : Où la bouteille ne peut-elle plus partir avec la pluie ?
    - explication : Dans le bac de tri, la bouteille est ramassée et recyclée : elle n’arrive jamais à la mer. Le plastique ne disparaît pas : il se casse en morceaux qui restent dans l’eau.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je plante mes sondes dans le sol. · Je lis la girouette et le récipient de pluie. · Je note la chaleur des bouches.
+- lieu : Ici, des sources chaudes sortent de la roche. · Les instruments lisent la terre et le ciel.
+- ruine : Les sondes sont couchées côte à côte. · Le mât de la girouette est couché. · Le bord du bassin est tombé en blocs.
+- chantier : Les sondes sont replantées. · Le bord du bassin est refait.
+- rallumé : Les trois bouches fument. · Les instruments sont en place.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `active-earth` | Les bouches chaudes sortent de la roche. | Chaque bouche a son bord de pierre. |
+| `weather-climate` | La girouette tourne sur son mât. | La girouette se dresse sur son mât. |
+| `human-impact` | Les gens puisent l’eau des sources chaudes. | Le niveau de l’eau est noté. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

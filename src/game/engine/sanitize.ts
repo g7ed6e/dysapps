@@ -17,6 +17,8 @@ import { lireTirage, recetteDe, type TirageAssemblage } from '../world/assembly'
 import { archipelDeLaCommande, getCommande, MAX_COMMANDES_OUVERTES } from '../world/requests';
 import { getStory, isStoryDone } from '../world/stories';
 import { sanitizeDetours } from './detours';
+import { sanitizeEquipage } from './equipage';
+import { sanitizeVigils } from './vigils';
 import { PROJECT_BANKS } from '../world/projects';
 import { pairOfJoinId, sanitizeLayout } from '../world/savedLayout';
 import type { DrawKey, ExerciseProgress, GameState, LogEntry, SpacedItem, TypeStats } from './state';
@@ -253,6 +255,10 @@ export function sanitizeState(input: unknown): GameState {
   // un cairn ne se rallume qu'une fois son Détour trouvé.
   const detours = sanitizeDetours(world.detours);
   const detoursLit = sanitizeDetours(world.detoursLit).filter((id) => detours.includes(id));
+  // Les veillées vues (GD-23, GD-27, lot 3) : connues, sans doublon, dans leur ordre.
+  const vigils = sanitizeVigils(world.vigils);
+  // Le lieu retenu de chaque équipier dans le monde (GD-27, lot 5) : des identifiants, que le monde vérifie à la lecture.
+  const equipage = sanitizeEquipage(world.equipage);
   return {
     version: GAME_VERSION,
     progress,
@@ -262,7 +268,7 @@ export function sanitizeState(input: unknown): GameState {
     types,
     chests: Math.max(0, Math.round(num(raw.chests))),
     fluency,
-    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(stories.length ? { stories } : {}), ...(layout ? { layout } : {}), ...(challengesKeptOpen.length ? { challengesKeptOpen } : {}), ...(detours.length ? { detours } : {}), ...(detoursLit.length ? { detoursLit } : {}) },
+    world: { parts, log, links, ...(place ? { place } : {}), ...(requests.length ? { requests } : {}), ...(stories.length ? { stories } : {}), ...(layout ? { layout } : {}), ...(challengesKeptOpen.length ? { challengesKeptOpen } : {}), ...(detours.length ? { detours } : {}), ...(detoursLit.length ? { detoursLit } : {}), ...(vigils.length ? { vigils } : {}), ...(equipage ? { equipage } : {}) },
     ...(Object.keys(assemblyDraw).length ? { assemblyDraw } : {}),
   };
 }

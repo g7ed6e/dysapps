@@ -198,6 +198,26 @@ Pour tous les items :
    - explication : La pièce est équilibrée : pile a toujours une chance sur deux, 1/2. Sur peu de lancers, on peut obtenir 7 piles. 7/10 est ce qu’Hugo a observé, pas la probabilité. Et la pièce ne se souvient pas des lancers d’avant.
    - figure : diagramme pile · face / 7 · 3
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : J’ouvre et je ferme les portes. · Je tourne le treuil. · Je guide les bateaux dans le bassin.
+- lieu : Ici, le canal monte et descend les bateaux. · L’eau passe de bassin en bassin.
+- ruine : Les bassins du canal sont à sec. · Les murs sont ébréchés.
+- chantier : Les murs du canal sont refaits. · L’eau remplit le premier bassin.
+- rallumé : Les portes s’ouvrent sur le canal. · Les bateaux passent d’un bassin à l’autre.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `number-line` | Des nénuphars flottent sur le bassin. | Les nénuphars sont à leur place. |
+| `equivalence` | Deux rives bordent le canal. | Une planche relie les deux rives. |
+| `sharing` | Le gâteau de l’éclusier est sur la table. | L’éclusier sert les parts. |
+| `place-value` | Les galets du fond sont ramassés par tas. | L’éclusier pose les tas de galets. |
+| `fraction-sums` | L’éclusier note le niveau de chaque bassin. | L’éclusier inscrit le niveau. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

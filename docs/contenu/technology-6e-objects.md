@@ -567,6 +567,25 @@ Pour tous les items :
    - indice : Combien de côtés a un carré ?
    - explication : Un carré a 4 côtés : avec 3 répétitions, le robot n’en fait que 3. Il faut répéter 4 fois. Tourner à gauche ferait aussi un carré, mais de l’autre côté, toujours avec un côté de moins. Avancer de 3 cases agrandirait le carré sans le fermer.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je rabote les planches. · Je pose les planches sur la quille. · Je goudronne la coque.
+- lieu : Ici, on construit et on répare les bateaux. · La cale descend vers l’eau.
+- ruine : La cale est couverte de sable. · La quille est couchée sur les rails.
+- chantier : Les rails de la cale sont dégagés. · La quille est posée.
+- rallumé : La coque repose sur la cale. · L’atelier sent le bois neuf.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `object-function` | Le charpentier regarde la coque sur la cale. | Le charpentier juge la coque solide. |
+| `materials` | Les planches sont empilées dans l’atelier. | Le charpentier trie les planches. |
+| `information-networks` | Le charpentier tient un registre des bateaux. | Les bateaux sont inscrits au registre. |
+| `solve-program` | La coque glisse sur les rails de la cale. | La coque est sur ses rails. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

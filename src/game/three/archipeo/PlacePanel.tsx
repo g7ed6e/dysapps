@@ -17,12 +17,15 @@ import { useSettings } from '../../../core/SettingsContext';
 import { getIle, sansSonOption } from '../../biomes';
 import { Stars } from '../../Stars';
 import { playsInPlace, type MissionMark } from '../../world/continu/mission';
+import { surPlaceOf } from '../../world/continu/paroles';
 import { placeOfIsland, type LevelPlan, type OpenPlace, type PlaceId } from '../../world/continu/levelPlan';
 import type { EarnPlaceOf } from '../../PlanSection';
 import { MissionSheet, useOpenPanel } from './PortPanels';
 
 /** Ce que dit le signe d'une ligne qui se joue dans le lieu (il ne porte jamais seul le sens : il est dit). */
 export const IN_PLACE_LABEL = 'Scène';
+/** Le signe d'une mission dont un niveau se joue sur place, aux abords du lieu (GD-27, lot 6) : des pas, le mot dit. */
+export const SUR_PLACE_LABEL = 'Sur place';
 
 /**
  * L'adresse qui ramène à un lieu, sa liste ouverte, le focus sur une mission : `/adventure?lieu=quais&mission=make-ten`
@@ -109,12 +112,18 @@ export function PlacePanel({ place, missions, suggested, focus, onPlay, onClose,
       ) : (
         <span className="tag tag-new">Nouveau</span>
       ),
-    // Le signe des missions qui se jouent dans le lieu (référent dys) : une icône, le même partout, dite à la voix.
-    sign: playsInPlace(place, m.mission) ? (
-      <span className="mission-sign" role="img" aria-label={IN_PLACE_LABEL} title={IN_PLACE_LABEL}>
-        <Icon name="mountain" />
-      </span>
-    ) : null,
+    // Le signe des missions qui se jouent dans le lieu (référent dys) : une icône, le même partout, dite à la voix ;
+    // celle dont un niveau se joue sur place, aux abords (GD-27, lot 6), le dit par ses pas (directeur artistique).
+    sign:
+      surPlaceOf(place.id)?.mission === m.mission ? (
+        <span className="mission-sign" role="img" aria-label={SUR_PLACE_LABEL} title={SUR_PLACE_LABEL}>
+          <Icon name="footprints" />
+        </span>
+      ) : playsInPlace(place, m.mission) ? (
+        <span className="mission-sign" role="img" aria-label={IN_PLACE_LABEL} title={IN_PLACE_LABEL}>
+          <Icon name="mountain" />
+        </span>
+      ) : null,
     suggested: m.mission === suggested,
     onSelect: () => onPlay(m.mission),
   }));

@@ -414,6 +414,24 @@ Pour tous les items :
    - indice : Lis la deuxième ligne du document.
    - explication : Débroussailler, c’est enlever les broussailles qui brûlent vite : le feu n’atteint plus la maison. Les buissons et le bois contre les murs l’attirent.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je parle pour les gens dans la salle. · Je lis les lois aux gens. · J’explique leur cas devant le juge.
+- lieu : Ici, la salle est ouverte à tous. · Les gens viennent régler leurs affaires.
+- ruine : Les battants sont sortis de leurs gonds. · Les bancs sont dispersés. · Le toit de la salle est troué.
+- chantier : Un battant est remis en place. · Les bancs sont rangés.
+- rallumé : Les deux battants tournent sans bruit. · Les bancs forment un cercle. · La salle est pleine.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `freedoms` | Les gens se réunissent dans la salle. | Les bancs sont pleins de monde. |
+| `justice` | Le juge reçoit les gens dans la salle. | Le juge a rendu sa décision. |
+| `security-defence` | Les gardes ouvrent les portes aux passants. | Les portes sont fermées pour la nuit. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

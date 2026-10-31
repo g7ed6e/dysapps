@@ -3,8 +3,11 @@
 // mêmes fonctions, appelées de même) ; le 5e prend les siennes (./terrain5e.ts, ./paths5e.ts, ./sea.ts, ./sky.ts). Ce
 // que le 5e n'a pas encore (l'Escale, la Nef, les Détours, les scénettes) reste du 6e : la vue le coupe par `sixth` ; la
 // faune a celle de chaque niveau (./wildlife.ts, ./wildlife5e.ts). Code pur.
-import { WORLD_FOG, type CameraPose, type DetourView } from './camera';
-import { AIGUILLES_COLORS, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, RAFIOT_HULL_COLORS, RAFIOT_SMOKE_COLORS, SKY_ISLAND_COLORS, criqueDecorFacets, criqueLook } from './crique4e';
+import { WORLD_FOG, type DetourView } from './camera';
+import type { CameraScript } from './cameraPath';
+import { AIGUILLES_COLORS, CRIQUE_SITE, CRIQUE_VIEW, NEF_4E, SEMAPHORE_DARK_4E, SKY_ISLAND_COLORS, criqueDecorFacets, criqueLook } from './crique4e';
+import { RAFIOT_HULL_COLORS, RAFIOT_SMOKE_COLORS } from './rafiot';
+import { rafiot6eFacets } from './rafiot6e';
 import { mergeFacets, type Facets } from './facets';
 import { FANAL_TOWER_3E } from './fanal3e';
 import { FAR_ISLES_3E, FAR_ISLES_FOG_3E, FINAL_VIEW_3E, FINAL_VIEW_SECONDS_3E, farArchipelagos3e, finalViewPose3e } from './finalView3e';
@@ -25,6 +28,7 @@ import { CLIFF_MAP_COLORS, cliffMapLine } from './mist5e';
 import { NETWORK_6E, RIBBONS_6E, pathRibbons, type RibbonNet } from './paths';
 import { portFloor } from './plan6e';
 import { PARVIS, PEAK_3E, PLACES_3E, TERRAIN_3E, parvisFloor } from './plan3e';
+import { C4E } from './place4eKit';
 import { COLORS_4E, CRIQUE, TERRAIN_4E, criqueFloor } from './plan4e';
 import { COLORS_5E, TERRAIN_5E, lisiereFloor } from './plan5e';
 import { SEA_TEXTURE_3E, WATER_TONES, WATER_TONES_3E, WATER_TONES_4E, WATER_TONES_5E, seaPixels, seaPixels3e, seaPixels4e, seaPixels5e } from './sea';
@@ -173,14 +177,17 @@ export interface LevelWorld {
    * seule montre (les archipels au loin), et ce que dure son image fixe avec « Réduire les animations ». Rien ailleurs.
    */
   readonly finalView?: FinalView;
+  /**
+   * Le Rafiot des Ferrailleurs à quai (GD-23, lot 2 ; GD-27 ; GD-28 : au 6e, la seule trace de la bande, ./rafiot6e.ts) :
+   * amarré près d'un lieu éteint (`restored` dit si un lieu est rallumé), parti quand ils le sont tous ; dans le maillage
+   * des lieux, refait avec eux. Rien ailleurs (au 4e, il est dans `Departure.decor`).
+   */
+  rafiot?(restored: (place: PlaceId) => boolean): Facets | null;
 }
 
-/** La vue finale d'un niveau (`LevelWorld.finalView`). */
-interface FinalView {
+/** La vue finale d'un niveau (`LevelWorld.finalView`) : un script de caméra, et ce qu'elle seule dessine. */
+interface FinalView extends CameraScript {
   readonly place: PlaceId;
-  readonly seconds: number;
-  readonly still: number;
-  pose(t: number, from: CameraPose, out: CameraPose, still?: boolean): CameraPose;
   facets(): Facets;
 }
 
@@ -223,6 +230,7 @@ const WORLD_6E: LevelWorld = {
   departure: DEPARTURE_6E,
   fog: WORLD_FOG,
   mapOverlay: () => mergeFacets([]),
+  rafiot: rafiot6eFacets,
 };
 
 const WORLD_5E: LevelWorld = {
@@ -275,7 +283,7 @@ const DEPARTURE_4E_SITE: Departure = {
  * les Aiguilles, au loin (sans ombre, comme la lumière du Phare du 5e) ; la coque du Rafiot, sans ombre, voilée comme
  * tout le reste (retouche 1 : éclairée, elle tirait sur l'orange).
  */
-const THIN_FOG_4E = { plume: 0.45, islands: 0.7, aiguilles: 0.8, hull: 1 } as const;
+const THIN_FOG_4E = { plume: 0.45, islands: 0.7, aiguilles: 0.8, hull: 1, semaphore: 0.12 } as const;
 
 /**
  * Le 4e (lot 1 du monde ouvert du 4e) : sa lumière chaude, à plat (aucun étage : la lumière par la hauteur n'y sert qu'à
@@ -305,6 +313,8 @@ const WORLD_4E: LevelWorld = {
     // La Crique, lot 4 : les îles du ciel et les Aiguilles, au loin, sans ombre ; la coque du Rafiot, sans ombre.
     ...Object.values(SKY_ISLAND_COLORS).map((color) => ({ color, fog: THIN_FOG_4E.islands, unlit: true })),
     ...Object.values(AIGUILLES_COLORS).map((color) => ({ color, fog: THIN_FOG_4E.aiguilles, unlit: true })),
+    // La lanterne du Sémaphore en tête d'une Aiguille (GD-27, lot 5), presque sans brouillard, comme la lumière du Phare au 5e.
+    ...[C4E.lantern, SEMAPHORE_DARK_4E].map((color) => ({ color, fog: THIN_FOG_4E.semaphore })),
     ...Object.values(RAFIOT_HULL_COLORS).map((color) => ({ color, fog: THIN_FOG_4E.hull, unlit: true })),
   ],
   departure: DEPARTURE_4E_SITE,

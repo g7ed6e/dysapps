@@ -27,12 +27,12 @@ import { frenchTypography } from '../../../components/math/RichText';
 import { useProgress } from '../../../core/ProgressContext';
 import { useSettings } from '../../../core/SettingsContext';
 import { useMoinsDAnimations } from '../../../core/motion';
-import { isSpeechAvailable } from '../../../core/speech';
+import { isSpeechAvailable, stopSpeaking } from '../../../core/speech';
 import { useTextes } from '../../../universes';
 import { useBlocland } from '../../BloclandContext';
 import { paruresPoseBlock } from '../../useParuresBuilder';
 import { vehiclePoseBlock } from '../../useVehicleBuilder';
-import { getIle, type BiomeId, type IleId } from '../../biomes';
+import { getBiome, getIle, type BiomeId, type IleId } from '../../biomes';
 import { cheminDeRevision, revisionsDeLIle, usePlusTard } from '../../reminders';
 import { todayISO } from '../../engine';
 import { exercisesOf, questProgress } from '../../exercises';
@@ -46,16 +46,22 @@ import type { PartShape } from '../../world/continu/construction';
 import { LOOK_UP } from '../../world/continu/camera';
 import { bornesDuMondeOuvert, firstToPlayAt, keepClear, keoZone, missionsOfPlace, nextMission, overlaps, playsInPlace, type MarkOnScreen, type Obstacle, type ScreenRect } from '../../world/continu/mission';
 import { hasScenette, placeById, placeRecord, planFor, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { levelVigils, vigilCuts, vigilOf, vigilVeils, vigilWords, type VigilKind } from '../../world/continu/levelVigils';
+import { vigilCutTimes } from '../../world/continu/vigil';
+import { vigilSeen } from '../../world/vigilsSaved';
 import { scenetteOf } from '../../world/continu/scenette';
 import type { PortSpot } from '../../world/continu/plan6e';
 import { traceDone } from '../../world/continu/questions';
 import { REVISION_PHRASES } from '../../world/continu/remise';
 import { hasWorldHabitant } from '../../world/continu/worldHabitants';
+import { habitantLine, type PlaceMood } from '../../world/continu/paroles';
+import { EQUIPIER_ROLE, equipierLine, equipierPlaces, type EquipierPlaces } from '../../world/continu/equipageMonde';
 import { bornesDesLieuxSeuls, modeleDuMonde } from '../../world/model';
 import { gameAsShown } from '../../world/stories';
 import { SpeakButton } from '../../../components/SpeakButton';
 import { ClosedLandSheet, afterLabel, closedLandLabel, linkActionLabel, linkableLabel } from './ClosedLandSheet';
 import { constructionState, fanalRestored, placeConstruction, posedShapes, restoredLine } from './constructionParts';
+import { plansFor } from '../../world/plans';
 import { posedAmenagements } from './amenagements';
 import { arrivalPlace, gridLand, gridLands, openWorldLands, playedIslands } from './landLinks';
 import { MapLabels } from './MapLabels';
@@ -85,6 +91,8 @@ declare global {
   interface Window {
     /** Le monde ouvert, pour les captures et les mesures (en développement, ou avec `?mesures`). */
     __dysappsMondeOuvert?: Pick<OpenWorld, 'goTo' | 'goToPort' | 'assemble' | 'skip' | 'info' | 'portAt' | 'remiseView' | 'standAt' | 'turn' | 'ride' | 'view' | 'playFinal'> & {
+      /** Une veillée du 6e, jouée tout de suite (les captures seulement) ; `false` si la scène ne peut pas. */
+      veillee(kind: VigilKind): boolean;
       /** La dernière partie d'un lieu, posée de nouveau sous les yeux (la pose, puis la lueur de la Montée : les captures). */
       poseAgain(place: PlaceId): boolean;
       /** Le tour de la mesure automatique dans ce niveau (`?mesures=auto`, ./measureTour.ts). */
@@ -129,6 +137,8 @@ const missionTitle = (island: string, mission: string) => getIle(island)?.exerci
  */
 export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const plan = planFor(level);
+  // Les veillées du niveau (GD-23, GD-27, lots 3 et 3 bis) : son feu, qui monte à bord, leurs plans.
+  const vigils = useMemo(() => levelVigils(level), [level]);
   // Le 6e seul a les Détours, les commandes et l'entraide des habitants, et les scénettes de tous ses lieux (GD-22, lot
   // 2) ; chaque niveau a son lieu de départ et sa Nef (GD-22, lot 4 : la Lisière et le dirigeable).
   const sixth = level === '6e';
@@ -139,7 +149,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const habitantsShown = sixth || plan.places.some((p) => hasWorldHabitant(p.id));
   const errands = useMemo(() => hasOpenWorldErrands(plan), [plan]);
   const { biomeId } = useParams();
-  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, launch, moveTo, batisseur } = useBlocland();
+  const { state, linkLand, ensureOpenWorldLands, deliver, tapStory, findDetour, lightDetour, seeVigil, keepEquipage, launch, moveTo, batisseur } = useBlocland();
   const textes = useTextes();
   // Les noms du lieu de départ du niveau : l'Escale au 6e, la Lisière au 5e ; ses bâtiments gardent leur nom.
   const departNames = useMemo(() => (textes.depart ? { ...textes.depart, nom: textes.depart.noms?.[level as '5e'] ?? textes.depart.nom } : undefined), [textes.depart, level]);
@@ -206,6 +216,29 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // autant de lieux achevés que la grille demande de Gardiens (le monde continu n'en a pas) ; son temps, montré sur le ber.
   const nefStage = nefStageOf(level);
   const achieved = useMemo(() => Object.values(constructions).filter((c) => constructionState(c) === 'restauree').length, [constructions]);
+  // L'équipage dans le monde (GD-27, lot 5, piste B ; le 6e) : chaque équipier près de l'habitant du premier lieu rallumé
+  // qu'il a guidé, selon le journal des parties posées (ailleurs qu'au 6e, aucun lieu guidé : personne).
+  // Le journal change à chaque partie posée : la même table est gardée tant que son contenu ne change pas (la scène ne
+  // repose pas les lieux pour rien) ; le lieu choisi est retenu dans la sauvegarde, une fois pour toutes (`keepEquipage`).
+  const equipageRef = useRef<EquipierPlaces>({});
+  const equipage = useMemo(() => {
+    const next = equipierPlaces(
+      plan.places.filter((p) => constructionState(constructions[p.id]) === 'restauree').map((p) => p.id),
+      state.world.log,
+      (id) => {
+        const biome = getIle(placeById(id).island);
+        return biome ? plansFor(biome.id).map((p) => p.id) : [];
+      },
+      state.world.equipage ?? {},
+    );
+    const was = equipageRef.current;
+    if (JSON.stringify(was) === JSON.stringify(next)) return was;
+    equipageRef.current = next;
+    return next;
+  }, [plan, constructions, state.world.log, state.world.equipage]);
+  useEffect(() => {
+    if (Object.keys(equipage).length) keepEquipage(equipage);
+  }, [equipage, keepEquipage]);
   const sail = useMemo(() => nefSail(state, achieved, nefStage), [state, achieved, nefStage]);
   // Au 3e (`nefAtRest`), la Nef est au repos, entière : ni temps à construire, ni départ ; sa fiche pose ses trois
   // parures (GD-25), les feux arrivant avec deux lieux restaurés.
@@ -307,8 +340,17 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // La Nef part (GD-21) : la scène seule, comme pendant une question, jusqu'à l'arrivée en 5e.
   const [departing, setDeparting] = useState(false);
   // Le fondu du voyage entre niveaux : il couvre la page qui part, puis celle qui arrive, jusqu'à ce que son monde soit prêt.
-  const [fondu, setFondu] = useState(arrival.voyage === 'fondu' && !reduceMotion);
-  const [finalPlaying, setFinalPlaying] = useState(false);
+  // À l'arrivée par la Nef dans un niveau dont le feu est loin (`vigilCuts`), la page monte déjà voilée : l'élève ne voit
+  // pas le quai un instant avant la coupe de la veillée d'arrivée (consultant UX UI) ; si elle ne se joue pas, l'effet de
+  // l'arrivée lève le voile.
+  const [fondu, setFondu] = useState(!reduceMotion && (arrival.voyage === 'fondu' || (arrival.voyage === 'arrivee' && vigilCuts(vigils.fireVigil) && !vigilSeen(state.world, `${level}-arrival`))));
+  // Un script de caméra se joue (la vue finale du 3e, une veillée) : la scène seule, comme pendant une question.
+  const [scriptPlaying, setScriptPlaying] = useState(false);
+  // La veillée en cours (GD-23, GD-27, lot 3) : sa ligne, écrite sur fond uni et lue, relançable, le temps des plans.
+  // La ligne d'une veillée ; au départ du 5e et du 4e (GD-27, lot 5), le coup d'œil à la lueur du niveau d'avant la
+  // précède : pendant le glissement, rien n'est écrit (`glide`) ; la caméra posée, le lieu de la lueur, son icône et son
+  // nom, à la place de la ligne, dit une fois avec la lecture automatique (`beyond`) ; puis la ligne, sous le voile.
+  const [vigil, setVigil] = useState<{ n: number; line: string; glide?: boolean; beyond?: PlaceId } | null>(null);
   // Le panneau ouvert d'un lieu (GD-20, point 8) : sa liste de missions, et la ligne qui y prend le focus (celle dont on
   // revient) ; pour un lieu d'une terre fermée, la fiche de sa terre ; jamais en même temps qu'un panneau de l'Escale.
   const [lieu, setLieu] = useState<{ place: PlaceId; focus: string | null } | null>(null);
@@ -374,7 +416,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // combien de millisecondes (jamais en même temps que le toc).
   // Le nom d'un Détour où Kéo s'est arrêté s'écrit de même, en haut (`top`), et part dès qu'il en repart (`detour`).
   // L'état d'un lieu qui s'anime à sa restauration (la Forge du 4e) s'écrit de même, avec l'icône de l'état (`icon`).
-  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName; voice?: string } | null>(null);
+  const [said, setSaid] = useState<{ n: number; lines: readonly string[]; after: number; top?: boolean; detour?: DetourId; icon?: AnyIconName; voice?: string; label?: string } | null>(null);
   // Les mots d'état de l'univers, lus par la scène faite une fois (« La Forge est restaurée. »).
   const stateWords = useRef(textes.etatsDIle);
   stateWords.current = textes.etatsDIle;
@@ -388,6 +430,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const focusAfter = useRef<string | null>(null);
   // Au plus grand texte, un lieu ouvert sans la place de son nom : la vue de départ de la Carte change (GD-20, « La Carte
   // au plus grand texte »).
+  // Le geste du métier (GD-27, lot 5) attend tant qu'une phrase du monde est écrite et dite, ou qu'une fiche, un
+  // panneau ou les commandes couvrent la scène (référent dys : rien ne bouge pendant qu'on lit).
+  const gestesHeld = said !== null || lieu !== null || panel !== null || commandsOpen;
+  useEffect(() => {
+    world.current?.holdGestes(gestesHeld);
+  }, [gestesHeld]);
   const reframeMap = useCallback((crowded: (spots: readonly MapSpotOnScreen[]) => number) => world.current?.reframeMap(crowded), []);
   const mapPick = useRef<(place: PlaceId | 'port' | BridgeSpot) => void>(() => {});
   const mapButton = useRef<HTMLButtonElement>(null);
@@ -401,18 +449,21 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // La scénette d'assemblage se joue (GD-20, lot 2) : les célébrations attendent qu'elle finisse, comme pendant une
   // pose ; un panneau ouvert les retient aussi (PortPanels).
   const [assembling, setAssembling] = useState(false);
-  useHoldCelebrations(posePending || assembling || Boolean(remise) || finalPlaying);
-  // La vue finale se termine aussi au clavier, comme au toucher : Échap, Entrée ou Espace (référent dys).
+  useHoldCelebrations(posePending || assembling || Boolean(remise) || scriptPlaying);
+  // La vue finale et les veillées se terminent aussi au clavier, comme au toucher : Échap, Entrée ou Espace (référent dys).
+  // Entrée ou Espace sur un bouton (« Réécouter », « Passer ») reste au bouton : la veillée ne se passe pas d'elle-même
+  // quand on la réécoute au clavier (consultant UX UI, référent dys, relecture du lot 3 de GD-27) ; Échap passe toujours.
   useEffect(() => {
-    if (!finalPlaying) return;
+    if (!scriptPlaying) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== 'Escape' && e.key !== 'Enter' && e.key !== ' ') return;
+      if (e.key !== 'Escape' && e.target instanceof Element && e.target.closest('button')) return;
       e.preventDefault();
-      world.current?.endFinal();
+      passVigilRef.current();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [finalPlaying]);
+  }, [scriptPlaying]);
 
   // Les dimensions que la marque lit à chaque image, relues seulement quand la page, la marque ou un bouton change de
   // taille (jamais une mise en page forcée par image).
@@ -476,6 +527,14 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     // passait sous le bord droit (deuxième relecture du lot 1 du 4e, consultant UX UI : « La Forg »).
   }, [layout, next, suggestedId, walking, asking, remise, sheetOpen, ready, mapOpen, here]);
 
+  // L'état des lieux lu au toucher d'un habitant (le monde est créé une fois), et le rang du prochain toucher par lieu.
+  const constructionsRef = useRef(constructions);
+  useEffect(() => {
+    constructionsRef.current = constructions;
+  }, [constructions]);
+  const habitantTurns = useRef(new Map<PlaceId, number>());
+  // La dernière ligne dite par un habitant : un second toucher pendant qu'elle s'affiche la redit, sans avancer.
+  const habitantSaid = useRef<{ place: PlaceId; line: string; at: number } | null>(null);
   useEffect(() => {
     const el = host.current;
     if (!el) return;
@@ -525,6 +584,29 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         if (needleRef.current) needleRef.current.style.transform = `rotate(${yaw.toFixed(3)}rad)`;
         setTurned(Math.abs(yaw) > 0.01);
       },
+      // L'habitant d'un lieu touché près de sa porte (GD-27, la parole du lieu) : une ligne de dix mots au plus, sous
+      // son rôle en étiquette, écrite dans la phrase du monde et lue (« Rôle. Ligne. »), qui tourne à chaque toucher (son
+      // métier, son lieu, l'état du lieu) ; la rotation n'est pas sauvegardée. Un double toucher redit la même ligne
+      // (référent dys) ; « Réécouter » la redit aussi. Kéo ne bouge pas.
+      onHabitant: (placeId) => {
+        const state = constructionState(constructionsRef.current[placeId]);
+        const mood: PlaceMood = state === 'restauree' ? 'rallume' : state === 'en-chantier' ? 'chantier' : 'ruine';
+        const last = habitantSaid.current;
+        const again = last?.place === placeId && Date.now() - last.at < DOUBLE_TOUCH_MS ? last.line : null;
+        const n = habitantTurns.current.get(placeId) ?? 0;
+        const line = again ?? habitantLine(placeId, mood, n);
+        if (!line) return;
+        if (!again) habitantTurns.current.set(placeId, n + 1);
+        habitantSaid.current = { place: placeId, line, at: Date.now() };
+        const role = hasScenette(placeId) ? scenetteOf(placeId).role : null;
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0, label: role ?? undefined, voice: role ? `${role}. ${line}` : undefined }));
+      },
+      // Un équipier touché près de l'habitant qu'il a aidé (piste B) : sa ligne fixe, sous son rôle, écrite et lue.
+      onEquipier: (equipier) => {
+        const line = equipierLine(equipier);
+        const role = EQUIPIER_ROLE[equipier];
+        setSaid((was) => ({ n: (was?.n ?? 0) + 1, lines: [line], after: 0, label: role, voice: `${role}. ${line}` }));
+      },
       // Un lieu d'une terre fermée, ou son pont tombé, touché dans le monde : la fiche de la terre (GD-20, point 3).
       onClosed: (land) => {
         setPanel(null);
@@ -536,8 +618,8 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
       // Un lieu qui s'anime à sa restauration (la Forge du 4e) : son état, écrit avec son icône et dit, à la fin de
       // l'allumage ou au toucher qui le passe (tout de suite, avec « Réduire les animations ») ; puis la réplique de
       // l'habitant, s'il en a une (« Le feu de la montagne est revenu. »).
-      // La vue finale du niveau (au 3e) : les boutons se cachent le temps qu'elle dure ; un toucher la termine.
-      onFinalView: (on) => setFinalPlaying(on),
+      // La vue finale du niveau (au 3e) ou une veillée : les boutons se cachent le temps qu'elle dure ; un toucher la termine.
+      onCameraScript: (on) => setScriptPlaying(on),
       onRestored: (placeId) => {
         const lines = [restoredLine(placeById(placeId), stateWords.current)];
         const end = hasScenette(placeId) ? scenetteOf(placeId).words?.end : undefined;
@@ -576,6 +658,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
         ride: w.ride,
         view: w.view,
         playFinal: w.playFinal,
+        veillee: (kind) => playVigilRef.current(kind),
         poseAgain: (place) => {
           const now = placesNow.current;
           const parts = now?.built[place] ?? [];
@@ -930,7 +1013,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   // phrase revient et reste écrite toute sa durée, sans que la voix la redise (consultant UX UI, « Le temps de lire »).
   const saidAtFinal = useRef<number | null>(null);
   useEffect(() => {
-    if (finalPlaying) {
+    if (scriptPlaying) {
       saidAtFinal.current = said?.n ?? null;
       return;
     }
@@ -943,7 +1026,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     nextSaid(smallNow.current ? SAID_MS : SAID_MS * said.lines.length);
     // Seule la fin de la vue finale relance la phrase ; une nouvelle pose passe par l'effet de `said`.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalPlaying]);
+  }, [scriptPlaying]);
   // Une ligne touchée : comme une pastille de la Carte ; la voix dit le nom du lieu, celui du panneau qui s'ouvre à
   // l'arrivée (référent dys).
   const pickFromList = useCallback(
@@ -991,11 +1074,11 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   }, [nefResting, paruresNow, ready]);
   // « Partir » : la fiche se ferme, la Nef glisse vers la passe ; à la fin (ou au toucher), le voyage se fait et l'élève
   // arrive en 5e, dans la disposition que choisit la fabrique (le monde ouvert du 5e derrière `?monde=ouvert`, GD-22).
-  const departNef = useCallback(
+  // D'abord le départ lui-même (`leave`) : l'annonce, le son du véhicule, la Nef qui glisse, puis le voyage.
+  const leave = useCallback(
     (stage: VehicleStage) => {
       const w = world.current;
       if (!w) return;
-      setPanel(null);
       setDeparting(true);
       // L'annonce du départ (référent dys, retouche du lot 4) : courte, dans la zone du lecteur d'écran, et dite par la
       // voix avec la lecture automatique.
@@ -1021,6 +1104,152 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     },
     [launch, launchVoyage, navigate, sail.kit, settings.autoRead, settings.sounds, speak],
   );
+  const departNef = useCallback(
+    (stage: VehicleStage) => {
+      const w = world.current;
+      // Pendant une veillée (ou la vue finale), rien ne part : un second « Partir » attendrait la fin du script, puis
+      // partirait quand même (expert frontend, relecture du lot 3 de GD-27).
+      if (!w || scriptPlaying) return;
+      setPanel(null);
+      // Une fois par niveau, la veillée de départ d'abord (GD-27 : le feu du niveau tel qu'il est) ; le départ suit, par
+      // n'importe quel chemin (sa fin, ou le toucher qui la passe).
+      if (!vigilSeen(state.world, `${level}-departure`) && playVigilRef.current('departure', () => leave(stage), () => leave(stage))) return;
+      leave(stage);
+    },
+    [level, state.world, leave, scriptPlaying],
+  );
+  // Les veillées (GD-23, « trois veillées par niveau » ; GD-27, lots 3 et 3 bis) : la caméra quitte Kéo pour les plans de
+  // la veillée, sa ligne s'écrit sur fond uni et se dit avec la lecture automatique ; un toucher passe tout. Une veillée
+  // vue ne se rejoue pas, quoi qu'il arrive ensuite (`seeVigil`). `after` à la fin, par n'importe quel chemin ; la voix de
+  // la ligne s'arrête avec la veillée (passée d'un toucher, elle ne continue pas sur le monde revenu : référent dys). La
+  // scène peut refuser (la Carte ouverte, la Nef en route, un autre script) : `false`, rien n'est retenu. Quand le feu est
+  // trop loin pour y glisser (le 5e, le 4e, le 3e : `vigilCuts`), le voile du fondu couvre la coupe du début et celle du
+  // retour derrière Kéo (un quart de seconde chacune, comme le voyage entre niveaux) ; avec « Réduire les animations »,
+  // sans voile, l'image fixe d'un coup.
+  const veilTimers = useRef<number[]>([]);
+  const clearVeil = () => {
+    for (const t of veilTimers.current) window.clearTimeout(t);
+    veilTimers.current = [];
+  };
+  const veilLater = (fn: () => void, ms: number) => veilTimers.current.push(window.setTimeout(fn, ms));
+  useEffect(() => () => {
+    for (const t of veilTimers.current) window.clearTimeout(t);
+  }, []);
+  // Une veillée qui coupe se passe aussi sous le voile : « Passer », Échap, Entrée, Espace (la page) et le toucher sur le
+  // monde (la scène, par `pass`) couvrent d'abord, puis terminent le script un quart de seconde après ; la caméra ne
+  // saute pas derrière Kéo à découvert (consultant UX UI, expert frontend). `passing` : un seul passage à la fois.
+  const veiledRun = useRef(false);
+  const passing = useRef(false);
+  const passVigil = useCallback(() => {
+    const w = world.current;
+    if (!w || passing.current) return;
+    if (!veiledRun.current) return w.endScript();
+    passing.current = true;
+    clearVeil();
+    setFondu(true);
+    veilLater(() => w.endScript(), LEVEL_FADE_MS / 2);
+  }, []);
+  const passVigilRef = useRef(passVigil);
+  passVigilRef.current = passVigil;
+  const playVigil = useCallback(
+    (kind: VigilKind, after?: () => void, refused?: () => void): boolean => {
+      const w = world.current;
+      const lit = vigils.fireLit(posedShapes(constructionsRef.current[vigils.fire]));
+      const vigil = w ? vigilOf(vigils, kind, lit) : null;
+      if (!w || !vigil || scriptPlaying || asking || mapOpen) return false;
+      const line = vigilWords(vigils, kind, lit);
+      // Le voile couvre chaque coupe (`vigilVeils`) ; celle du début, avant que la veillée commence.
+      const veiled = vigilCutTimes(vigil).length > 0 && !reduceMotion;
+      const veiledStart = veiled && vigilCuts(vigil);
+      // La lueur du niveau d'avant (GD-27, lot 5) : son lieu nommé pendant le coup d'œil, la ligne et sa voix à la coupe
+      // sur le feu ; avec « Réduire les animations », l'image fixe du feu et sa ligne d'un coup.
+      const beyond = kind === 'departure' && !reduceMotion ? (vigils.beyond ?? null) : null;
+      const start = (): boolean => {
+        const started = w.playVigil(
+          vigil,
+          () => {
+            clearVeil();
+            veiledRun.current = false;
+            passing.current = false;
+            stopSpeaking();
+            setVigil(null);
+            if (veiled) veilLater(() => setFondu(false), LEVEL_FADE_MS / 2);
+            after?.();
+          },
+          veiled ? passVigilRef.current : undefined,
+        );
+        if (!started) {
+          if (veiled) setFondu(false);
+          return false;
+        }
+        veiledRun.current = veiled;
+        seeVigil(`${level}-${kind}`);
+        setVigil((was) => ({ n: (was?.n ?? 0) + 1, line, glide: Boolean(beyond) }));
+        if (beyond) {
+          const { place, shown, until } = beyond;
+          veilLater(() => {
+            setVigil((was) => (was ? { n: was.n, line: was.line, beyond: place } : was));
+            if (settings.autoRead) speak(placeById(place).name);
+          }, shown * 1000);
+          veilLater(() => {
+            setVigil((was) => (was ? { n: was.n, line: was.line } : was));
+            if (settings.autoRead) speak(line);
+          }, until * 1000);
+        } else if (settings.autoRead) speak(line);
+        if (veiled) for (const { at, on } of vigilVeils(vigil, LEVEL_FADE_MS / 2000)) veilLater(() => setFondu(on), at * 1000);
+        return true;
+      };
+      if (!veiledStart) return start();
+      // Le voile couvre d'abord, puis la caméra coupe sous lui. La scène peut refuser entre-temps (un raccourci clavier
+      // ouvre la Carte, la Nef est lancée) : la veillée, déjà tenue pour lancée, n'est pas retenue, et `refused` rend à
+      // l'appelant ce qu'il attendait de `false` (le départ part sans veillée, l'embarquement reste à jouer).
+      clearVeil();
+      setFondu(true);
+      veilLater(() => {
+        if (!start()) refused?.();
+      }, LEVEL_FADE_MS / 2);
+      return true;
+    },
+    [level, vigils, reduceMotion, scriptPlaying, asking, mapOpen, seeVigil, settings.autoRead, speak],
+  );
+  const playVigilRef = useRef(playVigil);
+  playVigilRef.current = playVigil;
+  // L'arrivée : la première fois que l'élève entre dans le niveau, à son point d'arrivée (au 6e, le quai de l'Escale, sans
+  // voyage ; ensuite, l'arrivée par la Nef, où qu'elle dépose Kéo (au 5e, l'île du port de la grille, les Radeaux ; au 4e
+  // et au 3e, le débarcadère), ou le quai par le mode bâtisseur, jamais au retour d'un fondu), tant qu'aucun lieu n'est
+  // rallumé (le feu est éteint). Une partie plus avancée ne la voit jamais : elle est retenue comme vue. Une fois
+  // par entrée : si la scène refuse (la Nef en route, un autre script), l'arrivée n'est ni jouée ni retenue, et se
+  // rejouera à l'entrée suivante.
+  const arrivalVigilTried = useRef(false);
+  useEffect(() => {
+    if (!ready || arrivalVigilTried.current || vigilSeen(state.world, `${level}-arrival`)) return;
+    arrivalVigilTried.current = true;
+    if (achieved > 0) seeVigil(`${level}-arrival`);
+    else if ((arrival.voyage === 'arrivee' || (start === 'quai' && arrival.voyage !== 'fondu')) && playVigil('arrival')) return;
+    if (arrival.voyage === 'arrivee') setFondu(false);
+  }, [ready, level, state.world, achieved, start, arrival.voyage, seeVigil, playVigil]);
+  // L'embarquement d'un équipier : son lieu rallumé sous les yeux de l'élève, la veillée vient au retour de la scénette,
+  // après le bilan et la pose de la partie, jamais pendant. Déjà rallumé en arrivant : retenue comme vue.
+  const boardingWhole = useRef<boolean | null>(null);
+  const [boardingPending, setBoardingPending] = useState(false);
+  useEffect(() => {
+    const place = vigils.boarding?.place;
+    if (!ready || !place) return;
+    const whole = constructionState(constructions[place]) === 'restauree';
+    const was = boardingWhole.current;
+    boardingWhole.current = whole;
+    if (was === null) {
+      if (whole && !vigilSeen(state.world, `${level}-boarding`)) seeVigil(`${level}-boarding`);
+      return;
+    }
+    if (whole && !was && !vigilSeen(state.world, `${level}-boarding`)) setBoardingPending(true);
+  }, [ready, level, vigils, constructions, state.world, seeVigil]);
+  // Elle attend aussi la Carte fermée et la Nef à quai ; refusée par la scène, elle reste à jouer (expert frontend ;
+  // `departing` dans les gardes, pour qu'un refus sous voile ne la relance pas en boucle, consultant UX UI).
+  useEffect(() => {
+    if (!boardingPending || posePending || asking || scriptPlaying || Boolean(remise) || mapOpen || departing) return;
+    if (playVigil('boarding', undefined, () => setBoardingPending(true))) setBoardingPending(false);
+  }, [boardingPending, posePending, asking, scriptPlaying, remise, mapOpen, departing, playVigil]);
   // Quand le monde est prêt, après un voyage entre niveaux : à la première arrivée par la Nef, le carillon, une fois ;
   // après un retour, le nom du niveau, dans la zone du lecteur d'écran et à la voix (référent dys). Puis l'adresse
   // oublie le voyage : un rechargement ne le rejoue pas (expert frontend).
@@ -1040,8 +1269,12 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   }, [ready, arrival.voyage, settings.sounds, settings.autoRead, speak, textes.archipels, level, navigate, location.pathname, location.search]);
   // Le retour d'un fondu : le voile se lève quand le monde est prêt, ou après quelques secondes au plus, pour ne jamais
   // laisser l'élève devant un voile qui prend les touchers (consultant UX UI).
+  // Le voile du voyage seul : celui d'une veillée qui coupe (`playVigil`) se lève à son heure, pas quand le monde est prêt.
+  const voyageVeil = useRef(arrival.voyage === 'fondu');
   useEffect(() => {
-    if (ready) setFondu(false);
+    if (!ready || !voyageVeil.current) return;
+    voyageVeil.current = false;
+    setFondu(false);
   }, [ready]);
   useEffect(() => {
     if (!fondu) return;
@@ -1104,9 +1337,9 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
     shownBuilt.current = built;
     askedPlace.current = null;
     const fresh = before && place ? built[place].filter((s) => !before[place].includes(s)) : [];
-    placesNow.current = { built, traces, amenagements };
+    placesNow.current = { built, traces, amenagements, equipage };
     if (!w.setPlaces(placesNow.current, place && fresh.length ? { place, parts: fresh } : undefined)) setPosePending(false);
-  }, [plan, constructions, traces, amenagements, asking, ready]);
+  }, [plan, constructions, traces, amenagements, equipage, asking, ready]);
   // L'état de chaque lieu sur la Carte, en icône et en mot (les mots d'état de l'univers).
   const states = useMemo(
     () => placeRecord(plan, (id) => constructionState(constructions[id])),
@@ -1179,7 +1412,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
   const earnPlaces = useMemo(() => earnPlacesOf(plan), [plan]);
 
   // Une question ou une remise : la scène seule, ni marque, ni accès directs, ni panneau.
-  const playing = Boolean(asking) || Boolean(remise) || departing || finalPlaying;
+  const playing = Boolean(asking) || Boolean(remise) || departing || scriptPlaying;
   // La phrase du monde est à l'écran : la bulle sous « Y aller » se retire le temps qu'elle l'est.
   // La phrase d'un Détour ne reste pas posée sur la Carte : elle se rapporte à la vue de Kéo (retouche 1 de l'Épaule,
   // point 5).
@@ -1331,7 +1564,7 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
               hors des noms des lieux du sud. */}
           <div className={`open-world-said${mapOpen ? ' on-map' : said?.top ? ' on-top' : ''}`} data-shown={saidOn ? 'oui' : 'non'} data-etape={saidStep} onPointerDown={holdSaid} onFocus={holdSaid}>
             {saidOn && said?.icon && <Icon name={said.icon} />}
-            <p role="status">{saidOn && said ? said.lines.map((line, i) => (
+            <p role="status">{saidOn && said?.label && <span className="open-world-said-label">{said.label}</span>}{saidOn && said ? said.lines.map((line, i) => (
                   // Sur un petit écran, l'autre phrase reste lue par le lecteur d'écran, cachée à la vue.
                   <span key={line} className={small && i !== saidStep ? 'visually-hidden' : undefined}>
                     {i > 0 && ' '}
@@ -1339,6 +1572,27 @@ export default function OpenWorldPage({ level }: { level: OpenWorldLevel }) {
                   </span>
                 )) : ''}</p>
             {saidOn && said && <SpeakButton text={said.voice ?? said.lines.join(' ')} label="Réécouter" compact />}
+          </div>
+          {/* La ligne d'une veillée (GD-23, GD-27, lot 3) : une seule, écrite sur fond uni le temps des plans, dite avec la
+              lecture automatique, à réentendre d'un toucher ; jamais nécessaire pour avancer. La zone reste dans la page,
+              vide le reste du temps, pour que les lecteurs d'écran annoncent la ligne (référent dys). « Passer » écrit
+              que la veillée se passe (le toucher n'importe où le fait aussi) : 48 px, discret (consultant UX UI). */}
+          <div className="open-world-said open-world-veillee" data-shown={vigil && !vigil.glide ? 'oui' : 'non'}>
+            {/* Le lieu de la lueur, la caméra posée dessus : son icône et son nom, sans phrase, dans la même boîte, hors de
+                l'annonce (une seule annonce, la ligne ; consultant UX UI, référent dys) ; dit une fois avec la lecture
+                automatique, sans « Réécouter » (directeur artistique). Pendant le glissement, la boîte est vide. */}
+            {vigil?.beyond && (
+              <p className="open-world-veillee-beyond" aria-hidden="true">
+                <Icon name={getBiome(placeById(vigil.beyond).island)?.icon ?? 'map'} /> {placeById(vigil.beyond).name}
+              </p>
+            )}
+            <p role="status">{vigil && !vigil.glide && !vigil.beyond ? vigil.line : ''}</p>
+            {vigil && !vigil.glide && !vigil.beyond && <SpeakButton text={vigil.line} label="Réécouter" compact />}
+            {vigil && !vigil.glide && (
+              <button type="button" className="open-world-veillee-pass" onClick={() => passVigilRef.current()}>
+                Passer
+              </button>
+            )}
           </div>
           {asking && world.current && (
             asking.revision ? (
@@ -1511,6 +1765,8 @@ const PONT_REBATI = 'Le pont est rebâti.';
  */
 const SAID_AFTER_MS = 450;
 const SAID_MS = 4000;
+/** Deux touchers de l'habitant à moins de ce délai : la même ligne, redite (un double toucher n'en saute pas une). */
+const DOUBLE_TOUCH_MS = 1200;
 
 /** Un petit écran : un téléphone, étroit ou couché (la même requête que `.open-world-said`, openWorld.css). */
 const SMALL_SCREEN = '(max-width: 600px), (max-height: 500px)';

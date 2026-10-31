@@ -422,6 +422,24 @@ Pour tous les items :
    - indice : Que se passe-t-il si le même mot de passe ouvre tous tes comptes ?
    - explication : Avec un mot de passe par compte, si l’un est découvert, les autres restent protégés. Cette commission veille à la protection des données personnelles.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je pose les tuiles brillantes. · Je monte la charpente de chêne. · Je scelle les dalles.
+- lieu : Ici, les gens du village se réunissent sous le toit. · Les piliers portent la toiture.
+- ruine : Le toit de la halle est tombé. · Les piliers tiennent sur le dallage.
+- chantier : La charpente de chêne est montée. · Les tuiles couvrent un pan.
+- rallumé : Le toit couvre tout le dallage. · Les gens se rassemblent sous la halle.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `representatives` | Les gens du village se réunissent sous le toit. | Les gens s’assoient sur les bancs alignés. |
+| `school-secularism` | La halle est ouverte à tous les gens du village. | La halle reste ouverte. |
+| `private-life` | Chaque maison du village a sa porte. | Les portes ferment bien. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

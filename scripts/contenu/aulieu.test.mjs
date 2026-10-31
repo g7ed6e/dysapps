@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { lireAuLieu, resoudreAuLieu } from './aulieu.mjs';
+import { KITS_SUR_PLACE, lireAuLieu, resoudreAuLieu, resoudreParoles, verifierParole } from './aulieu.mjs';
 import { lireIle } from './format.mjs';
 
 const fichier = 'docs/contenu/french-6e-grammar-spelling.md';
@@ -39,5 +39,95 @@ describe('les items du lieu en Markdown (monde ouvert d’Archipéo)', () => {
     expect(relire((s) => s.replace('## Au lieu · Archipéo', '## Au lieu · Blocland'))).toThrow(/monde ouvert inconnu/);
     expect(relire((s) => s.replace('- trou lu : (mot manquant)\n', ''))).toThrow(/« … » resterait/);
     expect(relire((s) => s.replace('- règle : Le nom commande', '- règle : Le verbe commande'))).toThrow(/pas une ligne de la carte/);
+  });
+});
+
+describe('l’épreuve hors des murs (GD-27, lot 6) : le niveau sur place et ses scènes à trois objets', () => {
+  const mangrove = 'docs/contenu/life-earth-sciences-6e-living-world.md';
+  const mdMangrove = readFileSync(mangrove, 'utf8');
+  const ileMangrove = lireIle(mdMangrove, mangrove);
+  /** La section « ## Au lieu · Archipéo » de la Mangrove, retouchée par `f`, lue puis résolue (items et paroles). */
+  const relire = (f) => () => {
+    const lignes = mdMangrove.split('\n');
+    const debut = lignes.findIndex((l) => l.startsWith('## Au lieu · '));
+    const fin = lignes.findIndex((l, i) => i > debut && l.startsWith('## '));
+    const section = f(lignes.slice(debut, fin).join('\n')).split('\n');
+    const auLieu = lireAuLieu(section, debut, mangrove);
+    return { items: resoudreAuLieu(auLieu, ileMangrove.exercices, mangrove), paroles: resoudreParoles(auLieu, ileMangrove.missions, mangrove) };
+  };
+
+  it('lit le niveau sur place, ses deux phrases et les objets de chaque jumeau, dans l’ordre des choix', () => {
+    const { items, paroles } = relire((s) => s)();
+    expect(paroles.surPlace).toEqual({ mission: 'living-groups', level: 1, go: 'Va voir les animaux de la rive.', instruction: 'Touche le bon animal.' });
+    const jumeaux = items['life-earth-sciences-6e-living-world-living-groups-1'];
+    expect(jumeaux.map((it) => it.key.slice(-1))).toEqual(['0', '1', '2', '4']);
+    expect(jumeaux[0]).toMatchObject({
+      scene: { objects: ['aigrette', 'chauve-souris', 'libellule'] },
+      choices: ['oiseau', 'mammifère', 'insecte'],
+      answer: 'mammifère',
+      spoken: 'Un animal a des ailes et des poils. C’est un (mot manquant)',
+      rule: 'On classe selon ce que les êtres vivants ont : leurs attributs.',
+    });
+    expect(jumeaux[3].scene).toEqual({ objects: ['aigrette', 'libellule', 'araignée'] });
+  });
+
+  it('le kit du lecteur est celui du jeu (src/game/world/continu/questions.ts, SUR_PLACE_OBJECTS), écrit une fois de chaque côté', () => {
+    const code = readFileSync('src/game/world/continu/questions.ts', 'utf8');
+    const liste = code.match(/export const SUR_PLACE_OBJECTS = \[([^\]]*)\]/)?.[1] ?? '';
+    const objets = [...liste.matchAll(/'([^']+)'/g)].map((m) => m[1]);
+    expect(objets.length).toBeGreaterThan(0);
+    expect(KITS_SUR_PLACE['life-earth-sciences-6e-living-world']).toEqual(objets);
+  });
+
+  it('refuse un objet hors du kit, posé deux fois, en nombre différent des choix, une scène des Filets au niveau sur place, une phrase qui presse', () => {
+    expect(relire((s) => s.replace('aigrette · chauve-souris · libellule', 'manchot · chauve-souris · libellule'))).toThrow(/pas un objet du kit/);
+    expect(relire((s) => s.replace('aigrette · chauve-souris · libellule', 'aigrette · aigrette · libellule'))).toThrow(/posé deux fois/);
+    expect(relire((s) => s.replace('aigrette · chauve-souris · libellule', 'aigrette · libellule'))).toThrow(/autant d’objets posés/);
+    expect(relire((s) => s.replace('aigrette · chauve-souris · libellule', 'sardines · 3'))).toThrow(/pas un objet du kit/);
+    expect(relire((s) => s.replace('- va voir : Va voir les animaux de la rive.', '- va voir : Les animaux attendent sur la rive.'))).toThrow(/ni attente, ni urgence/);
+    expect(relire((s) => s.replace('- consigne : Touche le bon animal.', '- consigne : Touche le bon animal posé sur sa pierre, là.'))).toThrow(/8 au plus/);
+    expect(relire((s) => s.replace('- consigne : Touche le bon animal.\n', ''))).toThrow(/« consigne » manque/);
+    expect(relire((s) => s.replace('- mission : `living-groups`', '- mission : `food-growth`'))).toThrow(/scène attendue/);
+    expect(relire((s) => s.replace('- niveau : 1', '- niveau : 2'))).toThrow(/scène attendue/);
+    expect(relire((s) => s.replace('### Sur place\n\n- mission : `living-groups`\n- niveau : 1\n- va voir : Va voir les animaux de la rive.\n- consigne : Touche le bon animal.\n', ''))).toThrow(/scène attendue/);
+  });
+});
+
+describe('la parole du lieu (GD-27, lot 2) : l’habitant et les missions', () => {
+  const quais = 'docs/contenu/maths-6e-calculation.md';
+  const mdQuais = readFileSync(quais, 'utf8');
+  const ileQuais = lireIle(mdQuais, quais);
+  /** La section « ## Au lieu · Archipéo » des Quais, retouchée par `f`, lue puis résolue en paroles. */
+  const paroles = (f) => () => {
+    const lignes = mdQuais.split('\n');
+    const debut = lignes.findIndex((l) => l.startsWith('## Au lieu · '));
+    const fin = lignes.findIndex((l, i) => i > debut && l.startsWith('## '));
+    const section = f(lignes.slice(debut, fin).join('\n')).split('\n');
+    return resoudreParoles(lireAuLieu(section, debut, quais), ileQuais.missions, quais);
+  };
+
+  it('lit les cinq registres de l’habitant et le cadre et la suite de chaque mission', () => {
+    const p = paroles((s) => s)();
+    expect(Object.keys(p.lines)).toEqual(['metier', 'lieu', 'ruine', 'chantier', 'rallume']);
+    expect(p.lines.metier[0]).toBe('Je charge les caisses sur la barge.');
+    expect(p.missions['times-tables']).toEqual({ frame: 'La barge prend des caisses par rangées.', follow: 'Les rangées sont comptées.' });
+    expect(resoudreParoles(ileQuais.auLieu, ileQuais.missions, quais)).toEqual(p);
+  });
+
+  it('refuse une ligne trop longue, sans point, un mot interdit, un verbe figuré, un cadre qui presse, une mission inconnue', () => {
+    expect(() => verifierParole('Un deux trois quatre cinq six sept huit neuf dix onze.', 'ici')).toThrow(/11 mots, 10 au plus/);
+    expect(() => verifierParole('Je charge la barge', 'ici')).toThrow(/finit par un point/);
+    expect(() => verifierParole('Oh ! la barge est là.', 'ici')).toThrow(/ni « ! »/);
+    expect(() => verifierParole('Je charge 3 caisses.', 'ici')).toThrow(/en lettres/);
+    expect(() => verifierParole('Le rafiot est à quai.', 'ici')).toThrow(/ne se dit pas à l’élève/);
+    expect(() => verifierParole('La grue est en ruine.', 'ici')).toThrow(/ne se dit pas à l’élève/);
+    expect(() => verifierParole('La veillée commence au quai.', 'ici')).toThrow(/ne se dit pas à l’élève/);
+    expect(() => verifierParole('Ma quête finit ici.', 'ici')).toThrow(/ne se dit pas à l’élève/);
+    expect(() => verifierParole('Un Ferrailleur passe au quai.', 'ici')).toThrow(/ne se dit pas à l’élève/);
+    expect(() => verifierParole('Je dompte la grue.', 'ici')).toThrow(/figuré/);
+    expect(() => verifierParole('La barge attend ses caisses.', 'ici', true)).toThrow(/ni attente, ni urgence/);
+    expect(() => verifierParole('La barge attend ses caisses.', 'ici')).not.toThrow();
+    expect(paroles((s) => s.replace('| `times-tables` |', '| `tables-inconnues` |'))).toThrow(/n’est pas une mission de l’île/);
+    expect(paroles((s) => s.replace('- rallumé :', '- allumé :'))).toThrow();
   });
 });

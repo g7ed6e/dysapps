@@ -1527,6 +1527,31 @@ Pour tous les items :
    - indice : Écoute : « aï », puis p ou b ?
    - explication : Leipzig : le son « aï » s’écrit ei, et on entend un p, pas un b. ai est rare en allemand (der Mai).
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je charge les malles des voyageurs. · Je lève la barrière du col. · Je pose les tampons sur le comptoir.
+- lieu : Ici, le col laisse passer les voyageurs. · La maison de pierre garde la route.
+- ruine : La barrière est rompue. · Le comptoir est fendu. · Les malles sont renversées.
+- chantier : La barrière tient sur ses poteaux. · Les tampons sont en rang.
+- rallumé : La barrière se lève au passage. · Les tampons sont sur le comptoir.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `es-past` | La carte du col montre les routes des voyageurs. | La carte est accrochée au mur. |
+| `es-stories` | Les voyageurs racontent leur route sur le banc. | Les voyageurs ont repris la route. |
+| `es-countries` | Les tampons marquent les pays traversés. | Les pays sont tamponnés. |
+| `es-connectives` | Les malles se lient avec des sangles. | Les malles sont sanglées. |
+| `es-media` | Le mur porte les affiches du col. | Les affiches sont collées. |
+| `de-past` | Le chemin de dalles mène à la barrière. | Le chemin est dégagé. |
+| `de-stories` | Le porteur écoute les récits des voyageurs. | Les récits sont connus de tout le col. |
+| `de-on-the-road` | Les voyageurs marchent sur le chemin du col. | Les voyageurs ont passé la barrière. |
+| `de-connectives` | La barrière tient sur ses deux poteaux. | Le contrepoids retient la barrière. |
+| `de-media` | Les cartes du col s’affichent au mur. | Les cartes sont fixées au mur. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

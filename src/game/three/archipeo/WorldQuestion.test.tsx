@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -8,6 +8,8 @@ import { SettingsProvider } from '../../../core/SettingsContext';
 import { BloclandProvider } from '../../BloclandContext';
 import type { OpenWorld } from './scene';
 import { JAUGE_INSTRUCTION, JAUGE_PROMPT } from '../../world/continu/questions';
+import { surPlaceStation } from '../../world/continu/surPlace';
+import placeItemsJson from '../../world/continu/placeItems.json';
 import { PlaceText, WorldQuestion } from './WorldQuestion';
 import { PlaceDocument } from './placeScreen';
 import { exercisesOf, loadExercise } from '../../exercises';
@@ -16,7 +18,7 @@ import { placeById, type PlaceId } from '../../world/continu/plan6e';
 import enclos from '../../exercises/data/french-6e-grammar-spelling-word-classes-1.json';
 
 // La scène 3D n'est pas là sous jsdom : la question ne lui demande que de poser les objets et d'allumer la lampe.
-const world = { question: vi.fn(() => []), onSceneTurn: vi.fn(() => () => {}), scenetteEnd: vi.fn() } as unknown as OpenWorld;
+const world = { question: vi.fn(() => []), onSceneTurn: vi.fn(() => () => {}), scenetteEnd: vi.fn(), walkTo: vi.fn(), skip: vi.fn() } as unknown as OpenWorld;
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -650,6 +652,26 @@ describe('Les lieux au décor neutre, dans la bulle (GD-26)', () => {
     await vi.waitFor(() => expect(last().item.answered).toBe(true));
   });
 
+  it('le monde qui répond compte une bonne réponse (GD-28, lot 4) ; jamais une correction après deux essais faux', async () => {
+    const user = await start('engine', 'energy-circuits');
+    expect(last().responded).toBe(0);
+    const { shown, answer } = await rightAnswer();
+    await user.click(answers()[shown.indexOf(answer)]);
+    await vi.waitFor(() => expect(last().responded).toBe(1));
+    expect(document.querySelector('.quiz-counter, .world-responded')).toBeNull();
+    // L'item suivant : le compte reste ; deux essais faux n'y ajoutent rien.
+    await user.click(document.querySelector<HTMLButtonElement>('.next-button')!);
+    await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    const next = await rightAnswer();
+    const wrong = next.shown.map((s, i) => (s === next.answer ? -1 : i)).filter((i) => i >= 0);
+    for (const i of wrong) {
+      if (document.querySelector('.next-button')) break;
+      await user.click(answers()[i]);
+    }
+    await vi.waitFor(() => expect(document.querySelector('.next-button')).not.toBeNull());
+    expect(last().responded).toBe(1);
+  });
+
   it('le témoin reste au repos après deux essais faux (la correction)', async () => {
     const user = await start('engine', 'energy-circuits');
     const { shown, answer } = await rightAnswer();
@@ -710,23 +732,33 @@ describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot
     lang = '';
     rate = 1;
     voice = null;
-    onend: (() => void) | null = null;
-    onerror: (() => void) | null = null;
+    onend: ((e: SpeechSynthesisEvent) => void) | null = null;
+    onerror: ((e: SpeechSynthesisErrorEvent) => void) | null = null;
     constructor(public text: string) {}
   }
-  const start = async () => {
+  const start = async (keepFrame = false) => {
     const user = userEvent.setup();
     const go = screen.queryByRole('button', { name: /Commencer/ });
     if (go) await user.click(go);
     await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    // Le cadre de la mission (GD-27, lot 2) : un toucher sur la phrase de l'habitant passe à la consigne.
+    const cadre = document.querySelector<HTMLElement>('.world-scenette-cadre');
+    if (cadre && !keepFrame) await user.click(cadre);
   };
 
   it('Familles-craft aux Archives : le sens, la racine trouée, les affixes écrits avec leur trait d’union', async () => {
     renderPlace('archives', 'word-families');
     expect(await screen.findByText('La copiste')).toBeInTheDocument();
     // La bulle (GD-26) : la consigne repliée et la phrase de l'item, jamais la phrase d'accueil de la copiste.
-    await start();
+    await start(true);
     expect(document.querySelector('.world-scenette-greeting')).toBeNull();
+    // Sans lecture automatique, le cadre (GD-27) reste jusqu'au toucher : aucune durée imposée.
+    const cadre = document.querySelector<HTMLElement>('.world-scenette-cadre');
+    expect(cadre).not.toBeNull();
+    await new Promise((r) => setTimeout(r, 200));
+    expect(document.querySelector('.world-scenette-cadre')).not.toBeNull();
+    await userEvent.setup().click(cadre!);
+    expect(document.querySelector('.world-scenette-cadre')).toBeNull();
     expect(document.querySelector('.world-gap-word')?.textContent).toMatch(/^…|…$/);
     for (const a of answers()) expect(a.textContent?.trim()).toMatch(/^-|-$/);
   });
@@ -738,7 +770,26 @@ describe('Le rivage nord, les écrans de référence redits (GD-20, point 8, lot
     localStorage.setItem('dysapps:settings', JSON.stringify({ autoRead: true }));
     renderPlace('printworks', 'sound-discrimination');
     expect(await screen.findByText('L’imprimeur')).toBeInTheDocument();
-    await start();
+    await start(true);
+    // Le cadre de la mission (GD-27, lot 2) s'écrit et se dit d'abord. Une voix coupée (le haut-parleur du cadre, une
+    // autre phrase) ne le lève pas ; la voix finie le lève un temps après, et la consigne se dit ensuite seulement.
+    const cadre = await vi.waitFor(() => {
+      const el = document.querySelector<HTMLElement>('.world-scenette-cadre');
+      expect(el).not.toBeNull();
+      return el!;
+    });
+    expect(cadre.textContent).toMatch(/\.$/);
+    const frameText = cadre.textContent ?? '';
+    await vi.waitFor(() => expect(speak).toHaveBeenCalled());
+    const frameUtterance = speak.mock.calls[speak.mock.calls.length - 1][0] as FakeUtterance;
+    expect(frameText).toContain(frameUtterance.text);
+    expect(speak.mock.calls.map((c) => (c[0] as FakeUtterance).text)).toEqual([frameUtterance.text]);
+    frameUtterance.onerror?.({ error: 'interrupted' } as SpeechSynthesisErrorEvent);
+    await new Promise((r) => setTimeout(r, 50));
+    expect(document.querySelector('.world-scenette-cadre')).not.toBeNull();
+    frameUtterance.onend?.({} as SpeechSynthesisEvent);
+    await vi.waitFor(() => expect(document.querySelector('.world-scenette-cadre')).toBeNull(), { timeout: 4000 });
+    await vi.waitFor(() => expect(speak.mock.calls.length).toBeGreaterThan(1));
     expect(screen.getByRole('button', { name: /Réécouter/ })).toBeInTheDocument();
     await vi.waitFor(() => expect(speak).toHaveBeenCalled());
     const spoken = speak.mock.calls.map((c) => (c[0] as { text?: string }).text ?? '');
@@ -777,15 +828,18 @@ describe('Le large (GD-20, point 8, lot L9)', () => {
     lang = '';
     rate = 1;
     voice = null;
-    onend: (() => void) | null = null;
-    onerror: (() => void) | null = null;
+    onend: ((e: SpeechSynthesisEvent) => void) | null = null;
+    onerror: ((e: SpeechSynthesisErrorEvent) => void) | null = null;
     constructor(public text: string) {}
   }
-  const start = async () => {
+  const start = async (keepFrame = false) => {
     const user = userEvent.setup();
     const go = screen.queryByRole('button', { name: /Commencer/ });
     if (go) await user.click(go);
     await vi.waitFor(() => expect(answers().length).toBeGreaterThanOrEqual(2));
+    // Le cadre de la mission (GD-27, lot 2) : un toucher sur la phrase de l'habitant passe à la consigne.
+    const cadre = document.querySelector<HTMLElement>('.world-scenette-cadre');
+    if (cadre && !keepFrame) await user.click(cadre);
   };
 
   /** Le texte de la page, sans les noms des boutons (le mot dit n'y est pas écrit). */
@@ -917,5 +971,131 @@ describe('Le rôle de l’habitant trop large pour sa ligne (retouche 1 des Cote
     expect(css).toMatch(/\.world-consigne-fold\.role-large \.world-scenette-role \{\s*max-width: 100%;\s*white-space: normal;/);
     style.remove();
     localStorage.removeItem('dysapps:settings');
+  });
+});
+
+describe('L’épreuve hors des murs (GD-27, lot 6) : la Mangrove, « Classer le vivant », niveau 1', () => {
+  const answers = () => [...document.querySelectorAll<HTMLButtonElement>('.world-answers .world-answer')];
+  // Les quatre items sans jumeau, joués dans la scénette d'abord : leurs réponses.
+  const SCENETTE_ANSWERS = ['la truite', 'mammifères et vertébrés', 'attribut', 'ce qu’ils ont'];
+  // Les quatre jumeaux joués sur place (placeItems.json) : la réponse de celui dont les choix sont à l'écran.
+  const twins = (placeItemsJson as { archipeo: Record<string, { prompt: string; answer: string }[]> }).archipeo['life-earth-sciences-6e-living-world-living-groups-1'];
+  // Le jumeau à l'écran se reconnaît à sa phrase (deux jumeaux ont les mêmes trois mots pour choix, dans un autre ordre,
+  // avec une autre réponse ; les items viennent dans un ordre tiré au sort).
+  const plainText = (t: string) => t.replace(/\s/g, '').replace(/…$/, '');
+  const stationAnswer = () => {
+    const shown = plainText(document.querySelector('.world-question-prompt')?.textContent ?? '');
+    return twins.find((t) => shown.startsWith(plainText(t.prompt)))!.answer;
+  };
+  const station = (i: number) => ({ text: '', x: 300 + 200 * i, y: 420, center: true, answer: i, box: { left: 270 + 200 * i, top: 400, right: 330 + 200 * i, bottom: 470 } });
+  beforeEach(() => {
+    vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(1024);
+    vi.spyOn(HTMLElement.prototype, 'clientHeight', 'get').mockReturnValue(768);
+  });
+  beforeAll(async () => {
+    const biome = getBiome('life-earth-sciences-6e-living-world')!;
+    await Promise.all(exercisesOf(biome.id, 'living-groups').map((e) => loadExercise(e.id)));
+  });
+
+  it('la scénette d’abord, puis « Va voir les animaux de la rive. » et « Aller voir », une marche avec « Passer le trajet », puis les objets comme cibles ; la bonne reste seule avec sa coche', async () => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    vi.mocked(world.walkTo).mockClear();
+    vi.mocked(world.question).mockImplementation((q) => (q?.item.scene.kind === 'surPlace' ? [0, 1, 2].map(station) : []));
+    renderPlace('mangrove', 'living-groups');
+    expect(await screen.findByText('La botaniste')).toBeInTheDocument();
+    // Le cadre de la mission, levé d'un toucher.
+    const cadre = await vi.waitFor(() => {
+      const el = document.querySelector<HTMLElement>('.world-scenette-cadre');
+      expect(el).not.toBeNull();
+      return el!;
+    });
+    await user.click(cadre);
+    // Quatre items dans la scénette : aucun « Aller voir » avant eux, les réponses sur la rangée.
+    for (let n = 0; n < 4; n++) {
+      await vi.waitFor(() => expect(answers().length).toBe(3));
+      expect(screen.queryByRole('button', { name: /Aller voir/ })).toBeNull();
+      const last = vi.mocked(world.question).mock.calls.at(-1)![0]!;
+      expect(last.item.scene.kind).toBe('column');
+      const right = answers().find((a) => SCENETTE_ANSWERS.includes(a.textContent?.trim() ?? ''));
+      expect(right, `item ${n + 1} de la scénette`).toBeDefined();
+      await user.click(right!);
+      await user.click(await screen.findByRole('button', { name: /Suivant/ }));
+    }
+    // Le départ : la phrase de l'habitant dans la bulle, « Aller voir » ; aucun item montré à la scène.
+    const go = await screen.findByRole('button', { name: /Aller voir/ });
+    const plain = (el: Element | null) => el?.textContent?.replace(/\s/g, '') ?? '';
+    expect(plain(document.querySelector('.world-sur-place-go'))).toBe('Vavoirlesanimauxdelarive.');
+    expect(answers()).toHaveLength(0);
+    expect(world.walkTo).not.toHaveBeenCalled();
+    await user.click(go);
+    // La marche : une seule, vers la station de la Mangrove ; « Passer le trajet » dès la première image.
+    expect(world.walkTo).toHaveBeenCalledTimes(1);
+    const [target, done] = vi.mocked(world.walkTo).mock.calls[0];
+    expect(target).toEqual(surPlaceStation('mangrove'));
+    expect(screen.getByRole('button', { name: /Passer le trajet/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /Aller voir/ })).toBeNull();
+    await user.click(screen.getByRole('button', { name: /Passer le trajet/ }));
+    expect(world.skip).toHaveBeenCalled();
+    // L'arrivée : le premier item sur place, ses trois objets comme cibles, l'étiquette au-dessus de chacun.
+    act(() => done!());
+    await vi.waitFor(() => expect(answers().length).toBe(3));
+    const last = vi.mocked(world.question).mock.calls.at(-1)![0]!;
+    expect(last.item.scene.kind).toBe('surPlace');
+    expect(last.place).toBe('mangrove');
+    expect(document.querySelector('.world-sur-place-go')).toBeNull();
+    expect(plain(document.querySelector('#consigne'))).toBe('Touchelebonanimal.');
+    await vi.waitFor(() => expect(answers().every((a) => a.classList.contains('sur-place'))).toBe(true));
+    // Chaque cible sur la boîte de son objet, élargie à 48 px au moins, de gauche à droite dans l'ordre des choix.
+    const lefts = answers().map((a) => parseFloat(a.style.left));
+    expect(lefts[0]).toBeLessThan(lefts[1]);
+    expect(lefts[1]).toBeLessThan(lefts[2]);
+    for (const a of answers()) {
+      expect(parseFloat(a.style.width)).toBeGreaterThanOrEqual(48);
+      expect(parseFloat(a.style.height)).toBeGreaterThanOrEqual(48);
+    }
+    // Aucun repère nu de la scène : l'étiquette est dans la cible.
+    expect(document.querySelectorAll('.world-question-label')).toHaveLength(0);
+    // La bonne réponse : la coche dans son étiquette, le cadre épais ; les deux autres partent d'un coup.
+    const right = answers().find((a) => a.textContent?.trim() === stationAnswer())!;
+    expect(right).toBeDefined();
+    await user.click(right);
+    await screen.findByRole('button', { name: /Suivant/ });
+    expect(right.classList.contains('right')).toBe(true);
+    expect(right.querySelector('.world-answer-label svg, .world-answer-label .icon')).not.toBeNull();
+    expect(answers().filter((a) => a !== right).every((a) => a.hidden)).toBe(true);
+    expect(right.hidden).toBe(false);
+    const after = vi.mocked(world.question).mock.calls.at(-1)![0]!;
+    expect(after.item).toMatchObject({ scene: { kind: 'surPlace' }, answered: true });
+    expect(after.item.right).toHaveLength(1);
+  });
+
+  it('sans objet à l’écran, la rangée habituelle ; en « Vue simple », la liste ; une révision reste en scénette', async () => {
+    const user = userEvent.setup();
+    vi.mocked(world.question).mockClear();
+    vi.mocked(world.question).mockImplementation(() => []);
+    renderPlace('mangrove', 'living-groups');
+    expect(await screen.findByText('La botaniste')).toBeInTheDocument();
+    const cadre = await vi.waitFor(() => {
+      const el = document.querySelector<HTMLElement>('.world-scenette-cadre');
+      expect(el).not.toBeNull();
+      return el!;
+    });
+    await user.click(cadre);
+    for (let n = 0; n < 4; n++) {
+      await vi.waitFor(() => expect(answers().length).toBe(3));
+      const right = answers().find((a) => SCENETTE_ANSWERS.includes(a.textContent?.trim() ?? ''));
+      await user.click(right!);
+      await user.click(await screen.findByRole('button', { name: /Suivant/ }));
+    }
+    await user.click(await screen.findByRole('button', { name: /Aller voir/ }));
+    act(() => vi.mocked(world.walkTo).mock.calls.at(-1)![1]!());
+    await vi.waitFor(() => expect(answers().length).toBe(3));
+    // Rien de la scène : la rangée habituelle, chaque réponse à sa place, jamais sans cible.
+    expect(answers().every((a) => !a.classList.contains('sur-place') && a.style.left !== '')).toBe(true);
+    await user.click(screen.getByRole('button', { name: /Vue simple/ }));
+    expect(document.querySelector('.quiz.in-world.simple')).not.toBeNull();
+    expect(answers()).toHaveLength(3);
+    expect(answers().every((a) => a.style.left === '')).toBe(true);
   });
 });

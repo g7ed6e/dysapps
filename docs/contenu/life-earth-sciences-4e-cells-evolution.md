@@ -402,6 +402,24 @@ Pour tous les items :
    - indice : Relis la ligne « C’est la sélection naturelle » du rappel.
    - explication : Le milieu trie : le froid, la nourriture, les prédateurs. L’animal ne choisit pas ses caractères : il naît avec, et le milieu le favorise ou non.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je fais pousser les plantes de la serre. · Je replante les bacs. · J’arrose avec l’eau de la citerne.
+- lieu : Ici, chaque plante a son bac. · La serre garde les plantes au chaud.
+- ruine : Les vitres de la serre sont cassées. · Les bacs sont vides. · La citerne est sèche.
+- chantier : Les bacs sont remplis de terre noire. · Des vitres sont remises.
+- rallumé : La serre est verte. · La citerne est pleine. · Les plantes poussent dans leurs bacs.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `cells-nutrition` | Les plantes ont besoin d’eau et de lumière. | Les bacs sont arrosés. |
+| `heredity` | Les graines sont semées dans les bacs. | Les graines sont en terre. |
+| `species-evolution` | Les plantes de la serre viennent de loin. | Les plantes sont étiquetées. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

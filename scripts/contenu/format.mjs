@@ -58,7 +58,7 @@ import { DEBUT_AU_LIEU, lireAuLieu } from './aulieu.mjs';
 import { ecrireDemandes, lireDemandes, TITRE_DEMANDES } from './demandes.mjs';
 import { ecrirePlans, lirePlans, TITRE_PLANS } from './plans.mjs';
 import { ecrireVoix, lireVoix, TITRE_VOIX } from './voix.mjs';
-import { aGuillemets, ecrireTexte, lireTexte } from './texte.mjs';
+import { aGuillemets, ecrireTexte, lireTexte, motsDe } from './texte.mjs';
 
 /** Champs de l'île, dans l'en-tête (son nom est le titre « # … ») : [étiquette, chemin dans le JSON]. */
 const ILE = [
@@ -160,7 +160,7 @@ const GESTES = ['ranger', 'placer'];
 export const MOTS_CONSIGNE_COURTE = 8;
 
 /** Les mots d'une consigne : séparés par des espaces (une apostrophe ne coupe pas le mot). */
-export const motsDe = (texte) => texte.split(/\s+/).filter((m) => /[\p{L}\p{N}]/u.test(m)).length;
+export { motsDe };
 
 const PAR_ETIQUETTE_NIVEAU = new Map(NIVEAU.map((c) => [c[0], c]));
 const PAR_ETIQUETTE_ITEM = new Map(ITEM.map((c) => [c[0], c]));

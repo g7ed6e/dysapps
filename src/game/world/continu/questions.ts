@@ -11,6 +11,7 @@ import { isSixthPlace, scenePlace, sixthPlace, type PlaceId as AnyPlaceId, type 
 import { isBuiltPlace4e } from './plan4e';
 import { isBuiltPlace3e } from './plan3e';
 import { isBuiltPlace5e } from './plan5e';
+import { ISLANDS_WITH_SUR_PLACE, playsSurPlace, surPlaceOf, surPlaceOfIsland } from './paroles';
 
 /** Un item d'exercice, vu d'ici : sa clé, et ses champs (ceux du jeu commun, sans en dépendre). */
 export interface QuestionItem {
@@ -78,7 +79,17 @@ export type ItemScene =
    * correction (GD-20, point 8, lot L9 : la bouée reçoit son voyant, la malle se ferme), puis reste jusqu'à l'item
    * suivant ; les réponses portées par l'objet du lieu, leurs étiquettes dans la page.
    */
-  | { kind: 'restMark' };
+  | { kind: 'restMark' }
+  /**
+   * L'épreuve hors des murs (GD-27, lot 6) : l'item joué sur place, aux abords du lieu, un objet du kit par choix, dans
+   * l'ordre des choix, chacun sur sa pierre (./surPlace.ts) ; l'étiquette de l'objet est son choix.
+   */
+  | { kind: 'surPlace'; objects: SurPlaceObject[] };
+
+/** Les objets du kit d'un lieu joué sur place : les noms écrits dans le Markdown du contenu (`scène : aigrette · …`). */
+export const SUR_PLACE_OBJECTS = ['aigrette', 'chauve-souris', 'libellule', 'poisson', 'araignée'] as const;
+export type SurPlaceObject = (typeof SUR_PLACE_OBJECTS)[number];
+const isSurPlaceObject = (v: unknown): v is SurPlaceObject => typeof v === 'string' && (SUR_PLACE_OBJECTS as readonly string[]).includes(v);
 
 const CATCHES: readonly Catch[] = ['sardines', 'filets', 'mouette', 'bocaux', 'crabes', 'pêche', 'seaux', 'crabe'];
 const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
@@ -108,6 +119,8 @@ export function isItemScene(v: unknown): v is ItemScene {
       return 'a' in v && isPart(v.a) && 'b' in v && isPart(v.b);
     case 'quai':
       return 'op' in v && (v.op === 'moitie' || v.op === 'double' || v.op === 'calcul') && 'before' in v && isCount(v.before) && 'after' in v && isCount(v.after);
+    case 'surPlace':
+      return 'objects' in v && Array.isArray(v.objects) && v.objects.length > 0 && v.objects.length <= 3 && v.objects.every(isSurPlaceObject) && new Set(v.objects).size === v.objects.length;
     default:
       return false;
   }
@@ -197,6 +210,8 @@ export function placeInstruction(anyPlace: AnyPlaceId, exerciseId: string, level
   // par syllabe » (relecture de L3, contenu). Sa première phrase change ; la fin des niveaux 2 et 3 reste.
   if (place === 'phare' && missionIs(exerciseId, 'syllables')) return PHARE_SYLLABLES + reference.slice(reference.indexOf('.') + 1);
   if (rangeGesture(place, exerciseId)) return ENCLOS_INSTRUCTION[level >= 2 ? 1 : 0];
+  // Sur place (GD-27, lot 6), la consigne du lieu (« Touche le bon animal. ») ; en scénette, celle de référence.
+  if (scene?.kind === 'surPlace') return surPlaceOf(place)?.instruction ?? reference;
   // Aux Marais salants, la Pente graduée au niveau 1 parle de la jauge (avant le premier item aussi) ; un item sans sa
   // jauge garde la consigne de référence.
   if (place === 'saltworks') return missionIs(exerciseId, 'scale') && level === 1 && (!scene || scene.kind === 'jauge') ? JAUGE_INSTRUCTION : reference;
@@ -217,6 +232,8 @@ export const SAS_INSTRUCTION = [
  * avec la question. Une consigne qui n'est pas celle d'un lieu n'en a pas ici (celle du niveau s'applique).
  */
 export function placeShortInstruction(placed: string): string | undefined {
+  // La consigne sur place a huit mots au plus (scripts/contenu/aulieu.mjs) : elle est sa propre consigne courte.
+  if (SUR_PLACE_INSTRUCTIONS.has(placed)) return placed;
   if (placed === ENCLOS_INSTRUCTION[0]) return 'Range chaque sujet dans son panier.';
   if (placed === ENCLOS_INSTRUCTION[1]) return 'Range chaque sujet selon son verbe.';
   if (placed.startsWith(PHARE_SYLLABLES)) return 'Écoute, touche la cloche.';
@@ -226,6 +243,9 @@ export function placeShortInstruction(placed: string): string | undefined {
   if (placed === SAS_INSTRUCTION[0]) return 'Regarde le sas, puis compte les parts.';
   return undefined;
 }
+
+/** Les consignes sur place écrites (une par lieu joué sur place), pour les reconnaître. */
+const SUR_PLACE_INSTRUCTIONS: ReadonlySet<string> = new Set(ISLANDS_WITH_SUR_PLACE.map((island) => surPlaceOfIsland(island)!.instruction));
 
 /** Les items du lieu d'un exercice, dans un univers (aujourd'hui, Archipéo seul) : par clé de leur jumeau. */
 function twinsOf(exerciseId: string): Map<string, QuestionItem> {
@@ -432,9 +452,9 @@ function inInstructionOrder(exerciseId: string, it: QuestionItem): { choices?: s
  * référence, sur le bassin au repos. À la Turbine et au Chantier naval, tout se joue en C, en items de référence.
  * `reference` : les items de « Vue simple ».
  */
-export function placeItems(anyPlace: AnyPlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false): PlacedItem[] {
+export function placeItems(anyPlace: AnyPlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction = written, reference = false, inPlace = true): PlacedItem[] {
   const place = scenePlace(anyPlace);
-  const placed = placedInScene(place, exerciseId, items, say);
+  const placed = placedInScene(place, exerciseId, items, say, inPlace);
   // « Vue simple » (`reference`) joue l'item de référence en entier quand la scène remplace sa figure : sa consigne, sa
   // phrase, son indice, sa correction et sa figure d'origine (directeur du contenu pédagogique, 16 octobre 2026) ; la
   // scène garde ses textes. Chaque lieu pose ses items un à un, dans l'ordre : le rang suffit.
@@ -492,7 +512,7 @@ function northItem(exerciseId: string, it: QuestionItem): Partial<PlacedItem> {
 }
 
 /** Les items posés dans la scène d'un lieu (`placeItems`), avec ses textes. */
-function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction): PlacedItem[] {
+function placedInScene(place: PlaceId, exerciseId: string, items: readonly QuestionItem[], say: SayFraction, inPlace: boolean): PlacedItem[] {
   if (place === 'phare') return items.map((it) => ({ ...it, placeScene: { kind: 'cloches' } }));
   // Les lieux construits du 5e (GD-22, ./plan5e.ts, `BUILT_PLACES_5E`, la seule liste) : toutes leurs missions en R, avec
   // leurs items de référence ; les réponses portées par l'objet du lieu (les godets de la Montée, les miches du Hameau,
@@ -515,8 +535,22 @@ function placedInScene(place: PlaceId, exerciseId: string, items: readonly Quest
     const column = missionIs(exerciseId, 'comprehension') || missionIs(exerciseId, 'tense-values') || missionIs(exerciseId, 'word-forms');
     return items.map((it) => (column ? { ...it, placeScene: COLUMN } : { ...it, ...northItem(exerciseId, it), placeScene: REST }));
   }
-  // La Mangrove (lot L8a) : de même, ses quatre missions en C, avec leurs items de référence.
-  if (place === 'mangrove') return items.map((it) => ({ ...it, placeScene: COLUMN }));
+  // La Mangrove (lot L8a) : de même, ses quatre missions en C, avec leurs items de référence ; sauf, au niveau joué sur
+  // place (GD-27, lot 6), les items qui ont un jumeau : leur scène à trois objets, leur phrase, leur indice et leur
+  // correction, la carte réduite à sa ligne de règle ; jamais en révision (`inPlace` faux : tout en scénette).
+  if (place === 'mangrove') {
+    const twins = inPlace && playsSurPlace(place, exerciseId) ? twinsOf(exerciseId) : new Map<string, QuestionItem>();
+    return items.map((it) => {
+      const twin = twins.get(it.key);
+      const objects = twin?.scene && typeof twin.scene === 'object' && 'objects' in twin.scene ? (twin.scene as { objects: unknown[] }).objects : null;
+      if (!twin || !objects || !objects.every(isSurPlaceObject)) return { ...it, placeScene: COLUMN };
+      const { scene: _scene, point: _point, traps: _traps, rule, ...fields } = twin;
+      // Sur place, le geste est toucher (un animal sur sa pierre) : le geste « ranger » de la référence, sa fiche et sa
+      // consigne courte restent à la scénette et à « Vue simple ».
+      const { gesture: _gesture, subject: _subject, shows: _shows, shortInstruction: _short, ...base } = it;
+      return { ...base, ...fields, key: it.key, ...(typeof rule === 'string' ? { aid: ruleOnly(it.aid, rule) } : {}), placeScene: { kind: 'surPlace', objects: [...objects] } };
+    });
+  }
   // Les Ruines (lot L8b) : de même.
   if (place === 'ruins') return items.map((it) => ({ ...it, placeScene: COLUMN }));
   // L'Observatoire (lot L8c) : ses trois missions en C, aux deux niveaux, avec leurs items de référence.
@@ -741,6 +775,20 @@ export function gestureScreens<T extends object>(items: readonly T[], perRound: 
   }
   return out;
 }
+
+/**
+ * L'épreuve hors des murs (GD-27, lot 6) : les écrans de la partie, les items de la scénette d'abord, puis, groupés à la
+ * fin, ceux qui se jouent sur place (un seul changement de cadre, annoncé par l'habitant ; référent dys), chacun des deux
+ * groupes dans l'ordre reçu (le tirage, les items dus en tête).
+ */
+export function surPlaceLast<T extends object>(screens: readonly T[][]): T[][] {
+  const inPlace = screens.filter((s) => isSurPlaceScreen(s));
+  if (!inPlace.length) return [...screens];
+  return [...screens.filter((s) => !isSurPlaceScreen(s)), ...inPlace];
+}
+
+/** Un écran dont l'item se joue sur place (sa scène à trois objets). */
+const isSurPlaceScreen = (screen: readonly object[]): boolean => (screen[0] as { placeScene?: { kind?: unknown } } | undefined)?.placeScene?.kind === 'surPlace';
 
 /**
  * Une fiche plus longue qu'un mot ou deux : une phrase (« Je viens pour chant… avec toi. »). Sur un écran bas, la bulle
