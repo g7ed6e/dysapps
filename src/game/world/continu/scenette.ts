@@ -553,7 +553,7 @@ export const SCENETTE_LAYOUT = {
    */
   noteRoom: 34,
   /** À la station (sur place), la part de la hauteur que le rappel prend en bas à gauche, sous les pierres. */
-  stationAidShare: 0.2,
+  stationAidShare: 0.22,
   row: { top: 0.66, bottom: 0.9 },
   low: { left: 0.4, top: 0.16, bottom: 0.62, rowTop: 0.64, rowBottom: 0.88 },
   /**

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { heightAt, standingHeight } from './terrain';
 import { openWorldCost } from './budget';
+import { respondTriangles } from './respond';
 import { placeById } from './levelPlan';
 import { questionLayout } from './questionScene';
 import { isItemScene, placeInstruction, placeItems, SUR_PLACE_OBJECTS, surPlaceLast, COLUMN } from './questions';
@@ -37,6 +38,12 @@ describe('l’épreuve hors des murs (GD-27, lot 6) : le kit, la station, la cam
     expect(SUR_PLACE_TRIANGLES_MAX).toBe(276);
     // Dans le poste « question » du budget du monde, qui compte déjà la scène la plus lourde : aucune hausse, aucun appel de plus.
     expect(openWorldCost(0).find((c) => c.poste === 'question')!.triangles).toBeGreaterThanOrEqual(SUR_PLACE_TRIANGLES_MAX);
+    // Avec les propagules toutes posées (le monde qui répond, vu depuis la station) : sous la somme des postes de
+    // l'item et de la scénette, qui ne se montre pas à la station.
+    const postes = openWorldCost(0);
+    const question = postes.find((c) => c.poste === 'question')!.triangles;
+    const scenette = postes.find((c) => c.poste === 'scénette')!.triangles;
+    expect(SUR_PLACE_TRIANGLES_MAX + respondTriangles('mangrove')).toBeLessThanOrEqual(question + scenette);
   });
 
   it('la station de la Mangrove est hors de la boîte du lieu, sur un sol plat ; ses trois pierres du nord au sud, Kéo au tiers gauche', () => {

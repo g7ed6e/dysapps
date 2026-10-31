@@ -48,8 +48,12 @@ const STATIONS: Readonly<Partial<Record<PlaceId, { dx: number; dz: number }>>> =
 /** Un lieu qui a sa station (et donc son kit). */
 export const hasSurPlaceStation = (place: PlaceId): boolean => Object.hasOwn(STATIONS, place);
 
-/** Kéo à la station : derrière les pierres (à l'est, loin de la caméra), au tiers gauche de l'image, tourné vers les objets. */
-const KEO_AT_STATION = { dx: 6, dz: -4.8 } as const;
+/**
+ * Kéo à la station : sur la rive, au dernier point où l'on marche (l'eau commence une unité à l'est des pierres), un peu
+ * en arrière et au nord d'elles, au tiers gauche de l'image, tourné vers les objets (directeur artistique : jamais sur
+ * l'eau).
+ */
+const KEO_AT_STATION = { dx: 0.4, dz: -2.6 } as const;
 
 /**
  * La caméra de la station : la plongée, le recul depuis l'objet du milieu, la hauteur visée au-dessus des pierres, et où
@@ -106,7 +110,12 @@ export function surPlacePose(site: SurPlaceSite, width: number, height: number):
 
 // ---------- Le kit ----------
 
-/** Les couleurs du kit : des aplats francs, jamais presque noirs ; `grey`, la silhouette d'un objet écarté. */
+/**
+ * Les couleurs du kit : des aplats francs, jamais presque noirs ; `grey`, la silhouette d'un objet écarté. À la station,
+ * le maillage de l'item n'est pas éclairé (la scène lui donne sa matière plate) : la caméra voit les faces à l'ouest,
+ * que le soleil n'atteint pas, et le blanc doit rester blanc (directeur artistique) ; le dessus un peu plus sombre que
+ * les côtés fait le relief.
+ */
 const K = {
   stone: 0xc8bfae,
   stoneSide: 0x9c937f,
@@ -233,8 +242,8 @@ function poisson(b: FacetBuilder, o: Vec3, c: Palette): void {
   wing(b, o.x, [o.y + 0.16, o.z + 0.26], [o.y + 0.07, o.z + 0.46], 0.09, c.fishTail);
   // La nageoire du dos, dressée, et l'œil.
   wing(b, o.x, [o.y + 0.28, o.z - 0.1], [o.y + 0.4, o.z + 0.06], 0.1, c.fishTail);
-  b.box({ x: o.x - 0.13, y: o.y + 0.18, z: o.z - 0.36 }, [0.03, 0.06, 0.06], c.eye);
-  b.box({ x: o.x + 0.13, y: o.y + 0.18, z: o.z - 0.36 }, [0.03, 0.06, 0.06], c.eye);
+  b.box({ x: o.x - 0.14, y: o.y + 0.19, z: o.z - 0.22 }, [0.03, 0.06, 0.06], c.eye);
+  b.box({ x: o.x + 0.14, y: o.y + 0.19, z: o.z - 0.22 }, [0.03, 0.06, 0.06], c.eye);
 }
 
 /**

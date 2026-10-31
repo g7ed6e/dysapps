@@ -2868,6 +2868,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!target) {
       if (!walkDone) return;
       walkDone = null;
+      stationFrom = null;
       stopWalk();
       return;
     }
@@ -3549,7 +3550,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La question posée dans un lieu (lot 4) : sa pose fixe, la scène de l'item et les objets des réponses (un maillage),
   // la réaction (un maillage qui bouge une à deux secondes). Refaits par item, jamais par image.
   let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean; scene: ItemScene; scale: number; sort?: SortLook } | null = null;
-  const itemMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  const itemMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
+  // À la station (GD-27, lot 6), l'item n'est pas éclairé : la caméra fixe voit les faces à l'ouest, à l'ombre du soleil,
+  // et le blanc de l'aigrette doit rester blanc (directeur artistique) ; les aplats du kit portent leur propre relief.
+  const stationMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
   const reactionMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
   itemMesh.visible = false;
   reactionMesh.visible = false;
@@ -3870,10 +3874,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const { facets, anchors } = surPlaceFacets(site, scene, { answered: item.answered, right: item.right, picked: item.picked });
     itemFacets = facets;
     setGeometry(itemMesh, facets);
+    itemMesh.material = stationMaterial;
     itemMesh.visible = true;
     itemShown = true;
     reaction = null;
     reactionMesh.visible = false;
+    // L'habitant qui a envoyé Kéo se voit au fond, devant son lieu (cadrage, règle D3 : le fond dit le lieu).
+    if (hasHabitantModel(place)) habitants.show(place, scenetteHabitant(place, posed));
     // Le monde qui répond (GD-28), depuis la station aussi : les propagules déjà posées, de l'autre côté de l'eau, et la
     // suivante qui tombe à chaque bonne réponse (directeur artistique : le monde répond là où l'élève le voit).
     countResponded(place, q.mission, item.key ?? JSON.stringify(item.scene), q.responded);
@@ -3912,6 +3919,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       itemFacets = null;
       // La question fermée depuis la station (« Quitter », GD-27, lot 6) : Kéo revient devant le lieu par la même coupe
       // que le bilan, et sort de la scénette comme d'habitude (le lieu encadré est bien celui où il se tient).
+      if (left.scene.kind === 'surPlace') itemMesh.material = landMaterial;
       if (left.scene.kind === 'surPlace' && !scenette) {
         enterScenette(left.place);
         if (stationFrom) here = { ...stationFrom };
@@ -4242,6 +4250,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const place = asked.place;
       itemShown = false;
       itemMesh.visible = false;
+      itemMesh.material = landMaterial;
       reactionMesh.visible = false;
       reaction = null;
       itemFacets = null;
