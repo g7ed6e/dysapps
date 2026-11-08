@@ -12,12 +12,16 @@ import * as THREE from 'three';
 import { loadKeo } from '../../importedCharacters';
 import { createHabitantModels } from './habitantModels';
 import { createWorldHabitantModels } from './worldHabitantModels';
+import { createWorldEquipageModels } from './worldEquipageModels';
 import { createEquipierModels } from './equipierModels';
-import { guideOf } from '../../world/continu/equipage';
+import { guideOf, type Equipier } from '../../world/continu/equipage';
+import { equipageInWorld, type EquipierInWorld, type EquipierPlaces } from '../../world/continu/equipageMonde';
 import { loadNef } from '../../importedNef';
 import { nefParts } from '../../world/nefModels';
 import { blendPose, nefArrivingParts, nefAtBerth, nefModelFacets, nefSheetPose, nefShownParts, type NefFlight, type NefLook } from '../../world/continu/nef';
 import { loadedKeo } from '../../world/characters/imported/keo';
+import type { CameraScript } from '../../world/continu/cameraPath';
+import { vigilScript, type Vigil } from '../../world/continu/vigil';
 import { KEO_HEIGHT, KEO_WORLD_SCALE, LOOK_UP, orbitAround, MARK_LIFT, COMMON_DETOUR_VIEW, cliffHold, detourRise, detourViewStep, fitArrivalBack, followPose, followStep, holdStep, liftStep, lookUp, lookUpStep, markBeside, markPoint, markOffset, occlusionLift, screenOf, wrapAngle, type CameraPose, type CliffHold, type DetourView } from '../../world/continu/camera';
 import { DETOUR_TIMING, DETOURS, FAUNA, FAUNA_BLOW, FAUNA_END, birdFacets, detourAtPoint, detourCap, detourFacets, faunaPose, spoutFacets, whaleFacets, detourViewOf, type DetourId } from '../../world/continu/detours';
 import { hutteFacets } from '../../world/continu/hutte5e';
@@ -41,7 +45,7 @@ import { perchoirFacets } from '../../world/continu/perchoir5e';
 import { MONTEE_GLOW, monteeGlowBand, monteeGlowFront } from '../../world/continu/montee5e';
 import { bridgeLay, bridgeLayAt, bridgeLayColors, bridgeLayDrawn, bridgeLayPositions, type BridgeLay, type BridgeLayState } from '../../world/continu/bridgeLay';
 import { bridgeSpot, firstClosed, isBridgeSpot, isLinkedLand, landOf, linkedLands, type BridgeSpot, type LinkedLand } from '../../world/continu/lands';
-import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId } from '../../world/continu/levelPlan';
+import { hasScenette, placeById, type LevelPlan, type OpenWorldLevel, type PlaceId, type ScenePlaceId } from '../../world/continu/levelPlan';
 import { HABITANT_HEIGHT, hasHabitantModel } from '../../world/continu/habitants';
 import { arrivalViewOf, doorFrameOf, doorViewOf, placeArt } from '../../world/continu/northShore';
 import { levelWorld, type LevelWorld, type ThinFog } from '../../world/continu/levelWorld';
@@ -57,7 +61,9 @@ import { ENGINE_ROTOR_COLORS, LAMP_COLOR, STEAM_COLORS, engineRotorHub, lanternL
 import { PAPER_COLOR } from '../../world/continu/printworks';
 import { assemblyScene, portFacets, portHeading, portMapPoint, portRooflines, portSubject, portTouch, type PortState } from '../../world/continu/port';
 import { HELD_LIFT, SALT_PUMP, answerScale, facingAnswerObjects, inBasket, itemScene, placeTrace, rankInBasket, saltPumpHub, sceneSpot, sortPrise, sortScales, swingTo, type Reaction, type SortLook } from '../../world/continu/questionScene';
-import { REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
+import { COLUMN, REACTION_SECONDS, type ItemScene } from '../../world/continu/questions';
+import { surPlaceFacets, surPlacePose, surPlaceSite, type SurPlaceScene } from '../../world/continu/surPlace';
+import { RESPOND_MAX, RESPOND_SECONDS, type RespondMove, respondMove, respondPlaced, responds } from '../../world/continu/respond';
 import {
   EXIT_VIEW,
   LANTERN,
@@ -102,7 +108,9 @@ import { ringHeights, standingHeight, tileRings } from '../../world/continu/terr
 import { createTileStore, type Tile } from '../../world/continu/tiles';
 import { veilFacets, type VeilMesh } from '../../world/continu/veil';
 import { WALK_CADENCE, skipWalk, startWalk, walkAt, type Walk } from '../../world/continu/walk';
+import { TOUCH_HALF, seatedHeight } from '../../world/continu/corps';
 import { hasWorldHabitant, worldHabitantAt, worldHabitantHeight } from '../../world/continu/worldHabitants';
+import { GESTE_SETTLE, activeGeste, gesteCandidates, gesteSlot, moveMobile, worldGestes, type GesteCandidate, type GesteSlot, type MobilePiece } from '../../world/continu/gestes';
 import { corpsDuBonhomme, type CorpsDuBonhomme } from '../paintedCharacters';
 import { createMeter } from '../meter';
 import { placedAmenagement } from './amenagements';
@@ -154,6 +162,13 @@ export interface OpenWorldOptions {
   /** Dans le monde, un lieu d'une terre fermée ou son pont tombé touché (GD-20, point 3) : la page ouvre la fiche de la terre. */
   onClosed(land: LinkedLand): void;
   /**
+   * L'habitant d'un lieu touché près de sa porte, hors de sa scénette (GD-27, la parole du lieu) : la page lui fait dire
+   * une ligne ; Kéo ne bouge pas.
+   */
+  onHabitant?(place: PlaceId): void;
+  /** Un équipier touché près de l'habitant qu'il a aidé (GD-27, lot 5, piste B ; le 6e) : la page lui fait dire sa ligne ; Kéo ne bouge pas. */
+  onEquipier?(equipier: Equipier): void;
+  /**
    * À l'Escale (GD-20, lot 2) : Kéo est devant une porte de l'école, la galerie ou le lieu d'assemblage (la page en ouvre
    * le panneau), ou l'on a touché le reste du Port (`fiche`, la page ouvre sa fiche).
    */
@@ -169,8 +184,11 @@ export interface OpenWorldOptions {
    * commence (ou se pose d'un coup, avec « Réduire les animations ») ; la page dit son état, écrit et à voix haute.
    */
   onRestored?(place: PlaceId): void;
-  /** La vue finale du niveau commence (`true`) ou finit (`false`) : la page cache ses boutons le temps qu'elle dure. */
-  onFinalView?(playing: boolean): void;
+  /**
+   * La vue finale du niveau ou une veillée commence (`true`) ou finit (`false`) : la page cache ses boutons le temps
+   * qu'elle dure.
+   */
+  onCameraScript?(playing: boolean): void;
   /**
    * La place à l'écran des pastilles des habitants (GD-20, point 4, lot L1), à chaque image, comme les cadenas (la même
    * liste, remplie sur place ; refaite quand `setSigns` change). Aucune pendant une question, une remise ou sur la Carte.
@@ -215,6 +233,18 @@ export interface OpenWorld {
   goTo(place: PlaceId, jump?: boolean): void;
   /** Saute le trajet en cours : Kéo est arrivé. */
   skip(): void;
+  /**
+   * L'épreuve hors des murs (GD-27, lot 6) : Kéo quitte la scénette et marche, une seule fois, jusqu'à la station du
+   * lieu (`target`, un point du sol : ./surPlace.ts) ; la caméra le suit comme dans le monde ; `skip` saute la marche ;
+   * avec « Réduire les animations », il y est posé d'un coup. `done` à l'arrivée, puis la page pose ses questions sur
+   * place (`question`, une scène « surPlace »). `null` : la marche s'arrête là (la question fermée en chemin).
+   */
+  walkTo(target: Vec2 | null, done?: () => void): void;
+  /**
+   * Retient le geste du métier (GD-27, lot 5) : tant que `on`, l'outil de l'habitant actif reste au repos, le temps
+   * d'une ligne écrite et dite dans la phrase du monde (référent dys : rien ne bouge pendant qu'on lit).
+   */
+  holdGestes(on: boolean): void;
   /**
    * La cabine de la Montée (GD-22, lot 3, le bouton « Monter » ou « Descendre », ou la caisse touchée) : de la gare où se
    * tient Kéo, elle monte ou descend ; rien ailleurs, pendant un trajet, une question ou sur la Carte, ni tant que la
@@ -360,8 +390,15 @@ export interface OpenWorld {
    * (les captures seulement) ; rien ailleurs, sur la Carte ou pendant une question.
    */
   playFinal(): void;
-  /** Termine la vue finale en cours, comme un toucher (Échap, Entrée ou Espace) ; rien s'il n'y en a pas. */
-  endFinal(): void;
+  /**
+   * Une veillée (GD-23, GD-27, lot 3 : world/continu/vigil.ts) : la caméra quitte Kéo pour ses plans, et revient derrière
+   * lui à la fin ou au premier toucher ; `done` alors, par n'importe quel chemin. `false`, sans rien faire, sur la Carte,
+   * pendant une question, le départ de la Nef ou un autre script. `pass`, s'il est donné, reçoit le toucher qui passe la
+   * veillée à la place de la fin immédiate : la page couvre d'abord, puis appelle `endScript`.
+   */
+  playVigil(vigil: Vigil, done: () => void, pass?: () => void): boolean;
+  /** Termine la vue finale ou la veillée en cours, comme un toucher (Échap, Entrée ou Espace) ; rien s'il n'y en a pas. */
+  endScript(): void;
   /** Les chiffres de la dernière image : appels de dessin et triangles (captures, mesures). */
   info(): { calls: number; triangles: number; mapMs: number };
   /** Ce qu'un toucher en ce point de la fenêtre ouvrirait au Port, la Nef comprise, sans rien faire (la mesure des cibles). */
@@ -378,6 +415,8 @@ interface PlacesState {
   traces: Readonly<Record<PlaceId, readonly string[]>>;
   /** Les aménagements posés de chaque lieu (GD-20, point 4, lot L0 : les petites constructions livrées, `world.parts`). */
   amenagements?: Readonly<Partial<Record<PlaceId, readonly string[]>>>;
+  /** Le lieu de chaque équipier dans le monde (GD-27, lot 5, piste B ; le 6e : ../../world/continu/equipageMonde.ts). */
+  equipage?: EquipierPlaces;
 }
 
 /**
@@ -396,6 +435,12 @@ interface QuestionRequest {
    * lot 5 du 5e : les miches du Hameau en portrait).
    */
   answersOut?: boolean;
+  /**
+   * Le monde qui répond (GD-28, lot 4 de GD-27) : le nombre de bonnes réponses de la scénette en cours. Quand il monte
+   * d'un cran, l'objet de plus descend sur le monument dès « Valider », à la place de la réaction du témoin de l'item,
+   * en un mouvement lent, et reste jusqu'à la sortie de la scénette ; un lieu sans objet (`responds`) ne montre rien.
+   */
+  responded?: number;
 }
 
 /** Ce que la pose d'un pont dit à la page : le toc (toutes ses parties posées), puis sa fin (la brume levée : la phrase). */
@@ -446,8 +491,16 @@ export interface LabelOnScreen {
   y: number;
   /** Centré sous son point (les fractions sous les deux sas de Deux rives). */
   center?: boolean;
+  /**
+   * Sur place (GD-27, lot 6) : le repère est un objet de réponse, celui du choix `answer` ; la page y pose le bouton de
+   * la réponse (son étiquette au-dessus de l'objet), sur la boîte de l'objet à l'écran (`box`), en pixels.
+   */
+  answer?: number;
+  box?: { left: number; top: number; right: number; bottom: number };
 }
 
+/** La distance (en unités du monde) en deçà de laquelle toucher l'habitant d'un lieu le fait parler (GD-27). */
+const HABITANT_REACH = 8;
 /** La marge de la flèche au bord de l'écran, en pixels : hors des boutons des coins. */
 const MARK_MARGIN = 56;
 /** La pastille d'un habitant, à tant d'unités au-dessus de ses pieds (au-dessus de sa tête, de Kéo près de lui). */
@@ -831,7 +884,7 @@ function heightLit(m: THREE.MeshLambertMaterial, light: HeightLight, thin: reado
   };
   // La clé du programme, une par niveau (`key` : celle du 5e reste « archipeo-hauteur », le 4e a la sienne) : Three.js
   // réutilise le programme compilé de toute matière qui porte la même clé, sans relire `onBeforeCompile`, et chaque
-  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (15 au 5e, 19 au 4e : comparées par sommet depuis la mesure iPad du 24 octobre 2026) sont
+  // niveau a sa liste `thin` et ses réglages. Les couleurs de `thin` (15 au 5e, 21 au 4e depuis la lanterne du Sémaphore du lot 5 de GD-27 : comparées par sommet depuis la mesure iPad du 24 octobre 2026) sont
   // loin de toute autre couleur du 5e (world/continu/thinFog.test.ts).
   m.customProgramCacheKey = () => key;
   return m;
@@ -1217,6 +1270,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
 
   // Kéo : le corps du bonhomme d'Archipéo (sa marche existante), son anneau clair au sol ; habillé dès que sa tenue est chargée.
   const keo = new THREE.Group();
+  // Nommé pour les tests de la scène (l'épreuve hors des murs), rien d'autre ne lit ce nom.
+  keo.name = 'keo';
   scene.add(keo);
   let body: CorpsDuBonhomme = corpsDuBonhomme(level);
   keo.add(body.mesh);
@@ -1261,6 +1316,141 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // Les habitants près de leur porte, hors de leur scénette (choix du mainteneur, 23 octobre 2026 : en modèle 3D, aux
   // quatre niveaux ; ./worldHabitantModels.ts) : leurs versions de loin, un maillage texturé à part, un appel.
   const worldHabitants = createWorldHabitantModels(scene, PLACES.map((p) => p.id), ground, (t) => renderer.initTexture(t));
+  // L'équipage dans le monde (GD-27, lot 5, piste B ; ./worldEquipageModels.ts) : au 6e, Zia et Malo près de l'habitant
+  // du premier lieu rallumé qu'ils ont guidé (la page le dit, `PlacesState.equipage`), dans un maillage texturé à part.
+  // Les modèles lus (plus tard, ou jamais hors ligne), les lieux se reposent : leurs outils et leur toucher viennent avec eux.
+  const worldEquipage = createWorldEquipageModels(scene, ground, (t) => renderer.initTexture(t), sixth, () => {
+    placesKey = '';
+    placeVisibility();
+  });
+  // Le geste du métier (GD-27, lot 5, piste A « l'outil qui travaille » ; ../../world/continu/gestes.ts) : les outils des
+  // habitants montrés, dans un maillage à part (un appel), montré et caché avec eux ; la pièce mobile d'un seul, celui
+  // du lieu rallumé le plus proche de Kéo arrêté, tournée sommet par sommet quand le monde est calme.
+  const gestesMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  gestesMesh.visible = false;
+  gestesMesh.name = 'gestes';
+  scene.add(still(gestesMesh));
+  let gestesKey = '';
+  let gestesRest: Float32Array | null = null;
+  let gestesMobiles: readonly MobilePiece[] = [];
+  /** Les lieux rallumés dont l'habitant est montré, à la place de ses pieds : ceux dont l'outil peut bouger. */
+  let gesteCandidatesShown: readonly GesteCandidate[] = [];
+  let gesteActive: ScenePlaceId | null = null;
+  /** La pièce mobile de `gesteActive`, retenue au changement ; `gesteStart`, l'instant `t` (en secondes) de son départ. */
+  let gesteMobile: MobilePiece | null = null;
+  let gesteStart = 0;
+  /** L'équipier qui partage le geste du lieu actif, sa pièce mobile, et qui bouge à cet instant (`null` : l'habitant). */
+  let gesteShared: Equipier | undefined;
+  let gesteMobileEq: MobilePiece | null = null;
+  let gesteWho: Equipier | null = null;
+  let gesteLastPhase = 0;
+  /** Le tour du geste de l'image, réutilisé (rien d'alloué par image). */
+  const gesteSlotNow: GesteSlot = { who: null, phase: 0 };
+  let gesteHeld = false;
+  /** La place de Kéo au dernier choix de l'habitant : le choix ne se refait que si elle a changé. */
+  const gesteHere = { x: NaN, z: NaN };
+  /** Le dernier instant `now` (en millisecondes, `performance.now()`) où Kéo bougeait (en marchant, dans la cabine) : le
+   * geste attend `GESTE_SETTLE` secondes après. */
+  let keoMovedAt = 0;
+  const showGestes = (places: readonly PlaceId[], equipage: readonly EquipierInWorld[]) => {
+    // Dans la ruine, ni outil ni support (directeur artistique) : l'outil paraît avec la première partie posée.
+    const withTool = (p: PlaceId) => posedOf(p).length > 0;
+    const k = `${places.map((p) => `${p}${withTool(p) ? '+' : ''}`).join(',')}|${equipage.map((e) => `${e.equipier}@${e.place}`).join(',')}`;
+    if (k === gestesKey) return;
+    gestesKey = k;
+    gesteActive = null;
+    // Le corps de l'habitant actif aussi, et celui de l'équipier : les outils se refont sans que leurs maillages se refassent.
+    worldHabitants.work(null, 0);
+    worldEquipage.work(null, 0);
+    gesteMobile = null;
+    gesteMobileEq = null;
+    gesteWho = null;
+    gesteLastPhase = 0;
+    gesteHere.x = NaN;
+    const g = worldGestes(places, ground, withTool, undefined, equipage);
+    gestesRest = g.facets.positions.slice();
+    gestesMobiles = g.mobiles;
+    setGeometry(gestesMesh, g.facets);
+    // Les sommets de la pièce mobile sont réécrits à chaque image.
+    (gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute).setUsage(THREE.DynamicDrawUsage);
+  };
+  /** Une pièce mobile des outils à la part `phase` de son geste. */
+  const movePiece = (m: MobilePiece, phase: number) => {
+    if (!gestesRest) return;
+    const attr = gestesMesh.geometry.getAttribute('position') as THREE.BufferAttribute;
+    moveMobile(gestesRest, attr.array as Float32Array, m, phase);
+    attr.addUpdateRange(m.start * 3, m.count * 3);
+    attr.needsUpdate = true;
+  };
+  /** Remet au repos les pièces mobiles du lieu `place` (l'outil de l'habitant, celui de l'équipier à côté) et leurs corps. */
+  const restGeste = (place: ScenePlaceId) => {
+    worldHabitants.work(place, 0);
+    worldEquipage.work(null, 0);
+    for (const m of gestesMobiles) if (m.place === place) movePiece(m, 0);
+    gesteWho = null;
+    gesteLastPhase = 0;
+  };
+  /**
+   * Le geste de l'image : `calm`, rien d'autre ne se joue (ni question, ni scénette, ni Carte, ni script, ni voile, ni
+   * ligne retenue, ni « Réduire les animations ») et Kéo est arrêté depuis `GESTE_SETTLE` ; sinon, l'outil actif revient
+   * au repos. Le choix de l'habitant ne dépend que de Kéo, jamais de la caméra.
+   */
+  const stepGestes = (t: number, now: number, calm: boolean) => {
+    let next: ScenePlaceId | null = null;
+    if (calm && gestesMobiles.length && now - keoMovedAt >= GESTE_SETTLE * 1000) {
+      // Kéo arrêté au même endroit : le choix d'avant tient, sans refaire les distances.
+      if (here.x === gesteHere.x && here.z === gesteHere.z) next = gesteActive;
+      else {
+        next = activeGeste(here, gesteCandidatesShown, gesteActive);
+        gesteHere.x = here.x;
+        gesteHere.z = here.z;
+      }
+    } else gesteHere.x = NaN; // Le calme revenu refait le choix, même sans que Kéo ait bougé.
+    if (next !== gesteActive) {
+      if (gesteActive) restGeste(gesteActive);
+      gesteActive = next;
+      gesteShared = next ? gesteCandidatesShown.find((c) => c.place === next)?.shared : undefined;
+      gesteMobile = next ? (gestesMobiles.find((x) => x.place === next && !x.who) ?? null) : null;
+      gesteMobileEq = next && gesteShared ? (gestesMobiles.find((x) => x.place === next && x.who === gesteShared) ?? null) : null;
+      gesteStart = t;
+    }
+    if (!gesteMobile || !gestesRest) return;
+    // À qui est le geste (l'habitant seul ; ou à tour de rôle avec l'équipier à côté, un repos entre les deux) et sa part.
+    const slot = gesteSlot(t - gesteStart, gesteShared, gesteSlotNow);
+    const { who } = slot;
+    if (who !== gesteWho) {
+      // Celui qui bougeait revient au repos avant que l'autre commence : jamais deux corps en mouvement (référent dys).
+      if (gesteWho) {
+        worldEquipage.work(null, 0);
+        if (gesteMobileEq) movePiece(gesteMobileEq, 0);
+      } else {
+        worldHabitants.work(gesteMobile.place, 0);
+        movePiece(gesteMobile, 0);
+      }
+      gesteWho = who;
+    }
+    // Au repos entre deux tours, rien à réécrire.
+    if (slot.phase === 0 && gesteLastPhase === 0) return;
+    gesteLastPhase = slot.phase;
+    // Le corps qui travaille (piste B) : le buste et le bras droit de celui qui bouge, au même rythme que son outil.
+    if (who) {
+      worldEquipage.work(who, slot.phase);
+      if (gesteMobileEq) movePiece(gesteMobileEq, slot.phase);
+    } else {
+      worldHabitants.work(gesteMobile.place, slot.phase);
+      movePiece(gesteMobile, slot.phase);
+    }
+  };
+  /** Les habitants montrés près de leur porte à la dernière pose des lieux : ceux qu'un toucher peut atteindre. */
+  let habitantsOnShow: readonly PlaceId[] = [];
+  /**
+   * Le corps de l'habitant d'un lieu tel qu'il se tient (le corps qui travaille) : assis dans la ruine, debout sinon ;
+   * sa hauteur et la demi-largeur de sa boîte du toucher (la seule source, pour la boîte comme pour son panneau).
+   */
+  const habitantBodyNow = (place: ScenePlaceId): { height: number; half: number } => {
+    const seated = posedOf(place).length === 0;
+    return { height: seated ? seatedHeight(worldHabitantHeight(place)) : worldHabitantHeight(place), half: seated ? TOUCH_HALF.seated : TOUCH_HALF.standing };
+  };
   // L'équipier qui guide le lieu (GD-23, lot 1, ./equipierModels.ts) : préparé avec l'habitant, montré dans la scénette.
   const equipiers = createEquipierModels(scene, prepareLater);
   habitants.mesh.onBeforeRender = finishShown;
@@ -1366,6 +1556,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   let here: Vec2 = startPlace ? startOf(startPlace.door, startPlace.center).at : pathNode(portNode(startSpot!)).at;
   let walk: Walk | null = null;
   let walkTarget: PlaceId | null = null;
+  // La marche vers la station de l'épreuve sur place (GD-27, lot 6) : ce que la page attend à l'arrivée, à la place de
+  // l'arrivée devant un lieu.
+  let walkDone: (() => void) | null = null;
+  /** D'où la marche vers la station est partie (GD-27, lot 6) : Kéo y revient à la coupe de fin, ou en quittant. */
+  let stationFrom: Vec2 | null = null;
   // Les Détours (GD-20, déplacement libre, lot 2) : ceux trouvés (leur sente tracée), les cairns rallumés, celui où Kéo
   // s'est arrêté (dit à la page), depuis quand il s'y tient immobile, et l'avancée de la vue qui monte.
   let detoursFound: readonly DetourId[] = [];
@@ -2106,7 +2301,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const hiddenModel = scenette && scenetteHidesPlace(scenette) ? scenette : null;
     const hiddenTrace = scenette && scenetteHidesPieces(scenette) ? scenette : null;
     const portFacetsNow = portOf();
-    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}p${paruresDrop ? paruresDrop.from : paruresNow}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}${colOpen ? 'g' : ''}|${restoring?.place ?? ''}`;
+    const k = `${landmark}|${scenette}|${scenette ? `${scenetteMission}${posed}` : ''}|${hiddenModel}|${hiddenTrace}|${placesState ? PLACES.map((p) => `${JSON.stringify(placesState!.built[p.id])}${placesState!.traces[p.id].join('+')}${placesState!.amenagements?.[p.id]?.join('+') ?? ''}`).join(',') : ''}|${placesState?.equipage ? JSON.stringify(placesState.equipage) : ''}|${remise?.place ?? ''}|${holding ? `${holding.place}${holding.parts.length}` : ''}|${portKey}|${mapView ? 'carte' : ''}|${closed.join(',')}|${laying && !laying.tapped ? laying.lay.land : ''}|${detoursFound.join(',')}|${detoursLit.join(',')}|${nefLookNow}${nefDrop ? `d${nefDrop.from}` : ''}${nefTrip ? 't' : ''}p${paruresDrop ? paruresDrop.from : paruresNow}${nefParts(nefSite.form) ? 'm' : ''}|${carAt}${carOpen ? 'o' : ''}${colOpen ? 'g' : ''}|${restoring?.place ?? ''}`;
     if (k === placesKey) return;
     placesKey = k;
     // L'Escale entre dans le maillage des lieux : aucun appel de plus.
@@ -2115,6 +2310,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Ce que des lieux posent bien au-delà de leur emprise (GD-22, lot 16 : les câbles des Nacelles), dans le monde seulement.
     const reaches: Facets[] = [];
     const habitantsShown: PlaceId[] = [];
+    habitantsOnShow = habitantsShown;
     lampShown = sixth && lanternLit(posedOf('phare'));
     for (const p of PLACES) {
       const ruin = ruins.get(p.id);
@@ -2155,7 +2351,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       const land = landOf(p.id);
       if (!mapView && !scenette && !(isLinkedLand(land) && closed.includes(land)) && hasWorldHabitant(p.id)) habitantsShown.push(p.id);
     }
-    worldHabitants.show(habitantsShown);
+    // Dans la ruine, l'habitant est assis sur son bloc (le corps qui travaille, ../../world/continu/corps.ts).
+    worldHabitants.show(habitantsShown, (p) => posedOf(p).length === 0);
+    // L'équipage (piste B) : chaque équipier près de l'habitant de son lieu, s'il est montré et le lieu entier.
+    // Ses outils et son toucher suivent ce que le maillage montre vraiment (le modèle lu, ou pas encore : `ready` repose alors les lieux).
+    worldEquipage.show(equipageInWorld(placesState?.equipage ?? {}).filter((e) => habitantsShown.includes(e.place) && isWhole(posedOf(e.place))));
+    const equipageShown = worldEquipage.shown();
+    showGestes(habitantsShown, equipageShown);
+    gesteCandidatesShown = gesteCandidates(habitantsShown.filter((p): p is ScenePlaceId => hasScenette(p) && isWhole(posedOf(p))), ground, equipageShown);
     // Les ponts (GD-20, point 3, « vraies terres ») : tombé pour une terre fermée, rebâti sinon, dans le maillage des
     // lieux (aucun appel de plus) ; sur la Carte, chacun aussi en trait double, d'une autre forme qu'un chemin.
     for (const land of LINKED_LANDS) {
@@ -2182,6 +2385,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (nefStays) rest.push(nefStays);
     if (siteDecor) rest.push(siteDecor);
     if (offMapDecor && !mapView) rest.push(offMapDecor);
+    // Le Rafiot des Ferrailleurs à quai (au 6e : GD-23, lot 2 ; GD-27 ; GD-28), près d'un lieu encore éteint ; parti quand
+    // ils le sont tous. Dans le monde et sur la Carte, aucun appel de plus.
+    const rafiot = world.rafiot?.((id) => isWhole(posedOf(id)));
+    if (rafiot) rest.push(rafiot);
     // Au 5e, sur la Carte, la ligne de la falaise (GD-22, lot 2) : le bord du plateau, et la bande sombre des chemins, dans
     // le maillage des lieux.
     if (!sixth) {
@@ -2532,7 +2739,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       // Au-dessus de l'habitant près de sa porte (à sa taille dans le monde), sinon de sa place dans la scénette,
       // là où se joue la remise ; autant au-dessus de sa tête que dans la scénette.
       const w = worldHabitantAt(place, ground);
-      if (w && hasWorldHabitant(place)) return { x: w.x, y: w.y + worldHabitantHeight(place) + SIGN_LIFT - HABITANT_HEIGHT, z: w.z };
+      if (w && hasWorldHabitant(place)) return { x: w.x, y: w.y + habitantBodyNow(place).height + SIGN_LIFT - HABITANT_HEIGHT, z: w.z };
       const h = scenetteHabitant(place, remisePosed(place));
       return { x: h.x, y: h.y + SIGN_LIFT, z: h.z };
     },
@@ -2586,11 +2793,22 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     carAt = side;
     placeVisibility();
   };
-  const arrive = (place: PlaceId | null) => {
+  /** La marche s'arrête : plus de trajet, la montée finie, la caisse rangée, le repère libre effacé. */
+  const stopWalk = () => {
     walk = null;
     rideUp = null;
     parkCar();
     showFreeMark(null);
+  };
+  const arrive = (place: PlaceId | null) => {
+    stopWalk();
+    // Arrivé à la station de l'épreuve sur place : la page reprend la main, rien du lieu ne s'ouvre.
+    if (walkDone) {
+      const done = walkDone;
+      walkDone = null;
+      done();
+      return;
+    }
     if (place) framed = place;
     startPrebuild();
     options.onArrive(place);
@@ -2607,6 +2825,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (!free && distance(here, from.at) > 0.05) route.unshift(here);
     showFreeMark(null);
     walkTarget = place;
+    walkDone = null;
     // Kéo part vers un lieu : le modèle de son habitant se prépare pendant la marche, avant « Livrer » ou une mission.
     if (place && hasHabitantModel(place)) habitants.prefetch(place);
     if (place) prefetchGuide(place);
@@ -2628,6 +2847,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const route = to ? freeRoute(g, here, to, walkClosed) : null;
     if (!to || !route) return startWalkTo(snapToNetwork(p), null);
     walkTarget = null;
+    walkDone = null;
     heldBridge = null;
     if (route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05) {
       arrive(null);
@@ -2639,11 +2859,45 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   };
 
   /**
+   * La marche vers la station de l'épreuve sur place (GD-27, lot 6, `OpenWorld.walkTo`) : la scénette quittée d'abord
+   * (Kéo à sa sortie, à sa taille, la caméra derrière lui), puis le trajet libre jusqu'au point du sol le plus proche où
+   * l'on marche ; la page est prévenue à l'arrivée (`walkDone`), jamais le panneau d'un lieu. D'un coup avec « Réduire
+   * les animations », ou sans trajet à faire.
+   */
+  const walkTo = (target: Vec2 | null, done?: () => void) => {
+    if (!target) {
+      if (!walkDone) return;
+      walkDone = null;
+      stationFrom = null;
+      stopWalk();
+      return;
+    }
+    if (asked) askQuestion(null);
+    const g = grid();
+    const to = nearestWalkable(g, target, walkClosed) ?? target;
+    const route = freeRoute(g, here, to, walkClosed);
+    walkTarget = null;
+    heldBridge = null;
+    walkDone = done ?? null;
+    stationFrom = { ...here };
+    showFreeMark(null);
+    if (!route || route.length < 2 || distance(route[0], route[route.length - 1]) < 0.05 || reduceMotion) {
+      here = { ...to };
+      placeKeo(here);
+      followStep(focus, aimed(), 0, true);
+      follow();
+      return arrive(null);
+    }
+    beginWalk(route);
+  };
+
+  /**
    * Kéo d'un coup devant un lieu : la caméra le suit d'un bloc (une coupe, jamais un long travelling). Devant un lieu
    * d'une terre fermée, sur la culée du pont à rebâtir d'abord, tourné vers l'eau.
    */
   const jumpTo = (place: PlaceId) => {
     heldBridge = null;
+    walkDone = null;
     const door = atNode(placeById(place).door);
     const stop = clampToOpen(door, closed, plan);
     const shut = stop !== door ? bridgeSite(firstClosed(landOf(place) as LinkedLand, closed)) : null;
@@ -2815,8 +3069,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (poseRun.active) return finishPose();
     // Un toucher pendant l'allumage d'un lieu restauré le passe : tout allumé d'un coup.
     if (restoring) return endRestore();
-    // Un toucher pendant la vue finale la termine : la caméra revient derrière Kéo.
-    if (finalRun) return finishFinal();
+    // Un toucher pendant la vue finale ou une veillée la termine : la caméra revient derrière Kéo (ou la page couvre
+    // d'abord, `pass`).
+    if (scriptRun) return scriptRun.pass ? scriptRun.pass() : finishScript();
     // Un toucher pendant le départ de la Nef le termine (GD-21).
     if (nefTrip) return finishNefTrip();
     if (assembly) return finishAssembly();
@@ -2828,6 +3083,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     if (cabinBusy()) return;
     manualView = null;
     if (carTouched(e.clientX, e.clientY)) return touchCar();
+    // L'habitant d'un lieu, près de sa porte (GD-27) : Kéo déjà près de lui, il dit une ligne et Kéo reste où il est.
+    const habitant = habitantAt(e.clientX, e.clientY);
+    if (habitant && options.onHabitant) return options.onHabitant(habitant);
+    // Un équipier près de lui (piste B) : sa ligne, Kéo reste où il est.
+    const equipier = equipierAt(e.clientX, e.clientY);
+    if (equipier && options.onEquipier) return options.onEquipier(equipier);
     // Un aménagement posé (GD-20, point 4, lot L1) : son lieu, toujours le sien, par son dessin ou le disque autour de lui ;
     // Kéo y marche, puis son panneau s'ouvre ; d'une terre fermée, la fiche de la terre.
     const object = objectAt(e.clientX, e.clientY);
@@ -2853,6 +3114,50 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const touched = nearestPlace(p, PLACES);
     if (touched) startWalkTo(atNode(placeById(touched).door), touched);
     else startFreeWalk(p);
+  };
+  /**
+   * L'habitant montré près de sa porte sous un toucher (`clientX`, `clientY`), s'il y en a un : sa boîte (ses pieds, sa
+   * hauteur, une demi-unité de côté) projetée à l'écran, et le disque de 48 px au moins autour d'elle, comme un
+   * aménagement ; ni derrière la caméra, ni dans la brume.
+   */
+  const habitantAt = (clientX: number, clientY: number): PlaceId | null => {
+    if (!habitantsOnShow.length || !options.onHabitant) return null;
+    const targets: ObjectTarget[] = [];
+    for (const place of habitantsOnShow) {
+      const at = worldHabitantAt(place, ground);
+      // De loin, le toucher garde son sens : Kéo marche vers le lieu (consultant UX UI, référent dys).
+      if (!at || distance(here, at) > HABITANT_REACH) continue;
+      const { height: h, half } = habitantBodyNow(place);
+      const rect = bodyRect(at, h, half);
+      if (rect) targets.push({ place, rect });
+    }
+    const r = renderer.domElement.getBoundingClientRect();
+    return touchedObject(clientX - r.left, clientY - r.top, targets);
+  };
+  /** La boîte d'un corps (ses pieds `at`, sa hauteur, sa demi-largeur) projetée à l'écran ; rien si un coin est derrière la caméra. */
+  const bodyRect = (at: { x: number; y: number; z: number }, h: number, half: number): ObjectTarget['rect'] | null => {
+    const points: { x: number; y: number }[] = [];
+    for (const x of [at.x - half, at.x + half])
+      for (const y of [at.y, at.y + h])
+        for (const z of [at.z - half, at.z + half]) {
+          corner.set(x, y, z).project(camera);
+          if (corner.z >= 1) return null;
+          points.push({ x: sx(corner), y: sy(corner) });
+        }
+    return screenRect(points);
+  };
+  /** L'équipier montré sous un toucher, comme un habitant (sa boîte, debout, à portée de Kéo). */
+  const equipierAt = (clientX: number, clientY: number): Equipier | null => {
+    if (!options.onEquipier) return null;
+    const targets: ObjectTarget<Equipier>[] = [];
+    for (const e of worldEquipage.shown()) {
+      const f = worldEquipage.frameOf(e.equipier);
+      if (!f || distance(here, f.at) > HABITANT_REACH) continue;
+      const rect = bodyRect(f.at, f.height, TOUCH_HALF.standing);
+      if (rect) targets.push({ place: e.equipier, rect });
+    }
+    const r = renderer.domElement.getBoundingClientRect();
+    return touchedObject(clientX - r.left, clientY - r.top, targets);
   };
   /**
    * Le lieu de l'aménagement montré sous un toucher (`clientX`, `clientY`), s'il y en a un : sa boîte projetée à l'écran,
@@ -3245,12 +3550,24 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   // La question posée dans un lieu (lot 4) : sa pose fixe, la scène de l'item et les objets des réponses (un maillage),
   // la réaction (un maillage qui bouge une à deux secondes). Refaits par item, jamais par image.
   let asked: { place: PlaceId; pose: CameraPose; objectsKey: string; itemKey: string; answered: boolean; scene: ItemScene; scale: number; sort?: SortLook } | null = null;
-  const itemMesh = new THREE.Mesh(new THREE.BufferGeometry(), landMaterial);
+  const itemMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
+  // À la station (GD-27, lot 6), l'item n'est pas éclairé : la caméra fixe voit les faces à l'ouest, à l'ombre du soleil,
+  // et le blanc de l'aigrette doit rester blanc (directeur artistique) ; les aplats du kit portent leur propre relief.
+  const stationMaterial = new THREE.MeshBasicMaterial({ vertexColors: true });
   const reactionMesh = new THREE.Mesh<THREE.BufferGeometry, THREE.Material>(new THREE.BufferGeometry(), landMaterial);
   itemMesh.visible = false;
   reactionMesh.visible = false;
+  // Nommés pour les tests de la scène (le monde qui répond), rien d'autre ne lit ces noms.
+  itemMesh.name = 'item';
+  reactionMesh.name = 'reaction';
   scene.add(still(itemMesh), reactionMesh);
   let reaction: { r: Reaction; start: number } | null = null;
+  // Le monde qui répond (GD-28, lot 4 de GD-27) : les objets posés sont dans le maillage de l'item, et celui qui se pose
+  // descend dans le maillage de la réaction, libre là où le lieu a son objet (l'objet remplace la réaction du témoin,
+  // directeur artistique) : aucun appel de plus. Si une réaction joue quand même (le tri), l'objet se pose d'un coup.
+  // `itemFacets` : la scène de l'item sans les objets posés, pour y remettre le prochain.
+  let respond: { place: PlaceId; mission: string; item: string; count: number; shown: number; move: { start: number; m: RespondMove } | null } | null = null;
+  let itemFacets: Facets | null = null;
   function setGeometry(mesh: THREE.Mesh, f: Facets) {
     mesh.geometry.dispose();
     mesh.geometry = geometryOf(f);
@@ -3272,6 +3589,61 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     projected.set(p.x, p.y, p.z).project(camera);
     top3.set(p.x, p.y + h, p.z).project(camera);
     return ((top3.y - projected.y) / 2) * viewH;
+  };
+  /** Les objets posés du monde qui répond, avec la scène de l'item, dans son maillage. */
+  const showResponded = () => {
+    if (!itemFacets) return;
+    const posed = respond && respond.shown > 0 ? respondPlaced(respond.place, respond.shown) : null;
+    setGeometry(itemMesh, posed && posed.triangles ? mergeFacets([itemFacets, posed]) : itemFacets);
+    if (descent.active) itemMesh.visible = false;
+  };
+  /** L'objet en vol se pose d'un coup (un autre item, « Suivant » avant la fin, la sortie, le bilan) ; rien en vol : rien. */
+  const finishRespond = () => {
+    if (!respond?.move) return;
+    respond.move = null;
+    reactionMesh.visible = false;
+    respond.shown = respond.count;
+    showResponded();
+  };
+  /** L'objet qui se pose, à l'instant `t` : il descend dans le maillage de la réaction, puis rejoint les objets posés. */
+  const stepRespond = (t: number) => {
+    const move = respond?.move;
+    if (!move) return;
+    if (t < move.start) return;
+    const u = reduceMotion ? 1 : Math.min(1, (t - move.start) / RESPOND_SECONDS);
+    // Une descente droite qui ralentit à la fin (directeur artistique) : jamais un arc, qui est le geste des réactions.
+    const e = 1 - (1 - u) ** 3;
+    const { from, to, arc } = move.m;
+    reactionMesh.visible = true;
+    reactionMesh.position.set(from.x + (to.x - from.x) * e, from.y + (to.y - from.y) * e + arc * Math.sin(Math.PI * e), from.z + (to.z - from.z) * e);
+    if (u >= 1) finishRespond();
+  };
+  /**
+   * Le compte des bonnes réponses de la scénette (`QuestionRequest.responded`) : un cran de plus, l'objet suivant part
+   * (dès « Valider », pendant l'écran du résultat ; d'un coup avec « Réduire les animations ») ; une autre mission ou un compte qui retombe
+   * (« Rejouer »), tout s'efface ; le même compte, rien ne bouge.
+   */
+  const countResponded = (place: PlaceId, mission: string, item: string, responded: number | undefined) => {
+    const wanted = responds(place) ? Math.max(0, Math.min(RESPOND_MAX, Math.floor(responded ?? 0))) : 0;
+    if (!respond || respond.place !== place || respond.mission !== mission || wanted < respond.count) {
+      finishRespond();
+      respond = { place, mission, item, count: wanted, shown: wanted, move: null };
+      return;
+    }
+    respond.item = item;
+    if (wanted === respond.count) return;
+    finishRespond();
+    respond.count = wanted;
+    const m = respondMove(place, wanted - 1);
+    if (!m || reduceMotion || reaction) {
+      respond.shown = wanted;
+      return;
+    }
+    setGeometry(reactionMesh, m.facets);
+    reactionMesh.rotation.set(0, 0, 0);
+    reactionMesh.position.set(m.from.x, m.from.y, m.from.z);
+    respond.shown = wanted - 1;
+    respond.move = { start: performance.now() / 1000, m };
   };
   /** La réaction à l'instant `t` (en secondes) : sa place sur son arc ; finie, elle reste ou s'efface (elle reste toujours avec « Réduire les animations »). */
   const placeReaction = (t: number) => {
@@ -3465,14 +3837,96 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const floor = ground(pose.position.x, pose.position.z) + SCENE_TURN.clearance;
     if (pose.position.y < floor) pose.position.y = floor;
   };
+  /**
+   * Un item joué sur place (GD-27, lot 6, ../../world/continu/surPlace.ts) : Kéo à la station, à sa taille de scénette,
+   * tourné vers les trois pierres ; la caméra fixe, à l'ouest, le trio au centre-bas de la scène laissée par la bulle, le
+   * lieu et sa porte au fond (l'habitant devant elle, comme dans le monde) ; les objets du kit sur leurs pierres, dans le
+   * maillage de l'item (aucun appel de plus). Rien ne tourne ni ne bouge : ni la caméra à deux doigts (pas de scénette),
+   * ni la faune, ni les gestes, ni l'équipage (le monde n'est pas calme pendant une question). Rend, pour chaque objet
+   * encore là, son repère : le haut de l'objet pour l'étiquette, sa boîte à l'écran pour le bouton de la réponse.
+   */
+  const askSurPlace = (q: QuestionRequest): LabelOnScreen[] => {
+    const { place, item } = q;
+    const scene = item.scene as SurPlaceScene;
+    const site = surPlaceSite(place, ground);
+    if (!site) return [];
+    // La scénette a été quittée pour la marche ; si elle ne l'était pas (une question posée sans marche), elle le devient.
+    if (scenette) leaveScenette();
+    lastQuestion = q;
+    scenetteMission = q.mission;
+    walk = null;
+    walkDone = null;
+    unlitReaction();
+    here = { ...site.keo.at };
+    heading = site.keo.yaw;
+    keo.rotation.y = heading;
+    // À la taille de la scénette, comme devant chaque habitant : à sa taille du monde (1,25), il prenait le tiers gauche au
+    // premier plan, plus grand que les animaux, la tête sous la bulle (directeur artistique, troisième passe du lot 6).
+    keo.scale.setScalar(scenetteKeo(place, posed).scale);
+    placeKeo(here);
+    keo.visible = true;
+    ring.visible = false;
+    fog.near = FOG.near;
+    fog.far = FOG.far;
+    descent.active = false;
+    const qp = surPlacePose(site, viewW, viewH);
+    setShift(qp.shift);
+    applyPose(qp.pose);
+    camera.updateMatrixWorld();
+    const { facets, anchors } = surPlaceFacets(site, scene, { answered: item.answered, right: item.right, picked: item.picked });
+    itemFacets = facets;
+    setGeometry(itemMesh, facets);
+    itemMesh.material = stationMaterial;
+    itemMesh.visible = true;
+    itemShown = true;
+    reaction = null;
+    reactionMesh.visible = false;
+    // L'habitant qui a envoyé Kéo se voit au fond, devant son lieu (cadrage, règle D3 : le fond dit le lieu).
+    if (hasHabitantModel(place)) habitants.show(place, scenetteHabitant(place, posed));
+    // Le monde qui répond (GD-28), depuis la station aussi : les propagules déjà posées, de l'autre côté de l'eau, et la
+    // suivante qui tombe à chaque bonne réponse (directeur artistique : le monde répond là où l'élève le voit).
+    countResponded(place, q.mission, item.key ?? JSON.stringify(item.scene), q.responded);
+    showResponded();
+    asked = { place, pose: qp.pose, objectsKey: `${place}|${viewW}x${viewH}|station`, itemKey: `${JSON.stringify(item.scene)}|${item.right.join(',')}`, answered: item.answered, scene: item.scene, scale: 1 };
+    const onScreen = (x: number, y: number, z: number) => {
+      projected.set(x, y, z).project(camera);
+      return { x: ((projected.x + 1) / 2) * viewW, y: ((1 - projected.y) / 2) * viewH };
+    };
+    return anchors.flatMap((a, i) => {
+      if (!a) return [];
+      const top = onScreen(a.top.x, a.top.y, a.top.z);
+      const box = { left: Infinity, top: Infinity, right: -Infinity, bottom: -Infinity };
+      for (const x of [a.min[0], a.max[0]])
+        for (const y of [a.min[1], a.max[1]])
+          for (const z of [a.min[2], a.max[2]]) {
+            const p = onScreen(x, y, z);
+            box.left = Math.min(box.left, p.x);
+            box.right = Math.max(box.right, p.x);
+            box.top = Math.min(box.top, p.y);
+            box.bottom = Math.max(box.bottom, p.y);
+          }
+      return [{ text: '', x: top.x, y: top.y, center: true, answer: i, box }];
+    });
+  };
   const askQuestion = (q: QuestionRequest | null): LabelOnScreen[] => {
     if (!q) {
       if (!asked) return [];
+      const left = asked;
       asked = null;
       reaction = null;
       itemShown = false;
       itemMesh.visible = false;
       reactionMesh.visible = false;
+      respond = null;
+      itemFacets = null;
+      // La question fermée depuis la station (« Quitter », GD-27, lot 6) : Kéo revient devant le lieu par la même coupe
+      // que le bilan, et sort de la scénette comme d'habitude (le lieu encadré est bien celui où il se tient).
+      if (left.scene.kind === 'surPlace') itemMesh.material = landMaterial;
+      if (left.scene.kind === 'surPlace' && !scenette) {
+        enterScenette(left.place);
+        if (stationFrom) here = { ...stationFrom };
+      }
+      stationFrom = null;
       leaveScenette();
       keo.visible = true;
       ring.visible = true;
@@ -3499,6 +3953,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const { place, layout, item } = q;
     // Au 5e, la Montée seule a sa scénette (GD-22, lot 3) : les missions des autres lieux se jouent sur l'écran habituel.
     if (!hasScenette(place)) return [];
+    // L'épreuve hors des murs (GD-27, lot 6) : l'item se joue à la station, hors de la scénette.
+    if (item.scene.kind === 'surPlace') return askSurPlace(q);
     // Une autre scénette, et chaque nouvel item, repartent de la pose prévue, à son cap de départ (de face, sauf aux
     // Écluses, dans l'axe du canal ; référent dys, consultant UX UI : un élève qui a tourné par mégarde retrouve la scène
     // qui aide à répondre sans refaire le geste).
@@ -3582,10 +4038,13 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const seen = screenHeight(points[0] ?? spot, height);
     if (seen > 1) height *= layout.objectHeight / seen;
     const scale = answerScale(place, points, height);
+    // Le monde qui répond remplace l'objet témoin du C neutre là où il a son objet (la pirogue de la Mangrove reste au
+    // repos : deux mouvements à la suite se liraient comme deux réponses, directeur artistique, 30 octobre 2026).
+    const witness = item.answered && !(item.scene.kind === 'column' && responds(place));
     const facets = itemScene(
       place,
       item.scene,
-      item.answered,
+      witness,
       item.right.map((k) => points[k]).filter(Boolean),
       scale,
       posed,
@@ -3624,12 +4083,17 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     const dialArt = item.dial ? placeArt(place)?.dial : undefined;
     const dialFoot = feet.get(place);
     if (item.dial && dialArt && dialFoot) merged.append(dialArt(dialFoot, item.dial));
-    setGeometry(itemMesh, merged.build());
-    itemShown = itemMesh.visible;
+    // Le monde qui répond : la scène de l'item, sans ses objets encore ; ils s'y posent une fois la réaction réglée. Un
+    // autre item (« Suivant » avant la fin du mouvement ; sa clé, pas sa scène, que deux items peuvent partager) : l'objet
+    // en vol se pose d'un coup.
+    itemFacets = merged.build();
+    if (respond && (respond.place !== place || respond.item !== item.key)) finishRespond();
     if (descent.active) itemMesh.visible = false;
     const before = asked && asked.place === place && asked.itemKey === itemKey ? asked : null;
     const bin = moving !== null && sort ? sort.placed[moving] : null;
     if (sort && moving !== null && bin !== null && points[moving] && points[bin]) {
+      // Le maillage de la réaction est repris : l'objet du monde qui répond encore en vol se pose d'un coup (expert frontend).
+      finishRespond();
       const f = new FacetBuilder();
       const scales = sortScales(points, scale, sort.low ?? true);
       sortPrise(f, { x: 0, y: 0, z: 0 }, scales.inBasket);
@@ -3641,8 +4105,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeReaction(performance.now() / 1000);
     } else if (!item.answered || !facets.reaction) {
       reaction = null;
-      reactionMesh.visible = false;
+      // Le maillage reste à l'objet du monde qui répond s'il est en vol (un cadrage refait pendant la descente).
+      if (!respond?.move) reactionMesh.visible = false;
     } else if (!before?.answered || before.objectsKey !== objectsKey) {
+      finishRespond();
       const f = facets.reaction.facets;
       const swing = facets.reaction.swing;
       // Des battants : leurs sommets tournent en place, dans des copies (jamais les tableaux de la scène de l'item) ; la
@@ -3664,6 +4130,11 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       reaction = { r: facets.reaction, start: before?.answered ? -Infinity : performance.now() / 1000 };
       placeReaction(performance.now() / 1000);
     }
+    // Le monde qui répond : les objets déjà posés, avec la scène de l'item ; un cran de plus, le prochain part dans le
+    // maillage de la réaction, s'il est libre.
+    countResponded(place, q.mission, item.key ?? itemKey, q.responded);
+    showResponded();
+    itemShown = itemMesh.visible;
     asked = { place, pose: qp.pose, objectsKey, itemKey, answered: item.answered, scene: item.scene, scale, sort };
     const labels = facets.labels.map((l) => {
       projected.set(l.at.x, l.at.y, l.at.z).project(camera);
@@ -3774,7 +4245,31 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
   const remiseFinish = () => remiseRun.finish();
   const stepRemise = (t: number) => remiseRun.step(t);
   const scenetteEnd = (lit: boolean) => {
+    // Sur place (GD-27, lot 6) : la coupe de fin, jamais une seconde marche. La scénette reprend son cadrage devant
+    // l'habitant (Kéo à sa place, le décor de près), les objets de la station partent ; le bilan se montre là, et la
+    // réussite se pose comme après une scénette.
+    if (asked?.scene.kind === 'surPlace' && lastQuestion) {
+      const place = asked.place;
+      itemShown = false;
+      itemMesh.visible = false;
+      itemMesh.material = landMaterial;
+      reactionMesh.visible = false;
+      reaction = null;
+      itemFacets = null;
+      enterScenette(place);
+      if (stationFrom) here = { ...stationFrom };
+      stationFrom = null;
+      sceneYaw = scenetteStartYaw(place, posed);
+      stopSceneReturn(sceneReturn);
+      const qp = scenettePose(place, lastQuestion.layout.scenette.stage, viewW, viewH, posed);
+      turnScenePose(qp.pose);
+      setShift(qp.shift);
+      applyPose(qp.pose);
+      asked = { ...asked, pose: qp.pose, scene: COLUMN, objectsKey: '', itemKey: '' };
+    }
     if (!asked || !scenette) return;
+    // Le monde qui répond : l'objet en vol se pose ; les objets restent derrière le panneau du bilan, jusqu'à la sortie.
+    finishRespond();
     // Une scénette posée (les Quais, les Filets, les Écluses) : la scène reste ; à la réussite, le décor change, un
     // objet va à sa place, puis une lumière s'allume (environ 1,5 s ; l'état final tout de suite avec « Réduire les
     // animations »).
@@ -3993,54 +4488,66 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     startFinal(place);
   }
 
-  // La vue finale du niveau (`LevelWorld.finalView`, au 3e : GD-25, relecture du Cirque, correction 1) : une fois, à la
-  // fin de l'allumage de son lieu (la fin des Ferrailleurs, au Fanal restauré), la caméra quitte Kéo, s'élève lentement et
-  // montre ce que la vue seule dessine (les archipels au loin), dans le maillage de la pose (aucun appel de plus) ; elle
-  // revient derrière Kéo à la fin, ou au premier toucher. Avec « Réduire les animations », l'image finale, fixe. Jamais
-  // sur la Carte ni pendant une question.
+  // Un script de caméra (world/continu/cameraPath.ts, `CameraScript`) : la vue finale du niveau (`LevelWorld.finalView`,
+  // au 3e : GD-25, relecture du Cirque, correction 1), une fois, à la fin de l'allumage de son lieu (la fin des
+  // Ferrailleurs, au Fanal restauré) ; ou une veillée (GD-23, GD-27, lot 3 : `playVigil`). La caméra quitte Kéo, suit le
+  // script et revient derrière lui à la fin, ou au premier toucher. Ce que la vue finale seule dessine (les archipels au
+  // loin) entre dans le maillage de la pose (aucun appel de plus) ; une veillée ne dessine rien. Avec « Réduire les
+  // animations », l'image finale, fixe. Jamais sur la Carte ni pendant une question.
   const finalView = world.finalView ?? null;
-  let finalRun: { start: number; from: CameraPose; still: boolean } | null = null;
-  const finalPose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
-  function startFinal(place: PlaceId | null) {
-    if (!finalView || (place !== null && place !== finalView.place) || finalRun || asked || mapView) return;
+  let scriptRun: { script: CameraScript; start: number; from: CameraPose; still: boolean; drawn: boolean; done: (() => void) | null; pass: (() => void) | null } | null = null;
+  const scriptPose: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
+  function startScript(script: CameraScript, facets: Facets | null, done: (() => void) | null, pass: (() => void) | null = null): boolean {
+    if (scriptRun || asked || mapView || nefTrip) return false;
     finishPose();
     finishLay();
     endGlow();
     walk = null;
     const from: CameraPose = { position: { x: 0, y: 0, z: 0 }, target: { x: 0, y: 0, z: 0 }, fov: 0, lens: 0 };
     copyPose(current, from);
-    finalRun = { start: performance.now() / 1000, from, still: reduceMotion };
-    setGeometry(poseMesh, finalView.facets());
-    poseMesh.material = landMaterial;
-    poseMesh.position.set(0, 0, 0);
+    scriptRun = { script, start: performance.now() / 1000, from, still: reduceMotion, drawn: facets !== null, done, pass };
+    if (facets) {
+      setGeometry(poseMesh, facets);
+      poseMesh.material = landMaterial;
+      poseMesh.position.set(0, 0, 0);
+    }
     options.onMark(null);
-    options.onFinalView?.(true);
-    stepFinal(finalRun.start);
+    options.onCameraScript?.(true);
+    stepScript(scriptRun.start);
+    return true;
   }
-  function finishFinal() {
-    if (!finalRun) return;
-    finalRun = null;
-    poseMesh.visible = false;
-    poseMesh.geometry.dispose();
-    poseMesh.geometry = new THREE.BufferGeometry();
-    poseMesh.material = poseMaterial;
+  function startFinal(place: PlaceId | null) {
+    if (!finalView || (place !== null && place !== finalView.place)) return;
+    startScript(finalView, finalView.facets(), null);
+  }
+  function finishScript() {
+    if (!scriptRun) return;
+    const { drawn, done } = scriptRun;
+    scriptRun = null;
+    if (drawn) {
+      poseMesh.visible = false;
+      poseMesh.geometry.dispose();
+      poseMesh.geometry = new THREE.BufferGeometry();
+      poseMesh.material = poseMaterial;
+    }
     updateRings(true);
     follow();
-    options.onFinalView?.(false);
+    options.onCameraScript?.(false);
+    done?.();
   }
-  function stepFinal(t: number) {
-    if (!finalRun || !finalView) return;
-    const u = t - finalRun.start;
-    if (u >= (finalRun.still ? finalView.still : finalView.seconds)) return finishFinal();
-    const p = finalView.pose(u, finalRun.from, finalPose, finalRun.still);
+  function stepScript(t: number) {
+    if (!scriptRun) return;
+    const u = t - scriptRun.start;
+    if (u >= (scriptRun.still ? scriptRun.script.still : scriptRun.script.seconds)) return finishScript();
+    const p = scriptRun.script.pose(u, scriptRun.from, scriptPose, scriptRun.still);
     applyPose(p);
     // Les tuiles du sol suivent la caméra et son regard (le cap de la caméra qui suit : 0 vers le nord).
-    finalRings.x = p.position.x;
-    finalRings.z = p.position.z;
-    finalRings.look = Math.atan2(-(p.target.x - p.position.x), -(p.target.z - p.position.z));
-    updateRings(false, finalRun.still, finalRings);
+    scriptRings.x = p.position.x;
+    scriptRings.z = p.position.z;
+    scriptRings.look = Math.atan2(-(p.target.x - p.position.x), -(p.target.z - p.position.z));
+    updateRings(false, scriptRun.still, scriptRings);
   }
-  const finalRings = { x: 0, z: 0, look: 0 };
+  const scriptRings = { x: 0, z: 0, look: 0 };
   function stepRestore(t: number) {
     if (!restoring) return;
     const art = placeArt(restoring.place)?.restoration;
@@ -4440,6 +4947,12 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     // Le rotor de la Turbine tourne lentement, à l'arrêt pendant toute question et sur la Carte (il reprend où il s'était
     // arrêté).
     if (!reduceMotion && !asked && !scenette && !mapView) rotorAngle.value = (rotorAngle.value + dt * ROTOR.turn) % (2 * Math.PI);
+    // Le geste du métier : seulement quand le monde est calme et Kéo arrêté (référent dys) ; sinon l'outil au repos.
+    if (walk || carRolling) keoMovedAt = now;
+    // Le monde est calme : rien ne se joue (ni question, ni scénette, ni Carte, ni script, ni voyage de la Nef, ni pose,
+    // ni remise, ni assemblage, ni trajet, ni voile, ni retenue de la page), et sans « Réduire les animations ».
+    const worldIsCalm = !reduceMotion && !asked && !scenette && !mapView && !scriptRun && !nefTrip && !poseRun.active && !remise && !assembly && !walk && !carRolling && !gesteHeld && veilShown === 0;
+    stepGestes(t, now, worldIsCalm);
     let moving = false;
     if (walk) {
       const state = walkAt(walk, now, reduceMotion);
@@ -4469,12 +4982,14 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     }
     if (asked) {
       // Pendant une question, la caméra ne bouge pas (sauf la descente dans une scénette, moins d'une seconde) ; seule
-      // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume.
+      // la réaction joue, puis la Roue tourne ; dans une scénette, Kéo se tient là, au repos, et la lampe s'allume. À la
+      // station aussi (GD-27, lot 6) : arrivé de sa marche, il revient au repos au lieu de rester figé en plein pas.
       stepDescent(t);
       placeReaction(t);
+      stepRespond(t);
       stepFinale(t);
       stepLamp(t);
-      if (scenette) body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
+      if (scenette || asked.scene.kind === 'surPlace') body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
       seeScene();
@@ -4503,9 +5018,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       meter?.tick(renderer.info, now);
       return;
     }
-    if (finalRun) {
-      // La vue finale : la caméra s'élève et tourne, Kéo attend où il est ; ni marque ni cadenas.
-      stepFinal(t);
+    if (scriptRun) {
+      // La vue finale ou une veillée : la caméra suit son script, Kéo attend où il est ; ni marque ni cadenas.
+      stepScript(t);
       body.bouger(t, dt, false, reduceMotion, WALK_CADENCE);
       options.onMark(null);
       hideLocks();
@@ -4585,6 +5100,7 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       if (jump) jumpTo(place);
       else startWalkTo(atNode(placeById(place).door), place);
     },
+    walkTo,
     skip: () => {
       if (!walk) return;
       // Dans la caisse : elle finit son trajet proprement, Kéo au bout du sien (« Passer le trajet »).
@@ -4650,6 +5166,9 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
     },
     map: setMap,
     reframeMap: reframeStart,
+    holdGestes: (on) => {
+      gesteHeld = on;
+    },
     scenetteEnd,
     setPlaces,
     remiseView: (place) => remiseView(place),
@@ -4681,7 +5200,8 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       placeVisibility();
     },
     playFinal: () => startFinal(null),
-    endFinal: () => finishFinal(),
+    playVigil: (vigil, done, pass) => startScript(vigilScript(vigil), null, done, pass ?? null),
+    endScript: () => finishScript(),
     departNef: (done) => {
       if (nefTrip || nefLookNow === 4) return done();
       startNefTrip(done);
@@ -4720,9 +5240,10 @@ export function createOpenWorld(host: HTMLElement, options: OpenWorldOptions): O
       body.dispose();
       habitants.dispose();
       worldHabitants.dispose();
+      worldEquipage.dispose();
       equipiers.dispose();
       for (const g of geometries) g.dispose();
-      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh, nefMesh, bancMesh]) m.geometry.dispose();
+      for (const m of [itemMesh, reactionMesh, placesMesh, landmarkMesh, poseMesh, remiseMesh, veilMesh, decorMesh, nefMesh, bancMesh, gestesMesh]) m.geometry.dispose();
       lampMaterial.dispose();
       poseMaterial.dispose();
       faunaMaterial.dispose();

@@ -647,6 +647,26 @@ Pour tous les items :
    - indice : Avec un professeur, on choisit le registre courant : pas de mot familier.
    - explication : « J’ai la flemme » est familier. Avec un professeur, on dit en registre courant : « Je n’ai pas envie. » « La flemme » et « la pêche » restent des mots familiers.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je tresse les cordes des passerelles. · Je noue les amarres au tronc. · Je tends les cordes entre les arbres.
+- lieu : Ici, les passerelles se séparent. · Chaque corde mène à un autre arbre.
+- ruine : La plateforme est tombée à moitié. · Les passerelles pendent dans le vide. · Le treuil est vide.
+- chantier : La plateforme tient de nouveau. · Une passerelle est tendue.
+- rallumé : Les passerelles sont tendues. · Chaque palier a sa corde.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `pairs` | Deux passerelles partent ensemble du tronc. | Les passerelles tiennent sans bruit. |
+| `choices` | Une corde est nouée à chaque palier. | Les nœuds serrent bien les cordes. |
+| `homophone-sentences` | Deux cordes se nouent au même palier. | Le palier tient par ses cordes. |
+| `participles` | La cordière tresse ses cordes au bord de l’eau. | Les cordes tressées tiennent le pont. |
+| `word-meaning` | La cordière nomme chaque corde selon son usage. | Chaque corde a son nom. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

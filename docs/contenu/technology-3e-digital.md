@@ -566,6 +566,25 @@ Pour tous les items :
    - indice : Cherche la ligne où il est écrit « faux ».
    - explication : Seul Tom a « faux » : le filtre ne garde que sa ligne. Lina et Sam ont « vrai », ils sont cachés.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je branche les cordons sur le tableau. · Je mets le casque pour écouter les fils. · Je surveille les lampes témoins.
+- lieu : Ici, les fils relient le Fanal aux archipels. · Le tableau fait passer chaque message.
+- ruine : Le toit du standard est ouvert. · Les cordons pendent en boucles. · Les poteaux sont penchés.
+- chantier : Le toit est refermé. · Les poteaux portent les fils.
+- rallumé : Les lampes brillent sur le tableau. · Les fils portent les messages.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `computer-networks` | Les fils vont de poteau en poteau. | Les poteaux portent les fils jusqu’au bout. |
+| `connected-objects` | Chaque lampe témoin répond à un cordon. | Les lampes répondent aux cordons. |
+| `algorithms` | La télégraphiste branche les cordons un par un. | Les cordons sont branchés. |
+| `data-tables` | Chaque fiche entre dans un trou du tableau. | Les fiches sont rangées dans leurs douilles. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

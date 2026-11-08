@@ -5,6 +5,8 @@
 // Le bilan d'une révision dans la scène (GD-20, point 4, lot L3, `revised`) : un seul, à la fin du passage ; sa phrase
 // (« Tu as revu 5 questions. ») à la place des étoiles, rien qui dise un score ou un échec, les pastilles de tout le
 // passage, et ni « Détail » (celui d'une mission) ni rien d'autre que « Continuer ».
+// La suite de la mission (GD-27, la raison du lieu, `follow`) : la phrase de l'habitant, écrite sous les pastilles avec
+// son haut-parleur, la même quel que soit le score, jamais après une révision.
 import { useState } from 'react';
 import { Icon } from '../../../components/Icon';
 import { BLOCKS, ofBlock } from '../../biomes';
@@ -30,7 +32,7 @@ function titleOf(completion: StageDoneProps['completion']): string {
   return completion.stars === 3 ? 'Superbe !' : completion.stars === 2 ? 'Bien joué !' : 'Terminé !';
 }
 
-export function WorldDone({ completion, detail, pause, back, revised }: StageDoneProps & { revised?: RevisedSummary }) {
+export function WorldDone({ completion, detail, pause, back, revised, follow }: StageDoneProps & { revised?: RevisedSummary }) {
   const [open, setOpen] = useState(false);
   const chest = completion.chestBlock ? BLOCKS[completion.chestBlock] : null;
   const parts = completion.pose?.posees.length ?? 0;
@@ -83,6 +85,12 @@ export function WorldDone({ completion, detail, pause, back, revised }: StageDon
             </li>
           )}
         </ul>
+        {!revised && follow && (
+          <p className="world-done-follow">
+            <Syllabified text={frenchTypography(follow)} />
+            <SpeakButton text={frenchTypography(follow)} compact />
+          </p>
+        )}
         {!revised && (
           <button type="button" className="button world-done-detail" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
             <Icon name="liste" /> Détail

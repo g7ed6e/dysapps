@@ -429,6 +429,24 @@ Pour tous les items :
    - indice : Relis la ligne qui commence par « Depuis ».
    - explication : Moins de maisons près des usines dangereuses, c’est moins d’enjeux menacés. C’est de la prévention.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je cultive le riz dans l’eau. · Je règle les vannes des gradins. · Je garde l’eau de marche en marche.
+- lieu : Ici, l’eau descend de gradin en gradin. · Le canal amène l’eau aux rizières.
+- ruine : Les gradins sont presque secs. · Le canal est fendu. · La roue du moulin est arrêtée.
+- chantier : Les murets retiennent l’eau. · Le canal haut est remis en place.
+- rallumé : L’eau descend dans les gradins. · La roue du moulin tourne.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `population` | Le village vit de ses rizières. | Les rizières nourrissent le village. |
+| `resources` | L’eau du canal se partage entre les gradins. | L’eau coule d’un gradin à l’autre. |
+| `risks` | La pluie tombe parfois fort sur les gradins. | Les murets tiennent. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

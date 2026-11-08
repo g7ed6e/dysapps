@@ -1,6 +1,6 @@
 # Le monde ouvert d’Archipéo
 
-> Les phrases des habitants du monde ouvert d’Archipéo, au 6e ([GD-20](../gameplay/propositions/GD-20.md), point 4, piste B « La remise », arbitrages du directeur artistique du 17 octobre 2026). Une seule forme pour toutes les commandes, que le jeu remplit : les 48 phrases écrites île par île (« Les demandes ») restent celles de la grille. `npm run contenu` écrit ce fichier dans `src/game/world/continu/mondeOuvert.json`, que seul le monde ouvert lit. Le directeur du contenu pédagogique tient le texte, le consultant d’Archipéo le ton, le référent dys la lecture.
+> Les phrases des habitants du monde ouvert d’Archipéo, au 6e, et la ligne de chaque veillée ([GD-20](../gameplay/propositions/GD-20.md), point 4, piste B « La remise », arbitrages du directeur artistique du 17 octobre 2026). Une seule forme pour toutes les commandes, que le jeu remplit : les 48 phrases écrites île par île (« Les demandes ») restent celles de la grille. `npm run contenu` écrit ce fichier dans `src/game/world/continu/mondeOuvert.json`, que seul le monde ouvert lit. Le directeur du contenu pédagogique tient le texte, le consultant d’Archipéo le ton, le référent dys la lecture.
 
 ## Les habitants
 
@@ -42,3 +42,22 @@
 > La révision jouée dans la scène du lieu (lot L3) : la phrase d’entrée, en tête de la scène, sous le rôle, avant la consigne de la première mission ; la phrase de fin, en tête du seul bilan, à la place des étoiles (une révision ne change pas les étoiles) ; le rappel, dans la ligne de l’habitant, avec « Reprendre » et « Plus tard », à la place de la phrase de la grille (« On reprend « … » ensemble ? ») dans le monde ouvert seulement : il ne nomme aucune mission (le passage ne commence pas forcément par la première nommée) ni aucun nombre (le passage se calcule au toucher de « Reprendre »), et vaut aussi quand « Reprendre » mène à l’écran habituel. Blocland et la grille gardent leur phrase. `{questions}` : leur nombre et le mot (« 5 questions », « 1 question »). **Le mot « question » est fixé par le code** (`questionsWord`, qui l’accorde au nombre) : une phrase ne peut pas dire « exercices » ni « items ». Jamais une date, un échec ni un retard : ni « ratées », ni « à revoir », ni « encore ».
 
 > La liste des lieux (sur la Carte, « Lieux ») n’a pas de forme ici : son étiquette lue ajoute **« avec »** et les aménagements posés du lieu (« Les Quais, …, avec le potager et la lanterne »), mots écrits par le code (`PlacesSheet.tsx`), comme les mots d’état. Si un univers veut sa propre formule, elle deviendra une forme de ce fichier.
+
+## Les veillées
+
+- feu éteint : {Feu} est éteint.
+- feu allumé : {Feu} est allumé.
+- embarquement : {Équipier} monte à bord.
+
+> Les veillées d’un niveau, trois au plus (le 4e n’a pas d’embarquement, le 3e n’a que l’arrivée ; [GD-23](../gameplay/propositions/GD-23.md) ; [GD-27](../gameplay/propositions/GD-27.md), « Par quels canaux le récit se raconte ») : l’arrivée cadre le feu du niveau éteint, le départ le cadre tel qu’il est, l’embarquement cadre le lieu où un équipier monte à bord. Une seule ligne par veillée, littérale, le lieu nommé, écrite sur fond uni et lue, relançable, jamais nécessaire pour avancer ; un toucher la passe. Les jetons, que le jeu remplace :
+> - `{Feu}` : le nom du lieu qui porte le feu du niveau, avec son article (au 6e, « Le Phare », dont la lanterne s’allume avec son haut ; au 5e, « Le Sémaphore », la lanterne de tête de son mât, avec son haut ; au 4e, « La Forge », son fourneau, avec ses abords ; au 3e, « Le Fanal », avec son haut) ; la forme s’écrit au masculin singulier et le jeu l’accorde au nom du lieu, comme les mots d’état (« La Forge est allumée. ») ;
+> - `{Équipier}` : l’équipier qui monte à bord, par son rôle, avec son article (au 6e, « L’équipière radio », à la Gare maritime ; au 5e, « Le naturaliste », aux Fumerolles ; au 4e et au 3e, personne n’embarque) ; un rôle qui désigne une personne, jamais un objet (« La radio » se lisait comme l’appareil), jamais un prénom.
+>
+> Dix mots au plus, un point à la fin, jamais « ! » ; ni « vite », ni « merci », ni le Rafiot, ni « veillée » dans la ligne elle-même (le mot est celui d’un lieu du 4e ; le manuel, lui, peut dire « les veillées »).
+
+## L’équipage
+
+- Zia : Je serre un écrou avec ma clé.
+- Malo : Je range les feuilles dans le registre.
+
+> La ligne de chaque équipier dans le monde ouvert du 6e ([GD-27](../gameplay/propositions/GD-27.md), lot 5, « L’équipage dans le monde » ; [GD-23](../gameplay/propositions/GD-23.md)) : après avoir guidé une scénette, Zia ou Malo se tient près de l’habitant du premier lieu rallumé qu’il a guidé, et y fait son geste (Zia resserre un écrou à la clé, Malo range une feuille dans un registre). Un toucher sur lui écrit et dit sa ligne sous son rôle (« La mécanicienne », « L’archiviste »), comme celle d’un habitant. Une seule ligne par équipier, **fixe** : elle ne change jamais, ni au toucher, ni avec les erreurs, ni en révision (référent dys : l’équipier est un repère immobile). À la première personne, le ton d’un ado de treize ans, sans « tu », sans nom de lieu (elle reste vraie partout où il se tient), sans Kéo ni Rafiot ; dix mots au plus, un point à la fin, jamais « ! ». Le mot avant les deux-points est la clé de la ligne, jamais lu.

@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Completion } from '../../engine';
+import { SettingsProvider } from '../../../core/SettingsContext';
 import { WorldDone } from './WorldDone';
 
 const completion = {
@@ -34,5 +35,16 @@ describe('Le bilan d’un lieu du monde ouvert', () => {
     render(<WorldDone completion={completion} detail={null} pause={<p>Pause</p>} back={{ label: 'Revenir', onClick: () => {} }} />);
     expect(screen.getByText('Pause')).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Continuer/ })).not.toBeInTheDocument();
+  });
+
+  it('la suite de la mission (GD-27) s’écrit après le résultat, avec sa voix, et le détail reste sur demande', () => {
+    render(
+      <SettingsProvider>
+        <WorldDone completion={completion} detail={<p>Le détail de l’écran classique</p>} pause={null} back={{ label: 'Revenir', onClick: () => {} }} follow="Les rangées sont comptées." />
+      </SettingsProvider>,
+    );
+    const follow = screen.getByText((_, el) => el?.classList.contains('world-done-follow') === true);
+    expect(follow).toHaveTextContent('Les rangées sont comptées.');
+    expect(screen.queryByText('Le détail de l’écran classique')).not.toBeInTheDocument();
   });
 });

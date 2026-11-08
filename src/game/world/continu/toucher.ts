@@ -28,9 +28,9 @@ export function nearestPlace(p: Vec2, places: readonly Pick<OpenPlace, 'id' | 'c
   return best;
 }
 
-/** Un aménagement montré, à l'écran : son lieu, et la boîte de son dessin projeté, en pixels. */
-export interface ObjectTarget {
-  place: PlaceId;
+/** Un aménagement montré, à l'écran : son lieu (ou ce qu'il désigne, `T` : un équipier), et la boîte de son dessin projeté, en pixels. */
+export interface ObjectTarget<T = PlaceId> {
+  place: T;
   rect: ScreenBox;
 }
 
@@ -48,8 +48,8 @@ const centerOf = (r: ScreenBox) => ({ x: (r.left + r.right) / 2, y: (r.top + r.b
  * au plus ; le dessin touché en plein d'abord (le plus proche de son centre, si deux se recouvrent), puis le disque le
  * plus proche. Rien sinon.
  */
-export function touchedObject(x: number, y: number, targets: readonly ObjectTarget[], pixels: number = OBJECT_TOUCH_PIXELS): PlaceId | null {
-  let best: PlaceId | null = null;
+export function touchedObject<T = PlaceId>(x: number, y: number, targets: readonly ObjectTarget<T>[], pixels: number = OBJECT_TOUCH_PIXELS): T | null {
+  let best: T | null = null;
   let bestKey = Infinity;
   for (const t of targets) {
     const c = centerOf(t.rect);

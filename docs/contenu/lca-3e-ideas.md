@@ -827,6 +827,27 @@ Pour tous les items :
    - indice : Relis la quatrième ligne du rappel.
    - explication : Monos (seul) et arkhê (le commandement) : la monarchie, c’est un seul qui commande, comme un roi. La démocratie, c’est le pouvoir du peuple.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je traduis les textes sous les pins. · Je prends place à la table ronde. · Je puise l’eau de la fontaine.
+- lieu : Ici, les colonnes entourent un banc rond. · Les pins gardent la clairière.
+- ruine : Deux colonnes sont couchées. · La fontaine est sèche. · Le banc est fendu.
+- chantier : Les linteaux reposent sur les colonnes. · La table ronde est droite.
+- rallumé : L’eau coule dans la fontaine. · Le banc rond fait le cercle.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `la-empire` | Les colonnes portent l’anneau de linteaux. | Le cercle est refermé sous le ciel. |
+| `la-provinces` | Le banc rond fait le tour de la table. | Le banc est remis en rond. |
+| `la-heritage` | La fontaine coule dans son bassin d’eau sombre. | Le bassin est plein. |
+| `gr-myth-history` | Les colonnes sont encore toutes lisses. | Les colonnes sont gravées et droites. |
+| `gr-greek-world` | Le cercle de colonnes s’ouvre sur le ciel. | Les colonnes se tiennent ensemble. |
+| `gr-heritage` | Les pins entourent la clairière. | La clairière est dégagée. |
+
 ## La voix
 
 | mot | langue | lu |

@@ -487,6 +487,25 @@ Pour tous les items :
    - indice : Écoute qui dit it’s chicken : le nom est juste avant answered.
    - explication : The cook answered, “No, it’s chicken today” : c’est le cuisinier (the cook) qui parle. Lucas, lui, croyait que c’était du poisson (fish).
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je couds les habits des comédiens. · Je range les costumes par rôle. · Je répare les robes de scène.
+- lieu : Ici, on joue des histoires sur la scène. · La loge garde tous les costumes.
+- ruine : Le rideau est déchiré. · La galerie est effondrée. · Les bancs de la loge sont renversés.
+- chantier : Le plancher tient. · Le rideau est accroché.
+- rallumé : Le rideau est tiré. · Les costumes sont prêts. · Les bancs sont en rang.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `dialogues` | Les comédiens répètent leurs répliques. | Les comédiens ont fini de jouer. |
+| `quantities` | Les costumes se comptent avant la pièce. | Les costumes sont rangés. |
+| `irregular-past` | Les comédiens racontent ce qu’ils ont fait. | Les récits sont joués. |
+| `stories` | Le conteur monte sur la scène. | L’histoire est racontée. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

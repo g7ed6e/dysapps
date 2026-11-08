@@ -11,5 +11,10 @@
   "bringRemise": "Tu apportes {nom}.",
   "revisionEntry": "Tu revois {questions}.",
   "revisionDone": "Tu as revu {questions}.",
-  "revisionReminder": "On revoit quelques questions ensemble."
+  "revisionReminder": "On revoit quelques questions ensemble.",
+  "fireOut": "{Feu} est éteint.",
+  "fireLit": "{Feu} est allumé.",
+  "boarding": "{Équipier} monte à bord.",
+  "equipageZia": "Je serre un écrou avec ma clé.",
+  "equipageMalo": "Je range les feuilles dans le registre."
 }

@@ -3,8 +3,8 @@
 // l'image sans jamais en toucher le bord ; avec « Réduire les animations », l'image fixe, la dernière.
 import { describe, expect, it } from 'vitest';
 import type { CameraPose } from './camera';
-import { FAR_ARCHIPELAGOS_3E, FINAL_NORTH_LIGHT_3E, FINAL_POSES_3E, FINAL_VIEW_3E, FINAL_VIEW_SECONDS_3E, farArchipelagos3e, finalViewPose3e } from './finalView3e';
-import { distance, type Vec3 } from './geometry';
+import { FAR_ARCHIPELAGOS_3E, FAR_ISLES_3E, FINAL_NORTH_LIGHT_3E, FINAL_POSES_3E, FINAL_VIEW_3E, FINAL_VIEW_SECONDS_3E, farArchipelagos3e, finalViewPose3e } from './finalView3e';
+import { distance, linearRgb, type Vec3 } from './geometry';
 import { levelWorld } from './levelWorld';
 import { PEAK_3E, PLACES_3E } from './plan3e';
 import { landDistance3e } from './terrain3e';
@@ -113,5 +113,22 @@ describe('La vue finale du 3e', () => {
     const f = farArchipelagos3e();
     expect(f.triangles).toBeLessThan(300);
     for (let i = 0; i < f.colors.length; i += 3) expect(Math.max(f.colors[i], f.colors[i + 1], f.colors[i + 2])).toBeGreaterThan(0.1);
+    // Les feux de la chaîne (GD-27, lot 5) : au 5e, la lanterne du Sémaphore en tête de la plus haute Aiguille, plus haut
+    // que toute pierre de l'île ; au 4e, la gueule du fourneau au pied du volcan, à hauteur d'homme ; au 6e, la lanterne du
+    // phare en haut de sa tour.
+    const light = linearRgb(FAR_ISLES_3E.light);
+    const lights: Record<'sixth' | 'fifth' | 'fourth', number[]> = { sixth: [], fifth: [], fourth: [] };
+    for (let k = 0; k < f.positions.length; k += 3) {
+      if (!light.every((v, c) => Math.abs(f.colors[k + c] - v) < 1e-6)) continue;
+      const p = { x: f.positions[k], y: f.positions[k + 1], z: f.positions[k + 2] };
+      for (const isle of ['sixth', 'fifth', 'fourth'] as const) if (Math.hypot(p.x - FAR_ARCHIPELAGOS_3E[isle].x, p.z - FAR_ARCHIPELAGOS_3E[isle].z) < 45) lights[isle].push(p.y);
+    }
+    expect(Math.min(...lights.sixth)).toBeGreaterThan(15);
+    expect(Math.min(...lights.fifth)).toBeGreaterThan(40);
+    expect(Math.max(...lights.fourth)).toBeLessThan(12);
+    expect(Math.min(...lights.fourth)).toBeGreaterThan(1);
+    // La gueule de la Forge, deux fois la lanterne du phare : elle se lit de loin (directeur artistique).
+    const span = (ys: number[]) => Math.max(...ys) - Math.min(...ys);
+    expect(span(lights.fourth)).toBeGreaterThanOrEqual(1.8 * span(lights.sixth));
   });
 });

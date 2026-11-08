@@ -577,6 +577,25 @@ Pour tous les items :
    - indice : Quelle vérification est la plus simple ?
    - explication : Recharger la batterie est simple : si le robot roule ensuite, la panne venait de là. On ne change le moteur que si le robot ne roule toujours pas.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : J’invente des machines et je les essaie. · Je lance les maquettes dans le bassin. · Je règle le treuil.
+- lieu : Ici, les bateaux s’essaient en petit. · Le bassin sert aux essais.
+- ruine : Le bassin est à sec. · Le chariot est rouillé sur ses rails. · Le treuil est sans toit.
+- chantier : Le bassin est rempli à moitié. · Le treuil est à l’abri.
+- rallumé : Le bassin est plein. · Le chariot roule sur ses rails. · Le treuil tire les maquettes.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `energy-chain` | Le treuil tire le chariot le long des rails. | Le chariot est au bout du bassin. |
+| `information-chain` | Les capteurs notent chaque essai du chariot. | Les essais sont notés. |
+| `simulation` | Les maquettes sont essayées avant la grande coque. | Les essais sont rangés. |
+| `troubleshooting` | Un chariot est démonté sur l’établi. | Le chariot est remonté. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

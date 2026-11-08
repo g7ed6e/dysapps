@@ -188,6 +188,26 @@ Pour tous les items :
 - description : L’hypoténuse, puis un côté de l’angle droit, puis la réciproque, enfin la logique : théorème, réciproque ou contraposée ?
 - compétences : c4.ma.d.pythagore · c4.ma.a.carres-racine
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je mesure et je trace chaque pièce. · Je dessine les plans sur le plancher. · Je règle l’équerre.
+- lieu : Ici, chaque pièce se trace en grand. · Le plancher sert de grande table.
+- ruine : Le plancher est fendu. · La galerie est tombée. · La grue a perdu son bras.
+- chantier : L’étage est remis sur ses poutres. · Le plancher tient sous les pas.
+- rallumé : Le plancher est plat. · La grue lève ses pièces. · Les tracés sont nets.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `simplifying` | Les mesures sont notées sur le plancher. | Les mesures sont rangées. |
+| `expanding` | Les grandes pièces se découpent en morceaux. | Les morceaux sont taillés. |
+| `equations` | Les deux pièces se posent sur la balance. | La balance est rangée. |
+| `rationals` | Les pièces se rangent selon leur longueur. | Les pièces sont alignées. |
+| `pythagorean-theorem` | L’équerre contrôle chaque angle droit. | Les angles droits sont contrôlés. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -39,6 +39,25 @@ créature : Stat
 - description : Partage une cargaison en deux ou trois parts selon un ratio.
 - compétences : c4.ma.b.ratio
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je relève la pluie et le vent. · Je lis les pluviomètres matin et soir. · Je note le temps sur la table de relevés.
+- lieu : Ici, on suit le temps du sommet. · Les instruments restent à l’air libre.
+- ruine : L’abri penche sur un pied cassé. · Deux pluviomètres sont couchés. · Les manches à air sont tombées au pied du mât.
+- chantier : L’abri est redressé. · Les pluviomètres sont debout.
+- rallumé : Les manches à air se gonflent au vent. · La roue de tirage tourne sur son socle.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `mean` | Les pluviomètres reçoivent la pluie du matin. | Les relevés sont notés sur la table. |
+| `probability` | Les boules de la roue sont en bois clair. | Les boules sont rangées dans la roue. |
+| `data` | La table porte les relevés de la semaine. | Les relevés sont rangés sous le petit toit. |
+| `ratio-sharing` | La météorologue partage ses relevés en deux tas. | Chaque tas a sa place sur la table. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

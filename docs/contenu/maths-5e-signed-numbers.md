@@ -329,6 +329,26 @@ Pour tous les items :
    - explication : 8 × 5 = 40, puis 40 ÷ 2 = 20 cm². 40, c’est oublier de diviser par 2 : c’est l’aire du rectangle. 13, c’est 8 + 5.
    - figure : plane triangle 8 · 5 / aire ?
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je monte l’eau, godet par godet. · Je tends les cordes du rail. · Je graisse les poulies.
+- lieu : Ici, l’eau monte le long du rail. · Une lanterne brille au sommet du rail.
+- ruine : Le rail est cassé en haut. · La lanterne est éteinte. · Un godet est tombé au pied.
+- chantier : Le bas du rail est remonté. · Les poulies sont en haut.
+- rallumé : La lanterne est allumée. · L’eau arrive au sommet.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `thermometer` | Le rail porte des encoches du bas en haut. | Le godet tient dans son encoche. |
+| `adding` | Les godets montent et descendent le long du rail. | Les godets sont revenus sur le rail. |
+| `fractions` | Le bassin se remplit godet après godet. | Le bassin garde son eau. |
+| `order-of-operations` | La fontainière règle ses poulies une à une. | Les poulies tournent sans bruit. |
+| `conversions-angles` | Le rail se mesure en mètres et en centimètres. | Le rail est mesuré. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

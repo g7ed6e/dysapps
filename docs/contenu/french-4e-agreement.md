@@ -687,6 +687,26 @@ Pour tous les items :
    - indice : Il n’y a pas de virgules autour de la relative. Relis la dernière ligne de la règle.
    - explication : Sans virgules, la relative trie les élèves : la phrase ne parle que de ceux qui étaient fatigués, et ce sont eux qui sont rentrés. Avec des virgules, elle parlerait de tous.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je détache les blocs de la paroi. · Je dresse les colonnes dans la cour. · Je tends la chaîne le long du mât.
+- lieu : Ici, la pierre sort de la montagne. · Les colonnes se dressent côte à côte.
+- ruine : La cour est pleine de cailloux. · Les colonnes sont couchées. · Le mât est tombé.
+- chantier : La cour est balayée. · Une colonne est dressée.
+- rallumé : Les colonnes se tiennent côte à côte. · La chaîne est tendue. · La cour est lisse sous les pas.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `past-participle` | Une corde monte les blocs sur la paroi. | Les blocs sont en haut. |
+| `adjectives` | Les colonnes se dressent le long de la paroi. | La paroi est lisse. |
+| `subject-verb` | Le carrier grimpe au sommet. | Le sommet est dégagé. |
+| `reflexive-verbs` | L’écho répond dans la carrière. | La carrière est silencieuse. |
+| `tense-meaning` | Le carrier marque la pierre avant la coupe. | Les pierres sont coupées. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -9,6 +9,7 @@ import { FacetBuilder, placeFacets, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { ANSE_5E, COLORS_5E, LISIERE, LISIERE_LEVEL, LISIERE_PAVING, LISIERE_QUAY_SPOT, QUAY_5E } from './plan5e';
 import type { PortSite } from './port';
+import { horizonDiamond } from './surroundingsKit';
 
 /**
  * Les matières de la Lisière (directeur artistique, « Les matières du 5e ») : la pierre grise (`COLORS_5E.stone`, au
@@ -158,23 +159,6 @@ export const PHARE_LIGHT: Vec3 = (() => {
 /** Le gris-bleu sombre de la tour et du liseré de la lumière du Phare. */
 export const PHARE_DARK = 0x3f4e5c;
 
-/** Un losange plat, plus large que haut, de demi-largeur `w` et de demi-hauteur `h`, tourné vers la Lisière (`yaw`). */
-function diamond(b: FacetBuilder, at: Vec3, w: number, h: number, depth: number, yaw: number, color: number): void {
-  const c = Math.cos(yaw),
-    s = Math.sin(yaw);
-  // La largeur suit la droite de qui regarde depuis la Lisière, la profondeur va vers elle.
-  const side = (k: number): [number, number, number] => [at.x + k * c, at.y, at.z - k * s];
-  const fore = (k: number): [number, number, number] => [at.x + k * s, at.y, at.z + k * c];
-  const ring = [side(w), fore(depth), side(-w), fore(-depth)];
-  const up: [number, number, number] = [at.x, at.y + h, at.z];
-  const down: [number, number, number] = [at.x, at.y - h, at.z];
-  for (let k = 0; k < 4; k++) {
-    const n = (k + 1) % 4;
-    b.triangle(ring[n], ring[k], up, color);
-    b.triangle(ring[k], ring[n], down, color);
-  }
-}
-
 export function phareLightFacets(): Facets {
   const b = new FacetBuilder();
   const p = PHARE_LIGHT;
@@ -184,8 +168,8 @@ export function phareLightFacets(): Facets {
   // Le liseré sombre, un peu plus grand, juste derrière la lumière.
   const { w, h } = PHARE_SPOT;
   const back = { x: p.x + 0.3 * Math.sin(yaw), y: p.y, z: p.z + 0.3 * Math.cos(yaw) };
-  diamond(b, back, 1.25 * w, 1.3 * h, 0.2, yaw, PHARE_DARK);
-  diamond(b, p, w, h, 0.35, yaw, COLORS_5E.lantern);
+  horizonDiamond(b, back, 1.25 * w, 1.3 * h, 0.2, yaw, PHARE_DARK);
+  horizonDiamond(b, p, w, h, 0.35, yaw, COLORS_5E.lantern);
   // La petite tour, sous le point : quatre pans, de la mer jusqu'à lui.
   b.prism({ x: p.x, y: -1, z: p.z, yaw }, 0.55, 0.38, p.y - h + 1, 4, PHARE_DARK);
   return b.build();

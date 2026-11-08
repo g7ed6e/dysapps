@@ -147,7 +147,12 @@ export function speak(text: string, rate = 0.9, onEnd?: () => void, lang: Lang =
     if (voice) utterance.voice = voice;
     if (onEnd && i === segments.length - 1) {
       utterance.onend = onEnd;
-      utterance.onerror = onEnd;
+      // Une phrase coupée par la suivante (`cancel()`, « interrupted » ou « canceled ») n'est pas finie : sa suite ne se
+      // dit pas (le cadre d'une mission ne se lève pas quand on touche son haut-parleur, GD-27). Une vraie panne de la
+      // voix enchaîne, pour ne rien bloquer.
+      utterance.onerror = (e) => {
+        if (e.error !== 'interrupted' && e.error !== 'canceled') onEnd();
+      };
     }
     window.speechSynthesis.speak(utterance);
   });

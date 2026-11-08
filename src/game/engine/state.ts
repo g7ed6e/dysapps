@@ -4,6 +4,8 @@ import type { BiomeId, BlockId } from '../biomes';
 import type { TirageAssemblage } from '../world/assembly';
 import type { Layout } from '../world/savedLayout';
 import type { DetourId } from './detours';
+import type { EquipageSaved } from './equipage';
+import type { VigilId } from './vigils';
 
 export interface ExerciseProgress {
   stars: 0 | 1 | 2 | 3;
@@ -102,6 +104,13 @@ export interface World {
   detours?: DetourId[];
   /** Les cairns de Détour rallumés (le seul, celui de la Braise des Hérons) : ils restent allumés. */
   detoursLit?: DetourId[];
+  /**
+   * Les veillées vues (GD-23, GD-27, lot 3 : engine/vigils.ts, world/vigilsSaved.ts) : une veillée vue ne se rejoue pas.
+   * Absent tant qu'aucune n'est vue, et dans une sauvegarde d'avant les veillées. Rien d'autre n'y est retenu.
+   */
+  vigils?: VigilId[];
+  /** Le lieu retenu de chaque équipier dans le monde du 6e (GD-27, lot 5 : engine/equipage.ts, world/equipageSaved.ts), écrit une fois. */
+  equipage?: EquipageSaved;
 }
 
 export interface LogEntry {

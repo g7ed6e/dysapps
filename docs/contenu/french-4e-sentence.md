@@ -838,10 +838,30 @@ Pour tous les items :
    - indice : Quel verbe vient après « il faut que » ?
    - explication : Après « il faut que », le verbe est au subjonctif : « allions ». À l’indicatif, on dirait « nous allons ».
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : J’entretiens la voie. · Je graisse les leviers du poste. · Je tourne la plaque.
+- lieu : Ici, les trains changent de voie. · Ici, les leviers du poste changent la voie.
+- ruine : Le toit du poste est tombé. · La plaque tournante est rouillée. · Les rails sont tordus.
+- chantier : Les leviers sont graissés. · Les rails sont redressés.
+- rallumé : Les trains passent d’une voie à l’autre. · La plaque tourne. · Les leviers répondent.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `relative-clauses` | Les wagons s’accrochent à la locomotive. | Le convoi est formé. |
+| `subordinate-clauses` | Chaque voie de service part du poste. | Les voies sont ouvertes. |
+| `passive-reported` | Le cantonnier transmet les messages de voie. | Les messages sont reçus. |
+| `compound-tenses` | Le poste garde le carnet des trains passés. | Chaque ligne du carnet porte une heure. |
+| `moods` | Le poste prépare les trains du jour. | Les trains sont aiguillés. |
+
 ## Les plans
 
 > Comme à l’Étalon : trois plans, jamais affichés dans le monde ouvert, qui servent à `parts.ts` pour découper les cinq parties (3 + 1 + 1). Le premier plan, en trois rangées, porte le corps 1 sur 3 (les relatives), 2 sur 3 (les conjonctives), 3 sur 3 (voix et paroles) ; le deuxième, le haut (les temps composés) ; le troisième, les abords (les modes). Aucun nom ne reprend un mot des phrases de pose de `contenu-coteaux.md` (poste, rebâti, leviers, place, plaque, tournante, réparée, couvert, voies, service, refaites). XP des lieux voisins (40, 50, 60) ; pas de coffre, le format n’en a plus (README, « Les plans »). Bloc gagné : celui des Roches (le Cabinet des mots, `french-4e-vocabulary`, le Parchemin), un lieu du monde ouvert seulement n’ayant pas de bloc à lui, confirmé par le directeur artistique. Réplique de fin : dite par le cantonnier, si le monde ouvert la reprend.
-> Pas de « ## Au lieu · Archipéo » : les jumeaux attendent la catégorie de scène de chaque mission (GD-20) et l’objet des réponses de la scénette (les cales de roue). Pas de « ## Les demandes » : un lieu du monde ouvert seulement n’a pas de commande, comme l’Étalon.
+> Pas de « ### Niveau » sous « ## Au lieu · Archipéo » : les jumeaux attendent la catégorie de scène de chaque mission (GD-20) et l’objet des réponses de la scénette (les cales de roue). Pas de « ## Les demandes » : un lieu du monde ouvert seulement n’a pas de commande, comme l’Étalon.
 
 | plan | nom | XP | quand c’est bâti |
 | --- | --- | --- | --- |

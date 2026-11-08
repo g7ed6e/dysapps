@@ -603,3 +603,24 @@ export function barqueFloor(b: FacetBuilder, at: Vec3, length: number, width: nu
   b.quad([x1, y, z1 - e], [x0, y, z1 - e], [x0, top, z1 - e], [x1, top, z1 - e], BARQUE.inside);
   b.quad([x0 + e, y, z1], [x0 + e, y, z0], [x0 + e, top, z0], [x0 + e, top, z1], BARQUE.inside);
 }
+
+/**
+ * Un losange plat, plus large que haut, de demi-largeur `w` et de demi-hauteur `h`, tourné vers qui le regarde (`yaw`,
+ * le cap depuis lui vers le point de vue) : la lumière d'un feu sur l'horizon (la lumière du Phare vue de la Lisière, la
+ * lanterne du Sémaphore vue de la Crique ; GD-27, « la chaîne des feux »), un seul point chaud, immobile.
+ */
+export function horizonDiamond(b: FacetBuilder, at: Vec3, w: number, h: number, depth: number, yaw: number, color: number): void {
+  const c = Math.cos(yaw),
+    s = Math.sin(yaw);
+  // La largeur suit la droite de qui regarde, la profondeur va vers lui.
+  const side = (k: number): [number, number, number] => [at.x + k * c, at.y, at.z - k * s];
+  const fore = (k: number): [number, number, number] => [at.x + k * s, at.y, at.z + k * c];
+  const ring = [side(w), fore(depth), side(-w), fore(-depth)];
+  const up: [number, number, number] = [at.x, at.y + h, at.z];
+  const down: [number, number, number] = [at.x, at.y - h, at.z];
+  for (let k = 0; k < 4; k++) {
+    const n = (k + 1) % 4;
+    b.triangle(ring[n], ring[k], up, color);
+    b.triangle(ring[k], ring[n], down, color);
+  }
+}

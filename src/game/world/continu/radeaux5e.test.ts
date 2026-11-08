@@ -2,7 +2,7 @@
 // le haut, puis les abords), une seule lanterne allumée dans la ruine, sa scénette, ses abords, son plafond de 1 600
 // triangles et le budget du 5e avec eux et le Creux. Sans Three.js.
 import { describe, expect, it } from 'vitest';
-import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e, worldHabitantsCost } from './budget';
+import { FOREST_REWORK_MAX_5E, PLACE_TRIANGLES_MAX_5E, mapCost5e, openWorldCost5e, worldGestesCost, worldHabitantsCost } from './budget';
 import { WHOLE, posedTraces, rowPosed, traceStagePosed, type PartShape, type Stage } from './construction';
 import { creuxTriangles } from './creux5e';
 import { failleTriangles } from './faille5e';
@@ -346,8 +346,9 @@ describe('Le budget du 5e, avec les Radeaux et le Creux (plafonds du lot 6)', ()
     // Sémaphore (lot 14) ; et la Faille (lot 11), comptée comme le Creux.
     const since = Object.keys(BUILT_PLACES_5E).filter((id) => id !== 'montee' && id !== 'hameau').length;
     // Les habitants près de leur porte (choix du mainteneur du 21 octobre 2026, « Garder au 5e », en modèle 3D depuis le
-    // 23 octobre : un maillage à part, un appel) : hors scénette et au départ seulement, jamais sur la Carte.
-    const habitants = worldHabitantsCost('5e');
+    // 23 octobre : un maillage à part, un appel) : hors scénette et au départ seulement, jamais sur la Carte ; et leur
+    // outil qui travaille (le geste du métier, GD-27 lot 5 : un maillage à part, un appel), aux mêmes vues.
+    const habitants = sum([worldHabitantsCost('5e'), worldGestesCost('5e')]);
     const views = [
       [sum(openWorldCost5e('monde')), LOT5_5E.world, habitants],
       [sum(openWorldCost5e('depart')), LOT5_5E.departure, habitants],

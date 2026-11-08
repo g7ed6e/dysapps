@@ -439,6 +439,24 @@ Pour tous les items :
    - indice : Ces gestes concernent-ils seulement soi, ou la vie de tous les citoyens ?
    - explication : Voter, s’engager, manifester : chaque citoyen fait vivre la démocratie. Elle n’est jamais finie, elle dépend de l’engagement de chacun.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je parle au nom du village. · Je sonne la cloche avant le débat. · Je compte les jetons sur le tableau.
+- lieu : Ici, le village débat et vote. · Les gradins sont tournés vers le pic.
+- ruine : Deux gradins sont tombés. · L’auvent est tombé. · La cloche est posée au sol.
+- chantier : Les gradins du bout sont posés. · La cloche pend sous l’auvent.
+- rallumé : La cloche sonne sous l’auvent. · Les jetons sont sur le tableau.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `constitution` | Les gradins sont tournés vers l’estrade. | L’estrade est dégagée. |
+| `information` | La cloche sonne avant chaque débat. | La cloche est sous l’auvent. |
+| `civic-engagement` | Chaque électeur a un jeton rond. | Le tableau des votes est garni. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

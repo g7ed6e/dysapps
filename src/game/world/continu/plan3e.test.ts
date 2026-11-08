@@ -5,7 +5,7 @@
 import { describe, expect, it } from 'vitest';
 import { HABITANT_TRIANGLES_3E } from './habitants';
 import { LINK_PRICE, islandsOf } from '../archipelago';
-import { ARCHES_TRIANGLES_3E, OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e, worldHabitantsCost } from './budget';
+import { ARCHES_TRIANGLES_3E, OPEN_WORLD_BUDGETS, mapCost3e, openWorldCost3e, worldGestesCost, worldHabitantsCost } from './budget';
 import { BRIDGE, bridgeFacets, bridgeFloor, bridgeParts, bridgeSite } from './bridges';
 import { boundsOf } from './facets';
 import { distance, linearRgb, type Vec2 } from './geometry';
@@ -354,8 +354,9 @@ describe('Le budget du 3e', () => {
     const env = OPEN_WORLD_BUDGETS['3e'];
     expect(env).toEqual({ triangles: 118_000, calls: 22 });
     // Hors scénette et au départ, les habitants près de leur porte en plus (choix du mainteneur, 23 octobre 2026 : en
-    // modèle 3D, aux quatre niveaux ; `worldHabitantsCost`) ; ni dans la scénette, ni sur la Carte.
-    const habitants = worldHabitantsCost('3e').triangles;
+    // modèle 3D, aux quatre niveaux ; `worldHabitantsCost`), et leur outil (le geste du métier, GD-27 lot 5 ;
+    // `worldGestesCost`) ; ni dans la scénette, ni sur la Carte.
+    const habitants = worldHabitantsCost('3e').triangles + worldGestesCost('3e').triangles;
     for (const [cost, added] of [
       [total(openWorldCost3e('monde')), habitants],
       [total(openWorldCost3e('scenette')), 0],

@@ -23,27 +23,29 @@ import {
   NEF_4E,
   NEF_4E_DEPARTURE,
   NEF_4E_TEMPS,
-  PIECES_BRONZE,
-  RAFIOT_FUNNEL,
-  RAFIOT_HULL_COLORS,
   SKY_GATE_4E,
   SKY_GATE_4E_PORTRAIT,
   SKY_ISLANDS_4E,
   SKY_ISLANDS_4E_PORTRAIT,
+  SEMAPHORE_DARK_4E,
+  SEMAPHORE_LIGHT_4E,
+  SEMAPHORE_SPOT_4E,
   SKY_ISLAND_COLORS,
   aiguillesFacets,
+  semaphoreLightFacets,
   criqueLook,
   criqueDecorFacets,
   digueFacets,
   envelopeShown,
   nef4eFlight,
   nef4eSiteTriangles,
-  rafiotPiece,
+ 
   skyIslandTouched,
   skyIslandsFacets,
   skyIslandsPortraitFacets,
 } from './crique4e';
 import { FacetBuilder } from './facets';
+import { PIECES_BRONZE, RAFIOT_FUNNEL, RAFIOT_HULL_COLORS, RAFIOT_PIECES_CARRIED, rafiotPiece } from './rafiot';
 import { distance, distanceToPolyline, linearRgb, type Vec2, type Vec3 } from './geometry';
 import { LISIERE_SITE } from './lisiere';
 import { levelWorld } from './levelWorld';
@@ -53,7 +55,7 @@ import { COLORS_3E } from './plan3e';
 import { criqueWalkwayFacets } from './paths4e';
 import { COLORS_4E, CRIQUE, CRIQUE_DIGUE, CRIQUE_LEVEL, CRIQUE_PAD, DEPARTURE_4E, PATH_EDGES_4E, PATH_NODES_4E, PLACES_4E, RAFIOT_4E, VOLCANO_4E } from './plan4e';
 import { ESCALE, PORT_WORST, portFacets, type PortState } from './port';
-import { FOG_4E } from './sky';
+import { FOG_4E, HORIZON_COLOR_4E } from './sky';
 import { heightAt4e, lavaFacets, plumeFacets, volcanoFarFacets } from './terrain4e';
 import type { Facets } from './facets';
 
@@ -535,18 +537,45 @@ describe('La vue d’arrivée, le Rafiot et les Aiguilles', () => {
     const hullSeen = colorsOf(decor);
     expect(hullSeen.has(key(RAFIOT_HULL_COLORS.hull))).toBe(true);
     expect(hullSeen.has(key(RAFIOT_HULL_COLORS.hullShade))).toBe(true);
+    // (La seule lanterne allumée du décor est celle du Sémaphore, sur l'horizon, loin du Rafiot.)
     let lamp = 0;
-    for (let k = 0; k < decor.colors.length; k += 3) if (`${decor.colors[k].toFixed(4)},${decor.colors[k + 1].toFixed(4)},${decor.colors[k + 2].toFixed(4)}` === key(C4E.lantern)) lamp++;
+    for (let k = 0; k < decor.colors.length; k += 3)
+      if (`${decor.colors[k].toFixed(4)},${decor.colors[k + 1].toFixed(4)},${decor.colors[k + 2].toFixed(4)}` === key(C4E.lantern) && Math.hypot(decor.positions[k] - RAFIOT_4E.at.x, decor.positions[k + 2] - RAFIOT_4E.at.z) < 30) lamp++;
     expect(lamp).toBe(0);
   });
 
-  it('le pont du Rafiot vide quand ses six pièces sont rendues au Fanal du 3e, le reste du décor identique', () => {
+  it('la lanterne du Sémaphore (GD-27, lot 5) : en tête de la plus haute Aiguille, un point chaud plus large que haut sur son mât, 40 triangles au plus, presque sans brouillard ; un demi-tour depuis le quai la met dans l’image, large d’au moins 18 pixels sur 1 024', () => {
+    const f = semaphoreLightFacets();
+    expect(f.triangles).toBeLessThanOrEqual(40);
+    const [, h] = AIGUILLES_4E.needles[SEMAPHORE_SPOT_4E.needle];
+    expect(h).toBe(Math.max(...AIGUILLES_4E.needles.map((n) => n[1])));
+    expect(SEMAPHORE_LIGHT_4E.y).toBeGreaterThan(h + 2);
+    expect(distance(SEMAPHORE_LIGHT_4E, AIGUILLES_AT)).toBeLessThan(15);
+    for (const v of vertices(f)) expect(v.y).toBeGreaterThan(h - 1);
+    // Le liseré sombre contre le ciel rose, la lanterne contre le liseré.
+    expect(contrast(SEMAPHORE_DARK_4E, HORIZON_COLOR_4E)).toBeGreaterThanOrEqual(3);
+    expect(contrast(C4E.lantern, SEMAPHORE_DARK_4E)).toBeGreaterThanOrEqual(3);
+    const thin = levelWorld('4e').thinFog;
+    expect(thin.find((t) => t.color === C4E.lantern)!.fog).toBeLessThan(0.2);
+    expect(thin.find((t) => t.color === SEMAPHORE_DARK_4E)!.fog).toBeLessThan(0.2);
+    const turned = followPose(KEO, 0, undefined, CRIQUE_VIEW.yaw + Math.PI);
+    const lantern = linearRgb(C4E.lantern);
+    const xs: number[] = [];
+    for (let k = 0; k < f.positions.length; k += 3)
+      if (lantern.every((v, c) => Math.abs(f.colors[k + c] - v) < 1e-6)) xs.push(screenOf(turned, { x: f.positions[k], y: f.positions[k + 1], z: f.positions[k + 2] }, 1024, 768).x);
+    expect(Math.max(...xs) - Math.min(...xs)).toBeGreaterThanOrEqual(18);
+    expect(inFrame(turned, SEMAPHORE_LIGHT_4E)).toBe(true);
+    expect(inFrame(arrival(), SEMAPHORE_LIGHT_4E)).toBe(false);
+  });
+
+  it('le pont du Rafiot porte trois pièces (l’anneau, la cloche, le poids : directeur artistique, 30 octobre 2026), vide quand elles sont rendues au Fanal du 3e, le reste du décor identique', () => {
     const full = criqueDecorFacets();
     const empty = criqueDecorFacets(true);
     expect(empty.triangles).toBeLessThan(full.triangles);
-    // Rien d'autre ne change : seules les pièces partent (le même nombre de triangles que le dessin des six pièces).
+    expect(RAFIOT_PIECES_CARRIED).toEqual(['anneau', 'cloche', 'poids']);
+    // Rien d'autre ne change : seules les pièces partent (le même nombre de triangles que le dessin des trois pièces).
     const b = new FacetBuilder();
-    for (const id of ['anneau', 'cloche', 'poids', 'regulateur', 'gong', 'vasque'] as const) rafiotPiece(b, id, 0, 0, 0, PIECES_BRONZE);
+    for (const id of RAFIOT_PIECES_CARRIED) rafiotPiece(b, id, 0, 0, 0, PIECES_BRONZE);
     expect(full.triangles - empty.triangles).toBe(b.build().triangles);
   });
 

@@ -24,6 +24,7 @@ import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, PlaceArt, Sphere } from './placeArt';
 import { C3E, SINK_3E, armLantern3e, bench3e, dryTufts3e, fallenPan3e, habitant3e, pathLantern3e, scene3e, site3e } from './place3eKit';
 import { capOf, groundPlane4e, inWorld, once, sheet, type P3 } from './place4eKit';
+import { placeFrame, registerResponder } from './respond';
 
 /**
  * Les couleurs propres aux Ondes, en plus des matières des Passeurs (`C3E`) : le fer bruni du pavillon, sombre et un peu
@@ -691,3 +692,56 @@ export const ONDES_LAYOUT = {
   scene: SCENE_SPOT,
   traceSpots: TRACE_SPOTS,
 } as const;
+
+// ---------- Le monde qui répond : les Ondes (GD-28, lot 4 de GD-27) ----------
+
+/**
+ * Les messages reçus, l'objet que pose chaque bonne réponse (décision du directeur artistique du 30 octobre 2026) : une
+ * feuille de papier vierge, épinglée à plat sur la façade de la station, sous l'auvent, au-dessus des postes, à droite
+ * de l'annonceur, assez haut pour que les postes ne les cachent pas (vérifié sur capture) ; rien n'y est écrit, ni
+ * ligne ni signe. Les feuilles s'épinglent en deux lignes en quinconce, et le groupe paraît complet quel que soit le
+ * nombre (le `Placement` n'a pas de roulis : elles sont droites). Jamais sur la table (la caméra ne la verrait pas), jamais
+ * sur le mât ni ses haubans (une ligne qui y monte serait une jauge), jamais une lumière ni un fanion de couleur. Chaque
+ * feuille descend de sous l'auvent et se plaque contre le mur. Son papier est clair et chaud, un cran plus chaud que les
+ * cadrans ; son épingle, de fer.
+ */
+const SHEET = { w: 0.46, h: 0.46, edge: 0.07, paper: 0xe8dcc0, frame: 0x4e5560 } as const;
+/** Chaque feuille : sa place le long de la façade, la hauteur de son haut ; deux lignes en quinconce, remplies en alternance. */
+const SHEETS: readonly (readonly [number, number])[] = [
+  [2.15, 1.94],
+  [3.65, 2.42],
+  [2.95, 1.94],
+  [2.85, 2.42],
+  [3.35, 1.94],
+  [2.45, 2.42],
+  [2.55, 1.94],
+  [3.25, 2.42],
+];
+
+/** Une feuille épinglée, à l'origine (le haut de son milieu, contre un mur dont le devant regarde +z), son épingle. */
+function pinnedSheet(b: FacetBuilder): void {
+  // Un cadre de fer sombre, large d'un bon doigt, déborde de la feuille : le papier clair se détache de la pierre claire
+  // de la façade (référent dys, consultant d'Archipéo : jamais par la seule couleur), sans assombrir le papier ; le
+  // cadre est sombre sans être presque noir.
+  b.box({ x: 0, y: -SHEET.h - SHEET.edge, z: -0.004 }, [SHEET.w + 2 * SHEET.edge, SHEET.h + 2 * SHEET.edge, 0.012], SHEET.frame, SHEET.frame);
+  b.box({ x: 0, y: -SHEET.h, z: 0 }, [SHEET.w, SHEET.h, 0.02], SHEET.paper, SHEET.paper);
+  b.box({ x: 0, y: -0.08, z: 0.012 }, [0.07, 0.07, 0.03], C3E.iron, C3E.iron);
+}
+
+registerResponder('ondes', () => {
+  const frame = placeFrame('ondes');
+  return {
+    spot(i) {
+      const [x, h] = SHEETS[i];
+      const p = local(x, STATION.z1 + 0.03);
+      const at = frame(p.x, planeY(p.x, p.z) + h, p.z);
+      // Elle descend de sous l'auvent, un peu devant le mur, et se plaque contre lui.
+      const front = local(x, STATION.z1 + 0.18);
+      const above = frame(front.x, planeY(front.x, front.z) + h + 0.45, front.z);
+      return { at, from: above, arc: 0 };
+    },
+    object(b) {
+      drawPosed(b, { x: 0, y: 0, z: 0, yaw: YAW }, pinnedSheet);
+    },
+  };
+});

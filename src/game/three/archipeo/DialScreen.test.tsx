@@ -19,7 +19,7 @@ function play(onAnswer = vi.fn(), shown: ExerciseItem = item) {
   const layout = { low: false, slots: [], aid: null, scenette: { validate: null } } as unknown as ScenetteLayout;
   render(
     <SettingsProvider>
-      <QuestionContext.Provider value={{ place: 'forge' as never, layout, show: () => {}, instruction: '', simple: true, lowScreen: false }}>
+      <QuestionContext.Provider value={{ place: 'forge' as never, layout, show: () => {}, instruction: '', simple: true, lowScreen: false, quiet: false, surPlace: null, anchors: [] }}>
         <DialScreen items={[shown]} answered={null} onAnswer={onAnswer} onHelp={() => {}} level={1} exerciseId="maths-4e-powers-powers-1" />
       </QuestionContext.Provider>
     </SettingsProvider>,

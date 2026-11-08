@@ -153,13 +153,13 @@ test('la phrase de la restauration du Fanal, cachée pendant la vue finale, revi
   try {
     act(() => {
       scene.options!.onRestored!('fanal');
-      scene.options!.onFinalView!(true);
+      scene.options!.onCameraScript!(true);
     });
     const box = document.querySelector('.open-world-said')!;
     // La vue finale dure plus longtemps que la phrase : elle n'est jamais écrite pendant la vue.
     act(() => vi.advanceTimersByTime(22_000));
     expect(box.getAttribute('data-shown')).toBe('non');
-    act(() => scene.options!.onFinalView!(false));
+    act(() => scene.options!.onCameraScript!(false));
     expect(box.getAttribute('data-shown')).toBe('oui');
     expect(box.textContent).toMatch(/Fanal/);
     // Deux phrases (l'état, puis la réplique) : 8 s ensemble, ou 4 s chacune sur un petit écran.
@@ -176,18 +176,18 @@ test('la vue finale se termine aussi au clavier : Échap, Entrée ou Espace', as
   renderPage();
   await screen.findByRole('button', { name: /Carte/ });
   for (const key of ['Escape', 'Enter', ' ']) {
-    act(() => scene.options!.onFinalView!(true));
-    const before = vi.mocked(scene.world!.endFinal).mock.calls.length;
+    act(() => scene.options!.onCameraScript!(true));
+    const before = vi.mocked(scene.world!.endScript).mock.calls.length;
     act(() => {
       window.dispatchEvent(new KeyboardEvent('keydown', { key }));
     });
-    expect(vi.mocked(scene.world!.endFinal).mock.calls.length).toBe(before + 1);
-    act(() => scene.options!.onFinalView!(false));
+    expect(vi.mocked(scene.world!.endScript).mock.calls.length).toBe(before + 1);
+    act(() => scene.options!.onCameraScript!(false));
   }
   // Hors de la vue finale, ces touches ne la demandent pas.
-  const after = vi.mocked(scene.world!.endFinal).mock.calls.length;
+  const after = vi.mocked(scene.world!.endScript).mock.calls.length;
   act(() => {
     window.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter' }));
   });
-  expect(vi.mocked(scene.world!.endFinal).mock.calls.length).toBe(after);
+  expect(vi.mocked(scene.world!.endScript).mock.calls.length).toBe(after);
 });

@@ -224,6 +224,22 @@ Pour tous les items :
 | Ouvre la bouche. | bouche | bouche · pouche | bouche | le b vibre dans la gorge, comme dans bateau. |
 | Une jupe rouge. | jupe | jupe · chupe | jupe | le j vibre, comme dans jouet. |
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je tourne la presse à bras. · Je sèche les feuilles sur la corde. · Je range l’établi.
+- lieu : Ici, les feuilles passent sous la presse. · Le toit de verre éclaire l’établi.
+- ruine : Les poutres de l’atelier sont tombées. · La presse est couchée dans la cour.
+- chantier : Les poutres de l’atelier sont relevées. · La presse est remise debout.
+- rallumé : La presse tourne dans l’atelier. · Les feuilles sèchent sur la corde.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `sound-discrimination` | L’imprimeur écoute chaque mot avant de composer. | L’imprimeur compose les mots. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

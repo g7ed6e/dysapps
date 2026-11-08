@@ -26,6 +26,7 @@ import { drawPosed, FacetBuilder, type Facets } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import type { AddPiece, DialShown, PlaceArt, SiteGround, Sphere } from './placeArt';
 import { COLORS_4E, PATH_NODES_4E, PLACES_4E, RIGOLE_4E } from './plan4e';
+import { placeFrame, registerResponder } from './respond';
 import { unlitSource } from './rendered5e';
 import { LIGHT_4E } from './sky';
 import { standingHeight } from './terrain';
@@ -1198,3 +1199,47 @@ export const FORGE_LAYOUT = {
   /** La tôle du toit de l'appentis, flanc et dessus (ses abords en empilent). */
   sheet: { shade: C.sheetShade, top: C.sheet },
 } as const;
+
+// ---------- Le monde qui répond : la Forge (GD-28, lot 4 de GD-27) ----------
+
+/**
+ * Les chaudrons de la chaudronnière, l'objet que pose chaque bonne réponse (décision du directeur artistique du 30
+ * octobre 2026) : un petit chaudron de tôle d'environ 0,3, rond, son bord et son dedans sombre, dont la silhouette ronde
+ * s'oppose aux lingots rectangulaires des réponses ; jamais une forme de lingot, de cloche ni d'anneau. Sur l'établi de
+ * l'appentis, sur sa moitié nord, en deux rangs décalés de quatre, qui se remplissent en alternant (le groupe paraît
+ * complet quel que soit le nombre) ; jamais derrière la flamme du foyer de « régler » ni derrière Kéo. Il descend d'en
+ * haut sur l'établi, sous la tôle du toit.
+ */
+const CAULDRON = { r0: 0.16, r1: 0.22, h: 0.3, rim: 0.24 } as const;
+const CAULDRONS: readonly (readonly [number, number])[] = [
+  [SHED.x1 - 0.83, 4.86],
+  [SHED.x1 - 0.35, 5.08],
+  [SHED.x1 - 0.83, 4.64],
+  [SHED.x1 - 0.35, 5.3],
+  [SHED.x1 - 0.83, 4.42],
+  [SHED.x1 - 0.35, 5.52],
+  [SHED.x1 - 0.83, 4.2],
+  [SHED.x1 - 0.35, 5.74],
+];
+
+/** Un chaudron, à l'origine, son fond en 0 : la panse en six pans, le bord de fer, le dedans sombre. */
+function cauldron(b: FacetBuilder): void {
+  const K = CAULDRON;
+  b.prism({ x: 0, y: 0, z: 0 }, K.r0, K.r1, K.h - 0.03, 6, C.sheetShade, C.hollow);
+  b.prism({ x: 0, y: K.h - 0.03, z: 0, yaw: Math.PI / 6 }, K.rim, K.rim, 0.03, 6, C.ironTop, C.hollow);
+}
+
+registerResponder('forge', () => {
+  const frame = placeFrame('forge');
+  const top = yardY((SHED.x0 + SHED.x1) / 2, (SHED.z0 + SHED.z1) / 2) + SHED_FLOOR.rise + 0.85;
+  return {
+    spot(i) {
+      const [x, z] = CAULDRONS[i];
+      const at = frame(x, top, z);
+      return { at, from: { x: at.x, y: at.y + 0.6, z: at.z }, arc: 0 };
+    },
+    object(b) {
+      cauldron(b);
+    },
+  };
+});

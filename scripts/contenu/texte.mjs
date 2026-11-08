@@ -20,3 +20,6 @@ export function lireTexte(v, ligne) {
   }
   return v;
 }
+
+/** Le nombre de mots d'un texte : ce qui porte une lettre ou un chiffre entre deux espaces. */
+export const motsDe = (texte) => texte.split(/\s+/).filter((m) => /[\p{L}\p{N}]/u.test(m)).length;

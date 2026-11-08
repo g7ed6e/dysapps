@@ -440,6 +440,23 @@ Pour tous les items :
 
 ## Au lieu · Archipéo
 
+### L’habitant
+
+- métier : Je répare les filets. · Je trie les sardines. · Je tire la barque sur le sable.
+- lieu : Ici, les pêcheurs sèchent leurs filets. · Les cabanes gardent le matériel de pêche.
+- ruine : Les murets des cabanes sont bas. · Les perches du séchoir sont couchées.
+- chantier : Les murs des cabanes sont montés. · Les toits de paille sont posés.
+- rallumé : Les filets sèchent sur le séchoir. · La barque repose sur le sable.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `word-classes` | Les pêcheurs rentrent avec la pêche. | La pêcheuse trie la pêche. |
+| `sorting` | Les sardines sont étalées sur le sable. | La pêcheuse range les paniers. |
+| `e-er-ez` | Les filets sèchent sur les perches. | La pêcheuse roule les filets. |
+| `plurals` | La barque rentre avec ses sardines. | Les sardines sont au séchoir. |
+
 > Les items du lieu des Filets, dans le monde ouvert d’Archipéo (`?monde=ouvert`) : chaque item est le jumeau d’un item du niveau 1 du Troupeau (« jumeau » : son rang), il en porte la clé, le point d’accord, les sortes de pièges et la règle (la carte de la référence, réduite à la ligne « règle » ; entière dans « Vue simple ») ; la phrase parle de ce que la scène montre (« scène » : ce qui est posé, et combien). Règle « à l’essai » : docs/univers/univers.md, § 4.2. Proposés par le directeur du contenu pédagogique (questions-du-monde.md, 14 octobre 2026).
 
 ### Niveau 1 · `french-6e-grammar-spelling-plurals-1`

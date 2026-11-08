@@ -8,7 +8,7 @@
 // Grappin et le port ; le Fanal les montre à sa restauration (./fanal3e.ts, `restoration`), la gondole les porte avant
 // (./parvis3e.ts, `zeppelinPiecesFacets`). Le bronze n'est qu'aux pièces rendues (relecture des Prairies, (b) 4) :
 // celui de `PIECES_BRONZE`, le même qu'au pont du Rafiot. Code pur.
-import { PIECES_BRONZE, RAFIOT_PIECE_HEIGHT, rafiotPiece, type RafiotPiece } from './crique4e';
+import { PIECES_BRONZE, RAFIOT_PIECE_HEIGHT, rafiotPiece, type RafiotPiece } from './rafiot';
 import { drawPosed, type FacetBuilder } from './facets';
 import type { Vec2, Vec3 } from './geometry';
 import { C3E } from './place3eKit';

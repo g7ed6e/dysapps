@@ -607,6 +607,24 @@ Pour tous les items :
    - indice : Regarde la date, pas seulement le verbe.
    - explication : L’année 1969 est passée. Le verbe « marche » est au présent, mais l’action est passée : ce présent rend le récit plus vivant. Le temps du verbe n’est pas le moment de l’action.
 
+## Au lieu · Archipéo
+
+### L’habitant
+
+- métier : Je guette la mer depuis la tour. · Je plie ma longue-vue. · Je note les bateaux.
+- lieu : Ici, la tour voit l’horizon. · Le plateau domine la côte.
+- ruine : Le fût de la tour est écroulé. · Le mât est brisé dans l’herbe.
+- chantier : Le fût est relevé. · Les fenêtres sont posées.
+- rallumé : La chambre de guet est ouverte. · Le mât tient sur le toit.
+
+### Les missions
+
+| mission | cadre | suite |
+| --- | --- | --- |
+| `comprehension` | Le guetteur lit le ciel et la mer. | Le guetteur a noté ce qu’il voit. |
+| `sentence-order` | Les vitraux de la chambre sont sur le banc. | Le guetteur monte les vitraux. |
+| `tense-values` | Le guetteur tient le journal de la tour. | Le journal a une page de plus. |
+
 ## Les plans
 
 | plan | nom | XP | quand c’est bâti |

@@ -25,10 +25,20 @@
 //   - fin : Tu as revu {questions}.
 //   - rappel : On revoit quelques questions ensemble.
 //
+//   ## Les veillées
+//   ## L’équipage (la ligne fixe de Zia et de Malo près de l'habitant du premier lieu rallumé qu'ils ont guidé, GD-27, lot 5)
+//
+//   - feu éteint : {Feu} est éteint.
+//   - feu allumé : {Feu} est allumé.
+//   - embarquement : {Équipier} monte à bord.
+//
 // Les étapes de l'entraide (lot L2) : une forme par geste, que le jeu remplit avec l'étape de la quête d'entraide du 6e
 // (src/game/world/stories.json) ; la fin d'« Apporter » reprend « posée », ce qui manque pour « Donner » reprend
 // « demande ». La révision jouée dans la scène du lieu (lot L3) : la phrase d'entrée et celle du bilan, sans date ni échec ; le rappel
 // de l'habitant, une forme sans jeton (ni nom de mission ni nombre), qui remplace celui de la grille dans le monde ouvert.
+// Les veillées (GD-23, GD-27, lots 3 et 3 bis) : la seule ligne de chacune, que le jeu remplit aux quatre niveaux avec le nom
+// du feu du niveau (« Le Phare », « Le Sémaphore », « La Forge », accordé par le code au nom du lieu, « Le Fanal ») ou de
+// l'équipier qui monte à bord (« L’équipière radio », « Le naturaliste ») ; lue par src/game/world/continu/levelVigils.ts.
 //
 // Chaque forme a ses jetons, tous exigés, aucun autre permis, jamais une accolade seule. Règles de lecture (référent dys,
 // arbitrages du directeur artistique) : trois phrases au plus, un point à la fin, jamais « ! » ni « … », l'apostrophe
@@ -69,6 +79,21 @@ export const SECTIONS = [
       ['rappel', 'revisionReminder', []],
     ],
   ],
+  [
+    '## Les veillées',
+    [
+      ['feu éteint', 'fireOut', ['Feu']],
+      ['feu allumé', 'fireLit', ['Feu']],
+      ['embarquement', 'boarding', ['Équipier']],
+    ],
+  ],
+  [
+    '## L’équipage',
+    [
+      ['Zia', 'equipageZia', []],
+      ['Malo', 'equipageMalo', []],
+    ],
+  ],
 ];
 
 /** Toutes les formes, section après section : le mot du Markdown, la clé du JSON et les jetons qu'elle prend. */
@@ -97,7 +122,7 @@ export function fautes(texte, jetons) {
   return f;
 }
 
-/** docs/contenu/monde-ouvert.md → { ask, askAssembled, ready, remise, done, stepMission, …, revisionEntry, revisionDone, revisionReminder }. */
+/** docs/contenu/monde-ouvert.md → { ask, askAssembled, ready, remise, done, stepMission, …, revisionReminder, fireOut, fireLit, boarding }. */
 export function lireMondeOuvert(md, fichier) {
   const lignes = md.replace(/\r\n/g, '\n').split('\n');
   const sortie = {};

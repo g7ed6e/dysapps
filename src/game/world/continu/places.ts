@@ -18,6 +18,7 @@ import { PATH_NODES_4E } from './plan4e';
 import { PATH_NODES_3E } from './plan3e';
 import { PATH_NODES_5E } from './plan5e';
 import { COLORS_6E, PATH_NODES, placeById, type PlaceId as PlaceId6e } from './plan6e';
+import { placeFrame, registerResponder } from './respond';
 import { buildHeightField, heightAt, heightOnMesh, standingHeight } from './terrain';
 import { landDistance } from './terrain';
 
@@ -2600,3 +2601,47 @@ export function modelOfPlace(id: PlaceId): PlaceModel {
   }
   return m;
 }
+
+// ---------- Le monde qui répond : la Mangrove (GD-28, lot 4 de GD-27) ----------
+
+/**
+ * Les propagules de la Mangrove, l'objet que pose chaque bonne réponse (décision du directeur artistique du 30 octobre
+ * 2026) : une jeune pousse de palétuvier plantée droite dans l'eau, une tige fine à trois pans et une petite couronne de
+ * feuilles, ni fleur ni fruit, environ 0,7 de haut. Un bosquet en deux lignes décalées, aux hauteurs inégales, dans
+ * l'eau entre la pirogue et le palétuvier de l'ouest, au pied du carbet (jamais sur le platelage, jamais contre la
+ * pirogue, jamais en ligne régulière) ; il se remplit du carbet vers l'avant, et paraît complet quel que soit le nombre.
+ * Chacune tombe droit d'en haut et se plante dans la vase, comme une vraie propagule. Le bosquet relève le lieu même, la
+ * mangrove replantée, et tient dans tous ses états, ruine comprise.
+ */
+const PROPAGULES: readonly (readonly [number, number, number])[] = [
+  [4.7, -8.3, 0.7],
+  [3.8, -8.1, 0.56],
+  [5.4, -8.0, 0.62],
+  [4.3, -7.75, 0.5],
+  [5.0, -7.55, 0.66],
+  [3.5, -7.5, 0.58],
+  [5.5, -7.4, 0.48],
+  [4.4, -8.3, 0.6],
+];
+
+/** Une propagule, à l'origine, son pied dans l'eau : la tige à trois pans, la couronne en deux étages. */
+function propagule(b: FacetBuilder, h: number): void {
+  b.prism({ x: 0, y: -0.25, z: 0 }, 0.045, 0.035, h + 0.25, 3, C.mangroveWood, C.mangroveWood);
+  b.prism({ x: 0, y: h - 0.08, z: 0 }, 0.17, 0.11, 0.14, 5, C.leafMangroveShade, C.leafMangroveShade);
+  b.prism({ x: 0, y: h + 0.04, z: 0, yaw: 0.6 }, 0.12, 0, 0.14, 5, C.leafMangrove);
+}
+
+registerResponder('mangrove', () => {
+  const frame = placeFrame('mangrove');
+  const water = siteGround('mangrove').water;
+  return {
+    spot(i) {
+      const [x, z] = PROPAGULES[i];
+      const at = frame(x, water - 0.05, z);
+      return { at, from: { x: at.x, y: at.y + 0.8, z: at.z }, arc: 0 };
+    },
+    object(b, i) {
+      propagule(b, PROPAGULES[i][2]);
+    },
+  };
+});
